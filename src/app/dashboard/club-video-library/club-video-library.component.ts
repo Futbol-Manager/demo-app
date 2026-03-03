@@ -39,7 +39,7 @@ export class ClubVideoLibraryComponent implements OnInit {
   activeFolderId: number | null | 'uncategorized' = null; // null = todas, 'uncategorized' = sin carpeta
   showCreateFolder = false;
   newFolderName = '';
-  newFolderColor = '#3b82f6';
+  newFolderColor = '#31b270';
   folderSaving = false;
   folderError = '';
 
@@ -49,7 +49,8 @@ export class ClubVideoLibraryComponent implements OnInit {
 
   movingVideo: any = null;  // vídeo al que se le está cambiando la carpeta
 
-  folderColors = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#06b6d4','#f97316'];
+  /** Paleta Sphaira: verde, navy, ámbar, rojo, violeta, rosa, teal, naranja */
+  folderColors = ['#31b270', '#002c40', '#0a4a6e', '#f59e0b', '#dc2626', '#7c3aed', '#0d9488', '#ea580c'];
 
   syncingFolders = false; // sync manual
 
@@ -287,7 +288,7 @@ export class ClubVideoLibraryComponent implements OnInit {
         if (res?.data) this.folders.push(res.data);
         this.folders.sort((a, b) => a.name.localeCompare(b.name));
         this.newFolderName = '';
-        this.newFolderColor = '#3b82f6';
+        this.newFolderColor = '#31b270';
         this.showCreateFolder = false;
         this.folderSaving = false;
       },
@@ -298,7 +299,7 @@ export class ClubVideoLibraryComponent implements OnInit {
   startEditFolder(folder: any): void {
     this.editingFolder = folder;
     this.editFolderName = folder.name;
-    this.editFolderColor = folder.color || '#3b82f6';
+    this.editFolderColor = folder.color || '#31b270';
   }
 
   saveEditFolder(): void {
@@ -420,9 +421,9 @@ export class ClubVideoLibraryComponent implements OnInit {
 
   barColor(): string {
     const p = this.usedPercent();
-    if (p >= 90) return '#e74c3c';
-    if (p >= 70) return '#f39c12';
-    return '#002c40';
+    if (p >= 90) return '#dc2626';
+    if (p >= 70) return '#f59e0b';
+    return '#31b270';
   }
 
   planLabel(): string {

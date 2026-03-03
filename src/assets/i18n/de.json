@@ -1973,7 +1973,8 @@
     "TEXT_398": "Vorab-Benachrichtigung an Eltern gesendet. Unter Nicht eingeladen sehen Sie nur Spieler, die die Teilnahme bestaetigt haben.",
     "TEXT_399": "Aenderung gespeichert.",
     "TEXT_400": "Benachrichtigung gesendet.",
-    "TEXT_401": "Spieldetails"
+    "TEXT_401": "Spieldetails",
+    "PROXIMAMENTE": "Demnächst"
   },
   "REGISTER": {
     "TITLE": "Benutzerregistrierung",
@@ -2529,7 +2530,8 @@
     "MESSAGE": "Nachricht",
     "MESSAGES": "Nachrichten",
     "CLOSE": "Schließen",
-    "SELECT_MESSAGE": "Nachricht auswählen, um sie zu lesen.",
+    "SELECT_MESSAGE": "Wählen Sie eine Nachricht aus der Liste, um den Inhalt anzuzeigen.",
+    "SELECT_MESSAGE_TITLE": "Nachricht auswählen",
     "DELETE": "Löschen",
     "SEND": "Senden",
     "CANCEL": "Abbrechen",

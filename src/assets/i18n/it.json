@@ -1968,7 +1968,8 @@
     "TEXT_398": "Pre-avviso inviato ai genitori. Tra i Non convocati vedrai solo i giocatori che hanno confermato la presenza.",
     "TEXT_399": "Modifica salvata.",
     "TEXT_400": "Notifica inviata.",
-    "TEXT_401": "Dettagli della partita"
+    "TEXT_401": "Dettagli della partita",
+    "PROXIMAMENTE": "Prossimamente"
   },
   "REGISTER": {
     "TITLE": "User registration",
@@ -2524,7 +2525,8 @@
     "MESSAGE": "Message",
     "MESSAGES": "Messages",
     "CLOSE": "Close",
-    "SELECT_MESSAGE": "Select a message to read it.",
+    "SELECT_MESSAGE": "Scegli un messaggio dall'elenco per visualizzarne il contenuto.",
+    "SELECT_MESSAGE_TITLE": "Seleziona un messaggio",
     "DELETE": "Delete",
     "SEND": "Send",
     "CANCEL": "Cancel",

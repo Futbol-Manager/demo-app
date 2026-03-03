@@ -273,6 +273,50 @@ $g-header: linear-gradient(135deg, #{$sp-navy} 0%, #{$sp-navy-mid} 55%, #{$sp-gr
   display: none;
 }
 
+/* ========== Cards Sphaira premium ========== */
+.card-sphaira {
+  background: var(--sphaira-card-bg);
+  border-radius: 16px;
+  border: 1px solid var(--sphaira-border);
+  box-shadow: var(--sphaira-shadow);
+  overflow: hidden;
+  transition: box-shadow 0.25s ease, border-color 0.2s ease;
+
+  &:hover {
+    box-shadow: var(--sphaira-shadow-hover);
+  }
+}
+
+.card-sphaira-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, rgba($sp-navy, 0.04) 0%, rgba($sp-green, 0.04) 100%);
+  border-bottom: 1px solid var(--sphaira-border);
+}
+
+.card-sphaira-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--sphaira-night);
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &::before {
+    content: '';
+    width: 4px;
+    height: 1.2em;
+    border-radius: 2px;
+    background: linear-gradient(180deg, $sp-green 0%, $sp-green-dark 100%);
+  }
+}
+
 /* ========== Controles DataTable ========== */
 .datatable-controls {
   display: flex;
@@ -287,7 +331,35 @@ $g-header: linear-gradient(135deg, #{$sp-navy} 0%, #{$sp-navy-mid} 55%, #{$sp-gr
   align-items: center;
 }
 
-/* ========== Tabla premium ========== */
+.filter-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba($sp-navy, 0.7);
+  margin-bottom: 0.35rem;
+  display: block;
+}
+
+.form-select-sphaira {
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  border-radius: 10px;
+  border: 1.5px solid rgba($sp-navy, 0.14);
+  background: #fff;
+  color: var(--sphaira-night);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  appearance: auto;
+  min-width: 180px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: $sp-green;
+    box-shadow: 0 0 0 3px rgba($sp-green, 0.12);
+  }
+}
+
+/* ========== Tablas modernas Sphaira ========== */
 .stats-section {
   margin-top: 0;
 }
@@ -297,51 +369,73 @@ $g-header: linear-gradient(135deg, #{$sp-navy} 0%, #{$sp-navy-mid} 55%, #{$sp-gr
   -webkit-overflow-scrolling: touch;
 }
 
+.table-wrapper--modern {
+  border-radius: 0 0 16px 16px;
+  overflow: hidden;
+}
+
+.table-sphaira,
 .table-pro {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
 }
 
+.table-sphaira thead,
 .table-pro thead {
-  background: var(--sphaira-night);
+  background: linear-gradient(135deg, $sp-navy 0%, $sp-navy-mid 100%);
   color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  box-shadow: 0 2px 4px rgba(0, 44, 64, 0.12);
 }
 
+.table-sphaira th,
 .table-pro th {
-  padding: 0.75rem 0.6rem;
+  padding: 0.85rem 0.65rem;
   text-align: center;
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
   border: none;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
+.table-sphaira tbody tr,
 .table-pro tbody tr {
-  transition: background 0.15s ease;
+  transition: background 0.18s ease;
 }
 
+.table-sphaira tbody tr:nth-child(even),
 .table-pro tbody tr:nth-child(even) {
-  background: rgba(0, 44, 64, 0.03);
+  background: rgba(0, 44, 64, 0.02);
 }
 
+.table-sphaira tbody tr:hover,
 .table-pro tbody tr:hover {
-  background: rgba(49, 178, 112, 0.08);
+  background: rgba(49, 178, 112, 0.06);
 }
 
+.table-sphaira td,
 .table-pro td {
-  padding: 0.65rem 0.6rem;
-  border-bottom: 1px solid var(--sphaira-border);
+  padding: 0.75rem 0.65rem;
+  border-bottom: 1px solid rgba(0, 44, 64, 0.06);
   color: var(--sphaira-night);
   vertical-align: middle;
+  font-weight: 500;
 }
 
+.table-sphaira.text-center th,
+.table-sphaira.text-center td,
 .table-pro.text-center th,
 .table-pro.text-center td {
   text-align: center;
 }
 
-/* ========== Gráfica ========== */
-.chart-card .card-pro-header {
+/* ========== Gráficos modernos Sphaira ========== */
+.chart-card .card-sphaira-header {
   flex-wrap: wrap;
 }
 
@@ -361,8 +455,18 @@ $g-header: linear-gradient(135deg, #{$sp-navy} 0%, #{$sp-navy-mid} 55%, #{$sp-gr
   max-height: 420px;
 }
 
+.chart-container--sphaira {
+  padding: 1.75rem 2rem;
+  background: linear-gradient(180deg, rgba(0, 44, 64, 0.01) 0%, transparent 100%);
+  border-radius: 0 0 16px 16px;
+}
+
+.chart-container--sphaira canvas {
+  border-radius: 12px;
+}
+
 /* ========== Card goles ========== */
-.goals-card .card-pro-header {
+.goals-card .card-sphaira-header {
   flex-wrap: wrap;
 }
 
@@ -392,11 +496,13 @@ $g-header: linear-gradient(135deg, #{$sp-navy} 0%, #{$sp-navy-mid} 55%, #{$sp-gr
     flex: 1;
   }
 
-  .card-pro-header {
+  .card-sphaira-header {
     flex-direction: column;
     align-items: stretch;
   }
 
+  .table-sphaira th,
+  .table-sphaira td,
   .table-pro th,
   .table-pro td {
     padding: 0.5rem 0.4rem;
@@ -454,30 +560,50 @@ $g-header: linear-gradient(135deg, #{$sp-navy} 0%, #{$sp-navy-mid} 55%, #{$sp-gr
     box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.2);
   }
 
-  .card-pro-header {
+  .card-sphaira-header {
     background: linear-gradient(180deg, rgba(var(--color-primary-rgb), 0.06) 0%, transparent 100%);
     border-bottom-color: var(--border-color);
   }
 
-  .card-pro-title {
+  .card-sphaira-title {
     color: var(--text-primary);
   }
 
+  .table-sphaira thead,
   .table-pro thead {
-    background: var(--color-navy);
+    background: linear-gradient(135deg, #0d2d42 0%, #0a3a52 100%);
   }
 
+  .card-sphaira {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+  }
+
+  .form-select-sphaira {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+    &:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.15); }
+  }
+
+  .table-sphaira tbody tr:nth-child(even),
   .table-pro tbody tr:nth-child(even) {
     background: rgba(var(--color-primary-rgb), 0.04);
   }
 
+  .table-sphaira tbody tr:hover,
   .table-pro tbody tr:hover {
     background: rgba(var(--color-primary-rgb), 0.08);
   }
 
+  .table-sphaira td,
   .table-pro td {
     border-bottom-color: var(--border-color);
     color: var(--text-primary);
+  }
+
+  .chart-container--sphaira {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
   }
 
   #button_datatable {

@@ -227,8 +227,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
     this.sections.push({ id: 'general', title: 'SIDEBAR.SECTION_GENERAL', items: generalItems, visible: true });
 
-    // ─── Club (profileId 1 - visible cuando NO está en menú club) ───
-    if (this.profileId === 1 && !isOnClubMenu && !isOnInicio) {
+    // ─── Club (profileId 1 - siempre visible) ───
+    if (this.profileId === 1) {
       const clubItems: SidebarItem[] = [
         { id: 'dashboard', label: 'SIDEBAR.DASHBOARD', icon: 'bi-clipboard2-data', route: `/dashboard/cuadro-de-mandos/${this.clubId}` },
         { id: 'equipos', label: 'SIDEBAR.TEAMS', icon: 'bi-people', route: '/dashboard/equipos' },
@@ -261,14 +261,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { id: 'notificaciones', label: 'SIDEBAR.NOTIFICATIONS', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
         { id: 'debrief', label: 'SIDEBAR.DEBRIEF', icon: 'bi-clipboard-pulse', route: `/dashboard/debrief/history/${this.teamId}` },
         { id: 'video-analysis', label: 'SIDEBAR.VIDEO_ANALYSIS', icon: 'bi-camera-reels', route: '/dashboard/video-analysis' },
-        { id: 'individual-training', label: 'Entreno Individual', icon: 'bi-person-walking', route: '/dashboard/individual-training' },
+        // Entreno Individual deshabilitado
         { id: 'perfil', label: 'SIDEBAR.MY_PROFILE', icon: 'bi-person-badge', route: `/dashboard/perfil-entrenador/${this.teamId}/${this.playerId}` },
       ];
       this.sections.push({ id: 'coach', title: 'SIDEBAR.SECTION_COACH', items: coachItems, visible: true });
     }
 
     // ─── Equipo Club (profileId 1 cuando está dentro de un equipo) ───
-    if (this.profileId === 1 && hasTeam && !isOnClubMenu) {
+    if (this.profileId === 1 && hasTeam) {
       const teamItems: SidebarItem[] = [
         { id: 'calendario', label: 'SIDEBAR.CALENDAR', icon: 'bi-calendar4-week', route: `/dashboard/calendario/${this.teamId}/0` },
         { id: 'jugadores', label: 'SIDEBAR.PLAYERS', icon: 'bi-people-fill', route: `/dashboard/jugadores/${this.teamId}` },
@@ -291,7 +291,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { id: 'galeria', label: 'SIDEBAR.GALLERY', icon: 'bi-images', route: `/dashboard/partidos-entrevistas/${this.teamId}/${this.playerId}` },
         { id: 'clasificacion', label: 'SIDEBAR.STANDINGS', icon: 'bi-trophy', route: `/dashboard/clasificacion-resultados/${this.teamId}` },
         { id: 'patrocinadores', label: 'SIDEBAR.SPONSORS', icon: 'bi-collection', route: '/dashboard/patrocinadores/0' },
-        { id: 'individual-training', label: 'Entreno Individual', icon: 'bi-person-walking', route: '/dashboard/individual-training' },
+        // Entreno Individual deshabilitado
         { id: 'notificaciones', label: 'SIDEBAR.NOTIFICATIONS', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
       ];
       this.sections.push({ id: 'player', title: 'SIDEBAR.SECTION_PLAYER', items: playerItems, visible: true });
@@ -305,7 +305,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { id: 'lesiones', label: 'Lesiones', icon: 'bi-heart-pulse', route: `/dashboard/lesiones/${this.teamId}` },
         { id: 'jugadores', label: 'Jugadores', icon: 'bi-people', route: `/dashboard/jugadores/${this.teamId}` },
         { id: 'calendario', label: 'Calendario', icon: 'bi-calendar-event', route: `/dashboard/calendario/${this.teamId}/0` },
-        { id: 'individual-training', label: 'Entreno Individual', icon: 'bi-person-walking', route: '/dashboard/individual-training' },
+        // Entreno Individual deshabilitado
         { id: 'stats-jugadores', label: 'Estadísticas jugadores', icon: 'bi-graph-up', route: `/dashboard/estadisticas_jugadores/${this.teamId}` },
         { id: 'stats-equipo', label: 'Estadísticas equipo', icon: 'bi-bar-chart-line', route: `/dashboard/estadisticas_equipo/${this.teamId}` },
         { id: 'clasificacion', label: 'Clasificación', icon: 'bi-trophy', route: `/dashboard/clasificacion-resultados/${this.teamId}` },

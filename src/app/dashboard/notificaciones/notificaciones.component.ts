@@ -38,7 +38,15 @@ export class NotificacionesComponent implements OnInit {
   usuarioActual!: User | null;
   clubId!: number;
   userId!: number;
-  correoSelected = {
+  correoSelected: {
+    destinatarios: string;
+    asunto: string;
+    body: string;
+    remitente: string;
+    destinatario: string;
+    fechaCreate: string;
+    remitentePhotoUrl?: string | null;
+  } = {
     destinatarios: '',
     asunto: '',
     body: '',
@@ -50,7 +58,7 @@ export class NotificacionesComponent implements OnInit {
   correosEnviadosSinFiltro: any = [];
   correosRecibidosSinFiltro: any = [];
   correosSinFiltro: any = [];
-  selectCorreo: boolean = true;
+  selectCorreo: boolean = false;
   correos = [...this.correosSinFiltro];
   loadingCorreos: boolean = true;
   receivedCount: number = 0;
@@ -120,6 +128,7 @@ export class NotificacionesComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.loadingCorreos = true;
     if (
       localStorage.getItem('temporada') != null &&
       localStorage.getItem('temporada') != undefined
@@ -135,40 +144,77 @@ export class NotificacionesComponent implements OnInit {
       }
       this.route.params.subscribe((params) => {
         const paramUserId = params['userId'];
-        const paramClubId = params['clubId'];
+        // Normalizar siempre por usuario logueado: si viene userId en la ruta, lo usamos,
+        // y si no, usamos el userId obtenido del login. El clubId ya no se usa para filtrar correos.
         if (paramUserId != null && paramUserId !== '') {
           this.userId = +paramUserId;
-          this.clubId = 0;
-          this.loadCorreosByUser(this.userId);
-        } else {
-          this.clubId = paramClubId != null && paramClubId !== '' ? +paramClubId : 0;
-          this.loadCorreosByUser(this.userId);
         }
+        this.clubId = 0;
+        this.loadCorreosByUser(this.userId);
       });
     });
   }
 
   private loadCorreosByUser(userId: number): void {
+    this.loadingCorreos = true;
     this.loadCorreosProgramados();
     this.clubService.getListCorreos(userId).subscribe(
       (response: Response) => {
-        this.loadingCorreos = true;
         this.selectCorreo = false;
-        if (response.data !== null) {
-          this.correosEnviadosSinFiltro = response.data.enviados ?? [];
-          this.correosRecibidosSinFiltro = response.data.recibidos ?? [];
-          this.correos = response.data.recibidos ?? [];
+        const data: any = response?.data;
+        if (data && typeof data === 'object') {
+          this.correosEnviadosSinFiltro = data.enviados ?? [];
+          this.correosRecibidosSinFiltro = data.recibidos ?? [];
+          this.correos = data.recibidos ?? [];
           this.receivedCount = this.correosRecibidosSinFiltro.filter((c: any) => c.leido === 0).length;
-          this.loadingCorreos = false;
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
+        this.loadingCorreos = false;
         this.initSummernote();
       },
       (error) => {
-        console.error('Error al cargar el listado de equipos', error);
+        console.error('Error al cargar el listado de notificaciones', error);
+        this.loadingCorreos = false;
       },
     );
+    this.loadTeamsComboIfNeeded();
+  }
+
+  /** Carga correos cuando se entra como club (por clubId). */
+  private loadCorreosByClub(clubId: number): void {
+    this.loadingCorreos = true;
+    this.loadCorreosProgramados();
+    this.clubService.getListCorreosByClub(clubId).subscribe(
+      (response: Response) => {
+        this.selectCorreo = false;
+        const data: any = response?.data;
+        if (data && typeof data === 'object') {
+          this.correosEnviadosSinFiltro = data.enviados ?? [];
+          this.correosRecibidosSinFiltro = data.recibidos ?? [];
+          this.correos = data.recibidos ?? [];
+          this.receivedCount = this.correosRecibidosSinFiltro.filter((c: any) => c.leido === 0).length;
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+        this.loadingCorreos = false;
+        this.initSummernote();
+      },
+      (error) => {
+        console.error('Error al cargar el listado de notificaciones (club). Fallback a usuario.', error);
+        this.loadingCorreos = false;
+
+        // Si falla la carga por club (por ejemplo, club no encontrado o sin usuario asociado),
+        // hacemos fallback a las notificaciones por usuario para no dejar la vista vacía.
+        if (this.userId) {
+          this.loadCorreosByUser(this.userId);
+        }
+      },
+    );
+    this.loadTeamsComboIfNeeded();
+  }
+
+  private loadTeamsComboIfNeeded(): void {
 
     if (this.clubId == 0) {
       this.clubService.getClubByUserId(this.userId).subscribe(

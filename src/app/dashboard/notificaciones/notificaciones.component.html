@@ -215,27 +215,61 @@
       </div>
     </section>
 
-    <section class="mail-reader" *ngIf="!loadingCorreos && selectCorreo">
+    <section class="mail-reader mail-reader--with-message" *ngIf="!loadingCorreos && selectCorreo">
       <button type="button" class="btn-back-clean mobile-back" (click)="cerrarLectura()">
         <i class="bi bi-arrow-left"></i>
         <span>{{ 'NOTIFICATIONS.MESSAGES' | translate }}</span>
       </button>
-      <div class="reader-header-pro">
-        <h1 class="reader-subject">{{ correoSelected.asunto }}</h1>
-        <div class="reader-meta">
-          <strong>{{ currentFolder === 'inbox' ? correoSelected.remitente : correoSelected.destinatario }}</strong>
-        </div>
-        <div class="reader-meta">
-          {{ 'NOTIFICATIONS.SENT_AT' | translate }} {{ correoSelected.fechaCreate }}
-        </div>
-      </div>
-      <div class="reader-body" [innerHTML]="correoSelected.body"></div>
+      <article class="reader-card">
+        <header class="reader-card-header">
+          <h1 class="reader-subject">{{ correoSelected.asunto }}</h1>
+          <div class="reader-card-meta">
+            <span class="reader-avatar" [class.reader-avatar--sent]="currentFolder === 'sent'">
+              <ng-container *ngIf="currentFolder === 'inbox'; else sentReaderAvatar">
+                <img *ngIf="correoSelected['remitentePhotoUrl']"
+                     [src]="imageBaseUrl + correoSelected['remitentePhotoUrl']"
+                     alt=""
+                     class="reader-avatar-img"
+                     (error)="correoSelected['remitentePhotoUrl'] = null" />
+                <span *ngIf="!correoSelected['remitentePhotoUrl']"
+                      class="reader-avatar-initials"
+                      [style.background-color]="getInitialsBg(correoSelected.remitente)">
+                  {{ getInitials(correoSelected.remitente) }}
+                </span>
+              </ng-container>
+              <ng-template #sentReaderAvatar>
+                <img *ngIf="usuarioActual?.pictureUser"
+                     [src]="imageBaseUrl + usuarioActual!.pictureUser"
+                     alt=""
+                     class="reader-avatar-img"
+                     (error)="usuarioActual!.pictureUser = ''" />
+                <span *ngIf="!usuarioActual?.pictureUser"
+                      class="reader-avatar-initials"
+                      [style.background-color]="getInitialsBg(usuarioActual?.firstName || '')">
+                  {{ getInitials((usuarioActual?.firstName || '') + ' ' + (usuarioActual?.secondName || '')) }}
+                </span>
+              </ng-template>
+            </span>
+            <div class="reader-meta-block">
+              <span class="reader-from">{{ currentFolder === 'inbox' ? correoSelected.remitente : correoSelected.destinatario }}</span>
+              <span class="reader-date">
+                <i class="bi bi-clock me-1"></i>
+                {{ 'NOTIFICATIONS.SENT_AT' | translate }} {{ correoSelected.fechaCreate | date:'dd MMM yyyy, HH:mm' }}
+              </span>
+            </div>
+          </div>
+        </header>
+        <div class="reader-body" [innerHTML]="correoSelected.body"></div>
+      </article>
     </section>
 
-    <section class="mail-reader" *ngIf="!loadingCorreos && !selectCorreo">
+    <section class="mail-reader mail-reader--empty" *ngIf="!loadingCorreos && !selectCorreo">
       <div class="empty-reader">
-        <i class="bi bi-envelope-open-heart empty-reader-icon"></i>
-        <p>{{ 'NOTIFICATIONS.SELECT_MESSAGE' | translate }}</p>
+        <div class="empty-reader-illustration">
+          <i class="bi bi-envelope-open empty-reader-icon"></i>
+        </div>
+        <h3 class="empty-reader-title">{{ 'NOTIFICATIONS.SELECT_MESSAGE_TITLE' | translate }}</h3>
+        <p class="empty-reader-desc">{{ 'NOTIFICATIONS.SELECT_MESSAGE' | translate }}</p>
       </div>
     </section>
   </div>

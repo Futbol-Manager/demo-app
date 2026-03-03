@@ -51,6 +51,241 @@
 }
 
 /* =========================================================
+   BARRA BÚSQUEDA + FILTRO — PREMIUM
+========================================================= */
+.docs-toolbar-premium {
+  margin-bottom: 1.25rem;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(0, 44, 64, 0.08) 0%, rgba(10, 74, 110, 0.06) 50%, rgba(49, 178, 112, 0.06) 100%);
+  border: 1px solid rgba(49, 178, 112, 0.18);
+  box-shadow: 0 4px 20px rgba(0, 44, 64, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.docs-toolbar-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0;
+  padding: 0.75rem 1rem;
+}
+
+.docs-toolbar-search-wrap {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 200px;
+  max-width: 340px;
+  padding: 0.5rem 0.85rem;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid rgba(49, 178, 112, 0.35);
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus-within {
+    border-color: rgba(49, 178, 112, 0.6);
+    box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.12);
+  }
+}
+
+.docs-toolbar-search-icon {
+  display: flex;
+  align-items: center;
+  margin-right: 0.5rem;
+  color: #0d9488;
+  font-size: 1rem;
+  opacity: 1;
+}
+
+.docs-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: #0f172a;
+  font-size: 0.9rem;
+  font-weight: 500;
+  outline: none;
+  min-width: 0;
+
+  &::placeholder {
+    color: #64748b;
+  }
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.docs-toolbar-divider {
+  width: 1px;
+  height: 28px;
+  margin: 0 1rem;
+  background: linear-gradient(180deg, transparent, rgba(49, 178, 112, 0.25), transparent);
+  flex-shrink: 0;
+}
+
+.docs-toolbar-filter-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.docs-toolbar-filter-icon {
+  color: #0d9488;
+  font-size: 0.9rem;
+}
+
+.docs-filter-label {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.docs-filter-select {
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid rgba(49, 178, 112, 0.35);
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 0.9rem;
+  font-weight: 600;
+  min-width: 180px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%230f172a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.65rem center;
+
+  &:hover {
+    border-color: rgba(49, 178, 112, 0.55);
+  }
+  &:focus {
+    outline: none;
+    border-color: rgba(49, 178, 112, 0.6);
+    box-shadow: 0 0 0 2px rgba(49, 178, 112, 0.15);
+  }
+  option {
+    background: #ffffff;
+    color: #0f172a;
+    font-weight: 500;
+    padding: 0.5rem;
+  }
+}
+
+.docs-toolbar-count-wrap {
+  margin-left: auto;
+  padding-left: 1rem;
+}
+
+.docs-toolbar-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(49, 178, 112, 0.15), rgba(0, 44, 64, 0.12));
+  border: 1px solid rgba(49, 178, 112, 0.28);
+  color: var(--sphaira-green);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px rgba(0, 44, 64, 0.15);
+
+  i {
+    font-size: 1rem;
+    opacity: 0.95;
+  }
+}
+
+/* =========================================================
+   PAGINACIÓN — Estilo ropa (card blanca, centrada, 1/3)
+========================================================= */
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.pagination-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+.pagination-info {
+  font-size: 0.85rem;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.pagination-select {
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.85rem;
+  background: #f9fafb;
+  color: #1f2937;
+  min-width: 56px;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: var(--sphaira-green);
+  }
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.page-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: #f3f4f6;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #31b270;
+  color: #ffffff;
+}
+
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.page-indicator {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #002c40;
+  min-width: 50px;
+  text-align: center;
+}
+
+/* =========================================================
    PAGE HEADER — Hero Gradient Band
 ========================================================= */
 .page-header {
@@ -319,12 +554,72 @@
 }
 
 /* COLUMNAS ESPECÍFICAS */
-.col-completed { width: 120px; }
-.col-name { width: 220px; text-align: left; }
-.col-description { width: auto; text-align: left; }
-.col-type { width: 140px; }
-.col-date { width: 120px; }
-.col-actions { width: 200px; }
+.col-completed   { width: 110px; }
+.col-teams       { width: 160px; text-align: left; }
+.col-name        { width: 200px; text-align: left; }
+.col-description { min-width: 200px; max-width: 360px; text-align: left; }
+.col-date        { width: 110px; }
+.col-actions     { width: 200px; }
+
+/* Celda equipos: badges en wrap compacto */
+.teams-cell {
+  text-align: left;
+  vertical-align: middle;
+
+  .team-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+}
+
+/* Badge equipo — estilo Sphaira */
+.badge-sphaira-team {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.71rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  background: linear-gradient(135deg, #002c40 0%, #0a4a6e 60%, #1f8f8a 100%);
+  color: #ffffff;
+  border: 1px solid rgba(31, 143, 138, 0.4);
+  box-shadow: 0 1px 4px rgba(0, 44, 64, 0.2);
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 44, 64, 0.35);
+  }
+}
+
+/* Badge "Todos" — verde Sphaira */
+.badge-sphaira-all {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.71rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  background: rgba(49, 178, 112, 0.12);
+  color: #1a7a52;
+  border: 1px solid rgba(49, 178, 112, 0.35);
+
+  :host-context(body.dark) & {
+    background: rgba(49, 178, 112, 0.18);
+    color: #3dd68a;
+    border-color: rgba(49, 178, 112, 0.4);
+  }
+}
+
+/* Celda nombre: solo texto, sin badges */
+.doc-name-cell {
+  font-weight: 500;
+  text-align: left;
+  vertical-align: middle;
+}
 
 /* ACCIONES */
 .actions-group {
@@ -343,46 +638,114 @@
 }
 
 /* =========================================================
-   DESCRIPCIÓN – TEXTO ACOPLADO
+   DESCRIPCIÓN – TEXTO LEGIBLE (wrap, sin truncar de más)
 ========================================================= */
 .doc-description {
-  max-width: 420px;
-  line-height: 1.4;
+  min-width: 180px;
+  max-width: 360px;
+  line-height: 1.45;
   font-size: 0.9rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp:var(--sphaira-blue) ;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  text-overflow: unset;
+  vertical-align: top;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  color: var(--text-secondary, #64748b);
+  cursor: default;
 }
 
 /* =========================================================
-   COMPLETADO / PROGRESS
+   COMPLETADO — ring donut SVG
 ========================================================= */
-.completion-btn {
-  display: inline-block;
-  padding: 6px 14px;
-  border-radius: 10px;
+.completed-cell {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.ring-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
   cursor: pointer;
-  border: 2px solid transparent;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+  border-radius: 50%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 
   &:hover {
-    border-color: #007bff;
-    box-shadow: 0 2px 10px rgba(0, 123, 255, 0.25);
-    background-color: rgba(0, 123, 255, 0.04);
+    transform: scale(1.08);
+    box-shadow: 0 4px 14px rgba(0, 44, 64, 0.18);
   }
 }
 
-.progress {
-  background-color: #e9ecef;
-  border-radius: 10px;
-  overflow: hidden;
+.ring-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg); // Start from top
 }
 
-.progress-bar {
-  transition: width 0.4s ease;
+.ring-track {
+  fill: none;
+  stroke: var(--bg-surface, #f1f5f9);
+  stroke-width: 4.5;
+}
+
+.ring-fill {
+  fill: none;
+  stroke-width: 4.5;
+  stroke-linecap: round;
+  stroke-dasharray: 113.1; // 2π × r(18)
+  transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+              stroke 0.3s ease;
+}
+
+// Estados de color del ring
+.ring--complete .ring-fill  { stroke: #31b270; }
+.ring--partial  .ring-fill  { stroke: #f59e0b; }
+.ring--empty    .ring-fill  { stroke: #cbd5e1; }
+
+.ring--complete .ring-track { stroke: rgba(49, 178, 112, 0.12); }
+.ring--partial  .ring-track { stroke: rgba(245, 158, 11, 0.12); }
+.ring--empty    .ring-track { stroke: #f1f5f9; }
+
+.ring-label {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  line-height: 1;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.ring-num {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--text-primary, #1e293b);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.ring-sep {
+  font-size: 0.62rem;
+  color: var(--text-muted, #94a3b8);
+  line-height: 1;
+}
+
+.ring-den {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--text-muted, #94a3b8);
+  font-variant-numeric: tabular-nums;
 }
 
 .btn-action {

@@ -12,7 +12,7 @@ $text-secondary: #64748b;
 $radius: 12px;
 $radius-sm: 8px;
 
-// ─── PAGE HEADER — gradiente unificado SphairaTech ───────────────────────────
+// ─── PAGE HEADER — más compacto, premium ────────────────────────────────────
 .page-header {
   position: relative;
   display: flex;
@@ -20,14 +20,15 @@ $radius-sm: 8px;
   justify-content: space-between;
   flex-wrap: nowrap;
   gap: 1rem;
-  min-height: 72px;
-  padding: 1rem 1.5rem;
-  margin-bottom: 1.5rem;
-  border-radius: 18px;
+  min-height: 56px;
+  padding: 0.65rem 1.25rem;
+  margin-bottom: 0.85rem;
+  border-radius: 14px;
   background: $gradient-header;
   box-shadow:
-    0 8px 32px rgba(0, 44, 64, 0.28),
-    0 2px 8px rgba(49, 178, 112, 0.14);
+    0 4px 20px rgba(0, 44, 64, 0.22),
+    0 1px 4px rgba(49, 178, 112, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
   overflow: hidden;
 
   &::after {
@@ -78,13 +79,14 @@ $radius-sm: 8px;
   left: 50%;
   transform: translateX(-50%);
   margin: 0;
-  font-size: 1.4rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: #ffffff;
   text-align: center;
   white-space: nowrap;
   pointer-events: none;
   z-index: 1;
+  letter-spacing: -0.02em;
 }
 
 .header-actions-right {
@@ -114,60 +116,61 @@ $radius-sm: 8px;
 .scouting-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 20px 24px;
+  padding: 0 16px 16px;
 }
 
-// ═══════ TABS ═══════
+// ═══════ TABS — más compactos, premium ─══════
 .scouting-tabs {
   display: flex;
   gap: 4px;
-  background: $bg-light;
-  border-radius: $radius;
+  background: #fff;
+  border-radius: 12px;
   padding: 4px;
-  margin-bottom: 24px;
+  margin-bottom: 14px;
   border: 1px solid $border-color;
+  box-shadow: 0 2px 12px rgba(0, 44, 64, 0.06);
 
   .tab-btn {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 10px 16px;
+    gap: 6px;
+    padding: 8px 14px;
     border: none;
     background: transparent;
-    border-radius: $radius-sm;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 0.875rem;
+    font-weight: 600;
     color: $text-secondary;
     transition: all 0.2s;
 
     &:hover {
       color: $text-primary;
-      background: #fff;
+      background: $bg-light;
     }
 
     &.active {
       background: $blue;
       color: #fff;
-      box-shadow: 0 2px 8px rgba(0, 44, 64, 0.2);
+      box-shadow: 0 2px 8px rgba(0, 44, 64, 0.25);
     }
 
     .badge {
       background: $green;
       color: #fff;
-      font-size: 11px;
-      padding: 2px 7px;
-      border-radius: 10px;
-      font-weight: 600;
+      font-size: 0.65rem;
+      padding: 2px 6px;
+      border-radius: 8px;
+      font-weight: 700;
     }
   }
 }
 
-// ═══════ TAB CONTENT ═══════
+// ═══════ TAB CONTENT — más espacio útil ─══════
 .tab-content {
-  min-height: 400px;
+  min-height: 280px;
 }
 
 // ═══════ SEARCH BAR ═══════
@@ -734,11 +737,11 @@ $radius-sm: 8px;
   }
 }
 
-// ═══════ WATCHLIST ═══════
+// ═══════ WATCHLIST — más espacio, premium ─══════
 .watchlist-header {
   display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: 12px;
   flex-wrap: wrap;
   align-items: center;
 
@@ -805,34 +808,34 @@ $radius-sm: 8px;
   width: 100%;
   border-collapse: collapse;
   background: #fff;
-  border-radius: $radius;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 16px rgba(0, 44, 64, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
 
   th {
-    background: $bg-light;
-    padding: 12px 16px;
-    font-size: 12px;
-    font-weight: 600;
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    padding: 10px 14px;
+    font-size: 0.7rem;
+    font-weight: 700;
     color: $text-secondary;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.06em;
     text-align: left;
     border-bottom: 1px solid $border-color;
   }
 
   td {
-    padding: 12px 16px;
-    font-size: 14px;
+    padding: 10px 14px;
+    font-size: 0.875rem;
     color: $text-primary;
     border-bottom: 1px solid #f1f5f9;
   }
 
   tbody tr {
-    transition: background 0.15s;
+    transition: background 0.15s ease;
 
     &:hover {
-      background: #f8fafc;
+      background: rgba(49, 178, 112, 0.04);
     }
   }
 

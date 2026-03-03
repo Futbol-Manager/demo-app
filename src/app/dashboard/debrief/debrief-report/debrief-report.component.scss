@@ -3,6 +3,7 @@
 ═══════════════════════════════════════ */
 $azul: #002C3F;
 $verde: #3BB271;
+$navy-mid: #004d6e;
 $blanco: #FAFAFA;
 $bg-page: #f4f7fa;
 $text-dark: #1a2332;
@@ -18,22 +19,113 @@ $info: #3b82f6;
 $gradient-training: linear-gradient(135deg, $verde 0%, $azul 100%);
 $gradient-match: linear-gradient(135deg, $azul 0%, #1f8f8a 60%, $verde 100%);
 
-/* ═══ LAYOUT ═══ */
-.back-container { padding: 0.75rem 1.25rem; }
+/* ═══ PAGE HEADER (mismo que estadísticas-equipo e informacion-equipo) ═══ */
+$g-header: linear-gradient(135deg, $azul 0%, $navy-mid 55%, $verde 100%);
 
-.btn-back-clean {
-  margin-left: 26px; margin-top: 15px;
-  padding: 0.35rem 0.6rem;
-  display: inline-flex; align-items: center; gap: 0.4rem;
-  background-color: rgba(59, 178, 113, 0.08);
-  border: none; border-radius: 8px;
-  color: $azul; font-size: 0.9rem; font-weight: 500;
-  cursor: pointer; transition: background-color 0.2s ease;
-  i { font-size: 1.1rem; }
-  &:hover { background-color: rgba(0, 44, 63, 0.08); transform: translateX(-2px); }
+.page-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  min-height: 72px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 18px;
+  background: $g-header;
+  box-shadow: 0 8px 32px rgba(0, 44, 64, 0.28), 0 2px 8px rgba(59, 178, 112, 0.14);
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+    pointer-events: none;
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    right: -40px; top: -40px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(59,178,112,0.22) 0%, transparent 68%);
+    pointer-events: none;
+  }
 }
 
-.report-container { max-width: 720px; margin: 0 auto; padding: 0 1rem 2rem; }
+.back-container { flex-shrink: 0; z-index: 1; }
+
+.page-header .btn-back-clean {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.24);
+  background: rgba(255,255,255,0.13);
+  color: #fff;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+  backdrop-filter: blur(4px);
+  i { font-size: 1rem; }
+  &:hover { background: rgba(255,255,255,0.22); transform: translateX(-2px); }
+  &:active { transform: translateX(0) scale(0.98); }
+}
+
+.header-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.page-header .page-header-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  letter-spacing: -0.025em;
+  white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.22);
+}
+
+.header-subtitle {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.72);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.header-spacer { flex-shrink: 0; width: 80px; }
+
+/* ═══ LAYOUT — Contenedor a toda la pantalla ═══ */
+.report-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+  box-sizing: border-box;
+}
+
+.report-container--fullscreen {
+  max-width: 1200px;
+  width: 100%;
+  min-height: calc(100vh - 180px);
+  padding: 0 1.25rem 2rem;
+}
 
 /* ═══ LOADING STATE ═══ */
 .loading-state { display: flex; justify-content: center; padding: 60px 0; }
@@ -264,15 +356,18 @@ $gradient-match: linear-gradient(135deg, $azul 0%, #1f8f8a 60%, $verde 100%);
 
 /* ═══ RESPONSIVE ═══ */
 @media (max-width: 768px) {
-  .report-container { padding: 0 0.5rem 2rem; }
+  .report-container,
+  .report-container--fullscreen { padding: 0 0.75rem 1.5rem; min-height: auto; }
   .report-header { padding: 14px 16px; border-radius: 14px; }
   .report-section { padding: 16px 18px; }
   .loading-card { padding: 36px 24px; }
+  .page-header { flex-wrap: wrap; min-height: auto; padding: 0.75rem 1rem; }
+  .header-center { position: static; transform: none; order: 2; width: 100%; }
+  .page-header .page-header-title { font-size: 1.1rem; white-space: normal; }
 }
 
 @media (max-width: 480px) {
-  .back-container { padding: 0.5rem; }
-  .btn-back-clean { margin-left: 8px; margin-top: 8px; }
+  .report-container--fullscreen { padding: 0 0.5rem 1.25rem; }
   .report-header-icon { width: 40px; height: 40px; font-size: 1.3rem; }
   .section-header { flex-wrap: wrap; }
   .section-rating { margin-top: 4px; }

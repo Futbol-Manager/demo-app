@@ -133,6 +133,7 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
   private readonly PITCH_W = 1050;
   private readonly PITCH_H = 680;
   private scaleRatio = 1;
+  private resizeObserver: ResizeObserver | null = null;
 
   /* colours for drawing tools */
   readonly COLORS = [
@@ -158,11 +159,29 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
     setTimeout(() => {
       this.initStage();
       this.loadAutosave();
+      this.observeContainerResize();
     }, 0);
   }
 
   ngOnDestroy(): void {
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = null;
     if (this.stage) this.stage.destroy();
+  }
+
+  /** Ajusta el canvas cuando el contenedor cambia de tamaño (responsive / overlay) */
+  private observeContainerResize(): void {
+    if (!this.boardContainer?.nativeElement || typeof ResizeObserver === 'undefined') return;
+    this.resizeObserver = new ResizeObserver(() => {
+      if (this.stage && this.boardContainer) this.fitStage();
+    });
+    this.resizeObserver.observe(this.boardContainer.nativeElement);
+    // En overlay/modal el contenedor puede recibir tamaño tras el layout; refit con un pequeño retraso
+    if (this.taskMode) {
+      [100, 250, 500].forEach(delay =>
+        setTimeout(() => { if (this.stage && this.boardContainer) this.fitStage(); }, delay)
+      );
+    }
   }
 
   @HostListener('window:resize')
@@ -202,10 +221,18 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
     this.isLoadingState = true;
 
     const container = this.boardContainer.nativeElement;
-    const w = container.clientWidth || 900;
-    const h = container.clientHeight || 580;
+    const w = Math.max(container.clientWidth || 0, 400);
+    const h = Math.max(container.clientHeight || 0, 320);
 
     this.stage = new Konva.Stage({ container, width: w, height: h });
+    // Mejora UX táctil: evita que el navegador haga scroll/zoom al arrastrar en la pizarra
+    try {
+      const el = this.stage.container();
+      el.style.touchAction = 'none';
+      (el.style as any).webkitUserSelect = 'none';
+      el.style.userSelect = 'none';
+      (el.style as any).webkitTouchCallout = 'none';
+    } catch { /* noop */ }
 
     this.pitchLayer = new Konva.Layer();
     this.drawLayer = new Konva.Layer();
@@ -238,6 +265,7 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
     this.fitStage();
     this.drawPitch();
     this.bindDrawEvents();
+    this.bindDragCursor();
     this.captureKeyframe(true);
     this.saveUndoState();
     this.initialStateHash = this.getCurrentStateHash();
@@ -248,8 +276,8 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
   private fitStage(): void {
     if (!this.stage || !this.boardContainer) return;
     const container = this.boardContainer.nativeElement;
-    const w = container.clientWidth;
-    const h = container.clientHeight;
+    const w = Math.max(container.clientWidth || 0, 400);
+    const h = Math.max(container.clientHeight || 0, 320);
     this.scaleRatio = Math.min(w / this.PITCH_W, h / this.PITCH_H);
     this.stage.width(w);
     this.stage.height(h);
@@ -348,6 +376,104 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
     this.stage.on('mouseup touchend', () => this.onPointerUp());
   }
 
+  /** Cursor grab/grabbing al pasar sobre elementos arrastrables y durante el drag */
+  private bindDragCursor(): void {
+    const container = this.stage.container();
+    const setCursor = (c: string) => { try { container.style.cursor = c; } catch { } };
+
+    this.stage.on('mouseover', (e: any) => {
+      if (this.isPlaying) return;
+      const target = e.target;
+      if (this.isDraggableNode(target)) setCursor('grab');
+      else setCursor(this.activeTool === 'select' ? 'default' : 'crosshair');
+    });
+    this.stage.on('mouseout', () => setCursor(this.activeTool === 'select' ? 'default' : 'crosshair'));
+    this.stage.on('dragstart', () => setCursor('grabbing'));
+    this.stage.on('dragend', () => setCursor(this.activeTool === 'select' ? 'default' : 'crosshair'));
+  }
+
+  private isDraggableNode(node: any): boolean {
+    if (!node || node === this.stage) return false;
+    return this.isMarkerDragTarget(node) || this.isDrawableDragTarget(node);
+  }
+
+  /** Limita el arrastre al área del campo en coordenadas del stage (Konva pasa pos en píxeles del stage, no del layer) */
+  private getPitchDragBoundFunc(): (this: Konva.Node, pos: { x: number; y: number }) => { x: number; y: number } {
+    const pitchW = this.PITCH_W;
+    const pitchH = this.PITCH_H;
+    const margin = 120;
+    return function(this: Konva.Node, pos: { x: number; y: number }) {
+      const layer = this.getLayer();
+      const stage = this.getStage();
+      if (!layer || !stage) return pos;
+      const scaleX = layer.scaleX();
+      const scaleY = layer.scaleY();
+      const ox = layer.x();
+      const oy = layer.y();
+      const minX = ox - margin * scaleX;
+      const maxX = ox + pitchW * scaleX + margin * scaleX;
+      const minY = oy - margin * scaleY;
+      const maxY = oy + pitchH * scaleY + margin * scaleY;
+      return {
+        x: Math.max(minX, Math.min(maxX, pos.x)),
+        y: Math.max(minY, Math.min(maxY, pos.y))
+      };
+    };
+  }
+
+  /** Aplica opciones de arrastre consistentes: menos distancia para iniciar, límite al campo */
+  private applyDraggableOptions(node: Konva.Node): void {
+    if (node && typeof (node as any).draggable === 'function') {
+      (node as any).draggable(true);
+      (node as any).dragDistance(3);
+      (node as any).dragBoundFunc(this.getPitchDragBoundFunc());
+    }
+  }
+
+  private preventTouchScroll(e: any): void {
+    const evt: any = e?.evt;
+    if (!evt || evt.cancelable === false) return;
+    const isTouch = (typeof evt.type === 'string' && evt.type.startsWith('touch')) || evt.pointerType === 'touch';
+    if (isTouch) evt.preventDefault();
+  }
+
+  /** true si el target (o alguno de sus padres) es un elemento draggable del markerLayer */
+  private isMarkerDragTarget(target: any): boolean {
+    return !!this.getDraggableMarkerGroup(target);
+  }
+
+  /** Devuelve el grupo draggable del markerLayer que contiene al target (balón o jugador). Solución definitiva para arrastre. */
+  private getDraggableMarkerGroup(target: any): Konva.Group | null {
+    if (!target || target === this.stage) return null;
+    const layer = target.getLayer?.();
+    if (layer !== this.markerLayer) return null;
+    let n: any = target;
+    while (n && n !== this.stage) {
+      if (n instanceof Konva.Group && typeof n.draggable === 'function' && n.draggable()) return n;
+      n = n.getParent?.();
+    }
+    return null;
+  }
+
+  /** true si el target (o alguno de sus padres) es un elemento draggable del drawLayer (shapes) */
+  private isDrawableDragTarget(target: any): boolean {
+    return !!this.getDraggableDrawNode(target);
+  }
+
+  /** Devuelve el nodo draggable del drawLayer que contiene al target (figura dibujada). Para arrastre consistente. */
+  private getDraggableDrawNode(target: any): Konva.Node | null {
+    if (!target || target === this.stage) return null;
+    const layer = target.getLayer?.();
+    if (layer !== this.drawLayer) return null;
+    let n: any = target;
+    while (n && n !== this.stage) {
+      if (n instanceof Konva.Transformer) return null;
+      if (typeof n.draggable === 'function' && n.draggable()) return n;
+      n = n.getParent?.();
+    }
+    return null;
+  }
+
   private getPointerPos(): { x: number; y: number } | null {
     const pos = this.stage.getPointerPosition();
     if (!pos) return null;
@@ -360,11 +486,17 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
 
   private onPointerDown(e: any): void {
     if (this.isPlaying) return;
+    this.preventTouchScroll(e);
     const pos = this.getPointerPos();
     if (!pos) return;
 
     /* close popups when clicking canvas */
     this.showPlayerColorPicker = false;
+
+    const target = e?.target;
+    // No iniciar dibujo ni selección: dejar que Konva gestione el arrastre cuando se hace clic en marcador o figura
+    if (this.getDraggableMarkerGroup(target)) return;
+    if (this.activeTool !== 'eraser' && this.getDraggableDrawNode(target)) return;
 
     if (this.activeTool === 'select') {
       const clickedEmpty = e.target === this.stage ||
@@ -410,7 +542,7 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
         strokeWidth: this.strokeWidth,
         points: [pos.x, pos.y],
         lineCap: 'round', lineJoin: 'round',
-        tension: 0.3, hitStrokeWidth: 20,
+        tension: 0.3, hitStrokeWidth: 24,
         globalCompositeOperation: 'source-over',
         name: 'drawable'
       });
@@ -420,7 +552,7 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
       const cfg: any = {
         stroke: this.strokeColor, strokeWidth: this.strokeWidth,
         points: [pos.x, pos.y, pos.x, pos.y],
-        lineCap: 'round', hitStrokeWidth: 20, name: 'drawable'
+        lineCap: 'round', hitStrokeWidth: 24, name: 'drawable'
       };
       if (this.activeTool === 'arrow') {
         cfg.pointerLength = 12; cfg.pointerWidth = 10;
@@ -431,20 +563,23 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
       this.currentShape = new Konva.Rect({
         x: pos.x, y: pos.y, width: 0, height: 0,
         stroke: this.strokeColor, strokeWidth: this.strokeWidth,
-        fill: 'transparent', name: 'drawable'
+        fill: 'transparent', name: 'drawable',
+        hitStrokeWidth: 16
       });
       this.previewLayer.add(this.currentShape);
     } else if (this.activeTool === 'ellipse') {
       this.currentShape = new Konva.Ellipse({
         x: pos.x, y: pos.y, radiusX: 0, radiusY: 0,
         stroke: this.strokeColor, strokeWidth: this.strokeWidth,
-        fill: 'transparent', name: 'drawable'
+        fill: 'transparent', name: 'drawable',
+        hitStrokeWidth: 16
       });
       this.previewLayer.add(this.currentShape);
     }
   }
 
   private onPointerMove(_e: any): void {
+    this.preventTouchScroll(_e);
     const pos = this.getPointerPos();
     if (!pos) return;
 
@@ -564,7 +699,7 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
       this.currentShape = null;
     }
     if (this.currentLine) {
-      this.currentLine.draggable(true);
+      this.applyDraggableOptions(this.currentLine);
       this.bindShapeEvents(this.currentLine);
       this.currentLine = null;
     }
@@ -575,6 +710,7 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
 
   /** Bind click-to-select, dblclick-to-edit, transform events on drawn shapes */
   private bindShapeEvents(shape: Konva.Shape): void {
+    this.applyDraggableOptions(shape);
     shape.on('click tap', (e: any) => {
       if (this.activeTool === 'eraser') {
         shape.destroy();
@@ -596,7 +732,28 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
       }
     });
 
-    shape.on('dragend', () => { this.saveUndoState(); });
+    /* Flotante: al arrastrar pasa al frente y sombra de elevación */
+    shape.on('dragstart', () => {
+      shape.moveToTop();
+      this.transformer?.moveToTop();
+      (shape as any).setAttrs({
+        shadowColor: 'rgba(0,0,0,0.4)',
+        shadowBlur: 12,
+        shadowOffset: { x: 0, y: 4 },
+        shadowOpacity: 1
+      });
+      this.drawLayer.batchDraw();
+    });
+    shape.on('dragend', () => {
+      (shape as any).setAttrs({
+        shadowColor: undefined,
+        shadowBlur: 0,
+        shadowOffset: { x: 0, y: 0 },
+        shadowOpacity: undefined
+      });
+      this.drawLayer.batchDraw();
+      this.saveUndoState();
+    });
     shape.on('transformend', () => { this.saveUndoState(); });
   }
 
@@ -887,25 +1044,27 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
     const cx = this.PITCH_W / 2;
     const cy = this.PITCH_H / 2;
     const group = new Konva.Group({ x: cx, y: cy, draggable: true, name: id });
+    this.applyDraggableOptions(group);
 
     if (isBall) {
       this.ballPlaced = true;
-
-      /* invisible hit circle for selection feedback */
-      const hitCircle = new Konva.Circle({
-        radius: 16,
-        fill: 'transparent',
-        stroke: 'transparent',
-        strokeWidth: 2.5
-      });
 
       const label = new Konva.Text({
         text: '⚽', fontSize: 24,
         fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif',
         listening: false, offsetX: 12, offsetY: 12
       });
-      group.add(hitCircle);
+      /* Área de agarre grande (radio 30) encima del emoji para mover el balón con facilidad */
+      const hitCircle = new Konva.Circle({
+        x: 0, y: 0, radius: 30,
+        fill: 'transparent',
+        stroke: 'transparent',
+        strokeWidth: 0,
+        listening: true,
+        hitStrokeWidth: 0
+      });
       group.add(label);
+      group.add(hitCircle);
       this.markerLayer.add(group);
       this.markerLayer.batchDraw();
 
@@ -920,7 +1079,26 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
         e.evt.preventDefault();
         this.removeMarker(marker);
       });
-      group.on('dragend', () => this.onMarkerChanged());
+      group.on('dragstart', () => {
+        group.moveToTop();
+        group.setAttrs({
+          shadowColor: 'rgba(0,0,0,0.35)',
+          shadowBlur: 14,
+          shadowOffset: { x: 0, y: 6 },
+          shadowOpacity: 1
+        });
+        this.markerLayer.batchDraw();
+      });
+      group.on('dragend', () => {
+        group.setAttrs({
+          shadowColor: undefined,
+          shadowBlur: 0,
+          shadowOffset: { x: 0, y: 0 },
+          shadowOpacity: undefined
+        });
+        this.markerLayer.batchDraw();
+        this.onMarkerChanged();
+      });
     } else {
       const radius = 18;
       const fill = this.playerColor;
@@ -931,9 +1109,9 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
         radius, fill,
         stroke: '#ffffff', strokeWidth: 2.5,
         shadowColor: 'rgba(0,0,0,0.5)',
-        shadowBlur: 8, shadowOffset: { x: 1, y: 3 }, shadowOpacity: 0.6
+        shadowBlur: 8, shadowOffset: { x: 1, y: 3 }, shadowOpacity: 0.6,
+        listening: false
       });
-
       const label = new Konva.Text({
         text: num, fontSize: 13,
         fill: this.getContrastColor(fill),
@@ -944,9 +1122,17 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
         offsetX: num.length > 1 ? 7.5 : 4,
         offsetY: 6
       });
-
+      /* Área de agarre encima (misma idea que el balón): un solo hijo con listening: true, añadido al final */
+      const hitArea = new Konva.Circle({
+        x: 0, y: 0, radius: 26,
+        fill: 'transparent',
+        stroke: 'transparent',
+        strokeWidth: 0,
+        listening: true
+      });
       group.add(circle);
       group.add(label);
+      group.add(hitArea);
       this.markerLayer.add(group);
       this.markerLayer.batchDraw();
 
@@ -963,9 +1149,28 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
         e.evt.preventDefault();
         this.removeMarker(marker);
       });
-      group.on('dragend', () => this.onMarkerChanged());
+      group.on('dragstart', () => {
+        group.moveToTop();
+        group.setAttrs({
+          shadowColor: 'rgba(0,0,0,0.35)',
+          shadowBlur: 14,
+          shadowOffset: { x: 0, y: 6 },
+          shadowOpacity: 1
+        });
+        this.markerLayer.batchDraw();
+      });
+      group.on('dragend', () => {
+        group.setAttrs({
+          shadowColor: undefined,
+          shadowBlur: 0,
+          shadowOffset: { x: 0, y: 0 },
+          shadowOpacity: undefined
+        });
+        this.markerLayer.batchDraw();
+        this.onMarkerChanged();
+      });
     }
-    
+
     // Register the change after adding the marker
     this.onMarkerChanged();
   }
@@ -1327,6 +1532,64 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
     }
   }
 
+  /** Construye el GIF a partir de los keyframes y devuelve la data URL (para guardar en tarea). Retorna null si hay error o hay < 2 keyframes. */
+  private buildGifDataURL(): Promise<string | null> {
+    if (this.keyframes.length < 2) return Promise.resolve(null);
+    this.saveCurrentKeyframeState();
+    this.deselectAll();
+    const frames: string[] = [];
+    const framesPerTransition = 20;
+    const totalFrames = (this.keyframes.length - 1) * framesPerTransition;
+
+    for (let ki = 0; ki < this.keyframes.length - 1; ki++) {
+      const fromKf = this.keyframes[ki];
+      const toKf = this.keyframes[ki + 1];
+      this.restoreDrawLayer(fromKf.drawings);
+      for (let f = 0; f < framesPerTransition; f++) {
+        const tt = f / framesPerTransition;
+        this.markers.forEach(m => {
+          const from = fromKf.positions[m.id];
+          const to = toKf.positions[m.id];
+          if (from && to) {
+            m.group.position({
+              x: from.x + (to.x - from.x) * tt,
+              y: from.y + (to.y - from.y) * tt
+            });
+          }
+        });
+        this.markerLayer.batchDraw();
+        if (f === Math.floor(framesPerTransition / 2)) this.restoreDrawLayer(toKf.drawings);
+        frames.push(this.getHorizontalExportDataURL(1));
+      }
+    }
+    this.restoreKeyframe(this.keyframes.length - 1);
+    for (let i = 0; i < 10; i++) frames.push(this.getHorizontalExportDataURL(1));
+
+    const gifW = 525;
+    const gifH = 340;
+    return new Promise((resolve) => {
+      this.loadGifshot()
+        .then((gifshot: any) => {
+          gifshot.createGIF({
+            images: frames,
+            gifWidth: gifW,
+            gifHeight: gifH,
+            interval: 0.05,
+            numFrames: frames.length,
+            frameDuration: 1,
+            sampleInterval: 10
+          }, (obj: any) => {
+            this.restoreKeyframe(this.activeKeyframe);
+            resolve(obj.error ? null : obj.image);
+          });
+        })
+        .catch(() => {
+          this.restoreKeyframe(this.activeKeyframe);
+          resolve(null);
+        });
+    });
+  }
+
   private loadGifshot(): Promise<any> {
     return new Promise((resolve, reject) => {
       if ((window as any).gifshot) { resolve((window as any).gifshot); return; }
@@ -1558,39 +1821,73 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
     if (!this.stage || this.savingTask) return;
     this.savingTask = true;
     this.saveTaskError = '';
+    const hasSequence = this.keyframes.length >= 2;
+
+    const finishWithFile = (file: File) => {
+      if (!this.taskId) {
+        this.savingTask = false;
+        this.saveTaskSuccess = true;
+        setTimeout(() => { this.saveTaskSuccess = false; }, 3000);
+        this.archivoGenerado.emit(file);
+        return;
+      }
+      this.trainingService.createUpdateImgTask(0, this.taskId, file, this.userId).subscribe({
+        next: (resp: any) => {
+          const nombre: string = resp?.data || '';
+          this.savingTask = false;
+          if (nombre) {
+            this.saveTaskSuccess = true;
+            setTimeout(() => { this.saveTaskSuccess = false; }, 3000);
+            this.imagenGuardada.emit(nombre);
+          } else {
+            this.saveTaskError = 'No se pudo guardar.';
+          }
+        },
+        error: () => {
+          this.savingTask = false;
+          this.saveTaskError = 'Error al subir a la tarea.';
+        }
+      });
+    };
+
+    if (hasSequence) {
+      this.isExporting = true;
+      this.exportProgress = 0;
+      this.buildGifDataURL()
+        .then(gifDataUrl => {
+          this.isExporting = false;
+          this.exportProgress = 0;
+          if (gifDataUrl) {
+            fetch(gifDataUrl)
+              .then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], `pizarra_tarea_${this.taskId || 'nueva'}.gif`, { type: 'image/gif' });
+                finishWithFile(file);
+              })
+              .catch(() => {
+                this.savingTask = false;
+                this.saveTaskError = 'Error al generar el GIF.';
+              });
+          } else {
+            this.savingTask = false;
+            this.saveTaskError = 'No se pudo generar el GIF. Usa PNG (sin secuencia).';
+          }
+        })
+        .catch(() => {
+          this.isExporting = false;
+          this.exportProgress = 0;
+          this.savingTask = false;
+          this.saveTaskError = 'Error al generar el GIF.';
+        });
+      return;
+    }
 
     const dataUrl = this.stage.toDataURL({ pixelRatio: 2, mimeType: 'image/png' });
-
     fetch(dataUrl)
       .then(res => res.blob())
       .then(blob => {
         const file = new File([blob], `pizarra_tarea_${this.taskId || 'nueva'}.png`, { type: 'image/png' });
-
-        if (!this.taskId) {
-          this.savingTask = false;
-          this.saveTaskSuccess = true;
-          setTimeout(() => { this.saveTaskSuccess = false; }, 3000);
-          this.archivoGenerado.emit(file);
-          return;
-        }
-
-        this.trainingService.createUpdateImgTask(0, this.taskId, file, this.userId).subscribe({
-          next: (resp: any) => {
-            const nombre: string = resp?.data || '';
-            this.savingTask = false;
-            if (nombre) {
-              this.saveTaskSuccess = true;
-              setTimeout(() => { this.saveTaskSuccess = false; }, 3000);
-              this.imagenGuardada.emit(nombre);
-            } else {
-              this.saveTaskError = 'No se pudo guardar la imagen.';
-            }
-          },
-          error: () => {
-            this.savingTask = false;
-            this.saveTaskError = 'Error al subir la imagen a la tarea.';
-          }
-        });
+        finishWithFile(file);
       })
       .catch(() => {
         this.savingTask = false;

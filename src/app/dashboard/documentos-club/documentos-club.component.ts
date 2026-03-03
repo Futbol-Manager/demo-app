@@ -66,6 +66,13 @@ export class DocumentosClubComponent implements OnInit {
   loadingData = false;
   loadingEliminar = false;
 
+  // Búsqueda, filtro por equipo y paginación
+  searchText = '';
+  filterTeamId: number | null = null;
+  pageSize = 10;
+  pageSizeOptions = [10, 25, 50, 100];
+  currentPage = 1;
+
   constructor(
     private location: Location,
     private clubService: ClubService,
@@ -151,9 +158,8 @@ export class DocumentosClubComponent implements OnInit {
           (doc: any) => !doc.destinatario || doc.destinatario === 0
         );
 
-        const totalPadres =
-          typeof rawData?.totalPadres === 'number' &&
-          !isNaN(rawData.totalPadres)
+        const totalPadresGlobal =
+          typeof rawData?.totalPadres === 'number' && !isNaN(rawData.totalPadres)
             ? rawData.totalPadres
             : 0;
 
@@ -163,14 +169,25 @@ export class DocumentosClubComponent implements OnInit {
             ? rawData.subidosPorDocumento
             : {};
 
-        this.listDocuments = docsJugadores.map((doc: any) => ({
-          ...doc,
-          totalPadres,
-          totalSubidos:
-            typeof subidosPorDocumento[doc.docClubesId] === 'number'
-              ? subidosPorDocumento[doc.docClubesId]
-              : 0,
-        }));
+        this.listDocuments = docsJugadores.map((doc: any) => {
+          const perDoc = subidosPorDocumento[doc.docClubesId];
+          // El API puede devolver un número simple o un objeto con detalle
+          const totalSubidos =
+            typeof perDoc === 'number'
+              ? perDoc
+              : typeof perDoc?.totalSubidos === 'number'
+              ? perDoc.totalSubidos
+              : 0;
+          // Usar totalEsperados por documento si el API lo provee
+          // (padres solo de los equipos asignados al documento)
+          const totalPadres =
+            typeof perDoc?.totalEsperados === 'number' && perDoc.totalEsperados > 0
+              ? perDoc.totalEsperados
+              : typeof perDoc?.totalPadres === 'number' && perDoc.totalPadres > 0
+              ? perDoc.totalPadres
+              : totalPadresGlobal;
+          return { ...doc, totalSubidos, totalPadres };
+        });
 
         this.loadingData = false;
       },
@@ -193,9 +210,8 @@ export class DocumentosClubComponent implements OnInit {
           ? rawData.documentos
           : [];
 
-        const totalEntrenadores =
-          typeof rawData?.totalEntrenadores === 'number' &&
-          !isNaN(rawData.totalEntrenadores)
+        const totalEntrenadoresGlobal =
+          typeof rawData?.totalEntrenadores === 'number' && !isNaN(rawData.totalEntrenadores)
             ? rawData.totalEntrenadores
             : 0;
 
@@ -205,12 +221,22 @@ export class DocumentosClubComponent implements OnInit {
             ? rawData.subidosPorDocumento
             : {};
 
-        this.listDocuments = documentos.map((doc: any) => ({
-          ...doc,
-          totalPadres: totalEntrenadores,
-          totalSubidos:
-            subidosPorDocumento[doc.docClubesId]?.totalSubidos || 0,
-        }));
+        this.listDocuments = documentos.map((doc: any) => {
+          const perDoc = subidosPorDocumento[doc.docClubesId];
+          const totalSubidos =
+            typeof perDoc === 'number'
+              ? perDoc
+              : typeof perDoc?.totalSubidos === 'number'
+              ? perDoc.totalSubidos
+              : 0;
+          const totalPadres =
+            typeof perDoc?.totalEsperados === 'number' && perDoc.totalEsperados > 0
+              ? perDoc.totalEsperados
+              : typeof perDoc?.totalEntrenadores === 'number' && perDoc.totalEntrenadores > 0
+              ? perDoc.totalEntrenadores
+              : totalEntrenadoresGlobal;
+          return { ...doc, totalSubidos, totalPadres };
+        });
 
         this.loadingData = false;
       },
@@ -694,5 +720,89 @@ export class DocumentosClubComponent implements OnInit {
         return team ? team.name : 'Equipo #' + id;
       })
       .join(', ');
+  }
+
+  /** Lista filtrada por búsqueda y por equipo */
+  get documentosFiltrados(): any[] {
+    let list = this.listDocuments || [];
+    const q = (this.searchText || '').toLowerCase().trim();
+    if (q) {
+      list = list.filter(
+        (d: any) =>
+          (d.nombre || '').toLowerCase().includes(q) ||
+          (d.descripcion || '').toLowerCase().includes(q)
+      );
+    }
+    if (this.filterTeamId != null) {
+      list = list.filter(
+        (d: any) =>
+          d.teamIds &&
+          Array.isArray(d.teamIds) &&
+          d.teamIds.includes(this.filterTeamId)
+      );
+    }
+    return list;
+  }
+
+  /** Total de páginas según filtros */
+  get totalPaginas(): number {
+    const total = this.documentosFiltrados.length;
+    return total <= 0 ? 1 : Math.ceil(total / this.pageSize);
+  }
+
+  /** Lista paginada para la tabla */
+  get documentosPaginados(): any[] {
+    const list = this.documentosFiltrados;
+    const start = (this.currentPage - 1) * this.pageSize;
+    return list.slice(start, start + this.pageSize);
+  }
+
+  setPage(page: number): void {
+    const max = this.totalPaginas;
+    if (page >= 1 && page <= max) this.currentPage = page;
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPaginas) this.currentPage++;
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) this.currentPage--;
+  }
+
+  /** Reinicia a página 1 cuando cambian filtros (llamar desde template si se desea) */
+  onFilterChange(): void {
+    this.currentPage = 1;
+  }
+
+  setPageSize(size: number | string): void {
+    const n = typeof size === 'string' ? parseInt(size, 10) : size;
+    if (!isNaN(n) && n > 0) {
+      this.pageSize = n;
+      this.currentPage = 1;
+    }
+  }
+
+  /** Índice real en listDocuments para eliminar correctamente */
+  getDocIndex(doc: any): number {
+    return this.listDocuments.findIndex((d: any) => d.docClubesId === doc.docClubesId);
+  }
+
+  get paginationFrom(): number {
+    const total = this.documentosFiltrados.length;
+    if (total === 0) return 0;
+    return (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  get paginationTo(): number {
+    const total = this.documentosFiltrados.length;
+    const end = this.currentPage * this.pageSize;
+    return total <= 0 ? 0 : end > total ? total : end;
+  }
+
+  /** Array [1, 2, ..., totalPaginas] para los botones de página */
+  get paginationPages(): number[] {
+    const n = this.totalPaginas;
+    return Array.from({ length: n }, (_, i) => i + 1);
   }
 }

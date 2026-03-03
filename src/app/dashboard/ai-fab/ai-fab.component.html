@@ -1,8 +1,12 @@
 <!-- ═══════════════════════════════════════
-     BOTÓN FLOTANTE (siempre fixed abajo-derecha)
+     BOTÓN FLOTANTE (arrastrable, posición guardada)
 ═══════════════════════════════════════ -->
-<div class="ai-fab-btn-wrapper" *ngIf="isVisible">
-  <button class="ai-fab-btn" (click)="toggleChat()" [class.open]="isOpen" aria-label="Asistente IA">
+<div class="ai-fab-btn-wrapper" *ngIf="isVisible"
+     [style.bottom.px]="fabBottom"
+     [style.right.px]="fabRight"
+     (mousedown)="onFabPointerDown($event)"
+     (touchstart)="onFabTouchStart($event); $event.preventDefault()">
+  <button class="ai-fab-btn" [class.open]="isOpen" (click)="onFabClick($event)" type="button" aria-label="Asistente IA - clic para abrir, arrastrar para mover">
     <i class="bi" [ngClass]="isOpen ? 'bi-x-lg' : 'bi-robot'"></i>
     <span class="fab-pulse" *ngIf="!isOpen"></span>
   </button>

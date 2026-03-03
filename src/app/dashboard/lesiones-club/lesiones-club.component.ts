@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { InjuryService } from 'src/app/core/services/injury/injury.service';
-import { Injury, InjuryStatus } from 'src/app/core/services/injury/injury.model';
+import { Injury, InjuryStatus, getStatusDef } from 'src/app/core/services/injury/injury.model';
 import { NotificationService } from 'src/app/core/services/notification/notification.service';
 import { ConfirmationService } from 'src/app/core/services/confirmation/confirmation.service';
 
@@ -18,6 +18,7 @@ export class LesionesClubComponent implements OnInit, OnDestroy {
   private subs: Subscription[] = [];
   clubId: number = 0;
   loading: boolean = true;
+  loadError: string | null = null;
 
   // All club injuries
   allInjuries: Injury[] = [];
@@ -59,7 +60,15 @@ export class LesionesClubComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.clubId = +this.route.snapshot.paramMap.get('clubId')! || 0;
-    this.loadClubInjuries();
+    if (!this.clubId) {
+      this.clubId = Number(sessionStorage.getItem('clubId')) || Number(localStorage.getItem('clubId')) || 0;
+    }
+    if (this.clubId) {
+      this.loadClubInjuries();
+    } else {
+      this.loading = false;
+      this.loadError = 'No se ha seleccionado ningún club.';
+    }
   }
 
   ngOnDestroy(): void {
@@ -70,15 +79,31 @@ export class LesionesClubComponent implements OnInit, OnDestroy {
     this.router.navigate(['/dashboard/cuadro-de-mandos', this.clubId]);
   }
 
+  retryLoad(): void {
+    this.loadError = null;
+    if (this.clubId) this.loadClubInjuries();
+  }
+
   private loadClubInjuries(): void {
     this.loading = true;
+    this.loadError = null;
     this.subs.push(
-      this.injuryService.getInjuriesByClub(this.clubId).subscribe(injuries => {
-        this.allInjuries = injuries;
-        this.buildTeamList();
-        this.buildTeamStats();
-        this.applyFilters();
-        this.loading = false;
+      this.injuryService.getInjuriesByClub(this.clubId).subscribe({
+        next: (injuries) => {
+          this.allInjuries = Array.isArray(injuries) ? injuries : [];
+          this.buildTeamList();
+          this.buildTeamStats();
+          this.applyFilters();
+          this.loading = false;
+        },
+        error: () => {
+          this.allInjuries = [];
+          this.filteredInjuries = [];
+          this.teams = [];
+          this.teamStats = [];
+          this.loading = false;
+          this.loadError = 'No se pudieron cargar las lesiones del club.';
+        }
       })
     );
   }
@@ -171,31 +196,9 @@ export class LesionesClubComponent implements OnInit, OnDestroy {
     return this.translate.instant(`INJURIES_CLUB.SEVERITY.${severityKey}`);
   }
 
-  getStatusLabel(status: string): string {
-    switch (status) {
-      case 'activa': return this.translate.instant('INJURIES_CLUB.STATUS.ACTIVE');
-      case 'recuperacion': return this.translate.instant('INJURIES_CLUB.STATUS.RECOVERING');
-      case 'cerrada': return this.translate.instant('INJURIES_CLUB.STATUS.CLOSED');
-      default: return status;
-    }
-  }
-
-  getStatusIcon(status: string): string {
-    switch (status) {
-      case 'activa': return 'bi-exclamation-circle-fill';
-      case 'recuperacion': return 'bi-arrow-repeat';
-      case 'cerrada': return 'bi-check-circle-fill';
-      default: return 'bi-question-circle';
-    }
-  }
-
-  getStatusColor(status: string): string {
-    switch (status) {
-      case 'activa': return '#dc3545';
-      case 'recuperacion': return '#ffc107';
-      case 'cerrada': return '#31b270';
-      default: return '#6c757d';
-    }
+  /** Usa la definición del modelo (baja, fisioterapia, readaptacion, condicionado, alta) para etiqueta, icono y color */
+  getStatusDef(status: string) {
+    return getStatusDef(status as InjuryStatus);
   }
 
   getDaysSinceInjury(dateInjury: string): number {

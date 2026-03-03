@@ -1262,29 +1262,103 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$gree
 
 // ─── RESPONSIVE ────────────────────────────────────────────────────────────
 @media (max-width: 768px) {
-  .page-header-inner {
-    flex-wrap: wrap;
-    gap: 0.65rem;
+
+  // ── Page header: cambio de absoluto a flujo normal ──
+  .page-header {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    padding: 0.7rem 1rem;
+    min-height: 56px;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    border-radius: 14px;
   }
 
-  .page-header-center {
-    order: -1;
-    flex: 1 1 100%;
-    justify-content: flex-start;
+  .header-center {
+    position: static;
+    transform: none;
+    flex: 1;
+    align-items: flex-start;
+    gap: 0.1rem;
+    min-width: 0;
   }
 
-  .page-title { font-size: 1.05rem; }
-  .page-subtitle { display: none; }
+  .table-title {
+    font-size: 1.05rem;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
 
-  .equipos-content { padding: 1rem 0.75rem 5rem; }
+  .header-subtitle {
+    display: none;
+  }
 
+  .header-spacer {
+    display: none;
+  }
+
+  // ── Contenido principal ──
+  .equipos-content { padding: 0.75rem 0.75rem 5rem; }
+
+  // ── Action cards: fila única compacta ──
+  .actions-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .action-card {
+    padding: 0.7rem 0.4rem;
+    border-radius: 14px;
+    gap: 0.4rem;
+  }
+
+  .action-icon-wrap {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    i { font-size: 1.15rem; }
+  }
+
+  .action-label {
+    font-size: 0.68rem;
+    line-height: 1.25;
+  }
+
+  // ── Skeleton actions ──
   .actions-skeleton {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .skeleton-action {
+    padding: 0.7rem 0.4rem;
+    border-radius: 14px;
+  }
+
+  .sk-icon-circle {
+    width: 40px;
+    height: 40px;
   }
 
   .season-bar { justify-content: flex-start; }
 }
 
 @media (max-width: 480px) {
-  .actions-skeleton { grid-template-columns: 1fr; }
+  .table-title { font-size: 0.95rem; }
+
+  .action-card { padding: 0.6rem 0.3rem; }
+
+  .action-icon-wrap {
+    width: 36px;
+    height: 36px;
+    i { font-size: 1rem; }
+  }
+
+  .action-label { font-size: 0.63rem; }
 }

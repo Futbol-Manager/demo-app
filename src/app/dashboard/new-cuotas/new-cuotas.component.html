@@ -1,24 +1,22 @@
-<!-- ===== PAGE HEADER ===== -->
+<!-- ===== PAGE HEADER (solo volver + título) ===== -->
 <div class="page-header">
-
-  <!-- IZQUIERDA: VOLVER -->
   <div class="back-container">
     <button class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
     </button>
   </div>
-
-  <!-- CENTRO: TÍTULO -->
   <div class="header-center">
     <h2 class="table-title">
       <i class="bi bi-cash-stack me-2"></i>Gestión de Cuotas
     </h2>
     <p class="header-subtitle">Pagos, cobros y suscripciones del club</p>
   </div>
+</div>
 
-  <!-- DERECHA: ACCIONES -->
-  <div class="page-header-actions">
+<!-- ===== OPCIONES DE ACCIÓN (debajo del encabezado) ===== -->
+<div class="header-actions-bar">
+  <div class="header-actions-inner">
     <button class="header-action-btn" (click)="openModalCuotas()" title="Configurar pagos">
       <i class="bi bi-currency-exchange"></i>
       <span>Pagos</span>
@@ -44,7 +42,6 @@
       <span>Notif.</span>
     </button>
   </div>
-
 </div>
 
 <!--<app-logo-spinner *ngIf="isLoading"></app-logo-spinner>  -->
@@ -828,10 +825,10 @@
             <i class="bi bi-cash-coin me-1"></i>Pago puntual
             <span class="gp-pill-count">{{ contarPorTipo('puntual') }}</span>
           </button>
-          <button class="gp-filter-pill gp-filter-pill--sub"
+          <button class="gp-filter-pill gp-filter-pill--sub gp-filter-pill--two-lines"
             [class.gp-filter-pill--active]="filtroTipoCobro === 'suscripcion'"
             (click)="filtroTipoCobro='suscripcion'">
-            <i class="bi bi-lightning-charge-fill"></i>Sphaira Pay
+            <i class="bi bi-lightning-charge-fill"></i><span class="gp-pill-label-two-lines">Sphaira<br>Pay</span>
             <span class="gp-pill-count">{{ contarPorTipo('suscripcion') }}</span>
           </button>
         </div>
