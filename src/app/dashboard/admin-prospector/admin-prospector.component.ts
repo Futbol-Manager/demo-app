@@ -60,6 +60,8 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
   showConvertModal = false;
   convertNote = '';
   isConverting = false;
+  showRevertModal = false;
+  isReverting = false;
 
   // Import CSV/Excel
   showImportModal = false;
@@ -1411,7 +1413,6 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.selectedProspect.status = 'CLIENT';
         this.selectedProspect.converted_at = res.converted_at;
-        // Actualizar en la lista local
         const idx = this.prospects.findIndex(p => p.prospect_id === this.selectedProspect.prospect_id);
         if (idx >= 0) {
           this.prospects[idx].status = 'CLIENT';
@@ -1419,15 +1420,23 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
         }
         this.isConverting = false;
         this.showConvertModal = false;
-        if (this.selectedCampaign) this.loadCampaignStats();
+        // Refrescar lista y stats para reflejar el cambio de estado
+        if (this.selectedCampaign) {
+          this.loadProspects();
+          this.loadCampaignStats();
+        }
       },
       error: () => { this.isConverting = false; }
     });
   }
 
-  revertToProspect(): void {
+  openRevertModal(): void {
+    this.showRevertModal = true;
+  }
+
+  confirmRevert(): void {
     if (!this.selectedProspect) return;
-    if (!confirm(`¿Revertir a "${this.selectedProspect.name}" a estado de prospecto? Se perderá la fecha de conversión.`)) return;
+    this.isReverting = true;
     this.prospectService.revertToProspect(this.selectedProspect.prospect_id).subscribe({
       next: (res) => {
         this.selectedProspect.status = res.new_status;
@@ -1437,8 +1446,20 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
           this.prospects[idx].status = res.new_status;
           this.prospects[idx].converted_at = null;
         }
-      }
+        this.isReverting = false;
+        this.showRevertModal = false;
+        // Refrescar lista y stats
+        if (this.selectedCampaign) {
+          this.loadProspects();
+          this.loadCampaignStats();
+        }
+      },
+      error: () => { this.isReverting = false; }
     });
+  }
+
+  revertToProspect(): void {
+    this.openRevertModal();
   }
 
   // ── Import CSV/Excel ─────────────────────────────────────────────────────

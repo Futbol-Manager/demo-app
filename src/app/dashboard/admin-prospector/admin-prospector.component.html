@@ -3230,6 +3230,31 @@
   </div>
 </div>
 
+<!-- Modal confirmar revertir a prospecto -->
+<div class="modal" [ngClass]="{'d-block': showRevertModal}" tabindex="-1" style="background:rgba(0,0,0,.65); z-index:1060;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:440px;">
+    <div class="modal-content" style="border-radius:12px;">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold"><i class="bi bi-arrow-counterclockwise me-2 text-warning"></i>Revertir a prospecto</h5>
+        <button class="btn-close" (click)="showRevertModal = false"></button>
+      </div>
+      <div class="modal-body pt-2" *ngIf="selectedProspect">
+        <p class="text-muted small mb-0">
+          ¿Estás seguro de que quieres revertir a <strong>{{ selectedProspect.name }}</strong> a estado de prospecto?
+          Se eliminará la fecha de conversión y el club dejará de aparecer en la sección de clientes.
+        </p>
+      </div>
+      <div class="modal-footer border-0 pt-2">
+        <button class="btn btn-outline-secondary btn-sm" (click)="showRevertModal = false">Cancelar</button>
+        <button class="btn btn-warning btn-sm fw-semibold" (click)="confirmRevert()" [disabled]="isReverting">
+          <span *ngIf="!isReverting"><i class="bi bi-arrow-counterclockwise me-1"></i>Sí, revertir</span>
+          <span *ngIf="isReverting"><i class="bi bi-hourglass-split spin-icon me-1"></i>Revirtiendo...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Preview email -->
 <div class="modal" [ngClass]="{'d-block': showEmailPreviewModal}" tabindex="-1" style="background:rgba(0,0,0,.6);">
   <div class="modal-dialog modal-xl" style="margin: 1.5rem auto; max-height: 95vh;">

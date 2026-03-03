@@ -499,6 +499,12 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
       parts.push('[STAFF / USUARIOS CON ACCESO AL DASHBOARD - DATOS ANONIMIZADOS]\n' + bg.staffStats.contextText);
       bg.staffStats.codeToReal.forEach((v, k) => allCodes.set(k, v));
     }
+    if (bg.injuryStats) {
+      parts.push('[LESIONES DEL CLUB (todos los equipos)]\n' + bg.injuryStats);
+    }
+    if (bg.classificationStats) {
+      parts.push('[CLASIFICACIÓN DE LIGA (equipos del club)]\n' + bg.classificationStats);
+    }
 
     if (parts.length === 0) return { messageToSend: text, activeCodeToReal: null };
 

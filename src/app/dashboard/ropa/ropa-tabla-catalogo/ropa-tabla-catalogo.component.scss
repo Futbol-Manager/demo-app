@@ -1,0 +1,301 @@
+.tabla-wrapper {
+  padding: 0 0 24px;
+}
+
+// ─── Filtros ────────────────────────────────────────────────────────────────
+.tabla-filtros {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 0 20px;
+  flex-wrap: wrap;
+}
+
+.filtro-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #666;
+  }
+
+  select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    background: #fff;
+    cursor: pointer;
+    min-width: 220px;
+
+    &:focus {
+      outline: none;
+      border-color: #1976d2;
+    }
+
+    &:disabled {
+      background: #f5f5f5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.filtro-info {
+  font-size: 13px;
+  color: #888;
+  margin-top: 18px;
+}
+
+// ─── Estados ────────────────────────────────────────────────────────────────
+.tabla-loading,
+.tabla-empty,
+.tabla-error {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 24px;
+  font-size: 15px;
+  color: #888;
+  justify-content: center;
+  flex-direction: column;
+
+  i {
+    font-size: 40px;
+    color: #ccc;
+  }
+
+  p { margin: 0; }
+}
+
+.tabla-error {
+  color: #c0392b;
+  i { color: #c0392b; }
+}
+
+.spinner,
+.celda-spinner {
+  display: inline-block;
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  border-top-color: #1976d2;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+.spinner { width: 20px; height: 20px; }
+.celda-spinner { width: 14px; height: 14px; }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ─── Scroll container ────────────────────────────────────────────────────────
+.tabla-scroll {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+// ─── Tabla ───────────────────────────────────────────────────────────────────
+.tabla-tallas {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  th, td {
+    padding: 0;
+    border-bottom: 1px solid #f0f0f0;
+    border-right: 1px solid #f0f0f0;
+
+    &:last-child { border-right: none; }
+  }
+
+  thead tr {
+    background: #f8f9fa;
+  }
+
+  tbody tr {
+    &:hover { background: #f9fafb; }
+    &:last-child td { border-bottom: none; }
+  }
+}
+
+// ─── Columna jugador ─────────────────────────────────────────────────────────
+.col-jugador {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: #fff;
+  min-width: 220px;
+  max-width: 260px;
+
+  thead & {
+    background: #f8f9fa;
+    z-index: 3;
+  }
+}
+
+.jugador-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+}
+
+.jugador-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid #e0e0e0;
+}
+
+.jugador-initials {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  background: #1976d2;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+
+.jugador-texto {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+  min-width: 0;
+}
+
+.jugador-nombre {
+  font-weight: 500;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.jugador-nick {
+  font-size: 11px;
+  color: #888;
+}
+
+// ─── Columna prenda ──────────────────────────────────────────────────────────
+.col-prenda {
+  min-width: 140px;
+  text-align: center;
+  vertical-align: top;
+}
+
+.prenda-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 8px;
+}
+
+.prenda-thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.prenda-nombre {
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.prenda-stats {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  color: #888;
+
+  .ok-icon {
+    font-size: 11px;
+    color: #27ae60;
+  }
+}
+
+// ─── Celda talla ─────────────────────────────────────────────────────────────
+.col-celda {
+  text-align: center;
+  vertical-align: middle;
+  transition: background 0.2s;
+
+  &.celda-confirmada {
+    background: #f0faf4;
+  }
+}
+
+.celda {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 8px;
+}
+
+.talla-select {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 12px;
+  background: #fff;
+  cursor: pointer;
+  max-width: 80px;
+  transition: border-color 0.15s;
+
+  &.has-value {
+    border-color: #1976d2;
+    background: #e3f2fd;
+    font-weight: 600;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.btn-confirmar {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  color: #ccc;
+  transition: color 0.15s;
+  font-size: 16px;
+
+  &.confirmado {
+    color: #27ae60;
+  }
+
+  &:hover:not(:disabled) {
+    color: #27ae60;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}

@@ -15,6 +15,45 @@
   <div class="header-spacer"></div>
 </div>
 
+<!-- ═══════════════════ PESTAÑAS ═══════════════════ -->
+<div class="ropa-tabs">
+  <button class="ropa-tab" [class.active]="activeRopaTab === 'tablaTallas'" (click)="activeRopaTab = 'tablaTallas'">
+    <i class="fas fa-table"></i> Tallas catálogo
+  </button>
+  <button class="ropa-tab" [class.active]="activeRopaTab === 'catalogo'" (click)="activeRopaTab = 'catalogo'">
+    <i class="fas fa-tshirt"></i> Catálogo de prendas
+  </button>
+  <button class="ropa-tab ropa-tab-legacy" [class.active]="activeRopaTab === 'tallas'" (click)="activeRopaTab = 'tallas'">
+    <i class="fas fa-ruler-horizontal"></i> Tallas jugadores
+    <span class="legacy-badge">Antiguo</span>
+  </button>
+</div>
+
+<!-- ═══════════════════ CONTENIDO PESTAÑA: TABLA TALLAS CATÁLOGO ══════ -->
+<div *ngIf="activeRopaTab === 'tablaTallas'" class="catalogo-tab-content">
+  <app-ropa-tabla-catalogo [clubId]="clubId"></app-ropa-tabla-catalogo>
+</div>
+
+<!-- ═══════════════════ CONTENIDO PESTAÑA: CATÁLOGO ═══════════════════ -->
+<div *ngIf="activeRopaTab === 'catalogo'" class="catalogo-tab-content">
+  <app-ropa-catalogo [clubId]="clubId"></app-ropa-catalogo>
+</div>
+
+<!-- ═══════════════════ CONTENIDO PESTAÑA: TALLAS ═══════════════════ -->
+<div *ngIf="activeRopaTab === 'tallas'">
+
+<div class="legacy-warning-banner">
+  <i class="fas fa-exclamation-triangle"></i>
+  <div>
+    <strong>Esta sección desaparecerá el 01/05/2026.</strong>
+    Descarga los datos que necesites antes de esa fecha para no perderlos.
+    El nuevo sistema de tallas está disponible en la pestaña <strong>Tallas catálogo</strong>.
+  </div>
+  <button class="action-btn excel legacy-export-btn" (click)="exportTableToExcel()">
+    <i class="bi bi-file-earmark-spreadsheet-fill"></i> Descargar datos
+  </button>
+</div>
+
 <div class="table-actions-row">
   <!-- IZQUIERDA -->
   <div class="table-actions-left">
@@ -479,6 +518,8 @@
   </div>
 </div>
 
+
+</div><!-- /tallas tab -->
 
 <!-- tabla para imprimir en excel -->
 <div style="display: none;">

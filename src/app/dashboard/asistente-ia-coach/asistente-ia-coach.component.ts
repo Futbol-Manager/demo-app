@@ -517,7 +517,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     }
 
     this.chatSub?.unsubscribe();
-    this.chatSub = this.aiChatService.sendMessage(this.userId, this.clubId, 'dashboard', enrichedText, 'users', this.teamId, history)
+    this.chatSub = this.aiChatService.sendMessage(this.userId, this.clubId, 'dashboard', enrichedText, 'users', this.teamId, history, true)
       .pipe(
         finalize(() => {
           this.isResponding = false;

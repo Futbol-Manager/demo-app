@@ -100,6 +100,9 @@ export class OpcionesjugadorComponent implements OnInit, OnDestroy {
       case 12:
         this.router.navigate(['/dashboard/scouting-player-profile', this.playerId]);
         break;
+      case 13:
+        this.router.navigate(['/dashboard/ropa-jugador', this.teamId, this.playerId]);
+        break;
     }
   }
 

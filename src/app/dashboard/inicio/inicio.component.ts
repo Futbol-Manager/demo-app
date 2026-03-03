@@ -200,11 +200,7 @@ export class InicioComponent implements OnInit {
       }
     }
 
-    if (this.profileId === 1 && this.clubPlanType === null) {
-      console.log('[INICIO DEBUG] clubPlanType is null, redirecting to subscriptions by safety rule');
-      this.router.navigate(['/dashboard/suscripcion-club']);
-      return;
-    }
+    // Si clubPlanType es null (sin suscripción activa o API no disponible), acceso completo a todos los módulos
 
     switch (id) {
       case 2:
@@ -290,8 +286,12 @@ export class InicioComponent implements OnInit {
     const cachedClubId = sessionStorage.getItem(this.CLUB_ID_KEY);
     const cachedClubPlanType = localStorage.getItem(this.CLUB_PLAN_TYPE_KEY) as ClubPlanType | null;
 
-    if (cachedClubPlanType) {
+    // Solo usar la caché si es un plan real (no 'gratuito' del bloque temporal eliminado)
+    if (cachedClubPlanType && cachedClubPlanType !== 'gratuito') {
       this.clubPlanType = cachedClubPlanType;
+    } else if (cachedClubPlanType === 'gratuito') {
+      // Limpiar valor temporal incorrecto de sesiones anteriores
+      localStorage.removeItem(this.CLUB_PLAN_TYPE_KEY);
     }
 
     if (cachedClubOk !== null && cachedClubId !== null) {
@@ -412,13 +412,6 @@ export class InicioComponent implements OnInit {
 
     console.log('[INICIO DEBUG] Loading club subscription plan for clubId:', this.clubId);
 
-    // TEMPORAL: Simular plan gratuito para pruebas
-    // Reemplazar con la llamada real al servicio cuando esté listo
-    this.clubPlanType = 'gratuito';
-    localStorage.setItem(this.CLUB_PLAN_TYPE_KEY, this.clubPlanType);
-    console.log('[INICIO DEBUG] Set clubPlanType to:', this.clubPlanType);
-
-    /*
     this.clubSubscriptionService.getCurrentClubPlan(this.clubId).pipe(take(1)).subscribe({
       next: (result: any) => {
         console.log('[INICIO DEBUG] Subscription API response:', result);
@@ -433,12 +426,11 @@ export class InicioComponent implements OnInit {
         console.log('[INICIO DEBUG] Set clubPlanType to:', this.clubPlanType);
       },
       error: (err) => {
-        console.log('[INICIO DEBUG] Subscription API error:', err);
+        console.log('[INICIO DEBUG] Subscription API error (acceso completo por defecto):', err);
         this.clubPlanType = null;
         localStorage.removeItem(this.CLUB_PLAN_TYPE_KEY);
       }
     });
-    */
   }
 
   navegarAOpcionesJugador(teamId: number, playerId: number): void {

@@ -29,6 +29,8 @@ export interface PageContext {
 export interface BackgroundStatsContext {
   clubId: number;
   upcomingStats: string | null;
+  injuryStats: string | null;
+  classificationStats: string | null;
   rosterStats:   { contextText: string; codeToReal: Map<string, string> } | null;
   teamStats:     { contextText: string; codeToReal: Map<string, string> } | null;
   playerStats:   { contextText: string; codeToReal: Map<string, string> } | null;
@@ -158,28 +160,53 @@ export class AiPageContextService {
           .map((t: any) => t.teamId as number);
 
         if (teamIds.length === 0) {
-          return of({ ...phase1, upcomingByTeam: null });
+          return of({ ...phase1, upcomingByTeam: null, injuriesByTeam: null, classificationByTeam: null });
         }
 
-        const upcomingRequests: { [key: string]: Observable<any> } = {};
+        const phase2Requests: { [key: string]: Observable<any> } = {};
         teamIds.forEach(id => {
-          upcomingRequests[`team_${id}`] = this.http.get<any>(
+          phase2Requests[`match_${id}`] = this.http.get<any>(
             environment.apiUrl + `match/listmatchpreparationsbyteam/${id}`,
             { headers: this.getAuthHeaders() }
           ).pipe(catchError(() => of(null)));
+          phase2Requests[`inj_${id}`] = this.http.get<any>(
+            environment.apiUrl + `injury/team/${id}`,
+            { headers: this.getAuthHeaders() }
+          ).pipe(catchError(() => of(null)));
+          phase2Requests[`cla_${id}`] = this.clubService.getTodo(id, 'current').pipe(catchError(() => of(null)));
         });
 
-        return forkJoin(upcomingRequests).pipe(
-          map(upcomingByTeam => ({ ...phase1, upcomingByTeam }))
+        return forkJoin(phase2Requests).pipe(
+          map(phase2Results => {
+            const upcomingByTeam: { [key: string]: any } = {};
+            const injuriesByTeam: { [key: string]: any } = {};
+            const classificationByTeam: { [key: string]: any } = {};
+            Object.keys(phase2Results).forEach(key => {
+              if (key.startsWith('match_')) upcomingByTeam[`team_${key.replace('match_', '')}`] = phase2Results[key];
+              else if (key.startsWith('inj_')) injuriesByTeam[key] = phase2Results[key];
+              else if (key.startsWith('cla_')) classificationByTeam[key] = phase2Results[key];
+            });
+            return { ...phase1, upcomingByTeam, injuriesByTeam, classificationByTeam };
+          })
         );
       })
-    ).subscribe(({ roster, teams, players, payments, docs, docsCoach, ropa, notifs, media, scouting, staff, upcomingByTeam }) => {
-      const rosterStats = roster?.data?.teams && Array.isArray(roster.data.teams)
-        ? this.buildRosterContext(roster.data.teams)
+    ).subscribe(({ roster, teams, players, payments, docs, docsCoach, ropa, notifs, media, scouting, staff, upcomingByTeam, injuriesByTeam, classificationByTeam }) => {
+      const rosterTeams: any[] = roster?.data?.teams || [];
+
+      const rosterStats = rosterTeams.length > 0
+        ? this.buildRosterContext(rosterTeams)
         : null;
 
       const upcomingStats = upcomingByTeam
-        ? this.buildUpcomingMatchesContext(upcomingByTeam, roster?.data?.teams || [])
+        ? this.buildUpcomingMatchesContext(upcomingByTeam, rosterTeams)
+        : null;
+
+      const injuryStats = injuriesByTeam
+        ? this.buildClubInjuryContext(injuriesByTeam, rosterTeams)
+        : null;
+
+      const classificationStats = classificationByTeam
+        ? this.buildClubClassificationContext(classificationByTeam, rosterTeams)
         : null;
 
       const teamStats = teams?.data && Array.isArray(teams.data)
@@ -211,7 +238,8 @@ export class AiPageContextService {
       const staffStats = this.buildStaffContext(staff);
 
       this.backgroundStats$.next({
-        clubId, upcomingStats, rosterStats, teamStats, playerStats, paymentStats,
+        clubId, upcomingStats, injuryStats, classificationStats,
+        rosterStats, teamStats, playerStats, paymentStats,
         documentStats, ropaStats, notifStats, mediaStats, scoutingStats, staffStats,
       });
       this.loadedForClubId = clubId;
@@ -857,6 +885,82 @@ export class AiPageContextService {
     });
 
     return lines.join('\n');
+  }
+
+  private buildClubInjuryContext(injuriesByTeam: { [key: string]: any }, rosterTeams: any[]): string | null {
+    const teamNameById = new Map<number, string>();
+    rosterTeams.forEach((t: any) => {
+      if (t.teamId) teamNameById.set(t.teamId, t.nameTeam || `Equipo ${t.teamId}`);
+    });
+
+    const SEVERITY: { [k: string]: string } = { leve: 'Leve', moderada: 'Moderada', grave: 'Grave', muy_grave: 'Muy grave' };
+    const STATUS: { [k: string]: string } = {
+      baja: 'Baja', recuperacion: 'Recuperación', alta_condicionada: 'Alta condicionada', alta: 'Alta',
+    };
+
+    const sections: string[] = [];
+    let hasAnyInjury = false;
+
+    for (const key of Object.keys(injuriesByTeam)) {
+      const teamId = parseInt(key.replace('inj_', ''), 10);
+      const res = injuriesByTeam[key];
+      const items: any[] = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+      if (items.length === 0) continue;
+
+      hasAnyInjury = true;
+      const teamName = teamNameById.get(teamId) || `Equipo ${teamId}`;
+      const lines = [`\n## ${teamName} (${items.length} lesiones)`];
+      lines.push('Jugador | Zona | Tipo | Gravedad | Estado | Baja desde | Vuelta estimada');
+      items.forEach((inj: any) => {
+        const jugador  = inj.playerName || `Jugador ${inj.playerId}`;
+        const zona     = inj.zoneLabel || inj.zone || '-';
+        const tipo     = inj.type || '-';
+        const gravedad = SEVERITY[inj.severity] || inj.severity || '-';
+        const estado   = STATUS[inj.status] || inj.status || '-';
+        const desde    = inj.dateInjury ? String(inj.dateInjury).substring(0, 10) : '-';
+        const vuelta   = inj.dateReturn ? String(inj.dateReturn).substring(0, 10) : '-';
+        lines.push(`${jugador} | ${zona} | ${tipo} | ${gravedad} | ${estado} | ${desde} | ${vuelta}`);
+      });
+      sections.push(lines.join('\n'));
+    }
+
+    if (!hasAnyInjury) return 'Sin lesiones registradas en ningún equipo.';
+    return sections.join('\n');
+  }
+
+  private buildClubClassificationContext(classificationByTeam: { [key: string]: any }, rosterTeams: any[]): string | null {
+    const teamNameById = new Map<number, string>();
+    rosterTeams.forEach((t: any) => {
+      if (t.teamId) teamNameById.set(t.teamId, t.nameTeam || `Equipo ${t.teamId}`);
+    });
+
+    const sections: string[] = [];
+    for (const key of Object.keys(classificationByTeam)) {
+      const teamId = parseInt(key.replace('cla_', ''), 10);
+      const res = classificationByTeam[key];
+      if (!res?.data) continue;
+      const data = res.data;
+      const clasificacion = data.clasificacion;
+      if (!Array.isArray(clasificacion) || clasificacion.length === 0) continue;
+
+      const teamName = teamNameById.get(teamId) || `Equipo ${teamId}`;
+      const competicion: string = data.competicion || '';
+      const grupo: string = data.grupo || '';
+      const jornada: string = data.jornada || '';
+
+      const lines = [`\n## ${teamName}`];
+      if (competicion) {
+        lines.push(`Competición: ${competicion}${grupo ? ` (${grupo})` : ''} — Jornada ${jornada}`);
+      }
+      lines.push('Pos | Equipo | Pts | PJ | PG | PE | PP | GF | GC');
+      clasificacion.slice(0, 20).forEach((r: any) => {
+        lines.push(`${r.posicion || '-'} | ${r.nombre || '-'} | ${r.puntos || '-'} | ${r.jugados || '-'} | ${r.ganados || '-'} | ${r.empatados || '-'} | ${r.perdidos || '-'} | ${r.golesAFavor || '-'} | ${r.golesEnContra || '-'}`);
+      });
+      sections.push(lines.join('\n'));
+    }
+
+    if (sections.length === 0) return null;
+    return sections.join('\n');
   }
 
   private buildPaymentContext(playersData: any[]): { contextText: string; codeToReal: Map<string, string> } {

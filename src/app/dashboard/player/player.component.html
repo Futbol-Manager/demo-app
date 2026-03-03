@@ -1142,6 +1142,11 @@
                             <i class="bi bi-heart-pulse me-1"></i> Lesiones
                         </button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button type="button" class="nav-link" [class.active]="infoModalActiveTab === 'ropa'" (click)="setInfoModalTab('ropa')">
+                            <i class="bi bi-bag me-1"></i> Ropa
+                        </button>
+                    </li>
                 </ul>
 
                 <div class="tab-content player-info-tab-content">
@@ -1389,6 +1394,68 @@
                           [embedded]="true"
                           [readOnly]="(usuarioActual?.profileType?.profileId ?? 0) >= 3 && (usuarioActual?.profileType?.profileId ?? 0) < 6">
                         </app-lesiones>
+                    </div>
+
+                    <!-- Pestaña: Ropa -->
+                    <div class="tab-pane" [class.active]="infoModalActiveTab === 'ropa'" role="tabpanel">
+                        <div *ngIf="ropaCargando" class="text-center py-4">
+                            <div class="spinner-border text-success" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+
+                        <div *ngIf="ropaError && !ropaCargando" class="alert alert-warning mt-3">
+                            <i class="bi bi-exclamation-triangle me-1"></i> {{ ropaError }}
+                        </div>
+
+                        <div *ngIf="!ropaCargando && !ropaError">
+                            <div *ngIf="ropaPrendas.length === 0" class="text-muted text-center py-4">
+                                <i class="bi bi-bag-x fs-3 d-block mb-2"></i>
+                                No hay prendas configuradas para este equipo.
+                            </div>
+
+                            <div *ngIf="ropaPrendas.length > 0" class="table-responsive mt-2">
+                                <table class="table table-sm align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Prenda</th>
+                                            <th>Talla seleccionada</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let prenda of ropaPrendas">
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <img *ngIf="prenda.imagenUrl"
+                                                         [src]="prenda.imagenUrl"
+                                                         alt="{{ prenda.nombre }}"
+                                                         style="width:40px;height:40px;object-fit:cover;border-radius:6px;">
+                                                    <i *ngIf="!prenda.imagenUrl" class="bi bi-bag fs-4 text-secondary"></i>
+                                                    <span>{{ prenda.nombre }}</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-success" *ngIf="getTallaSeleccionada(prenda) !== '—'">
+                                                    {{ getTallaSeleccionada(prenda) }}
+                                                </span>
+                                                <span class="text-muted" *ngIf="getTallaSeleccionada(prenda) === '—'">
+                                                    Sin seleccionar
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge"
+                                                    [class.bg-success]="getEstadoRopa(prenda.prendaId) === 'entregada'"
+                                                    [class.bg-primary]="getEstadoRopa(prenda.prendaId) === 'confirmado'"
+                                                    [class.bg-secondary]="getEstadoRopa(prenda.prendaId) !== 'confirmado' && getEstadoRopa(prenda.prendaId) !== 'entregada'">
+                                                    {{ getEstadoRopa(prenda.prendaId) }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

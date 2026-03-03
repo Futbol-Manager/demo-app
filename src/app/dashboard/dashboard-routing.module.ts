@@ -115,6 +115,7 @@ import { ErpBudgetsComponent } from './erp/erp-budgets/erp-budgets.component';
 import { ErpReportsComponent } from './erp/erp-reports/erp-reports.component';
 import { ErpSetupComponent } from './erp/erp-setup/erp-setup.component';
 import { IndividualTrainingComponent } from './individual-training/individual-training.component';
+import { RopaJugadorComponent } from './ropa-jugador/ropa-jugador.component';
 
 const routes: Routes = [
   {
@@ -147,6 +148,7 @@ const routes: Routes = [
       { path: 'new-cuotas/:clubId', component: NewCuotasComponent, canActivate: [ClubOwnerGuard] },
       { path: 'abonados/:clubId', component: AbonadosComponent, canActivate: [ClubOwnerGuard] },
       { path: 'ropa/:clubId', component: RopaComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'ropa-jugador/:teamId/:playerId', component: RopaJugadorComponent },
       { path: 'cuotas/:teamId/:playerId', component: CuotasComponent },
       { path: 'cuadro-de-mandos/:clubId', component: CuadroComponent, canActivate: [ClubOwnerGuard] },
       { path: 'patrocinadores/:clubId', component: PatrocinadoresComponent },

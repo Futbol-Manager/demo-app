@@ -299,16 +299,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
     console.log('[SIDEBAR DEBUG] Starting subscription load...');
     this.isLoadingSubscription = true;
     
-    // TEMPORAL: Simular plan gratuito para probar el filtrado
-    console.log('[SIDEBAR DEBUG] SIMULATING gratuito plan for testing');
-    setTimeout(() => {
-      this.clubPlanType = 'gratuito';
-      console.log('[SIDEBAR DEBUG] Set clubPlanType to:', this.clubPlanType);
-      this.isLoadingSubscription = false;
-      this.buildSections();
-    }, 1000); // Simular delay de API
-    
-    /*
     this.clubSubscriptionService.getCurrentClubPlan(this.clubId).pipe(take(1)).subscribe({
       next: (result: any) => {
         console.log('[SIDEBAR DEBUG] Subscription API response:', result);
@@ -320,13 +310,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
         this.buildSections();
       },
       error: (err) => {
-        console.log('[SIDEBAR DEBUG] Subscription API error:', err);
+        console.log('[SIDEBAR DEBUG] Subscription API error (acceso completo por defecto):', err);
         this.clubPlanType = null;
         this.isLoadingSubscription = false;
         this.buildSections();
       }
     });
-    */
   }
 
   private isClubFreePlan(): boolean {

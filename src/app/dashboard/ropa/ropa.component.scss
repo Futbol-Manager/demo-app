@@ -1022,3 +1022,83 @@
     grid-template-columns: 1fr;
   }
 }
+
+// ─── Pestañas ropa ────────────────────────────────────────────────────────────
+.ropa-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 1rem 0 1rem;
+  border-bottom: 2px solid #e0e0e0;
+  margin-bottom: 0;
+}
+
+.ropa-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 12px 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7c8f;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: -2px;
+
+  &:hover { color: #1976d2; }
+
+  &.active {
+    color: #1976d2;
+    border-bottom-color: #1976d2;
+    font-weight: 600;
+  }
+}
+
+.catalogo-tab-content {
+  padding: 24px 1rem;
+}
+
+.ropa-tab-legacy {
+  color: #8a6800;
+  &:hover { color: #c9910a; }
+  &.active { color: #c9910a; border-bottom-color: #c9910a; }
+}
+
+.legacy-badge {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffc107;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.legacy-warning-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-left: 4px solid #dc3545;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 16px 16px 0;
+  font-size: 0.88rem;
+  color: #4a2600;
+
+  i { color: #dc3545; font-size: 1.1rem; margin-top: 2px; flex-shrink: 0; }
+
+  div { flex: 1; line-height: 1.5; }
+
+  strong { color: #dc3545; }
+}
+
+.legacy-export-btn {
+  flex-shrink: 0;
+  align-self: center;
+}

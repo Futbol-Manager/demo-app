@@ -31,6 +31,7 @@ export class RopaComponent implements OnInit, AfterViewChecked, OnDestroy {
   usuarioActual!: User | null;
   clubId!: number; // Ajusta el valor según el clubId del equipo actual
   userId!: number;
+  activeRopaTab: 'tallas' | 'catalogo' | 'tablaTallas' = 'tablaTallas';
   dataTable: any;
   ropaPlayers: any[] = [];
   datosCargados = false;

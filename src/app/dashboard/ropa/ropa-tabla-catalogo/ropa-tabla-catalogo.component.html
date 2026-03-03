@@ -1,0 +1,116 @@
+<div class="tabla-wrapper">
+  <!-- Filtros -->
+  <div class="tabla-filtros">
+    <div class="filtro-grupo">
+      <label>Equipo</label>
+      <select
+        [(ngModel)]="teamIdSeleccionado"
+        (ngModelChange)="onEquipoChange()"
+        [disabled]="cargandoEquipos"
+      >
+        <option *ngFor="let equipo of equipos" [ngValue]="equipo.value">
+          {{ equipo.name }}
+        </option>
+      </select>
+    </div>
+    <div class="filtro-info" *ngIf="!cargandoTabla && jugadores.length > 0">
+      {{ jugadores.length }} jugadores · {{ prendas.length }} prendas
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="tabla-loading" *ngIf="cargandoTabla">
+    <span class="spinner"></span> Cargando datos…
+  </div>
+
+  <!-- Error -->
+  <div class="tabla-error" *ngIf="errorTabla && !cargandoTabla">
+    <i class="fas fa-exclamation-circle"></i> {{ errorTabla }}
+  </div>
+
+  <!-- Sin datos -->
+  <div class="tabla-empty" *ngIf="!cargandoTabla && !errorTabla && (prendas.length === 0 || jugadores.length === 0)">
+    <i class="fas fa-tshirt"></i>
+    <p *ngIf="prendas.length === 0">No hay prendas en el catálogo para este equipo y temporada.</p>
+    <p *ngIf="prendas.length > 0 && jugadores.length === 0">No hay jugadores en este equipo.</p>
+  </div>
+
+  <!-- Tabla -->
+  <div class="tabla-scroll" *ngIf="!cargandoTabla && !errorTabla && prendas.length > 0 && jugadores.length > 0">
+    <table class="tabla-tallas">
+      <thead>
+        <tr>
+          <th class="col-jugador">Jugador</th>
+          <th *ngFor="let prenda of prendas" class="col-prenda">
+            <div class="prenda-header">
+              <img
+                *ngIf="prenda.imagenUrl"
+                [src]="prenda.imagenUrl"
+                [alt]="prenda.nombre"
+                class="prenda-thumb"
+              />
+              <span class="prenda-nombre">{{ prenda.nombre }}</span>
+              <span class="prenda-stats">
+                {{ contarRespuestas(prenda.prendaId) }}/{{ jugadores.length }}
+                <i class="fas fa-check-circle ok-icon" title="confirmados"></i>
+                {{ contarConfirmados(prenda.prendaId) }}
+              </span>
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let jugador of jugadores">
+          <td class="col-jugador">
+            <div class="jugador-info">
+              <img
+                *ngIf="jugador.picturePlayer"
+                [src]="imageBaseUrlUser + jugador.picturePlayer"
+                [alt]="jugador.nombre"
+                class="jugador-avatar"
+              />
+              <span class="jugador-initials" *ngIf="!jugador.picturePlayer">
+                {{ jugador.nombre?.charAt(0) }}{{ jugador.apellido?.charAt(0) }}
+              </span>
+              <div class="jugador-texto">
+                <span class="jugador-nombre">{{ jugador.nombre }} {{ jugador.apellido }}</span>
+                <span class="jugador-nick" *ngIf="jugador.nick">{{ jugador.nick }}</span>
+              </div>
+            </div>
+          </td>
+          <td
+            *ngFor="let prenda of prendas"
+            class="col-celda"
+            [class.celda-confirmada]="tabla[jugador.playerId]?.[prenda.prendaId]?.estado === 'confirmado'"
+          >
+            <div class="celda" *ngIf="tabla[jugador.playerId]?.[prenda.prendaId] as celda">
+              <select
+                class="talla-select"
+                [(ngModel)]="celda.tallaId"
+                (ngModelChange)="onTallaChange(jugador, prenda, $event)"
+                [disabled]="celda.guardando"
+                [class.has-value]="celda.tallaId != null"
+              >
+                <option [ngValue]="null">—</option>
+                <option *ngFor="let talla of prenda.tallas" [ngValue]="talla.tallaId">
+                  {{ talla.nombreTalla }}
+                </option>
+              </select>
+              <button
+                *ngIf="celda.tallaId != null"
+                class="btn-confirmar"
+                [class.confirmado]="celda.estado === 'confirmado'"
+                [disabled]="celda.guardando"
+                (click)="toggleConfirmacion(jugador, prenda)"
+                [title]="celda.estado === 'confirmado' ? 'Marcar como pendiente' : 'Confirmar entrega'"
+              >
+                <i [class]="celda.estado === 'confirmado' ? 'fas fa-check-circle' : 'far fa-circle'"></i>
+              </button>
+              <span class="celda-spinner" *ngIf="celda.guardando"></span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

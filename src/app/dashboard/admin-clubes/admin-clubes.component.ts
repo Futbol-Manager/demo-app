@@ -97,9 +97,11 @@ export class AdminClubesComponent implements OnInit {
     this.cargarClientesProspectados();
   }
 
+  readonly clientsPageSize = 20;
+
   cargarClientesProspectados(): void {
     this.isLoadingClients = true;
-    this.prospectService.getClients(this.clientsSearch, this.clientsPage).subscribe({
+    this.prospectService.getClients(this.clientsSearch, this.clientsPage, this.clientsPageSize).subscribe({
       next: (res) => {
         this.prospectedClients = res.items || [];
         this.prospectedClientsTotal = res.total || 0;
@@ -109,13 +111,40 @@ export class AdminClubesComponent implements OnInit {
     });
   }
 
+  get clientsTotalPages(): number {
+    return Math.ceil(this.prospectedClientsTotal / this.clientsPageSize);
+  }
+
+  clientsNextPage(): void {
+    if (this.clientsPage < this.clientsTotalPages - 1) {
+      this.clientsPage++;
+      this.cargarClientesProspectados();
+    }
+  }
+
+  clientsPrevPage(): void {
+    if (this.clientsPage > 0) {
+      this.clientsPage--;
+      this.cargarClientesProspectados();
+    }
+  }
+
+  onClientsSearchChange(): void {
+    this.clientsPage = 0;
+    this.cargarClientesProspectados();
+  }
+
   openClientDetail(client: any): void {
     this.selectedClient = client;
     this.showClientDetailModal = true;
   }
 
-  goToProspector(): void {
-    this.router.navigate(['/dashboard/admin-prospector']);
+  goToProspector(prospectId?: number): void {
+    if (prospectId) {
+      this.router.navigate(['/dashboard/admin-prospector'], { queryParams: { prospectId } });
+    } else {
+      this.router.navigate(['/dashboard/admin-prospector']);
+    }
   }
 
   goBack(): void {

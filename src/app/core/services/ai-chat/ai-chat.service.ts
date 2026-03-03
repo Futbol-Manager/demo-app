@@ -143,10 +143,11 @@ export class AiChatService {
    * Envía un mensaje al asistente IA. Consume 1 crédito.
    * history: array opcional de {role, text} con los últimos mensajes de la conversación.
    */
-  sendMessage(userId: number, clubId: number | null, screenContext: string, message: string, apiKeyType: string = 'users', teamId?: number | null, history?: {role: string, text: string}[]): Observable<AiChatResponse> {
+  sendMessage(userId: number, clubId: number | null, screenContext: string, message: string, apiKeyType: string = 'users', teamId?: number | null, history?: {role: string, text: string}[], hasClientContext?: boolean): Observable<AiChatResponse> {
     const body: any = { userId, clubId, screenContext, message, apiKeyType };
     if (teamId) body.teamId = teamId;
     if (history && history.length > 0) body.history = history;
+    if (hasClientContext) body.hasClientContext = true;
     return this.http.post<AiChatResponse>(`${this.baseUrl}/chat`, body, { headers: this.getHeaders() }).pipe(
       timeout(45000),
       catchError(err => {
