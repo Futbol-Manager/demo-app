@@ -1,13 +1,21 @@
-<!-- Back button -->
-<div class="back-container">
-  <button type="button" class="btn-back-clean" (click)="goBack()">
-    <i class="bi bi-arrow-left"></i>
-    <span>{{ taskMode ? 'Cerrar' : ('COMMON.BACK' | translate) }}</span>
-  </button>
-  <span class="board-title">
-    <i class="bi bi-easel2"></i>
-    {{ taskMode ? 'Pizarra táctica' : ('TBOARD.TITLE' | translate) }}
-  </span>
+<app-publicidad *ngIf="!taskMode"></app-publicidad>
+
+<!-- Encabezado premium (estilo info-jugadores, menos alto) -->
+<header class="page-header page-header--compact">
+  <div class="back-container">
+    <button type="button" class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ taskMode ? 'Cerrar' : ('COMMON.BACK' | translate) }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h2 class="table-title">
+      <i class="bi bi-easel2"></i>
+      {{ taskMode ? 'Pizarra táctica' : ('TBOARD.TITLE' | translate) }}
+    </h2>
+    <p class="header-subtitle">{{ 'TBOARD.SUBTITLE' | translate }}</p>
+  </div>
 
   <!-- Botón guardar en tarea (solo en modo tarea) -->
   <div class="task-save-area" *ngIf="taskMode">
@@ -18,13 +26,35 @@
       <i class="bi bi-exclamation-triangle-fill me-1"></i>{{ saveTaskError }}
     </span>
     <button type="button" class="btn-save-task" (click)="guardarEnTarea()" [disabled]="savingTask">
-      <span *ngIf="!savingTask"><i class="bi bi-floppy me-1"></i>Guardar imagen en tarea</span>
+      <span *ngIf="!savingTask"><i class="bi bi-floppy me-1"></i>{{ keyframes.length >= 2 ? 'Guardar GIF en tarea' : 'Guardar imagen en tarea' }}</span>
       <span *ngIf="savingTask"><span class="spinner-border spinner-border-sm me-1"></span>Guardando...</span>
     </button>
   </div>
-</div>
+</header>
 
 <div class="board-wrapper">
+  <!-- Atajo jugadores y balón en la parte superior -->
+  <div class="players-shortcut-bar">
+    <div class="players-shortcut-label">{{ 'TBOARD.ADD_PLAYER' | translate }}:</div>
+    <div class="players-shortcut-actions">
+      <div class="player-color-options player-color-options--inline">
+        <button *ngFor="let c of PLAYER_COLORS" type="button" class="player-color-dot"
+                [style.background]="c" [class.active]="c === playerColor"
+                (click)="setPlayerColor(c)" [attr.title]="'TBOARD.COLOR' | translate"></button>
+      </div>
+      <button type="button" class="shortcut-btn shortcut-btn--player" (click)="addPlayer('color'); showPlayerPanel = false"
+              [title]="'TBOARD.ADD_PLAYER' | translate">
+        <i class="bi bi-person-plus-fill"></i>
+        <span>{{ 'TBOARD.ADD_PLAYER' | translate }}</span>
+      </button>
+      <button type="button" class="shortcut-btn shortcut-btn--ball" (click)="addPlayer('ball'); showPlayerPanel = false"
+              [disabled]="ballPlaced" [title]="'TBOARD.BALL' | translate">
+        <span class="ball-icon">⚽</span>
+        <span>{{ 'TBOARD.BALL' | translate }}</span>
+      </button>
+    </div>
+  </div>
+
   <!-- ═══════════ TOOLBAR ═══════════ -->
   <div class="toolbar">
     <!-- Drawing tools -->

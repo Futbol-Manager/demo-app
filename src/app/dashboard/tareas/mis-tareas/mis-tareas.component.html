@@ -1,29 +1,29 @@
-<!-- Botón atrás -->
-<div class="back-container">
-  <button type="button" class="btn-back-clean" (click)="goBack()">
-    <i class="bi bi-arrow-left"></i>
-    <span>{{ 'COMMON.BACK' | translate }}</span>
-  </button>
-</div>
+<app-publicidad></app-publicidad>
 
-<div class="mis-tareas-page">
-
-  <!-- HEADER -->
-  <header class="page-header">
-    <h1 class="page-title">
-      <i class="bi bi-cone-striped header-icon"></i>
-      {{ 'TAREAS_MIS.TITLE' | translate }}
-    </h1>
-    <p class="page-subtitle">{{ 'TAREAS_MIS.SUBTITLE' | translate }}</p>
-  </header>
-
-  <!-- TOOLBAR -->
-  <div class="toolbar">
-    <button class="btn-create" (click)="openCreate()">
-      <i class="bi bi-plus-lg"></i>
-      {{ 'TAREAS_MIS.CREATE' | translate }}
+<!-- Encabezado premium (mismo estilo y altura que info-jugadores) -->
+<header class="page-header">
+  <div class="back-container">
+    <button type="button" class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
     </button>
   </div>
+
+  <div class="header-center">
+    <h2 class="table-title">
+      <i class="bi bi-cone-striped table-title-icon"></i>
+      {{ 'TAREAS_MIS.TITLE' | translate }}
+    </h2>
+    <p class="header-subtitle">{{ 'TAREAS_MIS.SUBTITLE' | translate }}</p>
+  </div>
+
+  <button type="button" class="btn-header-cta" (click)="openCreate()">
+    <i class="bi bi-plus-lg"></i>
+    <span>{{ 'TAREAS_MIS.CREATE' | translate }}</span>
+  </button>
+</header>
+
+<div class="mis-tareas-page">
 
   <!-- LISTA VACÍA -->
   <app-empty-state *ngIf="misTareas.length === 0 && !showForm"
@@ -36,17 +36,42 @@
   </app-empty-state>
 
   <!-- ════════════════════════════════════════════
-       FORMULARIO CREAR / EDITAR
+       MODAL CREAR / EDITAR TAREA
   ════════════════════════════════════════════ -->
-  <div class="form-panel" *ngIf="showForm">
+  <div class="modal-create-backdrop" *ngIf="showForm" (click)="cancelForm()"></div>
+  <div class="modal-create-task" *ngIf="showForm" (click)="$event.stopPropagation()">
     <div class="form-panel-header">
       <h3>{{ editingId ? ('TAREAS_MIS.EDIT_TITLE' | translate) : ('TAREAS_MIS.CREATE_TITLE' | translate) }}</h3>
-      <button class="form-close" (click)="cancelForm()">
+      <button type="button" class="form-close" (click)="cancelForm()" aria-label="Cerrar">
         <i class="bi bi-x-lg"></i>
       </button>
     </div>
 
     <div class="form-body">
+      <!-- Imagen desde pizarra -->
+      <div class="form-group image-pizarra-section">
+        <label>{{ 'TAREAS_MIS.IMAGE_PIZARRA' | translate }}</label>
+        <div class="image-pizarra-box">
+          <div class="image-pizarra-preview" *ngIf="formImageUrl">
+            <img [src]="formImageUrl" alt="Preview" />
+          </div>
+          <div class="image-pizarra-placeholder" *ngIf="!formImageUrl">
+            <i class="bi bi-easel2"></i>
+            <span>{{ 'TAREAS_MIS.IMAGE_PIZARRA_PLACEHOLDER' | translate }}</span>
+          </div>
+          <div class="image-pizarra-actions">
+            <button type="button" class="btn-pizarra-open" (click)="abrirPizarra()">
+              <i class="bi bi-vector-pen"></i>
+              {{ 'TAREAS_MIS.ABRIR_PIZARRA' | translate }}
+            </button>
+            <button type="button" class="btn-pizarra-remove" *ngIf="pizarraFile || form.imagenBoard" (click)="quitarImagenPizarra()">
+              <i class="bi bi-trash"></i>
+              {{ 'TAREAS_MIS.QUITAR_IMAGEN' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Título -->
       <div class="form-group">
         <label>{{ 'TAREAS_MIS.FIELD_TITLE' | translate }} *</label>
@@ -119,12 +144,13 @@
     </div>
 
     <div class="form-footer">
-      <button class="btn btn-outline-secondary btn-sm" (click)="cancelForm()">
+      <p class="form-footer-error" *ngIf="saveFormError">{{ saveFormError }}</p>
+      <button class="btn btn-outline-secondary btn-sm" (click)="cancelForm()" [disabled]="savingForm">
         {{ 'COMMON.CANCEL' | translate }}
       </button>
-      <button class="btn btn-success btn-sm" (click)="saveForm()" [disabled]="!form.slogans?.trim()">
-        <i class="bi bi-check-lg"></i>
-        {{ editingId ? ('COMMON.SAVE' | translate) : ('TAREAS_MIS.CREATE' | translate) }}
+      <button class="btn btn-success btn-sm" (click)="saveForm()" [disabled]="!form.slogans?.trim() || savingForm">
+        <span *ngIf="!savingForm"><i class="bi bi-check-lg"></i> {{ editingId ? ('COMMON.SAVE' | translate) : ('TAREAS_MIS.CREATE' | translate) }}</span>
+        <span *ngIf="savingForm">{{ 'COMMON.SAVING' | translate }}</span>
       </button>
     </div>
   </div>
@@ -296,5 +322,18 @@
       </div>
     </div>
   </div>
+</div>
 
+<!-- Overlay pizarra táctica (fuera de .mis-tareas-page para que ningún contenedor bloquee la altura) -->
+<div class="pizarra-overlay" *ngIf="mostrarPizarra">
+  <div class="pizarra-container">
+    <app-tactical-board
+      [taskMode]="true"
+      [taskId]="0"
+      [trainingId]="0"
+      [userId]="userId"
+      (archivoGenerado)="onPizarraArchivoGenerado($event)"
+      (cerrar)="cerrarPizarra()">
+    </app-tactical-board>
+  </div>
 </div>

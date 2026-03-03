@@ -1200,7 +1200,8 @@ $g-header:    linear-gradient(135deg, #{$sp-navy} 0%, #{$sp-navy-mid} 55%, #{$sp
   overflow: hidden;
 }
 
-.new-activity-menu button {
+.new-activity-menu button,
+.new-activity-menu .new-activity-option {
   width: 100%;
   padding: 10px 14px;
   background: none;
@@ -1208,10 +1209,40 @@ $g-header:    linear-gradient(135deg, #{$sp-navy} 0%, #{$sp-navy-mid} 55%, #{$sp
   text-align: left;
   font-size: 0.85rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.new-activity-menu button:hover {
+.new-activity-menu button:hover:not(:disabled) {
   background: #f3f4f6;
+}
+
+/* Opciones deshabilitadas: Otra y Sesión Individual */
+.new-activity-option--disabled {
+  cursor: not-allowed;
+  opacity: 0.75;
+  color: #6b7280;
+  border-top: 1px solid #e5e7eb;
+  pointer-events: none;
+}
+
+.new-activity-option--disabled span:first-of-type {
+  flex: 1;
+}
+
+/* Badge azul Sphaira "Próximamente" */
+.badge-proximamente {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  background: #002c40;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 

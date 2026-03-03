@@ -60,6 +60,32 @@
   </div>
 
 
+  <!-- ================= BARRA BÚSQUEDA + FILTRO (premium) ================= -->
+  <div class="docs-toolbar-premium">
+    <div class="docs-toolbar-inner">
+      <div class="docs-toolbar-search-wrap">
+        <span class="docs-toolbar-search-icon"><i class="bi bi-search"></i></span>
+        <input type="text" class="docs-search-input" placeholder="Buscar por nombre o descripción..."
+          [(ngModel)]="searchText" (ngModelChange)="onFilterChange()" />
+      </div>
+      <div class="docs-toolbar-divider"></div>
+      <div class="docs-toolbar-filter-wrap">
+        <span class="docs-toolbar-filter-icon"><i class="bi bi-shield-fill"></i></span>
+        <label class="docs-filter-label">Equipo</label>
+        <select class="docs-filter-select" [ngModel]="filterTeamId" (ngModelChange)="filterTeamId = $event; onFilterChange()">
+          <option [ngValue]="null">Todos los equipos</option>
+          <option *ngFor="let t of equiposClub" [ngValue]="t.value">{{ t.name }}</option>
+        </select>
+      </div>
+      <div class="docs-toolbar-count-wrap" *ngIf="documentosFiltrados.length >= 0">
+        <span class="docs-toolbar-count-badge">
+          <i class="bi bi-file-earmark-text"></i>
+          <span>{{ documentosFiltrados.length }} documento{{ documentosFiltrados.length !== 1 ? 's' : '' }}</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= TABLA DOCUMENTOS ================= -->
   <div class="table-responsive table-container">
 
@@ -82,6 +108,7 @@
       <thead class="table-dark">
         <tr>
           <th class="col-completed">{{ 'DOCS_EQUIPO.DOCS.COMPLETED' | translate }}</th>
+          <th class="col-teams">Equipos</th>
           <th class="col-name" (click)="ordenarPor('nombre')">
             {{ 'DOCS_EQUIPO.DOCS.NAME' | translate }}
             <i class="bi ms-1" [ngClass]="{
@@ -100,15 +127,6 @@
               }">
             </i>
           </th>
-          <th class="col-type" (click)="ordenarPor('tipo')">
-            {{ 'DOCS_EQUIPO.DOCS.TYPE' | translate }}
-            <i class="bi ms-1" [ngClass]="{
-                'bi-arrow-up': columnaActual === 'tipo' && ordenAscendente,
-                'bi-arrow-down': columnaActual === 'tipo' && !ordenAscendente,
-                'bi-arrow-down-up': columnaActual !== 'tipo'
-              }">
-            </i>
-          </th>
           <th class="col-date" (click)="ordenarPor('fecCreate')">
             {{ 'DOCS_EQUIPO.DOCS.DATE' | translate }}
             <i class="bi ms-1" [ngClass]="{
@@ -123,31 +141,44 @@
       </thead>
 
       <tbody>
-        <tr *ngFor="let doc of listDocuments; let i = index">
+        <tr *ngFor="let doc of documentosPaginados; let i = index">
           <!-- COMPLETADO -->
           <td class="completed-cell">
-            <div class="completion-btn" (click)="openCompletionDetail(doc)"
-                 title="Click para ver detalle">
-              <span class="fw-bold">{{ doc.totalSubidos }}/{{ doc.totalPadres }}</span>
-              <div class="progress progress-xs">
-                <div class="progress-bar bg-success"
-                  [style.width.%]="doc.totalPadres ? (doc.totalSubidos / doc.totalPadres) * 100 : 0">
-                </div>
+            <div class="ring-wrap"
+                 (click)="openCompletionDetail(doc)"
+                 title="Ver detalle de completados"
+                 [class.ring--complete]="doc.totalPadres > 0 && doc.totalSubidos >= doc.totalPadres"
+                 [class.ring--partial]="doc.totalSubidos > 0 && doc.totalSubidos < doc.totalPadres"
+                 [class.ring--empty]="!doc.totalSubidos || doc.totalSubidos === 0">
+              <svg viewBox="0 0 48 48" class="ring-svg">
+                <circle cx="24" cy="24" r="18" class="ring-track"/>
+                <circle cx="24" cy="24" r="18" class="ring-fill"
+                  [style.stroke-dashoffset]="(doc.totalPadres > 0 ? (1 - doc.totalSubidos / doc.totalPadres) : 1) * 113.1"/>
+              </svg>
+              <div class="ring-label">
+                <span class="ring-num">{{ doc.totalSubidos }}</span>
+                <span class="ring-sep">/</span>
+                <span class="ring-den">{{ doc.totalPadres }}</span>
               </div>
             </div>
           </td>
 
-          <td>
-            {{ doc.nombre }}
-            <div *ngIf="doc.teamIds?.length > 0" class="team-badges mt-1">
-              <span class="badge bg-info text-dark me-1" *ngFor="let tid of doc.teamIds">
+          <!-- EQUIPOS -->
+          <td class="teams-cell">
+            <div *ngIf="doc.teamIds?.length > 0" class="team-badges">
+              <span class="badge badge-sphaira-team me-1 mb-1" *ngFor="let tid of doc.teamIds">
                 {{ getTeamNames([tid]) }}
               </span>
             </div>
-            <span *ngIf="!doc.teamIds || doc.teamIds.length === 0" class="badge bg-secondary mt-1">Todos</span>
+            <span *ngIf="!doc.teamIds || doc.teamIds.length === 0" class="badge badge-sphaira-all">Todos</span>
           </td>
 
-          <td *ngIf="doc.requiere < 2" class="doc-description">
+          <!-- NOMBRE -->
+          <td class="doc-name-cell">{{ doc.nombre }}</td>
+
+          <!-- DESCRIPCIÓN -->
+          <td *ngIf="doc.requiere < 2" class="doc-description"
+              [title]="doc.descripcion">
             {{ doc.descripcion }}
           </td>
 
@@ -157,7 +188,6 @@
             </span>
           </td>
 
-          <td>{{ doc.tipo }}</td>
           <td>{{ doc.fecCreate | date:'dd/MM/yyyy' }}</td>
 
           <!-- ACCIONES -->
@@ -196,7 +226,7 @@
               </button>
 
               <button class="btn-action danger" title="{{ 'DOCS_EQUIPO.COMMON.DELETE' | translate }}"
-                (click)="confirmarEliminarDoc(i, doc.docClubesId, doc.nombre)">
+                (click)="confirmarEliminarDoc(getDocIndex(doc), doc.docClubesId, doc.nombre)">
                 <i class="bi bi-trash"></i>
               </button>
 
@@ -208,6 +238,27 @@
       </tbody>
 
     </table>
+
+    <!-- Paginación (estilo ropa: centrada, card blanca, 1/3) -->
+    <div class="pagination-wrapper" *ngIf="!loadingData && documentosFiltrados.length > 0">
+      <div class="pagination-content">
+        <span class="pagination-info">Mostrando {{ paginationFrom }}–{{ paginationTo }} de {{ documentosFiltrados.length }}</span>
+        <select class="pagination-select" [ngModel]="pageSize" (ngModelChange)="setPageSize($event)">
+          <option *ngFor="let opt of pageSizeOptions" [ngValue]="opt">{{ opt }}</option>
+        </select>
+        <div class="pagination-controls">
+          <button type="button" class="page-btn prev" aria-label="Página anterior"
+            [disabled]="currentPage <= 1" (click)="prevPage()">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <span class="page-indicator">{{ currentPage }}/{{ totalPaginas }}</span>
+          <button type="button" class="page-btn next" aria-label="Página siguiente"
+            [disabled]="currentPage >= totalPaginas" (click)="nextPage()">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 <!-- ================= MODAL SUBIR DOCUMENTO ================= -->

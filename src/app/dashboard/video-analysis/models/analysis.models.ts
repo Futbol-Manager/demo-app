@@ -283,9 +283,10 @@ export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
   ARCHIVED: 'Archivado'
 };
 
+/** Colores Sphaira por estado */
 export const PROJECT_STATUS_COLORS: Record<ProjectStatus, string> = {
-  DRAFT: '#6c757d',
-  IN_PROGRESS: '#0d6efd',
-  COMPLETED: '#198754',
-  ARCHIVED: '#ffc107'
+  DRAFT: '#64748b',
+  IN_PROGRESS: '#0a4a6e',
+  COMPLETED: '#31b270',
+  ARCHIVED: '#f59e0b'
 };

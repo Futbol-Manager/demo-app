@@ -1,13 +1,25 @@
+<app-publicidad></app-publicidad>
+
+<!-- Encabezado premium (mismo estilo y altura que info-jugadores) -->
+<header class="page-header page-header--premium">
+  <div class="back-container">
+    <button type="button" class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h2 class="table-title">
+      <i class="bi bi-person-badge table-title-icon"></i>
+      {{ profileTitle || ('COACH_PROFILE.TITLE' | translate) }}
+    </h2>
+    <p class="header-subtitle">{{ 'COACH_PROFILE.SUBTITLE' | translate }}</p>
+  </div>
+</header>
+
 <!-- PERFIL ENTRENADOR -->
 <div class="perfil-entrenador-page">
-
-  <!-- HEADER -->
-  <div class="page-header">
-    <button class="btn-back" (click)="goBack()">
-      <i class="bi bi-arrow-left"></i>
-    </button>
-    <h1>{{ profileTitle || ('COACH_PROFILE.TITLE' | translate) }}</h1>
-  </div>
 
   <!-- ========== TARJETA DE SUSCRIPCIÓN (solo coach independiente) ========== -->
   <div class="subscription-card" *ngIf="profileId === 2 && !coachBelongsToClub && subscriptionStatus !== null">

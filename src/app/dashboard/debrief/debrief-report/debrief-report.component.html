@@ -1,12 +1,23 @@
-<!-- Back -->
-<div class="back-container">
-  <button class="btn-back-clean" (click)="goBack()">
-    <i class="bi bi-arrow-left"></i>
-    {{ 'DEBRIEF.BACK' | translate }}
-  </button>
+<app-publicidad></app-publicidad>
+
+<!-- ===== PAGE HEADER (mismo que resto del dashboard) ===== -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h2 class="page-header-title">{{ (isTraining ? 'DEBRIEF.REPORT.TRAINING_TITLE' : 'DEBRIEF.REPORT.MATCH_TITLE') | translate }}</h2>
+    <p class="header-subtitle">{{ 'DEBRIEF.REPORT.SUBTITLE' | translate }}</p>
+  </div>
+
+  <div class="header-spacer"></div>
 </div>
 
-<div class="report-container">
+<div class="report-container report-container--fullscreen">
 
   <!-- ── LOADING / GENERATING ── -->
   <div class="loading-state" *ngIf="isLoading || isGenerating">

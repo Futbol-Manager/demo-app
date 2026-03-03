@@ -12,7 +12,10 @@ import { Location } from '@angular/common';
 Chart.register(...registerables);
 
 const CHART_COLOR_PRIMARY = '#31b270';
-const CHART_COLOR_NIGHT = '#002c40';
+const CHART_COLOR_PRIMARY_DARK = '#1f8f5a';
+const CHART_COLOR_NAVY = '#002c40';
+const CHART_COLOR_NAVY_MID = '#0a4a6e';
+const CHART_FONT_FAMILY = "'Inter', 'Segoe UI', system-ui, sans-serif";
 
 @Component({
   selector: 'app-estadisticas-jugadores',
@@ -445,9 +448,10 @@ export class EstadisticasJugadoresComponent implements OnInit, OnDestroy {
     }
 
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, 'rgba(49, 178, 112, 0.92)');
-    gradient.addColorStop(0.6, 'rgba(49, 178, 112, 0.75)');
-    gradient.addColorStop(1, 'rgba(0, 44, 64, 0.7)');
+    gradient.addColorStop(0, 'rgba(49, 178, 112, 0.95)');
+    gradient.addColorStop(0.5, 'rgba(49, 178, 112, 0.75)');
+    gradient.addColorStop(0.85, 'rgba(31, 143, 90, 0.6)');
+    gradient.addColorStop(1, 'rgba(0, 74, 110, 0.5)');
 
     const labels = this.players.map(player => player.nombre);
 
@@ -460,41 +464,65 @@ export class EstadisticasJugadoresComponent implements OnInit, OnDestroy {
           data,
           backgroundColor: gradient,
           borderColor: CHART_COLOR_PRIMARY,
-          borderWidth: 1,
-          borderRadius: 8,
-          borderSkipped: false
+          borderWidth: 1.5,
+          borderRadius: 10,
+          borderSkipped: false,
+          hoverBackgroundColor: 'rgba(49, 178, 112, 0.85)',
+          hoverBorderColor: CHART_COLOR_PRIMARY_DARK,
+          hoverBorderWidth: 2
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: true,
         aspectRatio: 2.2,
+        animation: {
+          duration: 600
+        },
         plugins: {
           title: {
             display: true,
             text,
-            font: { size: 16, weight: 'bold' },
-            color: CHART_COLOR_NIGHT,
-            padding: { bottom: 16 }
+            font: { size: 17, weight: 'bold', family: CHART_FONT_FAMILY },
+            color: CHART_COLOR_NAVY,
+            padding: { bottom: 20 }
           },
           legend: {
             display: false
+          },
+          tooltip: {
+            backgroundColor: CHART_COLOR_NAVY,
+            titleFont: { size: 13, weight: 600, family: CHART_FONT_FAMILY },
+            bodyFont: { size: 13, family: CHART_FONT_FAMILY },
+            padding: 12,
+            cornerRadius: 10,
+            displayColors: true,
+            callbacks: {
+              label: (item) => ` ${item.dataset.label}: ${item.raw}`
+            }
           }
         },
         scales: {
           y: {
             beginAtZero: true,
-            grid: { color: 'rgba(0, 44, 64, 0.08)' },
-            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 } }
+            grid: { color: 'rgba(0, 44, 64, 0.06)', drawTicks: true },
+            ticks: {
+              color: CHART_COLOR_NAVY,
+              font: { size: 11, family: CHART_FONT_FAMILY },
+              padding: 6
+            },
+            border: { display: false }
           },
           x: {
             grid: { display: false },
             ticks: {
-              color: CHART_COLOR_NIGHT,
-              font: { size: 11 },
+              color: CHART_COLOR_NAVY,
+              font: { size: 11, family: CHART_FONT_FAMILY },
               maxRotation: 45,
-              minRotation: 0
-            }
+              minRotation: 0,
+              padding: 8
+            },
+            border: { display: false }
           }
         }
       }

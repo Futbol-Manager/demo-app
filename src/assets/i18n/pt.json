@@ -923,7 +923,8 @@
     "TEXT_398": "Pre-aviso enviado aos pais. Em Nao convocados voce vera apenas os jogadores que confirmaram presenca.",
     "TEXT_399": "Alteracao guardada.",
     "TEXT_400": "Notificacao enviada.",
-    "TEXT_401": "Detalhes do jogo"
+    "TEXT_401": "Detalhes do jogo",
+    "PROXIMAMENTE": "Em breve"
   },
   "REGISTER": {
     "TITLE": "Registo de utilizador",
@@ -1681,7 +1682,8 @@
     "MESSAGE": "Mensagem",
     "MESSAGES": "Mensagens",
     "CLOSE": "Fechar",
-    "SELECT_MESSAGE": "Selecione uma mensagem para a ler.",
+    "SELECT_MESSAGE": "Escolha uma mensagem da lista para ver o conteúdo aqui.",
+    "SELECT_MESSAGE_TITLE": "Selecione uma mensagem",
     "DELETE": "Eliminar",
     "SEND": "Enviar",
     "CANCEL": "Cancelar",

@@ -124,7 +124,7 @@
           <span class="folder-count">{{ videoCountInFolder(null) }}</span>
         </li>
         <li class="folder-item" [class.active]="activeFolderId === 'uncategorized'" (click)="selectFolder('uncategorized')">
-          <i class="bi bi-folder2-open" style="color:#9ca3af"></i>
+          <i class="bi bi-folder2-open folder-icon-muted"></i>
           <span>Sin carpeta</span>
           <span class="folder-count">{{ videoCountInFolder('uncategorized') }}</span>
         </li>
@@ -133,7 +133,7 @@
           [class.active]="activeFolderId === folder.id"
           (click)="selectFolder(folder.id)">
           <ng-container *ngIf="editingFolder?.id !== folder.id">
-            <i class="bi bi-folder-fill" [style.color]="folder.color || '#3b82f6'"></i>
+            <i class="bi bi-folder-fill" [style.color]="folder.color || '#31b270'"></i>
             <span class="folder-label">{{ folder.name }}</span>
             <span class="folder-count">{{ videoCountInFolder(folder.id) }}</span>
             <div class="folder-item-actions" *ngIf="!folder.isTeamFolder">
@@ -364,12 +364,12 @@
       <p class="move-modal-sub">Vídeo: <strong>{{ movingVideo?.title }}</strong></p>
       <ul class="move-folder-list">
         <li (click)="moveVideoToFolder(movingVideo, null)" [class.selected]="!movingVideo?.folderId">
-          <i class="bi bi-folder2-open" style="color:#9ca3af"></i> Sin carpeta
+          <i class="bi bi-folder2-open folder-icon-muted"></i> Sin carpeta
         </li>
         <li *ngFor="let folder of folders"
           (click)="moveVideoToFolder(movingVideo, folder.id)"
           [class.selected]="movingVideo?.folderId === folder.id">
-          <i class="bi bi-folder-fill" [style.color]="folder.color || '#3b82f6'"></i>
+          <i class="bi bi-folder-fill" [style.color]="folder.color || '#31b270'"></i>
           {{ folder.name }}
         </li>
       </ul>
@@ -415,7 +415,7 @@
         </div>
         <p class="analyze-progress-pct">{{ analyzeDownloadProgress }}%</p>
         <p class="analyze-modal-note" *ngIf="analyzeDownloadProgress === 100">
-          <i class="bi bi-check-circle-fill" style="color:#10b981"></i>
+          <i class="bi bi-check-circle-fill text-success-sphaira"></i>
           Procesando vídeo… redirigiendo al análisis.
         </p>
         <p class="folder-error" *ngIf="analyzeDownloadError">{{ analyzeDownloadError }}</p>

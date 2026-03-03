@@ -6,7 +6,7 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, BehaviorSubject } from 'rxjs';
+import { Observable, of, BehaviorSubject, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import {
@@ -64,9 +64,9 @@ export class InjuryService {
     return this.http.get<any>(this.baseUrl + `club/${clubId}`).pipe(
       map(response => {
         const injuries = response?.data || [];
-        return injuries.map((i: any) => this.mapToInjury(i));
+        return Array.isArray(injuries) ? injuries.map((i: any) => this.mapToInjury(i)) : [];
       }),
-      catchError(() => of([]))
+      catchError(err => throwError(() => err))
     );
   }
 

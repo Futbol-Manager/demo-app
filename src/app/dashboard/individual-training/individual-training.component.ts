@@ -109,7 +109,7 @@ export class IndividualTrainingComponent implements OnInit, OnDestroy {
   };
 
   daysOfWeek     = ['LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO', 'DOMINGO'];
-  dayLabels: Record<string, string> = {
+  dayLabels: Record<string, string | undefined> = {
     LUNES:'Lunes', MARTES:'Martes', MIERCOLES:'Miércoles', JUEVES:'Jueves',
     VIERNES:'Viernes', SABADO:'Sábado', DOMINGO:'Domingo',
   };
@@ -162,8 +162,8 @@ export class IndividualTrainingComponent implements OnInit, OnDestroy {
   // Player log form – templates cargados para el día actual
   activePreTemplate:  FormTemplate | null = null;
   activePostTemplate: FormTemplate | null = null;
-  preFormAnswers:  Record<string, string> = {};
-  postFormAnswers: Record<string, string> = {};
+  preFormAnswers:  Record<string, string | undefined> = {};
+  postFormAnswers: Record<string, string | undefined> = {};
   loadingTemplatesForLog = false;
 
   // Coach compliance – respuestas de jugadores
@@ -1063,7 +1063,7 @@ export class IndividualTrainingComponent implements OnInit, OnDestroy {
 
   private saveFormResponses(logId: number): void {
     const teamId = this.resolvedTeamId || parseInt(sessionStorage.getItem('it_lastTeamId') ?? '0', 10);
-    const saveIfNeeded = (template: FormTemplate | null, answers: Record<string, string>, tipo: 'pre-training' | 'post-training') => {
+    const saveIfNeeded = (template: FormTemplate | null, answers: Record<string, string | undefined>, tipo: 'pre-training' | 'post-training') => {
       if (!template) return;
       // Guardar siempre que el template tenga campos, aunque no se hayan modificado
       if (!(template.campos?.length)) return;

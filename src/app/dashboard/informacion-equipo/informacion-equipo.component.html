@@ -1,3 +1,4 @@
+<app-publicidad></app-publicidad>
 <div class="page-header">
   <button type="button" class="btn-back-clean" (click)="goBack()">
     <i class="bi bi-arrow-left"></i>
@@ -14,17 +15,17 @@
   <div class="page-header-spacer"></div>
 </div>
 
-<app-publicidad></app-publicidad>
 
 <div class="info-equipo-page" [class.loaded]="datosCargados">
-  <div class="info-equipo-card card-pro" *ngIf="datosCargados">
+  <div class="info-equipo-layout" *ngIf="datosCargados">
+    <!-- Columna principal: card con logo + formulario -->
+    <div class="info-equipo-card card-pro">
+      <div class="card-layout">
 
-    <div class="card-layout">
-
-      <!-- ═══════════════════════════════════════
-           SIDEBAR — Logo del equipo
-      ═══════════════════════════════════════ -->
-      <aside class="card-sidebar">
+        <!-- ═══════════════════════════════════════
+             SIDEBAR — Logo del equipo
+        ═══════════════════════════════════════ -->
+        <aside class="card-sidebar">
         <div class="sidebar-inner">
 
           <p class="sidebar-label">{{ 'INFO_EQUIPO.LOGO' | translate }}</p>
@@ -177,56 +178,57 @@
 
         </form>
       </div>
-
+    </div>
     </div>
 
     <!-- ═══════════════════════════════════════
-         STAFF DEL EQUIPO
+         COLUMNA LATERAL — Staff del equipo
     ═══════════════════════════════════════ -->
-    <div class="coaches-section">
-      <div class="coaches-header">
-        <div class="coaches-header-left">
-          <i class="bi bi-people-fill coaches-icon"></i>
-          <h2 class="section-title">Staff del equipo</h2>
+    <aside class="info-equipo-staff">
+      <div class="staff-card">
+        <div class="staff-header">
+          <i class="bi bi-people-fill staff-icon"></i>
+          <h3 class="staff-title">Staff del equipo</h3>
+          <ng-container *ngIf="coaches.length < 4 && (team.userId == usuarioActual?.userId || usuarioActual?.profileType?.profileId == 1)">
+            <button type="button" class="btn-invite" (click)="abrirModalInvitarEntenador()">
+              <i class="bi bi-person-plus-fill"></i>
+              {{ 'INFO_EQUIPO.INVITAR' | translate }}
+            </button>
+          </ng-container>
         </div>
-        <ng-container *ngIf="coaches.length < 4 && (team.userId == usuarioActual?.userId || usuarioActual?.profileType?.profileId == 1)">
-          <button type="button" class="btn-invite" (click)="abrirModalInvitarEntenador()">
-            <i class="bi bi-person-plus-fill"></i>
-            {{ 'INFO_EQUIPO.INVITAR' | translate }}
-          </button>
-        </ng-container>
-      </div>
-
-      <div class="coaches-grid">
-        <div class="coach-card" *ngFor="let coach of coaches">
-          <div class="coach-card-inner" *ngIf="coach.profile == 2 || coach.profile == 6 || coach.profile == 7">
-            <div class="coach-avatar">
-              <img *ngIf="coach.picture"
-                   src="https://appsphairatech.com/images/user/{{ coach.picture }}"
-                   alt="" />
-              <i *ngIf="!coach.picture" class="bi bi-person"></i>
-            </div>
-            <h5 class="coach-name">{{ coach.name }} {{ coach.surname }}</h5>
-            <span class="coach-role-badge" [ngClass]="{
-              'badge-coach':  coach.profile == 2,
-              'badge-physio': coach.profile == 6,
-              'badge-nutri':  coach.profile == 7
-            }">
-              {{ coach.profileName || (coach.profile == 2 ? 'Entrenador' : coach.profile == 6 ? 'Fisioterapeuta' : 'Nutricionista') }}
-            </span>
-            <div class="coach-actions"
-                 *ngIf="(team.userId == usuarioActual?.userId && team.userId != coach.userId) || usuarioActual?.profileType?.profileId == 1">
-              <button type="button" class="btn-coach-delete" title="Eliminar"
-                      (click)="deleteCoach(coach.userId)">
-                <i class="bi bi-trash3"></i>
-              </button>
+        <div class="staff-list" *ngIf="hasStaffCoaches">
+          <div class="coach-card" *ngFor="let coach of coaches">
+            <div class="coach-card-inner" *ngIf="coach.profile == 2 || coach.profile == 6 || coach.profile == 7">
+              <div class="coach-avatar">
+                <img *ngIf="coach.picture"
+                     src="https://appsphairatech.com/images/user/{{ coach.picture }}"
+                     alt="" />
+                <i *ngIf="!coach.picture" class="bi bi-person"></i>
+              </div>
+              <h5 class="coach-name">{{ coach.name }} {{ coach.surname }}</h5>
+              <span class="coach-role-badge" [ngClass]="{
+                'badge-coach':  coach.profile == 2,
+                'badge-physio': coach.profile == 6,
+                'badge-nutri':  coach.profile == 7
+              }">
+                {{ coach.profileName || (coach.profile == 2 ? 'Entrenador' : coach.profile == 6 ? 'Fisioterapeuta' : 'Nutricionista') }}
+              </span>
+              <div class="coach-actions"
+                   *ngIf="(team.userId == usuarioActual?.userId && team.userId != coach.userId) || usuarioActual?.profileType?.profileId == 1">
+                <button type="button" class="btn-coach-delete" title="Eliminar"
+                        (click)="deleteCoach(coach.userId)">
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
+        <p class="staff-empty" *ngIf="!hasStaffCoaches">
+          <i class="bi bi-people"></i>
+          Aún no hay staff asignado.
+        </p>
       </div>
-
-    </div>
-
+    </aside>
   </div>
 </div>
 

@@ -918,6 +918,20 @@ export class ClubService {
     }
   }
 
+  /** Lista de correos/notificaciones por club (cuando el usuario entra como club). */
+  getListCorreosByClub(clubId: number): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      });
+      const url: string =
+        environment.apiUrl + `club/getlistcorreosbyclub/${clubId}`;
+      return this.http.get<Response>(url, { headers });
+    }
+    return EMPTY;
+  }
+
   // Método para crear o actualizar un equipo
   createCorreo(correoEnviado: CorreoEnviado): Observable<Response> {
     // Obtén el token almacenado en localStorage
