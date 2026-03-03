@@ -1,16 +1,24 @@
-<div class="back-container">
-  <button type="button" class="btn-back-clean" (click)="irAPantalla(1)">
-    <i class="bi bi-arrow-left"></i>
-    <span>{{ 'COMMON.BACK' | translate }}</span>
-  </button>
-</div>
+<app-publicidad></app-publicidad>
+
+<!-- Encabezado premium (mismo estilo y altura que info-jugadores) -->
+<header class="page-header">
+  <div class="back-container">
+    <button type="button" class="btn-back-clean" (click)="irAPantalla(1)">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h2 class="table-title">
+      <i class="bi bi-list-check table-title-icon"></i>
+      {{ 'TAREAS.TITLE' | translate }}
+    </h2>
+    <p class="header-subtitle">{{ 'TAREAS.SUBTITLE' | translate }}</p>
+  </div>
+</header>
 
 <div class="tareas-page">
-  <header class="tareas-header">
-    <h1 class="tareas-title">{{ 'TAREAS.TITLE' | translate }}</h1>
-    <p class="tareas-subtitle">{{ 'TAREAS.SUBTITLE' | translate }}</p>
-  </header>
-
   <div class="tareas-grid">
     <div class="fifa-card" (click)="openTacticalBoard()">
       <div class="fifa-card-inner">

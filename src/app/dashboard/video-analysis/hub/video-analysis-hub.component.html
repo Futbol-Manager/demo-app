@@ -1,4 +1,4 @@
-﻿<!-- ===== PAGE HEADER ===== -->
+<!-- ===== PAGE HEADER ===== -->
 <div class="page-header">
   <div class="back-container">
     <button class="btn-back-clean" (click)="goBack()">
@@ -31,15 +31,15 @@
       <div class="kpi-label">Total</div>
     </div>
     <div class="kpi-card" (click)="setFilter('IN_PROGRESS')" [class.active]="activeFilter === 'IN_PROGRESS'">
-      <div class="kpi-value" style="color: #0d6efd">{{ getStatusCount('IN_PROGRESS') }}</div>
+      <div class="kpi-value kpi-value--progress">{{ getStatusCount('IN_PROGRESS') }}</div>
       <div class="kpi-label">En progreso</div>
     </div>
     <div class="kpi-card" (click)="setFilter('COMPLETED')" [class.active]="activeFilter === 'COMPLETED'">
-      <div class="kpi-value" style="color: #198754">{{ getStatusCount('COMPLETED') }}</div>
+      <div class="kpi-value kpi-value--completed">{{ getStatusCount('COMPLETED') }}</div>
       <div class="kpi-label">Completados</div>
     </div>
     <div class="kpi-card" (click)="setFilter('DRAFT')" [class.active]="activeFilter === 'DRAFT'">
-      <div class="kpi-value" style="color: #6c757d">{{ getStatusCount('DRAFT') }}</div>
+      <div class="kpi-value kpi-value--draft">{{ getStatusCount('DRAFT') }}</div>
       <div class="kpi-label">Borradores</div>
     </div>
   </div>
@@ -81,7 +81,7 @@
   <!-- Quick Actions -->
   <div class="quick-actions" *ngIf="!isLoading">
     <a class="quick-action" routerLink="/dashboard/video-analysis/templates">
-      <div class="qa-icon" style="background: linear-gradient(135deg, #3498db, #2980b9)">
+      <div class="qa-icon qa-icon--navy">
         <i class="bi bi-grid-3x3-gap"></i>
       </div>
       <div class="qa-info">
@@ -90,7 +90,7 @@
       </div>
     </a>
     <a class="quick-action" routerLink="/dashboard/video-analysis/playlists">
-      <div class="qa-icon" style="background: linear-gradient(135deg, #e67e22, #d35400)">
+      <div class="qa-icon qa-icon--green">
         <i class="bi bi-collection-play"></i>
       </div>
       <div class="qa-info">
@@ -99,7 +99,7 @@
       </div>
     </a>
     <a class="quick-action" routerLink="/dashboard/club-videos/{{ clubId }}">
-      <div class="qa-icon" style="background: linear-gradient(135deg, #9b59b6, #8e44ad)">
+      <div class="qa-icon qa-icon--teal">
         <i class="bi bi-film"></i>
       </div>
       <div class="qa-info">

@@ -74,16 +74,16 @@
 
     <!-- Vista Tabla -->
     <section *ngIf="datosCargados" class="stats-section">
-      <div class="card-pro table-card">
-        <div class="card-pro-header">
-          <h2 class="card-pro-title">{{ 'ESTADIS_JUGADORES.TABLA_JUGADORES' | translate }}</h2>
+      <div class="card-sphaira table-card">
+        <div class="card-sphaira-header">
+          <h2 class="card-sphaira-title">{{ 'ESTADIS_JUGADORES.TABLA_JUGADORES' | translate }}</h2>
           <div class="datatable-controls">
             <div id="dt-length"></div>
             <div id="dt-search"></div>
           </div>
         </div>
-        <div class="table-wrapper">
-          <table id="dataTable" class="table-pro text-center">
+        <div class="table-wrapper table-wrapper--modern">
+          <table id="dataTable" class="table-sphaira text-center">
             <thead>
               <tr>
                 <th>ID</th>
@@ -136,12 +136,12 @@
 
     <!-- Vista Gráficas -->
     <section *ngIf="graficasPlayers" class="stats-section">
-      <div class="card-pro chart-card">
-        <div class="card-pro-header">
-          <h2 class="card-pro-title">{{ 'ESTADIS_JUGADORES.GRAFICA_JUGADORES' | translate }}</h2>
+      <div class="card-sphaira chart-card">
+        <div class="card-sphaira-header">
+          <h2 class="card-sphaira-title">{{ 'ESTADIS_JUGADORES.GRAFICA_JUGADORES' | translate }}</h2>
           <div class="filter-group chart-type-select">
             <label for="selectGrafica" class="filter-label">{{ 'ESTADIS_JUGADORES.SELECCIONA_GRAFICA' | translate }}</label>
-            <select class="form-select form-select-pro" id="selectGrafica" (change)="changeGrafic($event)">
+            <select class="form-select form-select-sphaira" id="selectGrafica" (change)="changeGrafic($event)">
               <option value="1">{{ 'ESTADIS_JUGADORES.MINUTOS_TOTALES' | translate }}</option>
               <option value="2">{{ 'ESTADIS_JUGADORES.GOLES_TOTALES' | translate }}</option>
               <option value="3">{{ 'ESTADIS_JUGADORES.ASISTENCIAS_TOTALES' | translate }}</option>
@@ -153,17 +153,17 @@
             </select>
           </div>
         </div>
-        <div class="chart-container">
+        <div class="chart-container chart-container--sphaira">
           <canvas #barChartCanvas id="barChartUnica"></canvas>
         </div>
       </div>
 
-      <div class="card-pro goals-card">
-        <div class="card-pro-header">
-          <h2 class="card-pro-title">{{ 'ESTADIS_JUGADORES.GOLES_JUGADORES' | translate }}</h2>
+      <div class="card-sphaira goals-card">
+        <div class="card-sphaira-header">
+          <h2 class="card-sphaira-title">{{ 'ESTADIS_JUGADORES.GOLES_JUGADORES' | translate }}</h2>
           <div class="filter-group">
             <label for="selectJugadorGoles" class="filter-label">{{ 'ESTADIS_JUGADORES.SELECCIONA_JUGADOR' | translate }}</label>
-            <select class="form-select form-select-pro" id="selectJugadorGoles" (change)="seleccionarIndices($event)">
+            <select class="form-select form-select-sphaira" id="selectJugadorGoles" (change)="seleccionarIndices($event)">
               <option value="0">{{ 'ESTADIS_JUGADORES.VER_TODOS' | translate }}</option>
               <option *ngFor="let player of players" [value]="player.playerId">{{ player.nombre }}</option>
             </select>
@@ -173,8 +173,8 @@
             <div id="dt-search"></div>
           </div>
         </div>
-        <div class="table-wrapper">
-          <table id="dataTableGoles" class="table-pro text-center">
+        <div class="table-wrapper table-wrapper--modern">
+          <table id="dataTableGoles" class="table-sphaira text-center">
             <thead>
               <tr>
                 <th>#</th>

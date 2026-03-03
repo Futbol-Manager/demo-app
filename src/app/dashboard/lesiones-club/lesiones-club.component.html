@@ -1,19 +1,24 @@
-<!-- ═══════ BACK BUTTON ═══════ -->
-<div class="back-container">
-  <div class="btn-back-clean" (click)="goBack()">
-    <i class="bi bi-arrow-left"></i>
-    <span>{{ 'COMMON.BACK' | translate }}</span>
+<!-- ═══════ PAGE HEADER (premium) ═══════ -->
+<header class="lc-page-header">
+  <div class="lc-header-back">
+    <button type="button" class="lc-btn-back" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
   </div>
-</div>
+  <div class="lc-header-center">
+    <h1 class="lc-header-title"><i class="bi bi-heart-pulse"></i>{{ 'INJURIES_CLUB.TITLE' | translate }}</h1>
+    <p class="lc-header-subtitle">{{ 'INJURIES_CLUB.SUBTITLE' | translate }}</p>
+  </div>
+  <div class="lc-header-spacer"></div>
+</header>
 
-<!-- ═══════ HEADER ═══════ -->
-<div class="lesiones-club-header">
-  <div class="header-content">
-    <div class="header-left">
-      <h2 class="page-title"><i class="bi bi-heart-pulse me-2"></i>{{ 'INJURIES_CLUB.TITLE' | translate }}</h2>
-      <p class="page-subtitle">{{ 'INJURIES_CLUB.SUBTITLE' | translate }}</p>
-    </div>
-  </div>
+<!-- Error al cargar -->
+<div class="lesiones-club-error-banner" *ngIf="loadError" role="alert">
+  <i class="bi bi-exclamation-triangle-fill me-2"></i>
+  <span>{{ loadError }}</span>
+  <button type="button" class="btn-retry" (click)="retryLoad()">{{ 'COMMON.RETRY' | translate }}</button>
+  <button type="button" class="btn-close-banner" (click)="loadError = null" aria-label="Cerrar"><i class="bi bi-x-lg"></i></button>
 </div>
 
 <!-- ═══════ KPI CARDS ═══════ -->
@@ -109,7 +114,7 @@
 
     <!-- Results count -->
     <div class="results-count">
-      <span>{{ filteredInjuries.length }} {{ filteredInjuries.length !== 1 ? ('INJURIES_CLUB.KPI.TOTAL' | translate).toLowerCase() : 'lesión' }}</span>
+      <span>{{ filteredInjuries.length }} {{ (filteredInjuries.length === 1 ? 'INJURIES_CLUB.ONE_INJURY' : 'INJURIES_CLUB.MANY_INJURIES') | translate }}</span>
     </div>
 
     <!-- Injuries table -->
@@ -144,9 +149,9 @@
             <td>{{ inj.dateInjury }}</td>
             <td class="td-days">{{ getDaysSinceInjury(inj.dateInjury) }}d</td>
             <td>
-              <span class="status-badge" [style.color]="getStatusColor(inj.status)">
-                <i class="bi me-1" [ngClass]="getStatusIcon(inj.status)"></i>
-                {{ getStatusLabel(inj.status) }}
+              <span class="status-badge" [style.color]="getStatusDef(inj.status).color">
+                <i class="bi me-1" [ngClass]="getStatusDef(inj.status).icon"></i>
+                {{ getStatusDef(inj.status).label }}
               </span>
             </td>
           </tr>
@@ -154,10 +159,13 @@
       </table>
 
       <!-- Empty state -->
-      <div class="empty-table" *ngIf="filteredInjuries.length === 0">
-        <i class="bi bi-shield-check display-4 opacity-50"></i>
-        <p>{{ 'INJURIES_CLUB.EMPTY.MESSAGE' | translate }}</p>
-        <button class="btn btn-outline-primary btn-sm" (click)="clearFilters()">{{ 'COMMON.CLEAR' | translate }}</button>
+      <div class="lc-empty" *ngIf="filteredInjuries.length === 0">
+        <div class="lc-empty-inner">
+          <i class="bi bi-shield-check"></i>
+          <h3>{{ 'INJURIES_CLUB.EMPTY.TITLE' | translate }}</h3>
+          <p>{{ 'INJURIES_CLUB.EMPTY.MESSAGE' | translate }}</p>
+          <button type="button" class="lc-btn-clear" (click)="clearFilters()"><i class="bi bi-x-circle me-1"></i>{{ 'COMMON.CLEAR' | translate }}</button>
+        </div>
       </div>
     </div>
   </div>

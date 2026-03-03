@@ -1,38 +1,39 @@
-<!-- Back -->
-<div class="back-container">
-  <button class="btn-back-clean" (click)="goBack()">
-    <i class="bi bi-arrow-left"></i>
-    {{ 'DEBRIEF.BACK' | translate }}
-  </button>
-</div>
+<app-publicidad></app-publicidad>
 
-<div class="history-container">
-
-  <!-- Header -->
-  <div class="history-header">
-    <div class="history-icon">
-      <i class="bi bi-clock-history"></i>
+<div class="history-page">
+  <!-- Encabezado premium a ancho completo -->
+  <header class="page-header">
+    <div class="back-container">
+      <button type="button" class="btn-back-clean" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+        <span>{{ 'DEBRIEF.BACK' | translate }}</span>
+      </button>
     </div>
-    <div class="history-info">
-      <h4>{{ 'DEBRIEF.HISTORY.TITLE' | translate }}</h4>
-      <span class="history-count">{{ historyItems.length }} {{ 'DEBRIEF.HISTORY.DEBRIEFS' | translate }}</span>
-    </div>
-  </div>
 
-  <!-- Filters -->
-  <div class="filter-bar">
-    <button class="filter-btn" [ngClass]="{ 'active': activeFilter === 'all' }" (click)="setFilter('all')">
-      {{ 'DEBRIEF.HISTORY.ALL' | translate }} ({{ historyItems.length }})
-    </button>
-    <button class="filter-btn" [ngClass]="{ 'active': activeFilter === 'training' }" (click)="setFilter('training')">
-      <i class="bi bi-clipboard-check"></i>
-      {{ 'DEBRIEF.HISTORY.TRAININGS' | translate }} ({{ trainingCount }})
-    </button>
-    <button class="filter-btn" [ngClass]="{ 'active': activeFilter === 'match' }" (click)="setFilter('match')">
-      <i class="bi bi-trophy"></i>
-      {{ 'DEBRIEF.HISTORY.MATCHES' | translate }} ({{ matchCount }})
-    </button>
-  </div>
+    <div class="header-center">
+      <h2 class="table-title">
+        <i class="bi bi-clock-history table-title-icon"></i>
+        {{ 'DEBRIEF.HISTORY.TITLE' | translate }}
+      </h2>
+      <p class="header-subtitle">{{ 'DEBRIEF.HISTORY.SUBTITLE' | translate }}</p>
+    </div>
+  </header>
+
+  <main class="history-main">
+    <!-- Filters -->
+    <div class="filter-bar">
+      <button class="filter-btn" [ngClass]="{ 'active': activeFilter === 'all' }" (click)="setFilter('all')">
+        {{ 'DEBRIEF.HISTORY.ALL' | translate }} ({{ historyItems.length }})
+      </button>
+      <button class="filter-btn" [ngClass]="{ 'active': activeFilter === 'training' }" (click)="setFilter('training')">
+        <i class="bi bi-clipboard-check"></i>
+        {{ 'DEBRIEF.HISTORY.TRAININGS' | translate }} ({{ trainingCount }})
+      </button>
+      <button class="filter-btn" [ngClass]="{ 'active': activeFilter === 'match' }" (click)="setFilter('match')">
+        <i class="bi bi-trophy"></i>
+        {{ 'DEBRIEF.HISTORY.MATCHES' | translate }} ({{ matchCount }})
+      </button>
+    </div>
 
   <!-- Loading -->
   <div class="loading-state" *ngIf="isLoading">
@@ -74,4 +75,5 @@
     </div>
   </div>
 
+  </main>
 </div>

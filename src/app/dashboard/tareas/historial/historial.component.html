@@ -1,21 +1,24 @@
-<!-- Botón atrás -->
-<div class="back-container">
-  <button type="button" class="btn-back-clean" (click)="goBack()">
-    <i class="bi bi-arrow-left"></i>
-    <span>{{ 'COMMON.BACK' | translate }}</span>
-  </button>
-</div>
+<app-publicidad></app-publicidad>
+
+<!-- Encabezado premium (mismo estilo y altura que info-jugadores) -->
+<header class="page-header">
+  <div class="back-container">
+    <button type="button" class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h2 class="table-title">
+      <i class="bi bi-clock-history table-title-icon"></i>
+      {{ 'TAREAS_HIST.TITLE' | translate }}
+    </h2>
+    <p class="header-subtitle">{{ 'TAREAS_HIST.SUBTITLE' | translate }}</p>
+  </div>
+</header>
 
 <div class="historial-page">
-
-  <!-- HEADER -->
-  <header class="page-header">
-    <h1 class="page-title">
-      <i class="bi bi-clock-history header-icon"></i>
-      {{ 'TAREAS_HIST.TITLE' | translate }}
-    </h1>
-    <p class="page-subtitle">{{ 'TAREAS_HIST.SUBTITLE' | translate }}</p>
-  </header>
 
   <!-- LISTA VACÍA -->
   <div class="empty-state" *ngIf="historial.length === 0">

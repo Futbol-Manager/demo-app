@@ -18,9 +18,9 @@
 </div>
 
 <ng-container *ngIf="datosCargados || graficasEquipo">
-  <div class="stats-page">
-    <header class="stats-header">
-      <div class="stats-filters card-pro">
+  <div class="stats-page report-container">
+    <header class="stats-header report-header">
+      <div class="stats-filters card-pro report-filters">
         <div class="stats-filters-row">
           <div class="filter-group">
             <label for="tipoPartidoSelected" class="filter-label">{{ 'ESTADIS_EQUIPO.TIPO_PARTIDO' | translate }}</label>
@@ -45,14 +45,15 @@
       </div>
     </header>
 
-    <!-- Vista Tabla -->
-    <section *ngIf="datosCargados" class="stats-section">
-      <div class="card-pro table-card">
-        <div class="card-pro-header">
-          <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.TITLE' | translate }}</h2>
-        </div>
-        <div class="table-wrapper">
-          <table class="table-pro text-center">
+    <!-- Vista Tabla: dos columnas en desktop -->
+    <section *ngIf="datosCargados" class="stats-section report-section table-section">
+      <div class="report-grid report-grid--tables">
+        <div class="card-pro table-card report-card">
+          <div class="card-pro-header report-card-header">
+            <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.TITLE' | translate }}</h2>
+          </div>
+          <div class="table-wrapper table-wrapper--premium">
+          <table class="table-pro table-pro--premium text-center">
             <thead>
               <tr>
                 <th>{{ 'ESTADIS_EQUIPO.TABLE.TEAM' | translate }}</th>
@@ -84,19 +85,19 @@
               </tr>
             </tbody>
           </table>
-        </div>
-      </div>
-
-      <div class="card-pro table-card">
-        <div class="card-pro-header">
-          <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.PARTIDOS' | translate }}</h2>
-          <div class="datatable-controls">
-            <div id="dt-length"></div>
-            <div id="dt-search"></div>
           </div>
         </div>
-        <div class="table-wrapper">
-          <table id="dataTable" class="table-pro text-center">
+
+        <div class="card-pro table-card report-card report-card--partidos">
+          <div class="card-pro-header report-card-header">
+            <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.PARTIDOS' | translate }}</h2>
+            <div class="datatable-controls">
+              <div id="dt-length"></div>
+              <div id="dt-search"></div>
+            </div>
+          </div>
+          <div class="table-wrapper table-wrapper--premium">
+          <table id="dataTable" class="table-pro table-pro--premium text-center">
             <thead>
               <tr>
                 <th>{{ 'ESTADIS_EQUIPO.MODAL.DATE' | translate }}</th>
@@ -148,88 +149,110 @@
               </tr>
             </tbody>
           </table>
+          </div>
+          <div id="button_datatable"></div>
         </div>
-        <div id="button_datatable"></div>
       </div>
     </section>
 
-    <!-- Vista Gráficas -->
-    <section *ngIf="graficasEquipo" class="stats-section">
-      <div class="card-pro chart-card">
-        <div class="card-pro-header">
-          <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.GRAFICA_RESULTADOS' | translate }}</h2>
-        </div>
-        <div class="chart-row">
-          <div class="chart-box">
-            <canvas id="pieChart"></canvas>
-            <div id="chartLabels" class="chart-labels"></div>
+    <!-- Vista Gráficas: dos gráficas por fila (dos columnas) -->
+    <section *ngIf="graficasEquipo" class="stats-section report-section report-charts">
+      <div class="report-grid report-grid--two-cols">
+        <!-- Col 1: Resultados (pie) -->
+        <div class="card-pro chart-card report-card report-card--half">
+          <div class="card-pro-header report-card-header">
+            <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.GRAFICA_RESULTADOS' | translate }}</h2>
           </div>
-          <div class="chart-box chart-box-line">
+          <div class="chart-container chart-container--compact">
+            <div class="chart-box chart-box--pie">
+              <canvas id="pieChart"></canvas>
+              <div id="chartLabels" class="chart-labels"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Col 2: Puntos por partido (línea) -->
+        <div class="card-pro chart-card report-card report-card--half">
+          <div class="card-pro-header report-card-header">
+            <h2 class="card-pro-title">Puntos por partido</h2>
+          </div>
+          <div class="chart-container chart-container--compact">
             <canvas id="myChart"></canvas>
           </div>
         </div>
-      </div>
 
-      <div class="card-pro chart-card">
-        <div class="card-pro-header">
-          <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.GRAFICA_ESTADISTICAS' | translate }}</h2>
-          <div class="filter-group chart-type-select">
-            <label for="selectGrafica" class="filter-label">{{ 'ESTADIS_EQUIPO.SELECCIONA_GRAFICA' | translate }}</label>
-            <select class="form-select form-select-pro" id="selectGrafica" (change)="changeGrafic($event)">
-              <option value="1">Goles a favor</option>
-              <option value="2">Goles en contra</option>
-              <option value="3">Disparos a favor</option>
-              <option value="4">Disparos en contra</option>
-              <option value="5">Faltas a favor</option>
-              <option value="6">Faltas en contra</option>
-              <option value="7">Corners a favor</option>
-              <option value="8">Corners en contra</option>
-              <option value="9">Llegadas con peligro a favor</option>
-              <option value="10">Llegadas con peligro en contra</option>
-              <option value="11">Penaltis a favor</option>
-              <option value="12">Penaltis en contra</option>
-              <option value="13">Tarjetas amarillas</option>
-              <option value="14">Tarjetas rojas</option>
-            </select>
+        <!-- Col 3: Estadísticas por partido -->
+        <div class="card-pro chart-card report-card report-card--half">
+          <div class="card-pro-header report-card-header">
+            <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.GRAFICA_ESTADISTICAS' | translate }}</h2>
+            <div class="filter-group chart-type-select">
+              <label for="selectGrafica" class="filter-label">{{ 'ESTADIS_EQUIPO.SELECCIONA_GRAFICA' | translate }}</label>
+              <select class="form-select form-select-pro" id="selectGrafica" (change)="changeGrafic($event)">
+                <option value="1">Goles a favor</option>
+                <option value="2">Goles en contra</option>
+                <option value="3">Disparos a favor</option>
+                <option value="4">Disparos en contra</option>
+                <option value="5">Faltas a favor</option>
+                <option value="6">Faltas en contra</option>
+                <option value="7">Corners a favor</option>
+                <option value="8">Corners en contra</option>
+                <option value="9">Llegadas con peligro a favor</option>
+                <option value="10">Llegadas con peligro en contra</option>
+                <option value="11">Penaltis a favor</option>
+                <option value="12">Penaltis en contra</option>
+                <option value="13">Tarjetas amarillas</option>
+                <option value="14">Tarjetas rojas</option>
+              </select>
+            </div>
+          </div>
+          <div class="chart-container chart-container--compact chart-container--tall">
+            <canvas id="barChartSegunda"></canvas>
           </div>
         </div>
-        <div class="chart-container">
-          <canvas id="barChartSegunda"></canvas>
-        </div>
-      </div>
 
-      <div class="card-pro chart-card">
-        <div class="card-pro-header">
-          <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.GRAFICA_GOLES_CATEGORIA' | translate }}</h2>
-        </div>
-        <div class="chart-row two-cols">
-          <div class="chart-container">
-            <canvas id="barChartCategoria00"></canvas>
+        <!-- Col 4: Goles por categoría (una tarjeta con dos gráficas internas) -->
+        <div class="card-pro chart-card report-card report-card--half">
+          <div class="card-pro-header report-card-header">
+            <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.GRAFICA_GOLES_CATEGORIA' | translate }}</h2>
           </div>
-          <div class="chart-container">
-            <canvas id="barChartCategoria01"></canvas>
+          <div class="chart-row chart-row--two-cols chart-row--compact">
+            <div class="chart-container chart-container--bar chart-container--compact">
+              <canvas id="barChartCategoria00"></canvas>
+            </div>
+            <div class="chart-container chart-container--bar chart-container--compact">
+              <canvas id="barChartCategoria01"></canvas>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="card-pro chart-card">
-        <div class="card-pro-header">
-          <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.GRAFICA_GOLES_SUBCATEGORIA' | translate }}</h2>
-          <div class="filter-group">
-            <label for="categoryGolTypes" class="filter-label">{{ 'ESTADIS_EQUIPO.CATEGORIA' | translate }}</label>
-            <select class="form-select form-select-pro" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
-              name="categoryGolTypes" (change)="onSelectGolTypes($event)">
-              <option value="">Seleccionar categoría</option>
-              <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}</option>
-            </select>
+        <!-- Bloque ancho: Goles por subcategoría (dos columnas de contenido) -->
+        <div class="card-pro chart-card report-card report-card--span-2 report-card--subcategoria">
+          <div class="card-pro-header report-card-header report-card-header--flex">
+            <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.GRAFICA_GOLES_SUBCATEGORIA' | translate }}</h2>
+            <div class="filter-group filter-group--inline">
+              <label for="categoryGolTypes" class="filter-label">{{ 'ESTADIS_EQUIPO.CATEGORIA' | translate }}</label>
+              <select class="form-select form-select-pro" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                <option value="">Seleccionar categoría</option>
+                <option *ngFor="let category of golTypesConSubcategorias" [value]="category.name">{{ category.name }}</option>
+              </select>
+            </div>
           </div>
-        </div>
-        <div class="chart-row two-cols">
-          <div class="chart-container">
-            <canvas id="barChartCategoria"></canvas>
-          </div>
-          <div class="chart-container">
-            <canvas id="barChartCategoria2"></canvas>
+          <div class="subcategoria-content">
+            <ng-container *ngIf="selectedGolTypes && hasSubcategorias(selectedGolTypes)">
+              <div class="chart-row chart-row--two-cols chart-row--subcategoria">
+                <div class="chart-container chart-container--stacked">
+                  <canvas id="barChartCategoria"></canvas>
+                </div>
+                <div class="chart-container chart-container--stacked">
+                  <canvas id="barChartCategoria2"></canvas>
+                </div>
+              </div>
+            </ng-container>
+            <div *ngIf="!selectedGolTypes || !hasSubcategorias(selectedGolTypes)" class="report-empty-state">
+              <i class="bi bi-pie-chart report-empty-icon"></i>
+              <p class="report-empty-text">{{ getSubcategoriaEmptyMessage() }}</p>
+            </div>
           </div>
         </div>
       </div>

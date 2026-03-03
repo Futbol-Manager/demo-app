@@ -749,7 +749,8 @@
     "TEXT_398": "Pre-avis envoye aux parents. Sous Non convoques vous ne verrez que les joueurs qui ont confirme leur presence.",
     "TEXT_399": "Modification enregistree.",
     "TEXT_400": "Notification envoyee.",
-    "TEXT_401": "Details du match"
+    "TEXT_401": "Details du match",
+    "PROXIMAMENTE": "Bientôt"
   },
   "REGISTER": {
     "TITLE": "Inscription de l’utilisateur",
@@ -1733,7 +1734,8 @@
     "MESSAGE": "Message",
     "MESSAGES": "Messages",
     "CLOSE": "Fermer",
-    "SELECT_MESSAGE": "Sélectionnez un message pour le lire.",
+    "SELECT_MESSAGE": "Choisissez un message dans la liste pour en afficher le contenu.",
+    "SELECT_MESSAGE_TITLE": "Sélectionnez un message",
     "DELETE": "Supprimer",
     "SEND": "Envoyer",
     "CANCEL": "Annuler",

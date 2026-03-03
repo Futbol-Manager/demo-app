@@ -106,6 +106,18 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
   quickSuggestions: SuggestionChip[] = [];
   showSuggestions = true;
 
+  // FAB button position (draggable, persisted)
+  fabBottom = 90;
+  fabRight = 24;
+  private readonly FAB_POSITION_KEY = 'sphaira_fab_btn_position';
+  private readonly FAB_SIZE = 60;
+  private fabDragging = false;
+  private fabDidDrag = false;
+  private fabPointerStartX = 0;
+  private fabPointerStartY = 0;
+  private fabStartBottom = 0;
+  private fabStartRight = 0;
+
   // Page context (estadísticas de equipos/jugadores disponibles para la IA)
   activePageContext: PageContext | null = null;
   backgroundStats: BackgroundStatsContext | null = null;
@@ -289,6 +301,8 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
   ) {}
 
   ngOnInit(): void {
+    this.loadFabPosition();
+
     this.subs.push(
       this.loginService.usuarioActual.subscribe((user) => {
         if (user) {
@@ -700,6 +714,105 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.creditsAvailable = info.creditsAvailable;
       });
     }
+  }
+
+  /** Click en el botón FAB: abrir/cerrar solo si no se arrastró */
+  onFabClick(event: Event): void {
+    if (this.fabDidDrag) {
+      this.fabDidDrag = false;
+      event.preventDefault();
+      return;
+    }
+    this.toggleChat();
+  }
+
+  /** Inicio de arrastre (ratón) */
+  onFabPointerDown(e: MouseEvent): void {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    this.fabDragging = true;
+    this.fabDidDrag = false;
+    this.fabPointerStartX = e.clientX;
+    this.fabPointerStartY = e.clientY;
+    this.fabStartBottom = this.fabBottom;
+    this.fabStartRight = this.fabRight;
+  }
+
+  /** Inicio de arrastre (táctil) */
+  onFabTouchStart(e: TouchEvent): void {
+    if (e.touches.length !== 1) return;
+    this.fabDragging = true;
+    this.fabDidDrag = false;
+    this.fabPointerStartX = e.touches[0].clientX;
+    this.fabPointerStartY = e.touches[0].clientY;
+    this.fabStartBottom = this.fabBottom;
+    this.fabStartRight = this.fabRight;
+  }
+
+  @HostListener('document:mousemove', ['$event'])
+  onDocumentMouseMove(e: MouseEvent): void {
+    if (!this.fabDragging) return;
+    const dx = e.clientX - this.fabPointerStartX;
+    const dy = e.clientY - this.fabPointerStartY;
+    if (Math.abs(dx) > 5 || Math.abs(dy) > 5) this.fabDidDrag = true;
+    const w = typeof window !== 'undefined' ? window.innerWidth : 400;
+    const h = typeof window !== 'undefined' ? window.innerHeight : 600;
+    // right: arrastrar a la derecha → menos right; left → más right
+    this.fabRight = Math.max(8, Math.min(w - this.FAB_SIZE - 8, this.fabStartRight - dx));
+    // bottom: arrastrar abajo → menos bottom; arriba → más bottom
+    this.fabBottom = Math.max(8, Math.min(h - this.FAB_SIZE - 8, this.fabStartBottom - dy));
+  }
+
+  @HostListener('document:mouseup')
+  onDocumentMouseUp(): void {
+    if (!this.fabDragging) return;
+    this.fabDragging = false;
+    this.saveFabPosition();
+  }
+
+  @HostListener('document:touchmove', ['$event'])
+  onDocumentTouchMove(e: TouchEvent): void {
+    if (!this.fabDragging || e.touches.length !== 1) return;
+    const dx = e.touches[0].clientX - this.fabPointerStartX;
+    const dy = e.touches[0].clientY - this.fabPointerStartY;
+    if (Math.abs(dx) > 5 || Math.abs(dy) > 5) this.fabDidDrag = true;
+    const w = typeof window !== 'undefined' ? window.innerWidth : 400;
+    const h = typeof window !== 'undefined' ? window.innerHeight : 600;
+    this.fabRight = Math.max(8, Math.min(w - this.FAB_SIZE - 8, this.fabStartRight - dx));
+    this.fabBottom = Math.max(8, Math.min(h - this.FAB_SIZE - 8, this.fabStartBottom - dy));
+    this.fabPointerStartX = e.touches[0].clientX;
+    this.fabPointerStartY = e.touches[0].clientY;
+    this.fabStartRight = this.fabRight;
+    this.fabStartBottom = this.fabBottom;
+  }
+
+  @HostListener('document:touchend')
+  onDocumentTouchEnd(): void {
+    if (!this.fabDragging) return;
+    this.fabDragging = false;
+    this.saveFabPosition();
+  }
+
+  private loadFabPosition(): void {
+    try {
+      const raw = localStorage.getItem(this.FAB_POSITION_KEY);
+      if (raw) {
+        const pos = JSON.parse(raw);
+        if (typeof pos?.bottom === 'number' && typeof pos?.right === 'number') {
+          this.fabBottom = Math.max(8, pos.bottom);
+          this.fabRight = Math.max(8, pos.right);
+        }
+      }
+    } catch (_) {}
+  }
+
+  private saveFabPosition(): void {
+    try {
+      localStorage.setItem(this.FAB_POSITION_KEY, JSON.stringify({
+        bottom: this.fabBottom,
+        right: this.fabRight
+      }));
+    } catch (_) {}
   }
 
   toggleChat(): void {

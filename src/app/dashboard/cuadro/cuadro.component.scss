@@ -76,33 +76,37 @@
 .info-card h5 {
   color: var(--text-primary);
 }
+/* Tarjetas deshabilitadas (Entrenamientos, Lesiones): mismo estilo, sin clic */
+.option-card-disabled,
 .option-card.disabled {
-  opacity: 0.6;
+  opacity: 0.85;
   cursor: not-allowed;
   pointer-events: none;
   position: relative;
+  border-color: var(--border-color);
+  i { color: var(--text-muted); }
 }
 
+.option-card small {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+/* Badge PRÓXIMAMENTE: debajo del subtítulo, fondo azul Sphaira */
 .badge-coming-soon {
-  display: inline-block;
-  margin-top: 0.5rem;
-  font-size: 0.6rem;
+  display: block;
+  margin-top: 0.6rem;
+  font-size: 0.62rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 0.2rem 0.55rem;
-  border-radius: 6px;
-  background: linear-gradient(135deg, #0fa3e8, #0d8ecb);
+  letter-spacing: 0.05em;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #002c40 0%, #0a4a6e 100%);
   color: #ffffff;
-}
-
-.option-card-injuries {
-  border-color: var(--color-primary);
-  i { color: var(--color-primary); }
-  &:hover {
-    border-color: var(--color-primary-hover);
-    box-shadow: var(--shadow-md);
-  }
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* =========================

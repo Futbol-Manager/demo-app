@@ -280,9 +280,15 @@
             <button (click)="selectNewActivity('entrenamiento')"><i class="fa-solid fa-dumbbell"></i>
               {{ 'CAL.TEXT_062' | translate }}</button>
             <button (click)="selectNewActivity('partido')"><i class="fa-solid fa-futbol"></i> {{ 'CAL.TEXT_066' | translate }}</button>
-            <button (click)="selectNewActivity('otra')"><i class="fa-regular fa-square-plus"></i> {{ 'CAL.TEXT_387' | translate }}</button>
-            <button (click)="goToIndividualTraining()" style="border-top: 1px solid #e5e7eb; color: #6f42c1;">
-              <i class="bi bi-person-walking"></i> Sesión Individual
+            <button type="button" class="new-activity-option new-activity-option--disabled" disabled>
+              <i class="fa-regular fa-square-plus"></i>
+              <span>{{ 'CAL.TEXT_387' | translate }}</span>
+              <span class="badge-proximamente">{{ 'CAL.PROXIMAMENTE' | translate }}</span>
+            </button>
+            <button type="button" class="new-activity-option new-activity-option--disabled" disabled>
+              <i class="bi bi-person-walking"></i>
+              <span>Sesión Individual</span>
+              <span class="badge-proximamente">{{ 'CAL.PROXIMAMENTE' | translate }}</span>
             </button>
           </div>
         </div>

@@ -14,13 +14,20 @@ $text-light: #8e9bab;
 $border-color: #e2e8f0;
 
 /* ═══════════════════════════════════════
-   BOTÓN FAB (siempre fixed abajo-derecha)
+   BOTÓN FAB (arrastrable; bottom/right desde componente)
 ═══════════════════════════════════════ */
 .ai-fab-btn-wrapper {
   position: fixed;
-  bottom: 90px;   /* margen suficiente sobre cualquier footer fijo */
-  right: 24px;
+  /* bottom y right se asignan por el componente (draggable + persistidos) */
   z-index: 10000;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none; /* permite arrastrar en táctil sin scroll */
+
+  &:active {
+    cursor: grabbing;
+  }
 }
 
 .ai-fab-btn {
@@ -765,11 +772,6 @@ $border-color: #e2e8f0;
    RESPONSIVE
 ═══════════════════════════════════════ */
 @media (max-width: 480px) {
-  .ai-fab-btn-wrapper {
-    bottom: 80px;
-    right: 16px;
-  }
-
   .ai-fab-btn {
     width: 54px;
     height: 54px;

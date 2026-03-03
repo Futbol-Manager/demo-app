@@ -17,6 +17,8 @@
   },
   "COMMON": {
     "BACK": "Volver",
+    "RETRY": "Reintentar",
+    "CLEAR": "Limpiar",
     "DATE": "Fecha",
     "CANCEL": "Cancelar",
     "SAVE": "Guardar",
@@ -767,7 +769,8 @@
     "TEXT_398": "Pre-aviso enviado a los padres, en No convocados solo veras a los jugadores que han confirmado asistencia.",
     "TEXT_399": "Cambio guardado.",
     "TEXT_400": "Notificacion enviada.",
-    "TEXT_401": "Detalles del Partido"
+    "TEXT_401": "Detalles del Partido",
+    "PROXIMAMENTE": "Próximamente"
   },
   "REGISTER": {
     "TITLE": "Registro de usuario",
@@ -1162,7 +1165,9 @@
     "EMPTY": {
       "TITLE": "Sin lesiones",
       "MESSAGE": "No hay lesiones registradas con los filtros actuales."
-    }
+    },
+    "ONE_INJURY": "lesión",
+    "MANY_INJURIES": "lesiones"
   },
   "AI_ASSISTANT": {
     "TITLE": "Asistente de IA",
@@ -1459,10 +1464,13 @@
     "STATUS_OVERDUE": "Vencido",
     "STATUS_NONE": "Sin pagos",
     "IMPUTE": "Imputar pago",
-    "HISTORY": "Historial",
+    "HISTORY": "Historial de pagos",
     "EDIT": "Editar",
     "CHARGE_CARD": "Cobrar tarjeta",
     "NO_PLAYERS": "No se encontraron jugadores.",
+    "NO_DATA": "Sin datos",
+    "NO_CHARGES": "No hay cargos en esta temporada.",
+    "NO_MATCH_FILTER": "Ningún cargo coincide con el filtro.",
     "PLAYERS": "jugadores",
     "NEW_TITLE": "Crear nuevo pago",
     "EDIT_TITLE": "Editar pago",
@@ -1554,7 +1562,8 @@
     "MESSAGE": "Mensaje",
     "MESSAGES": "Mensajes",
     "CLOSE": "Cerrar",
-    "SELECT_MESSAGE": "Selecciona un mensaje para leerlo.",
+    "SELECT_MESSAGE": "Elige un mensaje de la lista para ver su contenido aquí.",
+    "SELECT_MESSAGE_TITLE": "Selecciona un mensaje",
     "DELETE": "Eliminar",
     "SEND": "Enviar",
     "CANCEL": "Cancelar",
@@ -1624,6 +1633,7 @@
   },
   "TBOARD": {
     "TITLE": "Pizarra táctica",
+    "SUBTITLE": "Dibuja jugadas, posiciones y animaciones en el campo",
     "TOOL_SELECT": "Seleccionar",
     "TOOL_PENCIL": "Lápiz",
     "TOOL_LINE": "Línea",
@@ -1690,6 +1700,10 @@
     "EDIT": "Editar",
     "DELETE": "Eliminar",
     "DELETE_CONFIRM": "¿Estás seguro de que quieres eliminar esta tarea? Esta acción no se puede deshacer.",
+    "IMAGE_PIZARRA": "Imagen o GIF desde la pizarra",
+    "IMAGE_PIZARRA_PLACEHOLDER": "Crea un dibujo o animación en la pizarra y asígnalo a la tarea",
+    "ABRIR_PIZARRA": "Abrir pizarra",
+    "QUITAR_IMAGEN": "Quitar imagen",
     "FIELD_TITLE": "Título",
     "FIELD_TITLE_PH": "Nombre de la tarea...",
     "FIELD_STRATEGY": "Estrategia",
@@ -2079,6 +2093,7 @@
   },
   "COACH_PROFILE": {
     "TITLE": "Mi perfil de entrenador",
+    "SUBTITLE": "Gestiona tu perfil y datos personales",
     "TAB_PERSONAL": "Datos personales",
     "EMAIL": "Correo electrónico",
     "PHONE": "Teléfono",
@@ -2117,6 +2132,28 @@
     "CUSTOM_FIELDS_HINT": "Estos campos han sido definidos por tu club. Completa la información requerida.",
     "CLUB_DOCS_TITLE": "Documentos del club",
     "CHANGE_PHOTO": "Cambiar foto"
+  },
+  "DOCUMENTOS_ENTRENADOR": {
+    "TITLE": "Documentos",
+    "SUBTITLE": "Descarga, sube y rellena los documentos que te asigna tu club",
+    "EMPTY_TITLE": "Sin documentos",
+    "EMPTY_MSG": "No hay documentos asignados por tu club.",
+    "STATUS_PENDING_DOWNLOAD": "Pendiente de descargar",
+    "STATUS_DOWNLOADED": "Descargado",
+    "STATUS_PENDING_UPLOAD": "Pendiente de subir",
+    "STATUS_UPLOADED": "Subido",
+    "STATUS_PENDING_FILL": "Pendiente de rellenar",
+    "STATUS_FILLED": "Completado",
+    "ACTION_DOWNLOAD": "Descargar",
+    "ACTION_UPLOAD": "Subir documento",
+    "ACTION_FILL": "Rellenar",
+    "MODAL_UPLOAD_TITLE": "Subir documento",
+    "MODAL_UPLOAD_SUBTITLE": "PDF, Word o imagen",
+    "MODAL_UPLOAD_HINT": "Aquí puedes subir el archivo que se está solicitando.",
+    "MODAL_UPLOAD_PRIVACY": "Por política de privacidad no se puede mostrar el documento subido. Si crees que has cometido un error, súbelo de nuevo.",
+    "SELECT_FILE": "Seleccionar archivo",
+    "CANCEL": "Cancelar",
+    "UPLOAD": "Subir"
   },
   "SESSION_PDF": {
     "TITLE": "Sesión de Entrenamiento",
@@ -2693,6 +2730,7 @@
     "REPORT": {
       "TRAINING_TITLE": "Informe de Entrenamiento",
       "MATCH_TITLE": "Informe de Partido",
+      "SUBTITLE": "Informe generado por IA a partir del análisis",
       "GENERATING": "Generando informe con IA...",
       "GENERATING_DESC": "Analizando las respuestas para crear un informe personalizado",
       "ERROR": "Error al generar el informe",
@@ -2711,6 +2749,7 @@
     },
     "HISTORY": {
       "TITLE": "Historial de Análisis",
+      "SUBTITLE": "Accede a tus análisis de entrenamientos y partidos",
       "DEBRIEFS": "análisis",
       "ALL": "Todos",
       "TRAININGS": "Entrenamientos",

@@ -41,20 +41,23 @@ export class HistorialPagosClubComponent implements OnInit {
     private sanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
-    this.loginService.usuarioActual.subscribe(user => {
-      // Suscribirse a los cambios en los parámetros de la URL
-      this.route.params.subscribe(params => {
-        // Obtener el valor de clubId de los parámetros
-        this.clubId = +params['clubId'];  // El + convierte el valor a número
-        //console.log('clubId:', this.clubId);
-      });
-    });
-
     if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
     }
 
-    this.loadTabla();
+    this.route.params.subscribe(params => {
+      this.clubId = +params['clubId'] || 0;
+      if (!this.clubId) {
+        this.clubId = Number(sessionStorage.getItem('clubId')) || Number(localStorage.getItem('clubId')) || 0;
+      }
+      if (this.clubId) {
+        this.loadTabla();
+      } else {
+        this.isLoading = false;
+      }
+    });
+
+    this.loginService.usuarioActual.subscribe(() => {});
   }
 
   goBack(): void {
@@ -62,37 +65,52 @@ export class HistorialPagosClubComponent implements OnInit {
   }
 
   loadTabla() {
-    this.clubService.getListHistoriPagos(this.clubId, this.temporadaStoredValue).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== null) {
+    this.isLoading = true;
+    this.clubService.getListHistoriPagos(this.clubId, this.temporadaStoredValue).subscribe({
+      next: (response: Response) => {
+        if (response?.data != null && Array.isArray(response.data)) {
           this.listaPagos = response.data;
           this.listaPagosFiltrados = [...this.listaPagos];
           this.nCargos = this.listaPagos.length;
           this.formatearFechas();
           this.formatearFechasFiltro();
+        } else {
+          this.listaPagos = [];
+          this.listaPagosFiltrados = [];
+          this.nCargos = 0;
         }
         this.isLoading = false;
-        //this.datosCargados = true;
       },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
+      error: (error) => {
+        console.error('Error al cargar el historial de pagos', error);
+        this.listaPagos = [];
+        this.listaPagosFiltrados = [];
+        this.nCargos = 0;
+        this.isLoading = false;
       }
-    );
+    });
   }
 
   private formatearFechas(): void {
     this.listaPagos = this.listaPagos.map(pago => {
-      const partes = pago.fecha.split('-'); // yyyy-MM-dd
-      const fechaFormateada = `${partes[2]}-${partes[1]}-${partes[0]}`;
+      const fecha = pago?.fecha;
+      if (!fecha || typeof fecha !== 'string') {
+        return { ...pago, fechaFormateada: fecha ?? '–' };
+      }
+      const partes = fecha.split('-');
+      const fechaFormateada = partes.length === 3 ? `${partes[2]}-${partes[1]}-${partes[0]}` : fecha;
       return { ...pago, fechaFormateada };
     });
   }
 
   private formatearFechasFiltro(): void {
     this.listaPagosFiltrados = this.listaPagosFiltrados.map(pago => {
-      const partes = pago.fecha.split('-'); // yyyy-MM-dd
-      const fechaFormateada = `${partes[2]}-${partes[1]}-${partes[0]}`;
+      const fecha = pago?.fecha;
+      if (!fecha || typeof fecha !== 'string') {
+        return { ...pago, fechaFormateada: fecha ?? '–' };
+      }
+      const partes = fecha.split('-');
+      const fechaFormateada = partes.length === 3 ? `${partes[2]}-${partes[1]}-${partes[0]}` : fecha;
       return { ...pago, fechaFormateada };
     });
   }
@@ -120,6 +138,12 @@ export class HistorialPagosClubComponent implements OnInit {
 
     // Si no había URL, devolvemos el texto normal
     return descripcion;
+  }
+
+  isImporteNegativo(importe: any): boolean {
+    if (importe == null || importe === undefined) return false;
+    const s = String(importe);
+    return s.includes('-') || (typeof importe === 'number' && importe < 0);
   }
 
   filtrarClubes() {

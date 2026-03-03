@@ -194,4 +194,34 @@ export class DocumentosEntrenadorComponent implements OnInit {
   onFormRendererClosed(): void {
     this.cerrarModalEditarPersonalizado();
   }
+
+  getDocPending(doc: any): boolean {
+    if (doc.requiere === 0 || doc.fileClub) return doc.descargado === 0;
+    if (doc.requiere === 1 || doc.requiere === 2) return doc.subido === 0;
+    return false;
+  }
+
+  getDocDone(doc: any): boolean {
+    if (doc.requiere === 0 || doc.fileClub) return doc.descargado === 1;
+    if (doc.requiere === 1 || doc.requiere === 2) return doc.subido === 1;
+    return false;
+  }
+
+  getDocStatusIcon(doc: any): string {
+    if (this.getDocDone(doc)) return 'bi-check-circle-fill';
+    return 'bi-exclamation-circle-fill';
+  }
+
+  getDocStatusLabel(doc: any): string {
+    if (doc.requiere === 0 || doc.fileClub) {
+      return doc.descargado === 1 ? 'DOCUMENTOS_ENTRENADOR.STATUS_DOWNLOADED' : 'DOCUMENTOS_ENTRENADOR.STATUS_PENDING_DOWNLOAD';
+    }
+    if (doc.requiere === 1) {
+      return doc.subido === 1 ? 'DOCUMENTOS_ENTRENADOR.STATUS_UPLOADED' : 'DOCUMENTOS_ENTRENADOR.STATUS_PENDING_UPLOAD';
+    }
+    if (doc.requiere === 2) {
+      return doc.subido === 1 ? 'DOCUMENTOS_ENTRENADOR.STATUS_FILLED' : 'DOCUMENTOS_ENTRENADOR.STATUS_PENDING_FILL';
+    }
+    return '';
+  }
 }

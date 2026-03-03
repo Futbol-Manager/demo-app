@@ -77,6 +77,17 @@ export class StaffClubComponent implements OnInit {
   showPassword = false;
   editingUser: StaffUser | null = null;
 
+  /** Modal de confirmación eliminar */
+  showDeleteConfirm = false;
+  userToDelete: StaffUser | null = null;
+  deleting = false;
+
+  /** Modal de confirmación habilitar/deshabilitar */
+  showToggleConfirm = false;
+  userToToggle: StaffUser | null = null;
+  togglingConfirm = false;
+  pendingEnableState: boolean | null = null;
+
   form: Partial<StaffUser> & { permissionsMap: Record<string, boolean> } = {
     firstName: '',
     secondName: '',
@@ -92,10 +103,15 @@ export class StaffClubComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const cached = sessionStorage.getItem('clubId');
+    const fromStorage = cached ? Number(cached) : Number(localStorage.getItem('clubId'));
+    if (fromStorage) {
+      this.clubId = fromStorage;
+      this.loadStaff();
+    }
     this.loginService.usuarioActual.subscribe((user) => {
-      if (user) {
-        const cached = sessionStorage.getItem('clubId');
-        this.clubId = cached ? Number(cached) : ((user as any).clubId ?? 0);
+      if (user && !this.clubId) {
+        this.clubId = (user as any).clubId ?? 0;
         if (this.clubId) this.loadStaff();
       }
     });
@@ -222,25 +238,70 @@ export class StaffClubComponent implements OnInit {
     }
   }
 
+  /** Abre modal de confirmación para habilitar/deshabilitar */
   toggleEnabled(user: StaffUser): void {
-    const newState = !user.enabled;
-    this.togglingId = user.userId;
-    const url = `${environment.apiUrl}club/staff/toggle/${user.userId}?enable=${newState}`;
+    this.userToToggle = user;
+    this.pendingEnableState = !user.enabled;
+    this.showToggleConfirm = true;
+    this.togglingConfirm = false;
+  }
+
+  confirmToggle(): void {
+    if (!this.userToToggle || this.pendingEnableState === null) return;
+    this.togglingConfirm = true;
+    this.togglingId = this.userToToggle.userId;
+    const newState = this.pendingEnableState;
+    const url = `${environment.apiUrl}club/staff/toggle/${this.userToToggle.userId}?enable=${newState}`;
     this.http.patch<any>(url, null, { headers: this.getHeaders() }).subscribe({
       next: () => {
-        user.enabled = newState;
+        this.userToToggle!.enabled = newState;
+        this.togglingId = null;
+        this.closeToggleConfirm();
+      },
+      error: () => {
+        this.togglingConfirm = false;
         this.togglingId = null;
       },
-      error: () => { this.togglingId = null; },
     });
   }
 
+  closeToggleConfirm(): void {
+    this.showToggleConfirm = false;
+    this.userToToggle = null;
+    this.pendingEnableState = null;
+    this.togglingConfirm = false;
+    this.togglingId = null;
+  }
+
+  /** Abre modal de confirmación para eliminar */
   deleteStaff(user: StaffUser): void {
-    if (!confirm(`¿Eliminar al usuario "${user.firstName} ${user.secondName}"?`)) return;
-    const url = `${environment.apiUrl}club/staff/${user.userId}`;
+    this.userToDelete = user;
+    this.showDeleteConfirm = true;
+    this.deleting = false;
+  }
+
+  confirmDelete(): void {
+    if (!this.userToDelete) return;
+    this.deleting = true;
+    const url = `${environment.apiUrl}club/staff/${this.userToDelete.userId}`;
     this.http.delete<any>(url, { headers: this.getHeaders() }).subscribe({
-      next: () => this.loadStaff(),
+      next: () => {
+        this.loadStaff();
+        this.closeDeleteConfirm();
+      },
+      error: () => { this.deleting = false; },
     });
+  }
+
+  closeDeleteConfirm(): void {
+    if (!this.deleting) {
+      this.showDeleteConfirm = false;
+      this.userToDelete = null;
+    }
+  }
+
+  getFullName(user: StaffUser): string {
+    return [user.firstName, user.secondName].filter(Boolean).join(' ') || 'Usuario';
   }
 
   goBack(): void {

@@ -1086,4 +1086,20 @@ export class TrainingService {
     );
   }
 
+  /** Upload image for coach task (pizarra). Returns response with data = filename. */
+  uploadCoachTaskImage(coachTaskId: number, userId: number, file: File): Observable<Response> {
+    if (!file) {
+      return throwError(() => 'Archivo no proporcionado');
+    }
+    const token: string | null = localStorage.getItem('token');
+    if (!token) {
+      return throwError(() => 'Token no disponible');
+    }
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    const formData = new FormData();
+    formData.append('files', file, file.name);
+    const url = environment.apiUrl + `training/coach-task-image/${coachTaskId}/${userId}`;
+    return this.http.post<Response>(url, formData, { headers });
+  }
+
 }

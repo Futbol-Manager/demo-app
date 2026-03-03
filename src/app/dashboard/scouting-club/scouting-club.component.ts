@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { forkJoin } from 'rxjs';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { environment } from 'src/environments/environment';
@@ -19,7 +20,7 @@ export class ScoutingClubComponent implements OnInit {
   userId = 0;
   usuarioActual: User | null = null;
 
-  activeTab: 'watchlist' | 'search' | 'pipeline' = 'watchlist';
+  activeTab: 'watchlist' | 'pipeline' = 'watchlist';
 
   // Config
   config: any = null;
@@ -217,17 +218,40 @@ export class ScoutingClubComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.clubId = +params['clubId'] || 0;
+      if (!this.clubId) {
+        this.clubId = Number(sessionStorage.getItem('clubId')) || Number(localStorage.getItem('clubId')) || 0;
+      }
+      if (this.clubId) {
+        this.loadConfigAndWatchlist();
+      }
     });
 
     this.loginService.usuarioActual.subscribe(user => {
       if (user) {
         this.usuarioActual = user;
         this.userId = user.userId ?? 0;
-        if (!this.clubId) {
-          this.clubId = Number(sessionStorage.getItem('clubId')) || Number(localStorage.getItem('clubId')) || 0;
-        }
-        this.loadConfig();
-        this.loadWatchlist();
+      }
+    });
+  }
+
+  /** Carga config y watchlist en paralelo para abrir más rápido */
+  private loadConfigAndWatchlist(): void {
+    this.watchlistLoading = true;
+    const config$ = this.http.get<any>(`${this.apiBase}/${this.clubId}/config`, { headers: this.headers });
+    const watchlist$ = this.http.get<any>(`${this.apiBase}/${this.clubId}/watchlist`, { headers: this.headers });
+    forkJoin({ config: config$, watchlist: watchlist$ }).subscribe({
+      next: res => {
+        const cfg = res.config?.data;
+        this.config = cfg;
+        this.pipelineEnabled = cfg?.pipelineEnabled === 1;
+        this.reportsEnabled = cfg?.reportsEnabled === 1;
+        this.compareEnabled = cfg?.compareEnabled === 1;
+        this.watchlist = res.watchlist?.data || [];
+        this.watchlistLoading = false;
+      },
+      error: () => {
+        this.watchlist = [];
+        this.watchlistLoading = false;
       }
     });
   }
@@ -1037,7 +1061,7 @@ export class ScoutingClubComponent implements OnInit {
       .subscribe({ next: () => {}, error: () => {} });
   }
 
-  onTabChange(tab: 'search' | 'watchlist' | 'pipeline'): void {
+  onTabChange(tab: 'watchlist' | 'pipeline'): void {
     this.activeTab = tab;
     if (tab === 'watchlist') this.loadWatchlist();
     if (tab === 'pipeline') this.loadPipeline();

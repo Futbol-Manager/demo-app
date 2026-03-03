@@ -1,18 +1,18 @@
-﻿/* ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
    Variables Sphaira
 ═══════════════════════════════════════════════ */
 $navy:        #002c40;
 $navy-mid:    #0a4a6e;
 $verde:       #31b270;
-$azul:        #002C3F;
-$bg-page:     #f4f7fa;
-$text-dark:   #1a2332;
-$text-muted:  #6b7a8d;
-$text-light:  #8e9bab;
+$danger:      #dc2626;
+$bg-page:     #f8fafc;
+$text-dark:   #1e293b;
+$text-muted:  #64748b;
+$text-light:  #94a3b8;
 $border:      #e2e8f0;
-$shadow-sm:   0 2px 8px rgba(0, 0, 0, 0.06);
-$shadow-md:   0 6px 24px rgba(0, 0, 0, 0.10);
-$gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$verde} 100%);
+$shadow-sm:   0 2px 12px rgba(0, 44, 64, 0.06);
+$shadow-md:   0 8px 24px rgba(0, 44, 64, 0.10);
+$gradient-header: linear-gradient(135deg, $navy 0%, $navy-mid 50%, $verde 100%);
 
 /* ═══════════════════════════════════════════════
    Layout base
@@ -23,7 +23,7 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$verd
   min-height: 100vh;
 }
 
-// ─── PAGE HEADER — gradiente unificado SphairaTech ───────────────────────────
+// ─── PAGE HEADER — premium Sphaira ───────────────────────────────────────────
 .page-header {
   position: relative;
   display: flex;
@@ -31,14 +31,13 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$verd
   justify-content: space-between;
   flex-wrap: nowrap;
   gap: 1rem;
-  min-height: 72px;
-  padding: 1rem 1.5rem;
-  margin-bottom: 1.5rem;
-  border-radius: 18px;
+  min-height: 56px;
+  padding: 0.7rem 1.25rem;
+  margin-bottom: 1.1rem;
+  border-radius: 14px;
   background: $gradient-header;
-  box-shadow:
-    0 8px 32px rgba(0, 44, 64, 0.28),
-    0 2px 8px rgba(49, 178, 112, 0.14);
+  box-shadow: 0 4px 20px rgba(0, 44, 64, 0.22), 0 1px 4px rgba(49, 178, 112, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
   overflow: hidden;
 
   &::after {
@@ -89,21 +88,22 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$verd
   left: 50%;
   transform: translateX(-50%);
   margin: 0;
-  font-size: 1.4rem;
+  font-size: 1.15rem;
   font-weight: 700;
-  color: #ffffff;
+  color: #fff;
   text-align: center;
   white-space: nowrap;
   pointer-events: none;
   z-index: 1;
+  letter-spacing: -0.02em;
 }
 
 .header-spacer { flex-shrink: 0; width: 90px; }
 
 .hub-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 1.25rem 3rem;
+  padding: 0 1.25rem 2.5rem;
 }
 
 // ─── Barra de acción: contador + botón nuevo análisis ────────────────────────
@@ -156,19 +156,19 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$verd
 }
 
 /* ═══════════════════════════════════════════════
-   KPI Cards
+   KPI Cards — 4 columnas, Sphaira
 ═══════════════════════════════════════════════ */
 .kpi-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 12px;
-  margin-bottom: 20px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .kpi-card {
   background: #fff;
   border-radius: 14px;
-  padding: 18px 16px;
+  padding: 1rem 1rem;
   text-align: center;
   cursor: pointer;
   box-shadow: $shadow-sm;
@@ -177,29 +177,35 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$verd
 
   &:hover {
     border-color: $verde;
-    box-shadow: 0 4px 14px rgba($verde, 0.15);
-    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba($verde, 0.15);
+    transform: translateY(-2px);
   }
 
   &.active {
-    border-color: $azul;
-    background: rgba($azul, 0.04);
-    box-shadow: 0 4px 14px rgba($azul, 0.1);
+    border-color: $navy;
+    background: rgba($navy, 0.05);
+    box-shadow: 0 4px 16px rgba($navy, 0.12);
   }
 }
 
 .kpi-value {
-  font-size: 1.7rem;
+  font-size: 1.6rem;
   font-weight: 800;
   color: $text-dark;
   line-height: 1;
+
+  &.kpi-value--progress { color: $navy-mid; }
+  &.kpi-value--completed { color: $verde; }
+  &.kpi-value--draft { color: $text-muted; }
 }
 
 .kpi-label {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: $text-muted;
-  font-weight: 500;
-  margin-top: 4px;
+  font-weight: 600;
+  margin-top: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 /* ═══════════════════════════════════════════════
@@ -270,15 +276,26 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$verd
 }
 
 .qa-icon {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   flex-shrink: 0;
+  box-shadow: 0 2px 10px rgba(0, 44, 64, 0.2);
+
+  &.qa-icon--navy {
+    background: linear-gradient(135deg, $navy, $navy-mid);
+  }
+  &.qa-icon--green {
+    background: linear-gradient(135deg, $verde, darken($verde, 8%));
+  }
+  &.qa-icon--teal {
+    background: linear-gradient(135deg, #0d9488, #0f766e);
+  }
 }
 
 .qa-info {
@@ -299,12 +316,21 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$verd
 }
 
 /* ═══════════════════════════════════════════════
-   Loading
+   Loading — premium
 ═══════════════════════════════════════════════ */
 .loading-state {
   display: flex;
   justify-content: center;
-  padding: 60px 0;
+  align-items: center;
+  padding: 3rem 0;
+  min-height: 120px;
+
+  .spinner-border {
+    color: $verde;
+    width: 2rem;
+    height: 2rem;
+    border-width: 0.2em;
+  }
 }
 
 /* ═══════════════════════════════════════════════
@@ -319,47 +345,52 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$verd
 .empty-card {
   text-align: center;
   background: #fff;
-  border-radius: 18px;
-  padding: 48px 36px;
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
   box-shadow: $shadow-sm;
-  max-width: 440px;
+  border: 1px solid $border;
+  max-width: 420px;
   width: 100%;
 
   .bi {
-    font-size: 2.8rem;
-    color: $text-light;
+    font-size: 2.5rem;
+    color: $verde;
+    opacity: 0.85;
     display: block;
-    margin-bottom: 16px;
+    margin-bottom: 1rem;
   }
 
   h5 {
     font-weight: 700;
     color: $text-dark;
-    margin-bottom: 8px;
+    margin-bottom: 0.5rem;
     font-size: 1.05rem;
   }
 
   p {
     color: $text-muted;
     font-size: 0.88rem;
-    margin-bottom: 24px;
-    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    line-height: 1.55;
   }
 
-  .btn {
-    background: $gradient-header;
+  .btn-success, .btn {
+    background: linear-gradient(135deg, $verde, darken($verde, 6%));
     border: none;
     border-radius: 10px;
     font-weight: 600;
-    padding: 10px 22px;
+    padding: 0.6rem 1.25rem;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    transition: opacity 0.2s, transform 0.15s;
+    gap: 0.4rem;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba($verde, 0.35);
+    transition: transform 0.2s, box-shadow 0.2s;
 
     &:hover {
-      opacity: 0.88;
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba($verde, 0.4);
+      color: #fff;
     }
   }
 }
@@ -368,34 +399,35 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$verd
    Projects Grid
 ═══════════════════════════════════════════════ */
 .projects-section-title {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.06em;
   color: $text-muted;
-  margin-bottom: 12px;
+  margin-bottom: 1rem;
 }
 
+/* 4 columnas por fila */
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
 }
 
 .project-card {
   background: #fff;
-  border-radius: 16px;
+  border-radius: 14px;
   cursor: pointer;
   box-shadow: $shadow-sm;
-  border: 2px solid transparent;
-  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+  border: 1px solid $border;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 
   &:hover {
-    border-color: $verde;
-    box-shadow: $shadow-md;
+    border-color: rgba($verde, 0.4);
+    box-shadow: 0 8px 24px rgba(0, 44, 64, 0.12);
     transform: translateY(-3px);
   }
 }
@@ -436,21 +468,21 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$verd
   background: none;
   border: none;
   padding: 4px 7px;
-  border-radius: 6px;
+  border-radius: 8px;
   color: $text-muted;
   cursor: pointer;
   font-size: 0.88rem;
   transition: background 0.15s, color 0.15s;
 
   &:hover {
-    background: rgba($azul, 0.06);
+    background: rgba($navy, 0.08);
     color: $text-dark;
   }
 }
 
 .btn-danger-icon:hover {
-  color: #ef4444 !important;
-  background: rgba(239, 68, 68, 0.08) !important;
+  color: $danger !important;
+  background: rgba(220, 38, 38, 0.1) !important;
 }
 
 .project-card-body {
@@ -640,9 +672,9 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$verd
   &:hover { border-color: $verde; color: $text-dark; }
 
   &.active {
-    border-color: $azul;
-    background: rgba($azul, 0.06);
-    color: $azul;
+    border-color: $navy;
+    background: rgba($navy, 0.08);
+    color: $navy;
     font-weight: 700;
   }
 }
@@ -683,20 +715,13 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$verd
 /* ═══════════════════════════════════════════════
    Responsive
 ═══════════════════════════════════════════════ */
-@media (max-width: 900px) {
-  .quick-actions {
-    grid-template-columns: repeat(3, 1fr);
+@media (max-width: 1100px) {
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 768px) {
-  .hub-header {
-    padding: 18px 20px;
-    border-radius: 16px;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
   .btn-new-analysis {
     width: 100%;
     justify-content: center;
@@ -766,9 +791,9 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$verd
   }
 
   &.active {
-    border-color: $azul;
-    background: rgba($azul, 0.05);
-    color: $azul;
+    border-color: $navy;
+    background: rgba($navy, 0.06);
+    color: $navy;
     font-weight: 700;
   }
 }
@@ -805,8 +830,8 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$verd
     font-size: 0.88rem;
 
     &:focus {
-      border-color: $azul;
-      box-shadow: 0 0 0 3px rgba($azul, 0.12);
+      border-color: $verde;
+      box-shadow: 0 0 0 3px rgba($verde, 0.15);
     }
   }
 }
@@ -817,18 +842,31 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$verd
   gap: 5px;
   margin-top: 6px;
   padding: 4px 10px;
-  background: #f0fdf4;
-  border: 1px solid #86efac;
+  background: rgba($verde, 0.1);
+  border: 1px solid rgba($verde, 0.35);
   border-radius: 20px;
   font-size: 0.78rem;
   font-weight: 600;
-  color: #16a34a;
+  color: darken($verde, 8%);
 
   .bi-youtube { color: #ff0000; }
 }
 
 .local-file-picker {
   margin-top: 6px;
+
+  .btn-outline-primary {
+    border-color: rgba($verde, 0.5);
+    color: $verde;
+    border-radius: 10px;
+    font-weight: 600;
+
+    &:hover:not(:disabled) {
+      background: rgba($verde, 0.1);
+      border-color: $verde;
+      color: darken($verde, 6%);
+    }
+  }
 }
 
 .local-file-info {
@@ -837,13 +875,13 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$verd
   gap: 10px;
   padding: 10px 12px;
   margin-top: 8px;
-  background: #f0fdf4;
-  border: 1px solid #86efac;
-  border-radius: 8px;
+  background: rgba($verde, 0.08);
+  border: 1px solid rgba($verde, 0.3);
+  border-radius: 10px;
 
   > .bi-file-earmark-play-fill {
     font-size: 1.3rem;
-    color: #16a34a;
+    color: $verde;
   }
 
   .file-details {
@@ -876,11 +914,11 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$verd
 .alert-no-templates {
   margin-top: 8px;
   padding: 10px 12px;
-  background: #fff8e1;
-  border: 1px solid #ffe082;
-  border-radius: 8px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 10px;
   font-size: 0.8rem;
-  color: #7b5f00;
+  color: #92400e;
   line-height: 1.5;
 
   .bi { margin-right: 5px; color: #f59e0b; }
@@ -889,20 +927,20 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$verd
     display: inline-block;
     margin-top: 6px;
     font-weight: 700;
-    color: #0d6efd;
+    color: $verde;
     text-decoration: none;
 
-    &:hover { text-decoration: underline; }
+    &:hover { text-decoration: underline; color: darken($verde, 8%); }
   }
 }
 
 .create-error-banner {
   margin: 0 24px 12px;
   padding: 10px 14px;
-  background: #fff0f0;
-  border: 1px solid #f5c2c7;
-  border-radius: 8px;
-  color: #b02a37;
+  background: rgba($danger, 0.08);
+  border: 1px solid rgba($danger, 0.25);
+  border-radius: 10px;
+  color: darken($danger, 5%);
   font-size: 0.85rem;
   display: flex;
   align-items: flex-start;

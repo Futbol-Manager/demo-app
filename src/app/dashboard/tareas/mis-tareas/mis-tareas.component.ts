@@ -1,7 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TaskStorageService, StoredTask } from 'src/app/core/services/training/task-storage.service';
+import { TrainingService } from 'src/app/core/services/training/training.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { environment } from 'src/environments/environment';
 
@@ -15,11 +17,19 @@ export class MisTareasComponent implements OnInit, OnDestroy {
   misTareas: StoredTask[] = [];
   selectedTask: StoredTask | null = null;
   teamId = 0;
+  userId = 0;
   imageBaseUrl: string = environment.images + 'task-board/';
 
   showForm = false;
   editingId: string | null = null;
   form: Partial<StoredTask> = this.emptyForm();
+
+  /** Imagen/GIF desde la pizarra (archivo local antes de subir) */
+  pizarraFile: File | null = null;
+  pizarraPreviewUrl: string | null = null;
+  mostrarPizarra = false;
+  savingForm = false;
+  saveFormError = '';
 
   estrategias: string[] = [
     'Acciones a Balón Parado', 'Acciones Combinadas', 'Circuito', 'Conservación',
@@ -68,13 +78,16 @@ export class MisTareasComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     public taskStorage: TaskStorageService,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private trainingService: TrainingService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe(p => this.teamId = +p['teamId']);
     this.loginService.usuarioActual.subscribe(user => {
       if (user?.userId) {
+        this.userId = user.userId;
         this.taskStorage.loadFromBackend(user.userId);
       }
     });
@@ -105,16 +118,20 @@ export class MisTareasComponent implements OnInit, OnDestroy {
     this.selectedTask = null;
   }
 
-  /* ─── CREAR / EDITAR ─── */
+  /* ─── CREAR / EDITAR (modal) ─── */
   openCreate(): void {
     this.form = this.emptyForm();
     this.editingId = null;
+    this.clearPizarraAttachment();
+    this.saveFormError = '';
     this.showForm = true;
   }
 
   openEdit(task: StoredTask): void {
     this.form = { ...task };
     this.editingId = task.localId;
+    this.clearPizarraAttachment();
+    this.saveFormError = '';
     this.showForm = true;
     this.selectedTask = null;
   }
@@ -122,16 +139,84 @@ export class MisTareasComponent implements OnInit, OnDestroy {
   cancelForm(): void {
     this.showForm = false;
     this.editingId = null;
+    this.clearPizarraAttachment();
+    this.saveFormError = '';
+  }
+
+  /** Preview URL: pizarra recién añadida (sanitizada) o imagen existente de la tarea */
+  get formImageUrl(): SafeUrl | string | null {
+    if (this.pizarraPreviewUrl) {
+      return this.sanitizer.bypassSecurityTrustUrl(this.pizarraPreviewUrl);
+    }
+    if (this.form.imagenBoard) return this.imageBaseUrl + this.form.imagenBoard;
+    return null;
+  }
+
+  abrirPizarra(): void {
+    this.mostrarPizarra = true;
+  }
+
+  cerrarPizarra(): void {
+    this.mostrarPizarra = false;
+  }
+
+  /** Cuando el usuario guarda la imagen en la pizarra (modo crear, sin taskId) */
+  onPizarraArchivoGenerado(file: File): void {
+    if (this.pizarraPreviewUrl) URL.revokeObjectURL(this.pizarraPreviewUrl);
+    this.pizarraFile = file;
+    this.pizarraPreviewUrl = URL.createObjectURL(file);
+    this.mostrarPizarra = false;
+  }
+
+  /** Quitar imagen (pizarra recién añadida o referencia; deja la tarea sin imagen) */
+  quitarImagenPizarra(): void {
+    this.clearPizarraAttachment();
+    this.form = { ...this.form, imagenBoard: '' };
+  }
+
+  private clearPizarraAttachment(): void {
+    if (this.pizarraPreviewUrl) {
+      URL.revokeObjectURL(this.pizarraPreviewUrl);
+    }
+    this.pizarraFile = null;
+    this.pizarraPreviewUrl = null;
   }
 
   saveForm(): void {
-    if (this.editingId) {
-      this.taskStorage.updateMyTask(this.editingId, this.form);
+    if (!this.form.slogans?.trim()) return;
+    this.saveFormError = '';
+    this.savingForm = true;
+
+    const doSave = (imagenBoard?: string) => {
+      if (imagenBoard !== undefined) this.form.imagenBoard = imagenBoard;
+      if (this.editingId) {
+        this.taskStorage.updateMyTask(this.editingId, this.form);
+      } else {
+        this.taskStorage.addMyTask(this.form);
+      }
+      this.clearPizarraAttachment();
+      this.showForm = false;
+      this.editingId = null;
+      this.savingForm = false;
+    };
+
+    if (this.pizarraFile && this.userId) {
+      const coachTaskId = this.editingId
+        ? (this.misTareas.find(t => t.localId === this.editingId)?.coachTaskId ?? 0)
+        : 0;
+      this.trainingService.uploadCoachTaskImage(coachTaskId, this.userId, this.pizarraFile).subscribe({
+        next: (resp) => {
+          const filename = resp?.data as string | undefined;
+          doSave(filename || this.form.imagenBoard || '');
+        },
+        error: () => {
+          this.saveFormError = 'Error al subir la imagen de la pizarra.';
+          this.savingForm = false;
+        }
+      });
     } else {
-      this.taskStorage.addMyTask(this.form);
+      doSave();
     }
-    this.showForm = false;
-    this.editingId = null;
   }
 
   /* ─── ELIMINAR ─── */

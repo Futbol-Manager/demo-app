@@ -81,7 +81,7 @@
           </div>
         </div>
 
-        <!-- NOTIFICACIONES -->
+        <!-- 1. NOTIFICACIONES -->
         <div *ngIf="!clubLoading && clubOk" class="col-6 col-md-4">
           <div (click)="irAPantallaClub(8)" class="dashboard-card" role="button" tabindex="0">
             <img src="assets/images/notificaciones.jpg" alt="Notificaciones">
@@ -92,18 +92,18 @@
           </div>
         </div>
 
-        <!-- BIBLIOTECA DE VÍDEOS -->
-        <div *ngIf="!clubLoading && clubOk" class="col-6 col-md-4">
-          <div (click)="irAPantallaClub(13)" class="dashboard-card" role="button" tabindex="0">
-            <img src="assets/images/video-biblioteca.jpg" alt="Biblioteca de Vídeos">
+        <!-- 2. GESTIÓN DE STAFF -->
+        <div class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(16)" class="dashboard-card" role="button" tabindex="0">
+            <img src="assets/images/staff-club.jpg" alt="Gestión de Staff">
             <div class="overlay">
-              <i class="bi bi-play-btn-fill"></i>
-              <span>{{ 'NAV.VIDEO_LIBRARY' | translate }}</span>
+              <i class="bi bi-person-badge"></i>
+              <span>Gestión de Staff</span>
             </div>
           </div>
         </div>
 
-        <!-- SCOUTING -->
+        <!-- 3. SCOUTING -->
         <div *ngIf="!clubLoading && clubOk" class="col-6 col-md-4">
           <div (click)="irAPantallaClub(12)" class="dashboard-card" role="button" tabindex="0">
             <img src="assets/images/scouting.jpg" alt="Scouting">
@@ -114,18 +114,18 @@
           </div>
         </div>
 
-        <!-- ASISTENTE DE IA -->
-        <div class="col-6 col-md-4">
-          <div (click)="irAPantallaClub(11)" class="dashboard-card ai-assistant-card" role="button" tabindex="0">
-            <img src="assets/images/asistente-ia.jpg" alt="Asistente de IA">
+        <!-- 4. BIBLIOTECA DE VÍDEOS -->
+        <div *ngIf="!clubLoading && clubOk" class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(13)" class="dashboard-card" role="button" tabindex="0">
+            <img src="assets/images/video-biblioteca.jpg" alt="Biblioteca de Vídeos">
             <div class="overlay">
-              <i class="bi bi-robot"></i>
-              <span>{{ 'NAV.AI_ASSISTANT' | translate }}</span>
+              <i class="bi bi-play-btn-fill"></i>
+              <span>{{ 'NAV.VIDEO_LIBRARY' | translate }}</span>
             </div>
           </div>
         </div>
 
-        <!-- ANÁLISIS DE VÍDEO -->
+        <!-- 5. ANÁLISIS DE VÍDEO -->
         <div class="col-6 col-md-4">
           <div (click)="irAPantallaClub(14)" class="dashboard-card" role="button" tabindex="0">
             <img src="assets/images/video-analysis.jpg" alt="Análisis de vídeo">
@@ -136,13 +136,13 @@
           </div>
         </div>
 
-        <!-- GESTIÓN DE STAFF -->
+        <!-- 6. ASISTENTE DE IA -->
         <div class="col-6 col-md-4">
-          <div (click)="irAPantallaClub(16)" class="dashboard-card" role="button" tabindex="0">
-            <img src="assets/images/staff-club.jpg" alt="Gestión de Staff">
+          <div (click)="irAPantallaClub(11)" class="dashboard-card ai-assistant-card" role="button" tabindex="0">
+            <img src="assets/images/asistente-ia.jpg" alt="Asistente de IA">
             <div class="overlay">
-              <i class="bi bi-person-badge"></i>
-              <span>Gestión de Staff</span>
+              <i class="bi bi-robot"></i>
+              <span>{{ 'NAV.AI_ASSISTANT' | translate }}</span>
             </div>
           </div>
         </div>

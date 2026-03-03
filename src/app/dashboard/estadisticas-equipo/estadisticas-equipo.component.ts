@@ -291,6 +291,11 @@ export class EstadisticasEquipoComponent implements OnInit, OnDestroy {
   listSub: any[] = [];
   listLabels: any[] = [];
 
+  /** Categorías que tienen subcategorías (para el selector de Goles por subcategoría) */
+  get golTypesConSubcategorias(): { name: string; subcategories: any[] }[] {
+    return this.golTypes.filter(c => c.subcategories && c.subcategories.length > 0);
+  }
+
   golAvanzadoAFavor: GolPostPartido = new GolPostPartido({});
   golesAvanzadoAFavor: GolPostPartido[] = [];
 
@@ -559,8 +564,8 @@ export class EstadisticasEquipoComponent implements OnInit, OnDestroy {
     this.trainingService.getListGolesAvanzadoByTeamId(this.teamId).subscribe(
       (resp) => {
         if (resp.data) {
-          this.golesAvanzadoAFavor = resp.data.golesAFavor;
-          this.golesAvanzadoEnContra = resp.data.golesEnContra;
+          this.golesAvanzadoAFavor = resp.data.golesAFavor || [];
+          this.golesAvanzadoEnContra = resp.data.golesEnContra || [];
         }
 
         setTimeout(() => {
@@ -569,6 +574,13 @@ export class EstadisticasEquipoComponent implements OnInit, OnDestroy {
           this.createChart();
           this.createChartCategoryEnContra00();
           this.createChartCategoryEnContra01();
+          // Inicializar "Goles por subcategoría" con la primera categoría que tenga subcategorías
+          const conSub = this.golTypesConSubcategorias;
+          if (conSub.length > 0 && !this.selectedGolTypes) {
+            this.selectedGolTypes = conSub[0].name;
+            this.createChartCategoryAFavor();
+            this.createChartCategoryEnContra();
+          }
         }, 100);
       },
       (error) => {
@@ -745,12 +757,22 @@ export class EstadisticasEquipoComponent implements OnInit, OnDestroy {
     ];
     const borders = ['rgba(49, 178, 112, 1)', 'rgba(220, 53, 69, 1)', 'rgba(108, 117, 125, 1)'];
 
+    const victorias = this.resumentotales?.victorias ?? 0;
+    const derrotas = this.resumentotales?.derrotas ?? 0;
+    const empates = this.resumentotales?.empates ?? 0;
+    const total = victorias + derrotas + empates;
+
+    // Si todos son 0, Chart.js no dibuja segmentos; usamos valores placeholder para que el gráfico se vea
+    const dataValues = total > 0
+      ? [victorias, derrotas, empates]
+      : [1, 1, 1];
+
     this.pieChartResultados = new Chart(canvas, {
       type: 'pie',
       data: {
         labels: ['Victorias', 'Derrotas', 'Empates'],
         datasets: [{
-          data: [this.resumentotales.victorias, this.resumentotales.derrotas, this.resumentotales.empates],
+          data: dataValues,
           backgroundColor: colors,
           borderColor: borders,
           borderWidth: 2
@@ -758,11 +780,16 @@ export class EstadisticasEquipoComponent implements OnInit, OnDestroy {
       },
       options: {
         responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 1,
+        layout: {
+          padding: { top: 8, bottom: 8, left: 8, right: 8 }
+        },
         plugins: {
           legend: { position: 'top' },
           title: {
             display: true,
-            text: 'Resultados de partidos',
+            text: total > 0 ? 'Resultados de partidos' : 'Resultados de partidos (sin datos)',
             font: { size: 16, weight: 'bold' },
             color: CHART_COLOR_NIGHT,
             padding: { bottom: 12 }
@@ -771,19 +798,25 @@ export class EstadisticasEquipoComponent implements OnInit, OnDestroy {
       }
     });
 
-    const pieChartData = this.pieChartResultados.config.data.datasets[0].data;
-    const total = (pieChartData as number[]).reduce((a, b) => a + b, 0);
-    const pieChartLabels = this.pieChartResultados.config.data.labels;
-    if (total > 0 && chartLabelsEl && pieChartLabels) {
-      (pieChartData as number[]).forEach((value, index) => {
-        const percent = Math.round((value / total) * 100);
+    const pieChartLabels = this.pieChartResultados.config.data.labels as string[];
+    if (chartLabelsEl && pieChartLabels) {
+      if (total > 0) {
+        (dataValues as number[]).forEach((value, index) => {
+          const percent = Math.round((value / total) * 100);
+          const div = document.createElement('div');
+          div.textContent = `${pieChartLabels[index]}: ${percent}%`;
+          div.style.color = borders[index];
+          div.style.marginBottom = '6px';
+          div.style.fontWeight = '600';
+          chartLabelsEl.appendChild(div);
+        });
+      } else {
         const div = document.createElement('div');
-        div.textContent = `${pieChartLabels[index]}: ${percent}%`;
-        div.style.color = borders[index];
-        div.style.marginBottom = '6px';
+        div.textContent = 'Sin partidos registrados';
+        div.style.color = 'rgba(0, 44, 64, 0.6)';
         div.style.fontWeight = '600';
         chartLabelsEl.appendChild(div);
-      });
+      }
     }
   }
 
@@ -889,17 +922,41 @@ export class EstadisticasEquipoComponent implements OnInit, OnDestroy {
   }
 
   onSelectGolTypes(event: any): void {
-    if (event.target.value === 'Falta disparo directo' || event.target.value === 'Penalti') {
-      //no va haber nada mas
-      this.selectedGolTypes = '';
+    const value = event?.target?.value ?? event ?? '';
+    if (value === 'Falta disparo directo' || value === 'Penalti' || value === 'En propia' || value === '') {
+      this.selectedGolTypes = value || '';
       this.selectedSubGolTypes = '';
+      this.destroySubcategoriaCharts();
     } else {
-      this.selectedGolTypes = event.target.value;
+      this.selectedGolTypes = value;
       this.selectedSubGolTypes = '';
       this.createChartCategoryAFavor();
       this.createChartCategoryEnContra();
     }
+  }
 
+  hasSubcategorias(categoryName: string): boolean {
+    const cat = this.golTypes.find(c => c.name === categoryName);
+    return !!(cat?.subcategories?.length);
+  }
+
+  getSubcategoriaEmptyMessage(): string {
+    if (!this.selectedGolTypes) return 'Selecciona una categoría para ver goles por subcategoría.';
+    const cat = this.golTypes.find(c => c.name === this.selectedGolTypes);
+    if (cat && (!cat.subcategories || cat.subcategories.length === 0))
+      return 'Esta categoría no tiene subcategorías.';
+    return 'Selecciona una categoría para ver goles por subcategoría.';
+  }
+
+  private destroySubcategoriaCharts(): void {
+    if (this.barChartCuarta) {
+      this.barChartCuarta.destroy();
+      this.barChartCuarta = null;
+    }
+    if (this.barChartQuinta) {
+      this.barChartQuinta.destroy();
+      this.barChartQuinta = null;
+    }
   }
 
   onSelectSubGolTypes(event: any): void {
@@ -912,332 +969,233 @@ export class EstadisticasEquipoComponent implements OnInit, OnDestroy {
     return selectedGolTypes ? selectedGolTypes.subcategories : [];
   }
 
+  /** Obtiene todas las opciones únicas para la categoría seleccionada (desde golTypes y desde datos) */
+  private getOpcionesParaCategoria(categoryName: string, goles: GolPostPartido[]): string[] {
+    const cat = this.golTypes.find(c => c.name === categoryName);
+    const fromSchema = new Set<string>();
+    if (cat?.subcategories) {
+      cat.subcategories.forEach((sub: any) => {
+        (sub.options || []).forEach((opt: string) => fromSchema.add(opt));
+      });
+    }
+    goles.filter(g => g.category === categoryName).forEach(g => {
+      if (g.option?.trim()) fromSchema.add(g.option.trim());
+    });
+    return Array.from(fromSchema).sort();
+  }
+
+  /** Paleta de colores para datasets de subcategoría (fallback plano) */
+  private readonly SUBCHART_COLORS = [
+    'rgba(49, 178, 112, 0.75)',
+    'rgba(0, 77, 110, 0.75)',
+    'rgba(235, 81, 54, 0.6)',
+    'rgba(250, 150, 0, 0.7)',
+    'rgba(108, 117, 125, 0.7)',
+    'rgba(14, 235, 198, 0.6)',
+    'rgba(62, 14, 235, 0.55)',
+    'rgba(250, 0, 250, 0.5)',
+    'rgba(133, 250, 0, 0.6)',
+    'rgba(0, 108, 250, 0.6)',
+  ];
+
+  /** Degradados premium [top, bottom] para barras de subcategoría (a favor: verdes/azules) */
+  private readonly SUBCHART_GRADIENT_FAVOR: [string, string][] = [
+    ['rgba(49, 178, 112, 0.95)', 'rgba(0, 77, 110, 0.85)'],
+    ['rgba(72, 195, 140, 0.9)', 'rgba(0, 44, 64, 0.8)'],
+    ['rgba(14, 235, 198, 0.85)', 'rgba(0, 77, 110, 0.75)'],
+    ['rgba(133, 250, 0, 0.75)', 'rgba(49, 178, 112, 0.7)'],
+    ['rgba(0, 108, 250, 0.8)', 'rgba(0, 44, 64, 0.7)'],
+    ['rgba(62, 14, 235, 0.7)', 'rgba(0, 44, 64, 0.65)'],
+    ['rgba(250, 150, 0, 0.8)', 'rgba(180, 100, 0, 0.7)'],
+    ['rgba(108, 117, 125, 0.75)', 'rgba(0, 44, 64, 0.6)'],
+    ['rgba(250, 0, 250, 0.55)', 'rgba(120, 0, 120, 0.5)'],
+    ['rgba(235, 81, 54, 0.7)', 'rgba(180, 40, 30, 0.65)'],
+  ];
+
+  /** Degradados premium para barras de subcategoría (en contra: rojos/oscuros) */
+  private readonly SUBCHART_GRADIENT_CONTRA: [string, string][] = [
+    ['rgba(220, 53, 69, 0.9)', 'rgba(0, 44, 64, 0.85)'],
+    ['rgba(235, 81, 54, 0.85)', 'rgba(140, 30, 20, 0.8)'],
+    ['rgba(250, 100, 80, 0.75)', 'rgba(0, 44, 64, 0.7)'],
+    ['rgba(180, 80, 100, 0.75)', 'rgba(0, 44, 64, 0.65)'],
+    ['rgba(0, 77, 110, 0.7)', 'rgba(0, 44, 64, 0.6)'],
+    ['rgba(108, 117, 125, 0.7)', 'rgba(0, 44, 64, 0.6)'],
+    ['rgba(250, 150, 0, 0.7)', 'rgba(150, 80, 0, 0.6)'],
+    ['rgba(62, 14, 235, 0.6)', 'rgba(30, 0, 100, 0.55)'],
+    ['rgba(14, 235, 198, 0.6)', 'rgba(0, 77, 110, 0.55)'],
+    ['rgba(49, 178, 112, 0.6)', 'rgba(0, 44, 64, 0.5)'],
+  ];
+
+  /** Crea degradado vertical para una barra (estilo premium) */
+  private getSubchartBarGradient(
+    ctx: CanvasRenderingContext2D,
+    context: { element?: { y: number; base: number }; datasetIndex: number },
+    gradientStops: [string, string][]
+  ): string | CanvasGradient {
+    const el = context.element;
+    if (!el || typeof el.y !== 'number' || typeof el.base !== 'number') {
+      const idx = context.datasetIndex % gradientStops.length;
+      return gradientStops[idx][0];
+    }
+    const gradient = ctx.createLinearGradient(0, el.y, 0, el.base);
+    const [top, bottom] = gradientStops[context.datasetIndex % gradientStops.length];
+    gradient.addColorStop(0, top);
+    gradient.addColorStop(1, bottom);
+    return gradient;
+  }
+
   createChartCategoryAFavor() {
-    // Antes de crear el nuevo gráfico, destruye el gráfico existente si es necesario
     if (this.barChartCuarta) {
-      this.barChartCuarta.destroy(); // Destruye el gráfico existente
+      this.barChartCuarta.destroy();
+      this.barChartCuarta = null;
     }
 
-    const selectedGolTypes = this.golTypes.find(cat => cat.name === this.selectedGolTypes);
-    this.listSub = selectedGolTypes!.subcategories;
-    this.listLabels = [];
-    for (let a = 0; a < this.listSub.length; a++) {
-      this.listLabels.push(this.listSub[a].name);
-    }
+    const selectedCat = this.golTypes.find(c => c.name === this.selectedGolTypes);
+    if (!selectedCat?.subcategories?.length) return;
 
-    let uno: number = 0;
-    let dos: number = 0;
-    let tres: number = 0;
-    let cuatro: number = 0;
-    let cinco: number = 0;
-    let seis: number = 0;
-    let siete: number = 0;
-    let ocho: number = 0;
-    let unoA: any = [];
-    let dosA: any = [];
-    let tresA: any = [];
-    let cuatroA: any = [];
-    let cincoA: any = [];
-    let seisA: any = [];
-    let sieteA: any = [];
-    let ochoA: any = [];
-    //necesito saber la categoria, la subcategoria y luego defiir el resultado a la opcion correcta
+    this.listSub = selectedCat.subcategories;
+    this.listLabels = this.listSub.map((s: any) => s.name);
+    const opciones = this.getOpcionesParaCategoria(this.selectedGolTypes, this.golesAvanzadoAFavor);
 
-    for (let e = 0; e < this.listLabels.length; e++) { //5
-      for (let f = 0; f < this.golesAvanzadoAFavor.length; f++) { //5
-        if (this.golesAvanzadoAFavor[f].category === this.selectedGolTypes) { //3 
-          if (this.golesAvanzadoAFavor[f].subCategory === this.listLabels[e]) {
-            switch (this.golesAvanzadoAFavor[f].option) {
-              case 'Olímpico 1er palo':
-                uno++;
-                break;
-              case 'Olímpico 2do palo':
-                dos++;
-                break;
-              case 'De cabeza 1er palo':
-                tres++;
-                break;
-              case 'Con otra parte 1er palo':
-                cuatro++;
-                break;
-              case 'De cabeza punto penalti':
-                cinco++;
-                break;
-              case 'Con otra parte punto penalti':
-                seis++;
-                break;
-              case 'De cabeza 2do palo':
-                siete++;
-                break;
-              case 'Con otra parte 2do palo':
-                ocho++;
-                break;
-            }
-          }
-        }
-      }
-
-      unoA.push(uno);
-      dosA.push(dos);
-      tresA.push(tres);
-      cuatroA.push(cuatro);
-      cincoA.push(cinco);
-      seisA.push(seis);
-      sieteA.push(siete);
-      ochoA.push(ocho);
-
-      uno = 0;
-      dos = 0;
-      tres = 0;
-      cuatro = 0;
-      cinco = 0;
-      seis = 0;
-      siete = 0;
-      ocho = 0;
-    }
-
-    const data = {
-      labels: this.listLabels,
-      datasets: [
-        {
-          label: 'Olímpico 1er palo',
-          data: unoA,
-          backgroundColor: 'rgba(235, 81, 54, 0.5)',
-        },
-        {
-          label: 'Olímpico 2nd palo',
-          data: dosA,
-          backgroundColor: 'rgba(250, 150, 0, 0.5)',
-        },
-        {
-          label: 'De cabeza 1er palo',
-          data: tresA,
-          backgroundColor: 'rgba(235, 220, 14, 0.5)',
-        },
-        {
-          label: 'Con otra parte 1er palo',
-          data: cuatroA,
-          backgroundColor: 'rgba(133, 250, 0, 0.5)',
-        },
-        {
-          label: 'De cabeza centro palo',
-          data: cincoA,
-          backgroundColor: 'rgba(14, 235, 198, 0.5)',
-        },
-        {
-          label: 'Con otra parte centro palo',
-          data: seisA,
-          backgroundColor: 'rgba(0, 108, 250, 0.5)',
-        },
-        {
-          label: 'De cabeza 2nd palo',
-          data: sieteA,
-          backgroundColor: 'rgba(62, 14, 235, 0.5)',
-        },
-        {
-          label: 'Con otra parte 2nd palo',
-          data: ochoA,
-          backgroundColor: 'rgba(250, 0, 250, 0.5)',
-        },
-      ]
-    };
+    const rawDatasets = opciones.map((opt, idx) => {
+      const data = this.listLabels.map(subName => {
+        return this.golesAvanzadoAFavor.filter(
+          g => g.category === this.selectedGolTypes && g.subCategory === subName && (g.option || '').trim() === opt
+        ).length;
+      });
+      return { label: opt, data, colorIndex: idx };
+    });
+    const datasets = rawDatasets.filter(ds => ds.data.some(v => v > 0)).map((ds, i) => ({
+      label: ds.label,
+      data: ds.data,
+      backgroundColor: (context: any) =>
+        this.getSubchartBarGradient(context.chart?.ctx, context, this.SUBCHART_GRADIENT_FAVOR),
+      borderColor: 'rgba(0, 44, 64, 0.2)',
+      borderWidth: 1,
+      borderRadius: 8,
+      borderSkipped: false,
+    }));
 
     const ctx = document.getElementById('barChartCategoria') as HTMLCanvasElement;
+    if (!ctx) return;
+
     this.barChartCuarta = new Chart(ctx, {
       type: 'bar',
-      data: data,
+      data: {
+        labels: this.listLabels,
+        datasets: datasets.length ? datasets : [{
+          label: 'Sin datos',
+          data: this.listLabels.map(() => 0),
+          backgroundColor: 'rgba(0,44,64,0.12)',
+          borderRadius: 8,
+          borderSkipped: false,
+        }],
+      },
       options: {
         responsive: true,
         maintainAspectRatio: true,
+        aspectRatio: 1.8,
         plugins: {
           title: {
             display: true,
             text: 'Goles a favor',
-            font: { size: 16, weight: 'bold' },
+            font: { size: 15, weight: 'bold' },
             color: CHART_COLOR_NIGHT,
-            padding: { bottom: 12 }
+            padding: { bottom: 12 },
           },
-          legend: { position: 'top' }
+          legend: { position: 'top', labels: { boxWidth: 14, padding: 12, usePointStyle: true } },
         },
         scales: {
           x: {
             stacked: true,
             grid: { display: false },
-            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 }, maxRotation: 45 }
+            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 }, maxRotation: 45, minRotation: 0 },
           },
           y: {
             stacked: true,
             beginAtZero: true,
             grid: { color: 'rgba(0, 44, 64, 0.08)' },
-            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 } }
-          }
-        }
-      }
+            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 } },
+          },
+        },
+      },
     });
   }
 
   createChartCategoryEnContra() {
-    // Antes de crear el nuevo gráfico, destruye el gráfico existente si es necesario
     if (this.barChartQuinta) {
-      this.barChartQuinta.destroy(); // Destruye el gráfico existente
+      this.barChartQuinta.destroy();
+      this.barChartQuinta = null;
     }
 
-    const selectedGolTypes = this.golTypes.find(cat => cat.name === this.selectedGolTypes);
-    this.listSub = selectedGolTypes!.subcategories;
-    this.listLabels = [];
-    for (let a = 0; a < this.listSub.length; a++) {
-      this.listLabels.push(this.listSub[a].name);
-    }
+    const selectedCat = this.golTypes.find(c => c.name === this.selectedGolTypes);
+    if (!selectedCat?.subcategories?.length) return;
 
-    let uno: number = 0;
-    let dos: number = 0;
-    let tres: number = 0;
-    let cuatro: number = 0;
-    let cinco: number = 0;
-    let seis: number = 0;
-    let siete: number = 0;
-    let ocho: number = 0;
-    let unoA: any = [];
-    let dosA: any = [];
-    let tresA: any = [];
-    let cuatroA: any = [];
-    let cincoA: any = [];
-    let seisA: any = [];
-    let sieteA: any = [];
-    let ochoA: any = [];
-    //necesito saber la categoria, la subcategoria y luego defiir el resultado a la opcion correcta
+    const listLabels = selectedCat.subcategories.map((s: any) => s.name);
+    const opciones = this.getOpcionesParaCategoria(this.selectedGolTypes, this.golesAvanzadoEnContra);
 
-    for (let e = 0; e < this.listLabels.length; e++) { //5
-      for (let f = 0; f < this.golesAvanzadoEnContra.length; f++) { //5
-        if (this.golesAvanzadoEnContra[f].category === this.selectedGolTypes) { //3 
-          if (this.golesAvanzadoEnContra[f].subCategory === this.listLabels[e]) {
-            switch (this.golesAvanzadoEnContra[f].option) {
-              case 'Olímpico 1er palo':
-                uno++;
-                break;
-              case 'Olímpico 2nd palo':
-                dos++;
-                break;
-              case 'De cabeza 1er palo':
-                tres++;
-                break;
-              case 'Con otra parte 1er palo':
-                cuatro++;
-                break;
-              case 'De cabeza centro palo':
-                cinco++;
-                break;
-              case 'Con otra parte centro palo':
-                seis++;
-                break;
-              case 'De cabeza 2nd palo':
-                siete++;
-                break;
-              case 'Con otra parte 2nd palo':
-                ocho++;
-                break;
-            }
-          }
-        }
-
-      }
-
-      unoA.push(uno);
-      dosA.push(dos);
-      tresA.push(tres);
-      cuatroA.push(cuatro);
-      cincoA.push(cinco);
-      seisA.push(seis);
-      sieteA.push(siete);
-      ochoA.push(ocho);
-
-      uno = 0;
-      dos = 0;
-      tres = 0;
-      cuatro = 0;
-      cinco = 0;
-      seis = 0;
-      siete = 0;
-      ocho = 0;
-    }
-
-    const data = {
-      labels: this.listLabels,
-      datasets: [
-        {
-          label: 'Olímpico 1er palo',
-          data: unoA,
-          backgroundColor: 'rgba(235, 81, 54, 0.5)',
-        },
-        {
-          label: 'Olímpico 2nd palo',
-          data: dosA,
-          backgroundColor: 'rgba(250, 150, 0, 0.5)',
-        },
-        {
-          label: 'De cabeza 1er palo',
-          data: tresA,
-          backgroundColor: 'rgba(235, 220, 14, 0.5)',
-        },
-        {
-          label: 'Con otra parte 1er palo',
-          data: cuatroA,
-          backgroundColor: 'rgba(133, 250, 0, 0.5)',
-        },
-        {
-          label: 'De cabeza centro palo',
-          data: cincoA,
-          backgroundColor: 'rgba(14, 235, 198, 0.5)',
-        },
-        {
-          label: 'Con otra parte centro palo',
-          data: seisA,
-          backgroundColor: 'rgba(0, 108, 250, 0.5)',
-        },
-        {
-          label: 'De cabeza 2nd palo',
-          data: sieteA,
-          backgroundColor: 'rgba(62, 14, 235, 0.5)',
-        },
-        {
-          label: 'Con otra parte 2nd palo',
-          data: ochoA,
-          backgroundColor: 'rgba(250, 0, 250, 0.5)',
-        },
-      ]
-    };
+    const rawDatasets = opciones.map((opt, idx) => {
+      const data = listLabels.map(subName => {
+        return this.golesAvanzadoEnContra.filter(
+          g => g.category === this.selectedGolTypes && g.subCategory === subName && (g.option || '').trim() === opt
+        ).length;
+      });
+      return { label: opt, data, colorIndex: idx };
+    });
+    const datasets = rawDatasets.filter(ds => ds.data.some(v => v > 0)).map((ds, i) => ({
+      label: ds.label,
+      data: ds.data,
+      backgroundColor: (context: any) =>
+        this.getSubchartBarGradient(context.chart?.ctx, context, this.SUBCHART_GRADIENT_CONTRA),
+      borderColor: 'rgba(0, 44, 64, 0.2)',
+      borderWidth: 1,
+      borderRadius: 8,
+      borderSkipped: false,
+    }));
 
     const ctx = document.getElementById('barChartCategoria2') as HTMLCanvasElement;
+    if (!ctx) return;
+
     this.barChartQuinta = new Chart(ctx, {
       type: 'bar',
-      data: data,
+      data: {
+        labels: listLabels,
+        datasets: datasets.length ? datasets : [{
+          label: 'Sin datos',
+          data: listLabels.map(() => 0),
+          backgroundColor: 'rgba(220,53,69,0.12)',
+          borderRadius: 8,
+          borderSkipped: false,
+        }],
+      },
       options: {
         responsive: true,
         maintainAspectRatio: true,
+        aspectRatio: 1.8,
         plugins: {
           title: {
             display: true,
             text: 'Goles en contra',
-            font: { size: 16, weight: 'bold' },
+            font: { size: 15, weight: 'bold' },
             color: CHART_COLOR_NIGHT,
-            padding: { bottom: 12 }
+            padding: { bottom: 12 },
           },
-          legend: { position: 'top' }
+          legend: { position: 'top', labels: { boxWidth: 14, padding: 12, usePointStyle: true } },
         },
         scales: {
           x: {
             stacked: true,
             grid: { display: false },
-            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 }, maxRotation: 45 }
+            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 }, maxRotation: 45, minRotation: 0 },
           },
           y: {
             stacked: true,
             beginAtZero: true,
             grid: { color: 'rgba(0, 44, 64, 0.08)' },
-            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 } }
-          }
-        }
-      }
+            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 } },
+          },
+        },
+      },
     });
   }
 

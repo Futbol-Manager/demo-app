@@ -565,4 +565,8 @@ export class InformacionEquipoComponent implements OnInit {
     );
   }
 
+  get hasStaffCoaches(): boolean {
+    return this.coaches.some((c: any) => c.profile === 2 || c.profile === 6 || c.profile === 7);
+  }
+
 }
