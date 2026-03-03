@@ -354,7 +354,7 @@
                    style="width:200px; background:rgba(255,255,255,0.2); border:1px solid rgba(255,255,255,0.4); color:#fff;"
                    placeholder="Buscar cliente..."
                    [(ngModel)]="clientsSearch"
-                   (input)="cargarClientesProspectados()">
+                   (input)="onClientsSearchChange()">
             <button class="btn btn-sm" style="background:rgba(255,255,255,0.2); color:#fff; border:1px solid rgba(255,255,255,0.4);"
                     (click)="cargarClientesProspectados()">
               <i class="bi bi-arrow-clockwise" [class.spin-icon]="isLoadingClients"></i>
@@ -427,7 +427,7 @@
                   </button>
                 </td>
               </tr>
-              <tr *ngIf="prospectedClients.length === 0">
+              <tr *ngIf="prospectedClients.length === 0 && !isLoadingClients">
                 <td colspan="7" class="text-center py-4 text-muted">
                   <i class="bi bi-trophy me-2"></i>
                   Aún no has convertido ningún prospecto en cliente.
@@ -436,6 +436,24 @@
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <!-- Paginación clientes prospectados -->
+        <div class="d-flex align-items-center justify-content-between px-3 py-2 border-top"
+             *ngIf="prospectedClientsTotal > clientsPageSize"
+             style="background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.1)!important;">
+          <span class="text-white-50 small">
+            Mostrando {{ clientsPage * clientsPageSize + 1 }}–{{ clientsPage * clientsPageSize + prospectedClients.length }} de {{ prospectedClientsTotal }}
+          </span>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-light" (click)="clientsPrevPage()" [disabled]="clientsPage === 0">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <span class="text-white small align-self-center">{{ clientsPage + 1 }} / {{ clientsTotalPages }}</span>
+            <button class="btn btn-sm btn-outline-light" (click)="clientsNextPage()" [disabled]="clientsPage >= clientsTotalPages - 1">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -851,7 +869,7 @@
         </div>
       </div>
       <div class="modal-footer border-0" style="background:#fef3c7;">
-        <button class="btn btn-sm btn-outline-secondary" (click)="goToProspector()">
+        <button class="btn btn-sm btn-outline-secondary" (click)="goToProspector(selectedClient?.prospect_id)">
           <i class="bi bi-bullseye me-1"></i>Ver en Prospector
         </button>
         <button class="btn btn-sm btn-warning fw-semibold ms-auto" (click)="showClientDetailModal = false">Cerrar</button>

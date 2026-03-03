@@ -1,0 +1,84 @@
+<!-- HEADER -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>Volver</span>
+    </button>
+  </div>
+  <div class="header-center">
+    <h2 class="page-title"><i class="bi bi-bag me-2"></i>Mis tallas de ropa</h2>
+    <p class="header-subtitle">Selecciona tu talla para cada prenda · {{ temporada }}</p>
+  </div>
+  <div class="header-spacer"></div>
+</div>
+
+<div class="container-fluid ropa-jugador-container">
+
+  <!-- CARGANDO -->
+  <div *ngIf="cargando" class="text-center py-5">
+    <div class="spinner-border text-success" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="text-muted mt-2">Cargando catálogo de ropa...</p>
+  </div>
+
+  <!-- ERROR -->
+  <div *ngIf="error && !cargando" class="alert alert-warning mx-3 mt-3">
+    <i class="bi bi-exclamation-triangle me-1"></i> {{ error }}
+  </div>
+
+  <!-- SIN PRENDAS -->
+  <div *ngIf="!cargando && !error && prendas.length === 0" class="empty-state">
+    <i class="bi bi-bag-x"></i>
+    <p>El club aún no ha configurado el catálogo de ropa para este equipo.</p>
+  </div>
+
+  <!-- GRID DE PRENDAS -->
+  <div *ngIf="!cargando && !error && prendas.length > 0" class="prendas-grid">
+    <div class="prenda-card" *ngFor="let prenda of prendas">
+
+      <!-- Imagen -->
+      <div class="prenda-imagen-wrapper">
+        <img *ngIf="prenda.imagenUrl" [src]="prenda.imagenUrl" [alt]="prenda.nombre" class="prenda-imagen">
+        <div *ngIf="!prenda.imagenUrl" class="prenda-imagen-placeholder">
+          <i class="bi bi-bag fs-1 text-secondary"></i>
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="prenda-info">
+        <h6 class="prenda-nombre">{{ prenda.nombre }}</h6>
+        <p *ngIf="prenda.descripcion" class="prenda-descripcion">{{ prenda.descripcion }}</p>
+
+        <!-- Selector de talla -->
+        <div class="talla-selector-row">
+          <label class="talla-label">Talla:</label>
+          <select
+            class="form-select form-select-sm talla-select"
+            [ngModel]="getTallaSeleccionada(prenda.prendaId)"
+            (ngModelChange)="onTallaChange(prenda, $event)"
+            [disabled]="guardando[prenda.prendaId]">
+            <option [value]="0">— Sin seleccionar —</option>
+            <option *ngFor="let talla of prenda.tallas" [value]="talla.tallaId">
+              {{ talla.nombreTalla }}
+            </option>
+          </select>
+          <span *ngIf="guardando[prenda.prendaId]" class="guardando-indicator">
+            <span class="spinner-border spinner-border-sm text-success"></span>
+          </span>
+        </div>
+
+        <!-- Estado -->
+        <div class="estado-row" *ngIf="selecciones[prenda.prendaId]">
+          <span [class]="getEstadoBadgeClass(prenda.prendaId)">
+            {{ getEstadoLabel(prenda.prendaId) }}
+          </span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="menu-bottom-spacer"></div>
+</div>

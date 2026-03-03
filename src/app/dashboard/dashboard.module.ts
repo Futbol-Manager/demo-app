@@ -165,10 +165,13 @@ import { ErpBudgetsComponent } from './erp/erp-budgets/erp-budgets.component';
 import { ErpReportsComponent } from './erp/erp-reports/erp-reports.component';
 import { ErpSetupComponent } from './erp/erp-setup/erp-setup.component';
 import { IndividualTrainingComponent } from './individual-training/individual-training.component';
+import { RopaJugadorComponent } from './ropa-jugador/ropa-jugador.component';
 import { ErpAiConsentModalComponent } from './erp/erp-ai-consent-modal/erp-ai-consent-modal.component';
 import { StaffClubComponent } from './staff-club/staff-club.component';
 import { ModalBackdropDirective } from './shared/modal-backdrop.directive';
 import { PlanificadorSemanalIaComponent } from './planificador-semanal-ia/planificador-semanal-ia.component';
+import { RopaCatalogoComponent } from './ropa/ropa-catalogo/ropa-catalogo.component';
+import { RopaTablaCartalogComponent } from './ropa/ropa-tabla-catalogo/ropa-tabla-catalogo.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -191,6 +194,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     ContabilidadComponent,
     CuotasComponent,
     RopaComponent,
+    RopaCatalogoComponent,
+    RopaTablaCartalogComponent,
     CuadroComponent,
     InfoJugadoresComponent,
     EstadisticasJugadoresClubComponent,
@@ -336,6 +341,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ErpAiConsentModalComponent,
     StaffClubComponent,
     IndividualTrainingComponent,
+    RopaJugadorComponent,
     ModalBackdropDirective,
     PlanificadorSemanalIaComponent,
   ],

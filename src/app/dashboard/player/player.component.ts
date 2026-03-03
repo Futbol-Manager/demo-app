@@ -19,6 +19,7 @@ import { Location } from '@angular/common';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import * as XLSX from 'xlsx';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { RopaCatalogoService, RopaCatalogoPrenda, RopaCatalogoSeleccion } from 'src/app/core/services/ropa-catalogo/ropa-catalogo.service';
 // Registra los complementos necesarios
 Chart.register(...registerables);
 
@@ -57,6 +58,12 @@ export class PlayerComponent implements OnInit, OnDestroy {
   pagosCuotasData: PagocuotasPlayerResponse | null = null;
   pagosCuotasLoading = false;
   pagosCuotasError = false;
+
+  // ─── Ropa catálogo (pestaña en modal jugador) ─────────────────
+  ropaPrendas: RopaCatalogoPrenda[] = [];
+  ropaSelecciones: { [prendaId: number]: RopaCatalogoSeleccion } = {};
+  ropaCargando = false;
+  ropaError = '';
   player: Player = new Player({});
   radarChart: Chart | null = null; // Inicializar la variable radarChart
   mostrarEdad: boolean = false;
@@ -193,7 +200,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
 
   addPlayerMoved: boolean = false;
 
-  constructor(private playerservice: PlayerService,
+  constructor(private ropaCatalogoService: RopaCatalogoService,
+    private playerservice: PlayerService,
     private router: Router,
     private route: ActivatedRoute,
     private http: HttpClient,
@@ -863,6 +871,9 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.numTitulares = 0;
     this.pagosCuotasData = null;
     this.pagosCuotasError = false;
+    this.ropaPrendas = [];
+    this.ropaSelecciones = {};
+    this.ropaError = '';
     this.getInfoAsistencia(player.playerId);
     this.getDatosPlayer(player.playerId);
     this.selectedPlayer = player;
@@ -877,6 +888,54 @@ export class PlayerComponent implements OnInit, OnDestroy {
     if (tab === 'financiera') {
       this.loadPagosCuotasIfNeeded();
     }
+    if (tab === 'ropa') {
+      this.loadRopaIfNeeded();
+    }
+  }
+
+  loadRopaIfNeeded(): void {
+    if (this.ropaCargando || this.ropaPrendas.length > 0) return;
+    const playerId = this.selectedPlayer?.playerId;
+    if (!playerId || !this.teamId) return;
+
+    this.ropaCargando = true;
+    this.ropaError = '';
+    this.ropaPrendas = [];
+    this.ropaSelecciones = {};
+
+    this.ropaCatalogoService.getPrendasByTeam(this.clubId, this.teamId, this.temporadaStoredValue)
+      .subscribe({
+        next: (resPrendas: any) => {
+          this.ropaPrendas = (resPrendas.data as RopaCatalogoPrenda[]) || [];
+          this.ropaCatalogoService.getSeleccionesPlayer(playerId, this.temporadaStoredValue)
+            .subscribe({
+              next: (resSel: any) => {
+                const sels: RopaCatalogoSeleccion[] = (resSel.data as RopaCatalogoSeleccion[]) || [];
+                this.ropaSelecciones = {};
+                for (const s of sels) {
+                  this.ropaSelecciones[s.prendaId] = s;
+                }
+                this.ropaCargando = false;
+              },
+              error: () => { this.ropaCargando = false; }
+            });
+        },
+        error: () => {
+          this.ropaError = 'Error al cargar las prendas de ropa.';
+          this.ropaCargando = false;
+        }
+      });
+  }
+
+  getTallaSeleccionada(prenda: RopaCatalogoPrenda): string {
+    const sel = this.ropaSelecciones[prenda.prendaId];
+    if (!sel || !sel.tallaId) return '—';
+    const talla = (prenda.tallas || []).find(t => t.tallaId === sel.tallaId);
+    return talla ? talla.nombreTalla : '—';
+  }
+
+  getEstadoRopa(prendaId: number): string {
+    return this.ropaSelecciones[prendaId]?.estado || 'sin respuesta';
   }
 
   setFormModalTab(tab: 'personal' | 'deportiva'): void {

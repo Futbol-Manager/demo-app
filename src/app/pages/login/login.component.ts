@@ -155,6 +155,7 @@ export class LoginComponent implements OnInit {
           } else {
             this.loginError = true;
             this.loginErrorKey = 'LOGIN.ERROR.GENERIC';
+            this.cdr.detectChanges();
           }
         },
       });

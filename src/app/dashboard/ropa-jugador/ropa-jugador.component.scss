@@ -1,0 +1,175 @@
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px 12px;
+  border-bottom: 1px solid #e8ecf0;
+  background: #fff;
+
+  .header-center {
+    text-align: center;
+    flex: 1;
+  }
+
+  .page-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1a2f45;
+    margin: 0;
+  }
+
+  .header-subtitle {
+    font-size: 0.82rem;
+    color: #6c757d;
+    margin: 2px 0 0;
+  }
+
+  .back-container, .header-spacer {
+    width: 100px;
+  }
+}
+
+.btn-back-clean {
+  background: none;
+  border: none;
+  color: #495057;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: background 0.2s;
+
+  &:hover { background: #f1f3f5; }
+}
+
+.ropa-jugador-container {
+  padding: 20px 16px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6c757d;
+
+  i { font-size: 3rem; display: block; margin-bottom: 12px; }
+  p { font-size: 1rem; }
+}
+
+.prendas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.prenda-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s;
+
+  &:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.13); }
+}
+
+.prenda-imagen-wrapper {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.prenda-imagen {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.prenda-imagen-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f3f5;
+}
+
+.prenda-info {
+  padding: 14px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.prenda-nombre {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1a2f45;
+  margin: 0;
+}
+
+.prenda-descripcion {
+  font-size: 0.78rem;
+  color: #6c757d;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.talla-selector-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .talla-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #495057;
+    white-space: nowrap;
+  }
+
+  .talla-select {
+    flex: 1;
+    border-radius: 8px;
+    border-color: #dee2e6;
+    font-size: 0.85rem;
+
+    &:focus { border-color: #31b270; box-shadow: 0 0 0 2px rgba(49,178,112,0.2); }
+  }
+}
+
+.guardando-indicator {
+  display: flex;
+  align-items: center;
+}
+
+.estado-row {
+  .badge {
+    font-size: 0.75rem;
+    text-transform: capitalize;
+  }
+}
+
+.menu-bottom-spacer { height: 60px; }
+
+@media (max-width: 576px) {
+  .prendas-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .page-header {
+    padding: 12px 16px 8px;
+    .back-container, .header-spacer { width: 60px; }
+    .page-title { font-size: 1.1rem; }
+  }
+}
