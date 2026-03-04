@@ -16,9 +16,28 @@
         <button class="btn btn-link btn-sm p-0 ms-2" (click)="selectedCampaign = null; selectTab('campaigns')">cambiar</button>
       </div>
     </div>
-    <button class="btn btn-sm btn-refresh" (click)="loadCampaigns(); loadCampaignStats()">
-      <i class="bi bi-arrow-clockwise"></i> Actualizar
-    </button>
+    <div class="d-flex gap-2 align-items-center">
+      <!-- Acciones pendientes -->
+      <button class="btn btn-sm btn-outline-warning position-relative"
+              (click)="showPendingActions = !showPendingActions; loadPendingActions()"
+              title="Acciones pendientes">
+        <i class="bi bi-alarm"></i>
+        <span *ngIf="pendingActions.length" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:.65rem;">
+          {{ pendingActions.length }}
+        </span>
+      </button>
+      <!-- Kanban -->
+      <button class="btn btn-sm btn-outline-secondary" (click)="openKanban()" title="Vista Kanban">
+        <i class="bi bi-kanban me-1"></i>Kanban
+      </button>
+      <!-- Analytics -->
+      <button class="btn btn-sm btn-outline-secondary" (click)="showAnalytics = true; loadAnalytics()" title="Dashboard de ventas">
+        <i class="bi bi-bar-chart-line me-1"></i>Ventas
+      </button>
+      <button class="btn btn-sm btn-refresh" (click)="loadCampaigns(); loadCampaignStats()">
+        <i class="bi bi-arrow-clockwise"></i> Actualizar
+      </button>
+    </div>
   </div>
 
   <!-- ── Selector de modo ── -->
@@ -112,7 +131,6 @@
     <li class="nav-item">
       <a class="nav-link" [class.active]="activeTab === 'social'" (click)="selectTab('social')">
         <i class="bi bi-share me-1"></i>RRSS
-        <span *ngIf="socialPosts.length" class="badge ms-1 bg-light text-dark small">{{ socialPosts.length }}</span>
       </a>
     </li>
     <li class="nav-item ms-auto">
@@ -631,6 +649,7 @@
               <th>Email contacto</th>
               <th class="sortable" (click)="sortBy('pain_score')">Pain <i class="bi ms-1" [ngClass]="sortIcon('pain_score')"></i></th>
               <th title="Engagement score: aperturas, clics, respuestas, DMs enviados">Score</th>
+              <th>Etapa</th>
               <th>Estado email</th>
               <th>Asunto generado</th>
               <th>Acciones</th>
@@ -675,6 +694,20 @@
                   </span>
                 </ng-container>
                 <span *ngIf="!p.engagement_score" class="text-muted" style="font-size:0.75rem;">—</span>
+              </td>
+              <!-- Etapa pipeline -->
+              <td>
+                <span *ngIf="p.pipeline_stage_id" class="badge"
+                      [style.background]="getStageColor(p.pipeline_stage_id)" style="font-size:.72rem;">
+                  {{ getStageName(p.pipeline_stage_id) }}
+                </span>
+                <span *ngIf="!p.pipeline_stage_id" class="text-muted" style="font-size:0.75rem;">—</span>
+                <!-- Alerta próxima acción vencida -->
+                <div *ngIf="p.next_action_date && p.next_action_date <= today"
+                     class="text-danger small mt-1" style="font-size:.7rem;"
+                     [title]="p.next_action_text">
+                  <i class="bi bi-alarm-fill me-1"></i>{{ p.next_action_date }}
+                </div>
               </td>
               <!-- Estado email -->
               <td>
@@ -733,7 +766,7 @@
               </td>
             </tr>
             <tr *ngIf="filteredProspects.length === 0">
-              <td colspan="7" class="text-center text-muted py-5">
+              <td colspan="8" class="text-center text-muted py-5">
                 <i class="bi bi-inbox fs-3 d-block mb-2 opacity-50"></i>
                 No hay clubes en esta campaña.<br>
                 <button class="btn btn-sm btn-refresh mt-2" (click)="openAddClubModal()">
@@ -1572,7 +1605,7 @@
       <div class="apm-footer">
         <button class="btn btn-outline-secondary" (click)="showAutoPlanModal = false">Cerrar</button>
         <button class="btn btn-refresh btn-lg px-4"
-                (click)="generateAllPlan()"
+                (click)="openGenerateAllPlanModal()"
                 [disabled]="isGeneratingPlan || autoPlanGeneratingIdx !== null || contentPlan.length === 0">
           <i class="bi bi-stars me-2"></i>Generar todos los posts del plan
         </button>
@@ -2956,6 +2989,18 @@
             </button>
           </li>
           <li class="nav-item">
+            <button class="nav-link" [ngClass]="{'active fw-semibold': crmTab === 'activity'}" (click)="crmTab = 'activity'">
+              <i class="bi bi-clock-history me-1"></i>Actividad
+              <span *ngIf="interactions.length" class="badge ms-1 rounded-pill" style="background:#31b270;font-size:0.7rem;">{{ interactions.length }}</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" [ngClass]="{'active fw-semibold': crmTab === 'tags'}" (click)="crmTab = 'tags'">
+              <i class="bi bi-tags me-1"></i>Etiquetas
+              <span *ngIf="prospectTags.length" class="badge ms-1 rounded-pill" style="background:#3b82f6;font-size:0.7rem;">{{ prospectTags.length }}</span>
+            </button>
+          </li>
+          <li class="nav-item">
             <button class="nav-link" [ngClass]="{'active fw-semibold': crmTab === 'edit'}" (click)="crmTab = 'edit'">
               <i class="bi bi-pencil-square me-1"></i>Editar datos
             </button>
@@ -3120,6 +3165,147 @@
                   </span>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TAB: ACTIVIDAD (ACTIVITY LOG) ── -->
+        <div *ngIf="crmTab === 'activity'" class="p-4">
+
+          <!-- Próxima acción del club -->
+          <div *ngIf="selectedProspect?.next_action_date" class="alert mb-4 d-flex align-items-start gap-2"
+               [ngClass]="selectedProspect.next_action_date < today ? 'alert-danger' : 'alert-warning'">
+            <i class="bi bi-alarm fs-5 mt-1"></i>
+            <div>
+              <div class="fw-semibold small">Próxima acción {{ selectedProspect.next_action_date < today ? '⚠️ Vencida' : '' }}</div>
+              <div class="small">{{ selectedProspect.next_action_date }} — {{ selectedProspect.next_action_text || 'Sin descripción' }}</div>
+            </div>
+          </div>
+
+          <!-- Pipeline stage selector -->
+          <div class="mb-4">
+            <div class="small text-muted fw-semibold mb-2 text-uppercase" style="letter-spacing:.05em">Etapa del pipeline</div>
+            <div class="d-flex flex-wrap gap-2">
+              <button *ngFor="let s of pipelineStages"
+                      class="btn btn-sm crm-stage-btn"
+                      [style.border-color]="s.stage_id === selectedProspect?.pipeline_stage_id ? s.color : '#dee2e6'"
+                      [style.background]="s.stage_id === selectedProspect?.pipeline_stage_id ? s.color : 'transparent'"
+                      [style.color]="s.stage_id === selectedProspect?.pipeline_stage_id ? '#fff' : '#374151'"
+                      (click)="moveToStage(selectedProspect, s)">
+                {{ s.name }}
+              </button>
+              <button class="btn btn-sm btn-outline-secondary"
+                      *ngIf="selectedProspect?.pipeline_stage_id"
+                      (click)="moveToStage(selectedProspect, null)">
+                <i class="bi bi-x me-1"></i>Quitar etapa
+              </button>
+            </div>
+          </div>
+
+          <!-- Botón añadir interacción -->
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="fw-semibold">Historial de interacciones</span>
+            <button class="btn btn-sm btn-success" (click)="openInteractionForm()">
+              <i class="bi bi-plus-lg me-1"></i>Registrar contacto
+            </button>
+          </div>
+
+          <!-- Loading -->
+          <div *ngIf="interactionsLoading" class="text-center py-4 text-muted">
+            <span class="spinner-border spinner-border-sm me-2"></span>Cargando...
+          </div>
+
+          <!-- Empty state -->
+          <div *ngIf="!interactionsLoading && interactions.length === 0" class="text-center py-5 text-muted">
+            <i class="bi bi-clock-history d-block fs-2 mb-2 opacity-25"></i>
+            <p class="mb-1 fw-semibold">Sin contactos registrados</p>
+            <p class="small">Registra el primer contacto con este club para llevar un seguimiento.</p>
+          </div>
+
+          <!-- Timeline -->
+          <div *ngIf="!interactionsLoading && interactions.length > 0" class="crm-timeline">
+            <div *ngFor="let item of interactions" class="crm-timeline-item">
+              <div class="crm-timeline-icon" [style.background]="item.outcome === 'positive' ? '#22c55e' : item.outcome === 'negative' ? '#ef4444' : item.outcome === 'no_response' ? '#f59e0b' : '#6b7280'">
+                <i class="bi" [ngClass]="interactionIcon(item.type)"></i>
+              </div>
+              <div class="crm-timeline-content">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <span class="fw-semibold small">{{ interactionTypeLabel(item.type) }}</span>
+                    <span class="badge ms-2 small" [ngClass]="outcomeClass(item.outcome)">{{ outcomeLabel(item.outcome) }}</span>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="text-muted small">{{ item.interaction_date | date:'dd/MM/yy HH:mm' }}</span>
+                    <button class="btn btn-link btn-sm p-0 text-muted" (click)="openInteractionForm(item)" title="Editar"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-link btn-sm p-0 text-danger" (click)="deleteInteraction(item)" title="Eliminar"><i class="bi bi-trash"></i></button>
+                  </div>
+                </div>
+                <p *ngIf="item.summary" class="small text-muted mb-1 mt-1">{{ item.summary }}</p>
+                <div *ngIf="item.next_action_date" class="crm-next-action small">
+                  <i class="bi bi-arrow-right-circle me-1 text-primary"></i>
+                  <strong>Próxima acción {{ item.next_action_date }}:</strong> {{ item.next_action_text || '—' }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TAB: ETIQUETAS ── -->
+        <div *ngIf="crmTab === 'tags'" class="p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="fw-semibold">Etiquetas de este club</span>
+            <button class="btn btn-sm btn-outline-success" (click)="showTagForm = !showTagForm">
+              <i class="bi bi-plus-lg me-1"></i>Nueva etiqueta global
+            </button>
+          </div>
+
+          <!-- Form nueva etiqueta -->
+          <div *ngIf="showTagForm" class="card border-success mb-3 p-3">
+            <div class="row g-2 align-items-end">
+              <div class="col">
+                <label class="form-label small">Nombre</label>
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="newTag.name" placeholder="Ej: Alta prioridad">
+              </div>
+              <div class="col-auto">
+                <label class="form-label small">Color</label>
+                <input type="color" class="form-control form-control-sm form-control-color" [(ngModel)]="newTag.color" style="width:48px;">
+              </div>
+              <div class="col-auto">
+                <button class="btn btn-success btn-sm" (click)="createTagGlobal()" [disabled]="isSavingTag || !newTag.name.trim()">Crear</button>
+                <button class="btn btn-outline-secondary btn-sm ms-1" (click)="showTagForm = false">Cancelar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Loading -->
+          <div *ngIf="tagsLoading" class="text-center py-3"><span class="spinner-border spinner-border-sm"></span></div>
+
+          <!-- Tags asignadas -->
+          <div class="mb-3" *ngIf="prospectTags.length">
+            <div class="small text-muted mb-2 fw-semibold">Asignadas</div>
+            <div class="d-flex flex-wrap gap-2">
+              <span *ngFor="let t of prospectTags" class="badge tag-badge d-flex align-items-center gap-1"
+                    [style.background]="t.color">
+                {{ t.name }}
+                <button class="btn-close btn-close-white btn-sm p-0" style="font-size:.6rem;" (click)="toggleTag(t)"></button>
+              </span>
+            </div>
+          </div>
+
+          <!-- Todas las etiquetas disponibles -->
+          <div>
+            <div class="small text-muted mb-2 fw-semibold">Etiquetas disponibles</div>
+            <div *ngIf="allTags.length === 0" class="text-muted small">No hay etiquetas creadas todavía.</div>
+            <div class="d-flex flex-wrap gap-2">
+              <button *ngFor="let t of allTags" class="btn btn-sm tag-selector-btn"
+                      [class.active]="isTagAssigned(t)"
+                      [style.border-color]="t.color"
+                      [style.color]="isTagAssigned(t) ? '#fff' : t.color"
+                      [style.background]="isTagAssigned(t) ? t.color : 'transparent'"
+                      (click)="toggleTag(t)">
+                <i class="bi me-1" [ngClass]="isTagAssigned(t) ? 'bi-check-circle-fill' : 'bi-plus-circle'"></i>
+                {{ t.name }}
+              </button>
             </div>
           </div>
         </div>
@@ -3878,6 +4064,371 @@
           <button class="btn btn-outline-secondary btn-sm" (click)="showImportModal = false">Cerrar</button>
         </div>
 
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CRM — MODAL: Registrar / Editar interacción
+═══════════════════════════════════════════════════════════════ -->
+<div class="modal-backdrop-custom" *ngIf="showInteractionForm" (click)="showInteractionForm = false"></div>
+<div class="modal" [ngClass]="{'d-block': showInteractionForm}" tabindex="-1" style="z-index:1060;">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-clock-history me-2 text-success"></i>
+          {{ interactionEdit ? 'Editar contacto' : 'Registrar nuevo contacto' }}
+        </h5>
+        <button type="button" class="btn-close" (click)="showInteractionForm = false"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <!-- Tipo -->
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Tipo de contacto</label>
+            <div class="d-flex flex-wrap gap-2">
+              <button *ngFor="let t of INTERACTION_TYPES"
+                      class="btn btn-sm"
+                      [ngClass]="(interactionEdit ? interactionEdit.type : newInteraction.type) === t.value ? 'btn-success' : 'btn-outline-secondary'"
+                      (click)="interactionEdit ? interactionEdit.type = t.value : newInteraction.type = t.value">
+                <i class="bi me-1" [ngClass]="t.icon"></i>{{ t.label }}
+              </button>
+            </div>
+          </div>
+          <!-- Fecha -->
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Fecha y hora</label>
+            <input type="datetime-local" class="form-control form-control-sm"
+                   [ngModel]="interactionEdit ? interactionEdit.interaction_date : newInteraction.interaction_date"
+                   (ngModelChange)="interactionEdit ? interactionEdit.interaction_date = $event : newInteraction.interaction_date = $event">
+          </div>
+          <!-- Resultado -->
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Resultado</label>
+            <select class="form-select form-select-sm"
+                    [ngModel]="interactionEdit ? interactionEdit.outcome : newInteraction.outcome"
+                    (ngModelChange)="interactionEdit ? interactionEdit.outcome = $event : newInteraction.outcome = $event">
+              <option *ngFor="let o of OUTCOMES" [value]="o.value">{{ o.label }}</option>
+            </select>
+          </div>
+          <!-- Resumen -->
+          <div class="col-12">
+            <label class="form-label small fw-semibold">Resumen del contacto</label>
+            <textarea class="form-control form-control-sm" rows="3" placeholder="¿De qué hablasteis? ¿Qué acordasteis?"
+                      [ngModel]="interactionEdit ? interactionEdit.summary : newInteraction.summary"
+                      (ngModelChange)="interactionEdit ? interactionEdit.summary = $event : newInteraction.summary = $event"></textarea>
+          </div>
+          <!-- Próxima acción -->
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold"><i class="bi bi-arrow-right-circle me-1 text-primary"></i>Próxima acción — Fecha</label>
+            <input type="date" class="form-control form-control-sm"
+                   [ngModel]="interactionEdit ? interactionEdit.next_action_date : newInteraction.next_action_date"
+                   (ngModelChange)="interactionEdit ? interactionEdit.next_action_date = $event : newInteraction.next_action_date = $event">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Próxima acción — Descripción</label>
+            <input type="text" class="form-control form-control-sm" placeholder="Ej: Llamar para hacer seguimiento"
+                   [ngModel]="interactionEdit ? interactionEdit.next_action_text : newInteraction.next_action_text"
+                   (ngModelChange)="interactionEdit ? interactionEdit.next_action_text = $event : newInteraction.next_action_text = $event">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="showInteractionForm = false">Cancelar</button>
+        <button class="btn btn-success" (click)="saveInteraction()" [disabled]="isSavingInteraction">
+          <span *ngIf="isSavingInteraction" class="spinner-border spinner-border-sm me-1"></span>
+          <i *ngIf="!isSavingInteraction" class="bi bi-check-lg me-1"></i>
+          {{ isSavingInteraction ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CRM — MODAL: Razón de pérdida
+═══════════════════════════════════════════════════════════════ -->
+<div class="modal-backdrop-custom" *ngIf="showLostReasonModal" (click)="showLostReasonModal = false"></div>
+<div class="modal" [ngClass]="{'d-block': showLostReasonModal}" tabindex="-1" style="z-index:1060;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header modal-header-danger">
+        <h5 class="modal-title"><i class="bi bi-x-circle me-2"></i>Cerrado perdido — Razón</h5>
+        <button type="button" class="btn-close" (click)="showLostReasonModal = false"></button>
+      </div>
+      <div class="modal-body">
+        <p class="small text-muted mb-3">Registrar la razón de pérdida te ayudará a mejorar el proceso de ventas.</p>
+        <label class="form-label small fw-semibold">¿Por qué se perdió este lead?</label>
+        <select class="form-select form-select-sm mb-2" [(ngModel)]="lostReasonInput">
+          <option value="">— Seleccionar motivo —</option>
+          <option value="Precio">Precio demasiado alto</option>
+          <option value="No le interesa">No le interesa el producto</option>
+          <option value="Tiene otro proveedor">Tiene otro proveedor</option>
+          <option value="Sin presupuesto">Sin presupuesto</option>
+          <option value="Sin respuesta">Sin respuesta tras múltiples intentos</option>
+          <option value="Timing incorrecto">Momento incorrecto</option>
+          <option value="Otro">Otro motivo</option>
+        </select>
+        <input *ngIf="lostReasonInput === 'Otro'" type="text" class="form-control form-control-sm"
+               [(ngModel)]="lostReasonInput" placeholder="Describe el motivo...">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="showLostReasonModal = false">Cancelar</button>
+        <button class="btn btn-danger" (click)="confirmLostReason()">
+          <i class="bi bi-x-circle me-1"></i>Confirmar pérdida
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CRM — MODAL: Vista Kanban
+═══════════════════════════════════════════════════════════════ -->
+<div class="modal-backdrop-custom" *ngIf="showKanban" (click)="showKanban = false"></div>
+<div class="modal modal-fullscreen-xl-down" [ngClass]="{'d-block': showKanban}" tabindex="-1" style="z-index:1060;">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-kanban me-2 text-success"></i>Pipeline — Vista Kanban
+          <span *ngIf="selectedCampaign" class="text-muted small ms-2">{{ selectedCampaign.name }}</span>
+        </h5>
+        <button type="button" class="btn-close" (click)="showKanban = false"></button>
+      </div>
+      <div class="modal-body p-0">
+        <div *ngIf="kanbanLoading" class="text-center py-5"><span class="spinner-border text-success"></span></div>
+        <div *ngIf="!kanbanLoading" class="kanban-board">
+          <div *ngFor="let col of kanbanData" class="kanban-column">
+            <div class="kanban-col-header" [style.border-top-color]="col.color || '#9ca3af'">
+              <span class="fw-semibold small">{{ col.name }}</span>
+              <span class="badge rounded-pill ms-2" [style.background]="col.color || '#9ca3af'">{{ col.prospects?.length || 0 }}</span>
+              <span *ngIf="col.is_won" class="ms-1 text-success small"><i class="bi bi-trophy-fill"></i></span>
+              <span *ngIf="col.is_lost" class="ms-1 text-danger small"><i class="bi bi-x-circle-fill"></i></span>
+            </div>
+            <div class="kanban-col-body">
+              <div *ngIf="!col.prospects?.length" class="kanban-empty text-muted small">Sin clubs en esta etapa</div>
+              <div *ngFor="let p of col.prospects" class="kanban-card" (click)="openProspectDetail(p); showKanban = false">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                  <span class="fw-semibold small">{{ p.name }}</span>
+                  <span *ngIf="p.pain_score" class="badge badge-score-sm">{{ p.pain_score }}</span>
+                </div>
+                <div class="text-muted" style="font-size:.78rem;">{{ p.province || p.city || '—' }}</div>
+                <div *ngIf="p.next_action_date" class="mt-1" style="font-size:.75rem;"
+                     [ngClass]="p.next_action_date < today ? 'text-danger fw-semibold' : 'text-primary'">
+                  <i class="bi bi-alarm me-1"></i>{{ p.next_action_date }}
+                </div>
+                <!-- Mover a otra etapa -->
+                <div class="kanban-move-btns mt-2 d-flex flex-wrap gap-1">
+                  <ng-container *ngFor="let s of pipelineStages">
+                    <button *ngIf="s.stage_id !== col.stage_id" class="btn btn-xs kanban-move-btn"
+                            [style.border-color]="s.color" [style.color]="s.color"
+                            (click)="$event.stopPropagation(); moveToStage(p, s)">
+                      → {{ s.name }}
+                    </button>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CRM — MODAL: Dashboard Analytics
+═══════════════════════════════════════════════════════════════ -->
+<div class="modal-backdrop-custom" *ngIf="showAnalytics" (click)="showAnalytics = false"></div>
+<div class="modal" [ngClass]="{'d-block': showAnalytics}" tabindex="-1" style="z-index:1060;">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-bar-chart-line me-2 text-success"></i>Dashboard de Ventas</h5>
+        <button type="button" class="btn-close" (click)="showAnalytics = false"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="analyticsLoading" class="text-center py-5"><span class="spinner-border text-success"></span></div>
+
+        <div *ngIf="!analyticsLoading">
+          <!-- KPI cards -->
+          <div *ngIf="analyticsConversion" class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+              <div class="analytics-kpi-card">
+                <div class="analytics-kpi-value">{{ analyticsConversion.total }}</div>
+                <div class="analytics-kpi-label">Total prospects</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="analytics-kpi-card analytics-kpi-card--won">
+                <div class="analytics-kpi-value text-success">{{ analyticsConversion.won }}</div>
+                <div class="analytics-kpi-label">Ganados</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="analytics-kpi-card analytics-kpi-card--lost">
+                <div class="analytics-kpi-value text-danger">{{ analyticsConversion.lost }}</div>
+                <div class="analytics-kpi-label">Perdidos</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="analytics-kpi-card analytics-kpi-card--rate">
+                <div class="analytics-kpi-value text-primary">{{ analyticsConversion.conversion_rate }}%</div>
+                <div class="analytics-kpi-label">Tasa de conversión</div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="analyticsConversion?.avg_days_to_close" class="alert alert-info small mb-4">
+            <i class="bi bi-stopwatch me-1"></i>Tiempo medio de cierre: <strong>{{ analyticsConversion.avg_days_to_close }} días</strong> desde el primer contacto.
+          </div>
+
+          <!-- Embudo -->
+          <h6 class="fw-bold mb-3">Embudo de ventas</h6>
+          <div class="mb-4">
+            <div *ngFor="let s of analyticsFunnel" class="funnel-row mb-2">
+              <div class="d-flex justify-content-between mb-1">
+                <span class="small fw-semibold">{{ s.name }}</span>
+                <span class="small text-muted">{{ s.count }} clubs</span>
+              </div>
+              <div class="progress" style="height:12px;border-radius:6px;">
+                <div class="progress-bar" [style.width.%]="funnelBarWidth(s.count)"
+                     [style.background]="s.color || '#6b7280'" style="border-radius:6px;transition:width .4s;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Razones de pérdida -->
+          <div *ngIf="analyticsConversion?.top_lost_reasons?.length" class="mb-4">
+            <h6 class="fw-bold mb-3">Top razones de pérdida</h6>
+            <div class="d-flex flex-wrap gap-2">
+              <div *ngFor="let r of analyticsConversion.top_lost_reasons" class="badge bg-danger-subtle text-danger px-3 py-2">
+                {{ r.lost_reason }} <span class="ms-1 fw-bold">×{{ r.cnt }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tendencias mensuales -->
+          <div *ngIf="analyticsMonthly.length">
+            <h6 class="fw-bold mb-3">Tendencia mensual (últimos 6 meses)</h6>
+            <div class="table-responsive">
+              <table class="table table-sm table-hover">
+                <thead class="table-dark">
+                  <tr><th>Mes</th><th>Nuevos</th><th>Convertidos</th></tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let m of analyticsMonthly">
+                    <td>{{ m.month }}</td>
+                    <td>{{ m.new_prospects }}</td>
+                    <td><span class="badge bg-success">{{ m.converted }}</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CRM — PANEL: Acciones pendientes (flotante)
+═══════════════════════════════════════════════════════════════ -->
+<div *ngIf="showPendingActions" class="pending-actions-panel">
+  <div class="pending-actions-header d-flex justify-content-between align-items-center">
+    <span class="fw-semibold"><i class="bi bi-alarm me-2 text-warning"></i>Acciones pendientes</span>
+    <button class="btn-close btn-sm" (click)="showPendingActions = false"></button>
+  </div>
+  <div *ngIf="pendingActionsLoading" class="text-center py-3"><span class="spinner-border spinner-border-sm"></span></div>
+  <div *ngIf="!pendingActionsLoading && pendingActions.length === 0" class="text-center py-3 text-muted small">
+    <i class="bi bi-check-circle d-block fs-4 mb-1 text-success"></i>No hay acciones pendientes
+  </div>
+  <div class="pending-actions-list">
+    <div *ngFor="let a of pendingActions" class="pending-action-item"
+         [ngClass]="{'pending-action-item--overdue': a.is_overdue}"
+         (click)="openProspectDetail(a); showPendingActions = false">
+      <div class="d-flex justify-content-between align-items-start">
+        <span class="fw-semibold small">{{ a.name }}</span>
+        <span class="small" [ngClass]="a.is_overdue ? 'text-danger fw-bold' : 'text-muted'">{{ a.next_action_date }}</span>
+      </div>
+      <div class="text-muted small">{{ a.next_action_text || 'Sin descripción' }}</div>
+      <span *ngIf="a.stage_name" class="badge mt-1" [style.background]="a.stage_color" style="font-size:.7rem;">{{ a.stage_name }}</span>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmar borrado de email -->
+<div class="modal-backdrop-custom" *ngIf="showDeleteEmailConfirm" (click)="showDeleteEmailConfirm = false"></div>
+<div class="modal" [ngClass]="{'d-block': showDeleteEmailConfirm}" tabindex="-1" style="z-index:1051;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" *ngIf="emailToDelete">
+      <div class="modal-header modal-header-danger">
+        <h5 class="modal-title"><i class="bi bi-trash me-2"></i>Eliminar email</h5>
+        <button type="button" class="btn-close" (click)="showDeleteEmailConfirm = false; emailToDelete = null"></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Borrar el email generado para <strong>{{ emailToDelete.club_name }}</strong>?</p>
+        <p class="text-muted small mb-0">Esta acción no se puede deshacer. Podrás generar un nuevo email para este club en cualquier momento.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="showDeleteEmailConfirm = false; emailToDelete = null">Cancelar</button>
+        <button class="btn btn-danger" (click)="confirmDeleteEmail()" [disabled]="isDeletingEmail">
+          <span *ngIf="isDeletingEmail" class="spinner-border spinner-border-sm me-1"></span>
+          <i *ngIf="!isDeletingEmail" class="bi bi-trash me-1"></i>
+          {{ isDeletingEmail ? 'Eliminando...' : 'Eliminar email' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmar borrado de post social -->
+<div class="modal-backdrop-custom" *ngIf="showDeletePostConfirm" (click)="showDeletePostConfirm = false"></div>
+<div class="modal" [ngClass]="{'d-block': showDeletePostConfirm}" tabindex="-1" style="z-index:1051;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" *ngIf="postToDelete">
+      <div class="modal-header modal-header-danger">
+        <h5 class="modal-title"><i class="bi bi-trash me-2"></i>Eliminar post</h5>
+        <button type="button" class="btn-close" (click)="showDeletePostConfirm = false; postToDelete = null"></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Borrar el post de <strong>{{ postToDelete.network | titlecase }}</strong>?</p>
+        <p class="text-muted small mb-0">Esta acción no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="showDeletePostConfirm = false; postToDelete = null">Cancelar</button>
+        <button class="btn btn-danger" (click)="confirmDeletePost()" [disabled]="isDeletingPost">
+          <span *ngIf="isDeletingPost" class="spinner-border spinner-border-sm me-1"></span>
+          <i *ngIf="!isDeletingPost" class="bi bi-trash me-1"></i>
+          {{ isDeletingPost ? 'Eliminando...' : 'Eliminar post' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmar generación de todos los posts del plan -->
+<div class="modal-backdrop-custom" *ngIf="showGenerateAllPlanConfirm" (click)="showGenerateAllPlanConfirm = false"></div>
+<div class="modal" [ngClass]="{'d-block': showGenerateAllPlanConfirm}" tabindex="-1" style="z-index:1051;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-lightning-charge me-2 text-warning"></i>Generar plan completo</h5>
+        <button type="button" class="btn-close" (click)="showGenerateAllPlanConfirm = false"></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Generar los <strong>{{ generateAllPlanPending }} posts</strong> pendientes del plan?</p>
+        <div class="alert alert-warning small mb-0">
+          <i class="bi bi-clock me-1"></i>Esto puede tardar varios minutos. La generación se realizará de forma secuencial.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="showGenerateAllPlanConfirm = false">Cancelar</button>
+        <button class="btn btn-success" (click)="generateAllPlan()">
+          <i class="bi bi-lightning-charge me-1"></i>Generar {{ generateAllPlanPending }} posts
+        </button>
       </div>
     </div>
   </div>

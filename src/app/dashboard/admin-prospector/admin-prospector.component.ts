@@ -49,12 +49,83 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
   private searchDebounce: any = null;
   selectedProspect: any = null;
   showProspectModal = false;
-  crmTab: 'info' | 'edit' = 'info';
+  crmTab: 'info' | 'edit' | 'activity' | 'tags' = 'info';
   crmEdit: any = {};
   isSavingCrm = false;
   crmSaveOk = false;
+
+  // ── CRM: Interactions ──────────────────────────────────────────
+  interactions: any[] = [];
+  interactionsLoading = false;
+  showInteractionForm = false;
+  interactionEdit: any = null;
+  isSavingInteraction = false;
+  newInteraction = {
+    type: 'call', interaction_date: '', summary: '', outcome: 'neutral',
+    next_action_date: '', next_action_text: ''
+  };
+  readonly INTERACTION_TYPES = [
+    { value: 'email',    label: 'Email',    icon: 'bi-envelope' },
+    { value: 'call',     label: 'Llamada',  icon: 'bi-telephone' },
+    { value: 'whatsapp', label: 'WhatsApp', icon: 'bi-whatsapp' },
+    { value: 'meeting',  label: 'Reunión',  icon: 'bi-people' },
+    { value: 'note',     label: 'Nota',     icon: 'bi-sticky' },
+  ];
+  readonly OUTCOMES = [
+    { value: 'positive',    label: 'Positivo',      color: 'text-success' },
+    { value: 'neutral',     label: 'Neutral',        color: 'text-secondary' },
+    { value: 'negative',    label: 'Negativo',       color: 'text-danger' },
+    { value: 'no_response', label: 'Sin respuesta',  color: 'text-warning' },
+  ];
+
+  // ── CRM: Pipeline ──────────────────────────────────────────────
+  pipelineStages: any[] = [];
+  showKanban = false;
+  kanbanData: any[] = [];
+  kanbanLoading = false;
+  showStageForm = false;
+  newStage = { name: '', color: '#6b7280' };
+  isSavingStage = false;
+  showLostReasonModal = false;
+  lostReasonInput = '';
+  prospectToSetStage: any = null;
+  stageToSet: any = null;
+
+  // ── CRM: Tags ──────────────────────────────────────────────────
+  allTags: any[] = [];
+  prospectTags: any[] = [];
+  tagsLoading = false;
+  showTagForm = false;
+  newTag = { name: '', color: '#3b82f6' };
+  isSavingTag = false;
+
+  // ── CRM: Pending Actions widget ───────────────────────────────
+  pendingActions: any[] = [];
+  pendingActionsLoading = false;
+  showPendingActions = false;
+
+  // ── CRM: Analytics tab ────────────────────────────────────────
+  showAnalytics = false;
+  analyticsFunnel: any[] = [];
+  analyticsConversion: any = null;
+  analyticsMonthly: any[] = [];
+  analyticsLoading = false;
   showDeleteProspectConfirm = false;
   prospectToDelete: any = null;
+
+  // Borrar email con modal
+  showDeleteEmailConfirm = false;
+  emailToDelete: any = null;
+  isDeletingEmail = false;
+
+  // Borrar post social con modal
+  showDeletePostConfirm = false;
+  postToDelete: any = null;
+  isDeletingPost = false;
+
+  // Confirmar generación de todos los posts del plan
+  showGenerateAllPlanConfirm = false;
+  generateAllPlanPending = 0;
 
   // Conversión a cliente
   showConvertModal = false;
@@ -76,6 +147,8 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
   importResult: { inserted: number; duplicates: number; errors: string[]; total_processed: number } | null = null;
   csvImportLoading = false;
   importSkipDuplicates = true;
+
+  readonly today = new Date().toISOString().slice(0, 10);
 
   readonly CRM_FIELDS: { key: string; label: string; type: string }[] = [
     { key: 'name',             label: 'Nombre del club',  type: 'text' },
@@ -612,6 +685,9 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
     this.loadSettings();
     this.loadSocialMeta();
     this.loadCommentGuidelines();
+    this.loadPipelineStages();
+    this.loadAllTags();
+    this.loadPendingActions();
   }
 
   ngOnDestroy(): void {
@@ -632,7 +708,7 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
     }
     if (tab === 'emails' && this.selectedCampaign) this.loadEmails();
     if (tab === 'library') this.loadLibrary();
-    if (tab === 'social') { this.socialSubTab = 'posts'; this.loadSocialPosts(); this.loadSocialHistory(); }
+    if (tab === 'social') { this.socialSubTab = 'posts'; }
   }
 
   // ── Biblioteca global ──────────────────────────────────────────────────
@@ -986,7 +1062,7 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
         return;
       }
       const p = targets[i];
-      this.prospectService.generateEmailForProspect(p.prospect_id, this.campaignId).subscribe({
+      this.prospectService.generateEmailForProspect(p.prospect_id, this.campaignId!).subscribe({
         next: () => { this.bulkGenerateDone++; next(i + 1); },
         error: () => { this.bulkGenerateDone++; next(i + 1); },
       });
@@ -1076,22 +1152,41 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
   selectMode(mode: 'auto' | 'manual'): void {
     this.activeMode = mode;
     if (mode === 'manual') {
-      if (this.activeTab === 'pipeline') {
+      if (this.activeTab === 'pipeline' || this.activeTab === 'emails') {
         this.selectTab(this.selectedCampaign ? 'prospects' : 'campaigns');
       } else if (this.activeTab === 'prospects' && this.selectedCampaign) {
-        // Ya en prospects: cargar emails para tener datos en la vista unificada
         this.loadEmails();
+      }
+      // Limpiar filtro de estado incompatible con modo manual
+      if (!['', 'NEW', 'EMAIL_READY', 'EMAIL_SENT'].includes(this.prospectFilterStatus)) {
+        this.prospectFilterStatus = '';
       }
     }
   }
 
   selectCampaign(c: any): void {
+    // Parar el polling de la campaña anterior antes de cambiar
+    this.stopJobPolling();
+    this.currentJob = null;
+
     this.selectedCampaign = c;
     this.stepResults = { discover: null, enrich: null, analyze: null, generate: null };
+
+    // Resetear estado de navegación para evitar datos sucios de la campaña anterior
+    this.prospectsPage = 0;
+    this.prospectSearch = '';
+    this.prospectFilterStatus = '';
+    this.selectedManualIds.clear();
+    this.prospects = [];
+    this.prospectsTotal = 0;
+    this.emails = [];
+
     this.loadCampaignStats();
-    // En modo manual se va directamente a Clubes; en automático al Pipeline
     this.activeTab = this.activeMode === 'manual' ? 'prospects' : 'pipeline';
-    if (this.activeMode === 'manual') this.loadProspects();
+    if (this.activeMode === 'manual') {
+      this.loadProspects();
+      this.loadEmails();
+    }
   }
 
   loadCampaignStats(): void {
@@ -1136,7 +1231,7 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
 
   // ── Pipeline ──
 
-  get campaignId(): number {
+  get campaignId(): number | undefined {
     return this.selectedCampaign?.campaign_id;
   }
 
@@ -1194,6 +1289,7 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
   }
 
   runDiscover(): void {
+    if (!this.campaignId) return;
     const provinces = this.pipelineProvinces.trim()
       ? this.pipelineProvinces.split(',').map(p => p.trim())
       : undefined;
@@ -1203,18 +1299,21 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
   }
 
   runEnrich(): void {
+    if (!this.campaignId) return;
     this.prospectService.enrich(this.campaignId, this.pipelineMaxEnrich).subscribe({
       next: (res) => { this.startJobPolling(res.job_id, 'enrich'); }
     });
   }
 
   runAnalyze(): void {
+    if (!this.campaignId) return;
     this.prospectService.analyze(this.campaignId, this.pipelineMaxEnrich).subscribe({
       next: (res) => { this.startJobPolling(res.job_id, 'analyze'); }
     });
   }
 
   runGenerate(): void {
+    if (!this.campaignId) return;
     this.prospectService.generate(this.campaignId, this.pipelineAbRatio).subscribe({
       next: (res) => {
         this.stepResults['generate'] = { status: 'COMPLETED', processed: res.generated };
@@ -1365,7 +1464,11 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
     this.crmTab = 'info';
     this.crmEdit = { ...p };
     this.crmSaveOk = false;
+    this.interactions = [];
+    this.prospectTags = [];
     this.showProspectModal = true;
+    this.loadInteractions();
+    this.loadProspectTags();
   }
 
   saveCrmEdit(): void {
@@ -1548,14 +1651,31 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
 
   // ── Delete email ──
 
-  deleteEmail(e: any): void {
-    if (!confirm(`¿Borrar el email para ${e.club_name}? Esta acción no se puede deshacer.`)) return;
-    this.prospectService.deleteEmail(e.email_id).subscribe({
+  openDeleteEmailModal(e: any): void {
+    this.emailToDelete = e;
+    this.showDeleteEmailConfirm = true;
+  }
+
+  confirmDeleteEmail(): void {
+    if (!this.emailToDelete) return;
+    this.isDeletingEmail = true;
+    this.prospectService.deleteEmail(this.emailToDelete.email_id).subscribe({
       next: () => {
-        this.emails = this.emails.filter(em => em.email_id !== e.email_id);
+        this.emails = this.emails.filter(em => em.email_id !== this.emailToDelete.email_id);
         this.loadCampaignStats();
+        this.isDeletingEmail = false;
+        this.showDeleteEmailConfirm = false;
+        this.emailToDelete = null;
+      },
+      error: () => {
+        this.isDeletingEmail = false;
+        this.showDeleteEmailConfirm = false;
       }
     });
+  }
+
+  deleteEmail(e: any): void {
+    this.openDeleteEmailModal(e);
   }
 
   // ── Emails ──
@@ -1625,12 +1745,14 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
   }
 
   dryRun(): void {
+    if (!this.campaignId) return;
     this.prospectService.sendEmails(this.campaignId, true).subscribe({
       next: (res) => { this.sendResult = res; }
     });
   }
 
   confirmSend(): void {
+    if (!this.campaignId) return;
     this.prospectService.sendEmails(this.campaignId, false).subscribe({
       next: (res) => {
         this.sendResult = res;
@@ -1790,11 +1912,18 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
     });
   }
 
+  openGenerateAllPlanModal(): void {
+    const pending = this.contentPlan.filter((item: any) => !item._generated);
+    if (!pending.length) return;
+    this.generateAllPlanPending = pending.length;
+    this.showGenerateAllPlanConfirm = true;
+  }
+
   generateAllPlan(): void {
     if (!this.contentPlan.length) return;
     const pending = this.contentPlan.filter((item: any) => !item._generated);
     if (!pending.length) return;
-    if (!confirm(`¿Generar los ${pending.length} posts del plan? Esto puede tardar unos minutos.`)) return;
+    this.showGenerateAllPlanConfirm = false;
 
     let idx = 0;
     const generateNext = () => {
@@ -1882,7 +2011,7 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
     this.publishResult = null;
     const raw = post.image_url || null;
     this.previewImageUrl = raw?.startsWith('/static/')
-      ? `http://localhost:8001${raw}`
+      ? `${this.prospectService.staticBase}${raw}`
       : raw;
     this.isGeneratingImage = false;
     this.imageGenError = null;
@@ -1935,7 +2064,7 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
         this.imageModelUsed = res.model_used || this.selectedImageModel;
         const rawUrl = res.image_url;
         this.previewImageUrl = rawUrl?.startsWith('/static/')
-          ? `http://localhost:8001${rawUrl}`
+          ? `${this.prospectService.staticBase}${rawUrl}`
           : rawUrl;
         this.editingSocialPost = { ...this.editingSocialPost, image_url: res.image_url };
         const idx = this.socialPosts.findIndex(p => p.post_id === this.editingSocialPost.post_id);
@@ -2036,14 +2165,31 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
     });
   }
 
-  deleteSocialPost(post: any): void {
-    if (!confirm(`¿Borrar el post de ${post.network}? Esta acción no se puede deshacer.`)) return;
-    this.prospectService.deleteSocialPost(post.post_id).subscribe({
+  openDeletePostModal(post: any): void {
+    this.postToDelete = post;
+    this.showDeletePostConfirm = true;
+  }
+
+  confirmDeletePost(): void {
+    if (!this.postToDelete) return;
+    this.isDeletingPost = true;
+    this.prospectService.deleteSocialPost(this.postToDelete.post_id).subscribe({
       next: () => {
-        this.socialPosts = this.socialPosts.filter(p => p.post_id !== post.post_id);
-        if (this.editingSocialPost?.post_id === post.post_id) this.showSocialEditModal = false;
+        this.socialPosts = this.socialPosts.filter(p => p.post_id !== this.postToDelete.post_id);
+        if (this.editingSocialPost?.post_id === this.postToDelete.post_id) this.showSocialEditModal = false;
+        this.isDeletingPost = false;
+        this.showDeletePostConfirm = false;
+        this.postToDelete = null;
+      },
+      error: () => {
+        this.isDeletingPost = false;
+        this.showDeletePostConfirm = false;
       }
     });
+  }
+
+  deleteSocialPost(post: any): void {
+    this.openDeletePostModal(post);
   }
 
   copyPostText(post: any): void {
@@ -2372,5 +2518,270 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
     if (score >= 35) return 'Templado';
     if (score > 0)   return 'Frío';
     return '';
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // CRM — Interactions (Activity Log)
+  // ═══════════════════════════════════════════════════════════════
+
+  loadInteractions(): void {
+    if (!this.selectedProspect) return;
+    this.interactionsLoading = true;
+    this.prospectService.getInteractions(this.selectedProspect.prospect_id).subscribe({
+      next: (data) => { this.interactions = data; this.interactionsLoading = false; },
+      error: ()    => { this.interactionsLoading = false; }
+    });
+  }
+
+  openInteractionForm(interaction?: any): void {
+    const today = new Date().toISOString().slice(0, 16);
+    if (interaction) {
+      this.interactionEdit = { ...interaction };
+    } else {
+      this.interactionEdit = null;
+      this.newInteraction = {
+        type: 'call', interaction_date: today, summary: '', outcome: 'neutral',
+        next_action_date: '', next_action_text: ''
+      };
+    }
+    this.showInteractionForm = true;
+  }
+
+  saveInteraction(): void {
+    if (!this.selectedProspect) return;
+    this.isSavingInteraction = true;
+    const data = this.interactionEdit ?? this.newInteraction;
+    const payload = {
+      type: data.type,
+      interaction_date: data.interaction_date,
+      summary: data.summary || undefined,
+      outcome: data.outcome,
+      next_action_date: data.next_action_date || undefined,
+      next_action_text: data.next_action_text || undefined,
+    };
+    const obs = this.interactionEdit
+      ? this.prospectService.updateInteraction(this.interactionEdit.interaction_id, payload)
+      : this.prospectService.createInteraction(this.selectedProspect.prospect_id, payload);
+
+    obs.subscribe({
+      next: () => {
+        this.isSavingInteraction = false;
+        this.showInteractionForm = false;
+        this.loadInteractions();
+        // Recargar próxima acción en el prospect
+        this.prospectService.getProspect(this.selectedProspect.prospect_id).subscribe({
+          next: (p) => {
+            this.selectedProspect = p;
+            const idx = this.prospects.findIndex(x => x.prospect_id === p.prospect_id);
+            if (idx >= 0) this.prospects[idx] = p;
+          }
+        });
+      },
+      error: () => { this.isSavingInteraction = false; }
+    });
+  }
+
+  deleteInteraction(interaction: any): void {
+    this.prospectService.deleteInteraction(interaction.interaction_id).subscribe({
+      next: () => { this.interactions = this.interactions.filter(i => i.interaction_id !== interaction.interaction_id); }
+    });
+  }
+
+  interactionIcon(type: string): string {
+    const map: any = { email: 'bi-envelope', call: 'bi-telephone', whatsapp: 'bi-whatsapp', meeting: 'bi-people', note: 'bi-sticky' };
+    return map[type] || 'bi-chat';
+  }
+
+  interactionTypeLabel(type: string): string {
+    return this.INTERACTION_TYPES.find(t => t.value === type)?.label ?? type;
+  }
+
+  outcomeClass(outcome: string): string {
+    const map: any = { positive: 'badge-outcome-positive', negative: 'badge-outcome-negative', no_response: 'badge-outcome-warning' };
+    return map[outcome] || 'badge-outcome-neutral';
+  }
+
+  outcomeLabel(outcome: string): string {
+    return this.OUTCOMES.find(o => o.value === outcome)?.label ?? outcome;
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // CRM — Pipeline
+  // ═══════════════════════════════════════════════════════════════
+
+  loadPipelineStages(): void {
+    this.prospectService.getPipelineStages().subscribe({
+      next: (stages) => { this.pipelineStages = stages; }
+    });
+  }
+
+  loadKanban(): void {
+    this.kanbanLoading = true;
+    this.prospectService.getKanban(this.selectedCampaign?.campaign_id).subscribe({
+      next: (data) => { this.kanbanData = data; this.kanbanLoading = false; },
+      error: ()    => { this.kanbanLoading = false; }
+    });
+  }
+
+  openKanban(): void {
+    this.showKanban = true;
+    this.loadKanban();
+  }
+
+  moveToStage(prospect: any, stage: any): void {
+    if (stage?.is_lost) {
+      this.prospectToSetStage = prospect;
+      this.stageToSet = stage;
+      this.lostReasonInput = prospect.lost_reason || '';
+      this.showLostReasonModal = true;
+      return;
+    }
+    this.prospectService.setProspectPipelineStage(prospect.prospect_id, stage?.stage_id ?? null).subscribe({
+      next: () => {
+        prospect.pipeline_stage_id = stage?.stage_id ?? null;
+        prospect.lost_reason = null;
+        this.loadKanban();
+        if (this.showProspectModal && this.selectedProspect?.prospect_id === prospect.prospect_id) {
+          this.selectedProspect = { ...this.selectedProspect, pipeline_stage_id: stage?.stage_id ?? null };
+        }
+      }
+    });
+  }
+
+  confirmLostReason(): void {
+    if (!this.prospectToSetStage || !this.stageToSet) return;
+    this.prospectService.setProspectPipelineStage(
+      this.prospectToSetStage.prospect_id, this.stageToSet.stage_id, this.lostReasonInput
+    ).subscribe({
+      next: () => {
+        this.prospectToSetStage.pipeline_stage_id = this.stageToSet.stage_id;
+        this.prospectToSetStage.lost_reason = this.lostReasonInput;
+        this.showLostReasonModal = false;
+        this.prospectToSetStage = null;
+        this.stageToSet = null;
+        this.lostReasonInput = '';
+        this.loadKanban();
+      }
+    });
+  }
+
+  createStage(): void {
+    if (!this.newStage.name.trim()) return;
+    this.isSavingStage = true;
+    this.prospectService.createPipelineStage(this.newStage.name, this.newStage.color, this.pipelineStages.length).subscribe({
+      next: (stage) => {
+        this.pipelineStages = [...this.pipelineStages, stage];
+        this.isSavingStage = false;
+        this.showStageForm = false;
+        this.newStage = { name: '', color: '#6b7280' };
+        if (this.showKanban) this.loadKanban();
+      },
+      error: () => { this.isSavingStage = false; }
+    });
+  }
+
+  deleteStage(stage: any): void {
+    this.prospectService.deletePipelineStage(stage.stage_id).subscribe({
+      next: () => {
+        this.pipelineStages = this.pipelineStages.filter(s => s.stage_id !== stage.stage_id);
+        if (this.showKanban) this.loadKanban();
+      }
+    });
+  }
+
+  getStageName(stageId: number | null): string {
+    if (!stageId) return 'Sin etapa';
+    return this.pipelineStages.find(s => s.stage_id === stageId)?.name ?? 'Sin etapa';
+  }
+
+  getStageColor(stageId: number | null): string {
+    if (!stageId) return '#9ca3af';
+    return this.pipelineStages.find(s => s.stage_id === stageId)?.color ?? '#9ca3af';
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // CRM — Tags
+  // ═══════════════════════════════════════════════════════════════
+
+  loadAllTags(): void {
+    this.prospectService.getAllTags().subscribe({
+      next: (tags) => { this.allTags = tags; }
+    });
+  }
+
+  loadProspectTags(): void {
+    if (!this.selectedProspect) return;
+    this.tagsLoading = true;
+    this.prospectService.getProspectTags(this.selectedProspect.prospect_id).subscribe({
+      next: (tags) => { this.prospectTags = tags; this.tagsLoading = false; },
+      error: ()    => { this.tagsLoading = false; }
+    });
+  }
+
+  isTagAssigned(tag: any): boolean {
+    return this.prospectTags.some(t => t.tag_id === tag.tag_id);
+  }
+
+  toggleTag(tag: any): void {
+    if (!this.selectedProspect) return;
+    if (this.isTagAssigned(tag)) {
+      this.prospectService.removeTag(this.selectedProspect.prospect_id, tag.tag_id).subscribe({
+        next: () => { this.prospectTags = this.prospectTags.filter(t => t.tag_id !== tag.tag_id); }
+      });
+    } else {
+      this.prospectService.assignTag(this.selectedProspect.prospect_id, tag.tag_id).subscribe({
+        next: () => { this.prospectTags = [...this.prospectTags, tag]; }
+      });
+    }
+  }
+
+  createTagGlobal(): void {
+    if (!this.newTag.name.trim()) return;
+    this.isSavingTag = true;
+    this.prospectService.createTag(this.newTag.name.trim(), this.newTag.color).subscribe({
+      next: (tag) => {
+        this.allTags = [...this.allTags, tag];
+        this.isSavingTag = false;
+        this.showTagForm = false;
+        this.newTag = { name: '', color: '#3b82f6' };
+      },
+      error: () => { this.isSavingTag = false; }
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // CRM — Pending Actions
+  // ═══════════════════════════════════════════════════════════════
+
+  loadPendingActions(): void {
+    this.pendingActionsLoading = true;
+    this.prospectService.getPendingActions(7).subscribe({
+      next: (data) => { this.pendingActions = data; this.pendingActionsLoading = false; },
+      error: ()    => { this.pendingActionsLoading = false; }
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // CRM — Analytics
+  // ═══════════════════════════════════════════════════════════════
+
+  loadAnalytics(): void {
+    this.analyticsLoading = true;
+    const cid = this.selectedCampaign?.campaign_id;
+    this.prospectService.getSalesFunnel(cid).subscribe({
+      next: (data) => { this.analyticsFunnel = data; }
+    });
+    this.prospectService.getConversionStats(cid).subscribe({
+      next: (data) => { this.analyticsConversion = data; }
+    });
+    this.prospectService.getMonthlyTrends(6).subscribe({
+      next: (data) => { this.analyticsMonthly = data; this.analyticsLoading = false; },
+      error: ()    => { this.analyticsLoading = false; }
+    });
+  }
+
+  funnelBarWidth(count: number): number {
+    const max = Math.max(...this.analyticsFunnel.map(s => s.count), 1);
+    return Math.round((count / max) * 100);
   }
 }

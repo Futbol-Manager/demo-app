@@ -12,6 +12,11 @@ export class ProspectService {
   private base = (environment as any).prospectorApiUrl || 'http://localhost:8001/api/';
   private javaBase: string = (environment as any).apiUrl || 'http://localhost:8080/api/rest/';
 
+  /** Base del servidor del prospector sin el segmento /api/ (para URLs de /static/) */
+  get staticBase(): string {
+    return this.base.replace(/\/api\/?$/, '');
+  }
+
   constructor(private http: HttpClient) { }
 
   // ── Social posts CRUD → Java backend (MySQL compartida) ───────────────────
@@ -604,5 +609,107 @@ export class ProspectService {
 
   batchSchedulePosts(slots: { network: string; scheduled_at: string; content_type: string; generate_text: boolean }[]): Observable<any> {
     return this.http.post<any>(`${this.base}social/posts/batch-schedule`, { slots });
+  }
+
+  // ── CRM: Pipeline stages ──────────────────────────────────────────────────
+
+  getPipelineStages(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.base}pipeline/stages`);
+  }
+
+  createPipelineStage(name: string, color: string, position: number): Observable<any> {
+    return this.http.post<any>(`${this.base}pipeline/stages`, { name, color, position });
+  }
+
+  updatePipelineStage(stageId: number, data: Partial<{ name: string; color: string; position: number; is_won: boolean; is_lost: boolean }>): Observable<any> {
+    return this.http.put<any>(`${this.base}pipeline/stages/${stageId}`, data);
+  }
+
+  deletePipelineStage(stageId: number): Observable<any> {
+    return this.http.delete<any>(`${this.base}pipeline/stages/${stageId}`);
+  }
+
+  setProspectPipelineStage(prospectId: number, stageId: number | null, lostReason?: string): Observable<any> {
+    return this.http.patch<any>(`${this.base}prospects/${prospectId}/pipeline-stage`, {
+      stage_id: stageId, lost_reason: lostReason ?? null
+    });
+  }
+
+  getKanban(campaignId?: number): Observable<any[]> {
+    const params: any = {};
+    if (campaignId) params.campaign_id = campaignId;
+    return this.http.get<any[]>(`${this.base}pipeline/kanban`, { params });
+  }
+
+  // ── CRM: Interactions (Activity Log) ─────────────────────────────────────
+
+  getInteractions(prospectId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.base}prospects/${prospectId}/interactions`);
+  }
+
+  createInteraction(prospectId: number, data: {
+    type: string; interaction_date: string; summary?: string;
+    outcome: string; next_action_date?: string; next_action_text?: string;
+  }): Observable<any> {
+    return this.http.post<any>(`${this.base}prospects/${prospectId}/interactions`, data);
+  }
+
+  updateInteraction(interactionId: number, data: Partial<{
+    type: string; interaction_date: string; summary: string;
+    outcome: string; next_action_date: string; next_action_text: string;
+  }>): Observable<any> {
+    return this.http.put<any>(`${this.base}interactions/${interactionId}`, data);
+  }
+
+  deleteInteraction(interactionId: number): Observable<any> {
+    return this.http.delete<any>(`${this.base}interactions/${interactionId}`);
+  }
+
+  getPendingActions(daysAhead: number = 7): Observable<any[]> {
+    return this.http.get<any[]>(`${this.base}crm/pending-actions`, { params: { days_ahead: daysAhead } });
+  }
+
+  // ── CRM: Tags ─────────────────────────────────────────────────────────────
+
+  getAllTags(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.base}tags`);
+  }
+
+  createTag(name: string, color: string): Observable<any> {
+    return this.http.post<any>(`${this.base}tags`, { name, color });
+  }
+
+  deleteTagGlobal(tagId: number): Observable<any> {
+    return this.http.delete<any>(`${this.base}tags/${tagId}`);
+  }
+
+  getProspectTags(prospectId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.base}prospects/${prospectId}/tags`);
+  }
+
+  assignTag(prospectId: number, tagId: number): Observable<any> {
+    return this.http.post<any>(`${this.base}prospects/${prospectId}/tags/${tagId}`, {});
+  }
+
+  removeTag(prospectId: number, tagId: number): Observable<any> {
+    return this.http.delete<any>(`${this.base}prospects/${prospectId}/tags/${tagId}`);
+  }
+
+  // ── CRM: Analytics ────────────────────────────────────────────────────────
+
+  getSalesFunnel(campaignId?: number): Observable<any[]> {
+    const params: any = {};
+    if (campaignId) params.campaign_id = campaignId;
+    return this.http.get<any[]>(`${this.base}analytics/funnel`, { params });
+  }
+
+  getConversionStats(campaignId?: number): Observable<any> {
+    const params: any = {};
+    if (campaignId) params.campaign_id = campaignId;
+    return this.http.get<any>(`${this.base}analytics/conversion`, { params });
+  }
+
+  getMonthlyTrends(months: number = 6): Observable<any[]> {
+    return this.http.get<any[]>(`${this.base}analytics/trends`, { params: { months } });
   }
 }
