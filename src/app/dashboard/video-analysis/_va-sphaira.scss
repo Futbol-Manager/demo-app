@@ -1,0 +1,33 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// Video Analysis — Tema Sphaira Premium (compartido)
+// Importar en cada componente: @use '../va-sphaira' as va; (o ruta relativa)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Colores de marca
+$va-navy:        #002c40;
+$va-navy-mid:    #0a4a6e;
+$va-navy-light:  #0d5a7a;
+$va-green:       #31b270;
+$va-green-dark:  #27a060;
+$va-danger:      #dc2626;
+$va-danger-soft: rgba(220, 38, 38, 0.1);
+$va-white:       #ffffff;
+
+// UI
+$va-bg-page:     #f8fafc;
+$va-bg-soft:     #f1f5f9;
+$va-text-dark:   #1e293b;
+$va-text-muted:  #64748b;
+$va-text-light:  #94a3b8;
+$va-border:      #e2e8f0;
+
+// Sombras
+$va-shadow-sm:   0 2px 12px rgba(0, 44, 64, 0.06);
+$va-shadow-md:   0 8px 24px rgba(0, 44, 64, 0.1);
+$va-shadow-lg:   0 12px 40px rgba(0, 44, 64, 0.12);
+$va-shadow-card: 0 4px 20px rgba(0, 44, 64, 0.08);
+
+// Gradientes
+$va-gradient-header: linear-gradient(135deg, $va-navy 0%, $va-navy-mid 50%, $va-green 100%);
+$va-gradient-btn-primary: linear-gradient(135deg, $va-green 0%, $va-green-dark 100%);
+$va-gradient-btn-nav: linear-gradient(135deg, $va-navy 0%, $va-navy-mid 100%);

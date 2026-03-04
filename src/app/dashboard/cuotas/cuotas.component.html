@@ -195,6 +195,7 @@
                 <option value="">Todos</option>
                 <option value="0">Puntual</option>
                 <option value="1">Sphaira Pay</option>
+                <option value="2">Manual</option>
               </select>
             </div>
             <div class="cq-col-num">
@@ -257,7 +258,10 @@
               <span class="cq-tipo-badge cq-tipo-badge--sphaira cq-show-mobile" *ngIf="isSphaira(cuota)">
                 <i class="bi bi-lightning-charge-fill"></i> Sphaira Pay
               </span>
-              <span class="cq-tipo-badge cq-show-mobile" *ngIf="!isSphaira(cuota)">
+              <span class="cq-tipo-badge cq-tipo-badge--manual cq-show-mobile" *ngIf="isManual(cuota)">
+                <i class="bi bi-cash"></i> Manual
+              </span>
+              <span class="cq-tipo-badge cq-show-mobile" *ngIf="!isSphaira(cuota) && !isManual(cuota)">
                 <i class="bi bi-cash-coin"></i> Puntual
               </span>
             </div>
@@ -266,7 +270,10 @@
               <span class="cq-tipo-badge cq-tipo-badge--sphaira" *ngIf="isSphaira(cuota)">
                 <i class="bi bi-lightning-charge-fill"></i> Sphaira Pay
               </span>
-              <span class="cq-tipo-badge" *ngIf="!isSphaira(cuota)">
+              <span class="cq-tipo-badge cq-tipo-badge--manual" *ngIf="isManual(cuota)">
+                <i class="bi bi-cash"></i> Manual
+              </span>
+              <span class="cq-tipo-badge" *ngIf="!isSphaira(cuota) && !isManual(cuota)">
                 <i class="bi bi-cash-coin"></i> Puntual
               </span>
             </div>
@@ -279,7 +286,7 @@
               </span>
               <span class="cq-amount cq-amount--sphaira" *ngIf="isSphaira(cuota)"
                     [title]="'Base: ' + cuota.importe + ' €'">
-                {{ calcGrossAmount(cuota.importe, cuota.comisionClub ?? 0) }} €
+                {{ getDisplayAmount(cuota) }} €
               </span>
             </div>
             <div class="cq-col-num">
@@ -374,6 +381,7 @@
                 <option value="">Todos</option>
                 <option value="0">Puntual</option>
                 <option value="1">Sphaira Pay</option>
+                <option value="2">Manual</option>
               </select>
             </div>
             <div class="cq-col-num"></div>
@@ -433,7 +441,10 @@
               <span class="cq-tipo-badge cq-tipo-badge--sphaira cq-show-mobile" *ngIf="isSphaira(cuota)">
                 <i class="bi bi-lightning-charge-fill"></i> Sphaira Pay
               </span>
-              <span class="cq-tipo-badge cq-show-mobile" *ngIf="!isSphaira(cuota)">
+              <span class="cq-tipo-badge cq-tipo-badge--manual cq-show-mobile" *ngIf="isManual(cuota)">
+                <i class="bi bi-cash"></i> Manual
+              </span>
+              <span class="cq-tipo-badge cq-show-mobile" *ngIf="!isSphaira(cuota) && !isManual(cuota)">
                 <i class="bi bi-cash-coin"></i> Puntual
               </span>
             </div>
@@ -442,7 +453,10 @@
               <span class="cq-tipo-badge cq-tipo-badge--sphaira" *ngIf="isSphaira(cuota)">
                 <i class="bi bi-lightning-charge-fill"></i> Sphaira Pay
               </span>
-              <span class="cq-tipo-badge" *ngIf="!isSphaira(cuota)">
+              <span class="cq-tipo-badge cq-tipo-badge--manual" *ngIf="isManual(cuota)">
+                <i class="bi bi-cash"></i> Manual
+              </span>
+              <span class="cq-tipo-badge" *ngIf="!isSphaira(cuota) && !isManual(cuota)">
                 <i class="bi bi-cash-coin"></i> Puntual
               </span>
             </div>
@@ -455,7 +469,7 @@
               </span>
               <span class="cq-amount cq-amount--sphaira" *ngIf="isSphaira(cuota)"
                     [title]="'Base: ' + cuota.importe + ' €'">
-                {{ calcGrossAmount(cuota.importe, cuota.comisionClub ?? 0) }} €
+                {{ getDisplayAmount(cuota) }} €
               </span>
             </div>
             <div class="cq-col-num">
@@ -770,7 +784,7 @@
         <p>
           Estás a punto de solicitar la cancelación de
           <strong>{{ cuotaToCancel?.nombre }}</strong>
-          ({{ calcGrossAmount(cuotaToCancel?.importe, cuotaToCancel?.comisionClub ?? 0) }} €).
+          ({{ getDisplayAmount(cuotaToCancel) }} €).
           El club recibirá una notificación y deberá confirmar el desistimiento.
           <br>
           <span *ngIf="cuotaToCancel?.tipoCobro === 2">
@@ -853,7 +867,7 @@
           </p>
           <p class="premium-modal-subtitle" *ngIf="multiPayIsSubscription">
             {{ multiPaySubscriptionCuota?.titulo || multiPaySubscriptionCuota?.nombre }}
-            · {{ calcGrossAmount(multiPaySubscriptionCuota?.importe, multiPaySubscriptionCuota?.comisionClub ?? 0) }} € / ciclo
+            · {{ getDisplayAmount(multiPaySubscriptionCuota) }} € / ciclo
           </p>
         </div>
       </div>
@@ -899,7 +913,7 @@
           <div class="mp-sub-row mp-sub-row--total">
             <span class="mp-sub-label">Primer cobro</span>
             <strong class="mp-sub-val mp-sub-val--amount">
-              {{ calcGrossAmount(multiPaySubscriptionCuota?.importe, multiPaySubscriptionCuota?.comisionClub ?? 0) }} €
+              {{ getDisplayAmount(multiPaySubscriptionCuota) }} €
             </strong>
           </div>
         </div>
@@ -921,7 +935,7 @@
               <span class="mp-cuota-pending">Pendiente: {{ getPendiente(cuota) }} €</span>
             </div>
             <div class="mp-cuota-amounts">
-              <span class="mp-cuota-base">{{ calcGrossAmount(cuota.importe, cuota.comisionClub ?? 0) }} €</span>
+              <span class="mp-cuota-base">{{ getDisplayAmount(cuota) }} €</span>
             </div>
             <button class="mp-cuota-remove" (click)="toggleCuotaSelection(cuota)" title="Quitar">
               <i class="bi bi-x-lg"></i>
@@ -1105,7 +1119,7 @@
             </span>
             <span *ngIf="multiPayIsSubscription">
               He leído y acepto los <button type="button" class="mp-tc-inline-link" (click)="showMultiPayTerminos = !showMultiPayTerminos">Términos y Condiciones</button>.
-              Autorizo el primer cobro de <strong>{{ calcGrossAmount(multiPaySubscriptionCuota?.importe, multiPaySubscriptionCuota?.comisionClub ?? 0) }} €</strong> y los cobros automáticos recurrentes según la frecuencia indicada.
+              Autorizo el primer cobro de <strong>{{ getDisplayAmount(multiPaySubscriptionCuota) }} €</strong> y los cobros automáticos recurrentes según la frecuencia indicada.
               Soy mayor de edad o tutor legal del jugador.
             </span>
           </label>
@@ -1130,7 +1144,7 @@
             Pagar {{ selectedCuotasGrossTotal }} €
           </ng-container>
           <ng-container *ngIf="multiPayIsSubscription">
-            Suscribirse · {{ calcGrossAmount(multiPaySubscriptionCuota?.importe, multiPaySubscriptionCuota?.comisionClub ?? 0) }} €
+            Suscribirse · {{ getDisplayAmount(multiPaySubscriptionCuota) }} €
           </ng-container>
         </button>
         <button class="cq-btn-clear mp-btn-cancel" (click)="closeMultiPayModal()">
@@ -1194,7 +1208,7 @@
               <span class="mp-result-name">{{ r.cuota.nombre }}</span>
               <span class="mp-result-err" *ngIf="!r.success">{{ r.error }}</span>
             </div>
-            <span class="mp-result-amount">{{ calcGrossAmount(r.cuota.importe, r.cuota.comisionClub ?? 0) }} €</span>
+            <span class="mp-result-amount">{{ getDisplayAmount(r.cuota) }} €</span>
           </div>
         </div>
 

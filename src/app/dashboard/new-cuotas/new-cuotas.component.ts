@@ -4,6 +4,7 @@ import { Location } from '@angular/common';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
+import { ClubSubscriptionService } from 'src/app/core/services/subscription/club-subscription.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
@@ -172,6 +173,8 @@ export class NewCuotasComponent implements OnInit {
   stripeFeeFix = 0.25;    // Stripe fijo (€)
   aplicarComisionClub = false;
   clubComisionPct = 2;
+  /** Porcentaje de comisión del club desde el plan actual (club_plans.club_commission_percent) */
+  clubCommissionPercentFromPlan = 2;
   importeCalculoPreview = 50;
 
   // ── Filtro por pago individual ──
@@ -214,6 +217,7 @@ export class NewCuotasComponent implements OnInit {
     private route: ActivatedRoute,
     private location: Location,
     private clubService: ClubService,
+    private clubSubscriptionService: ClubSubscriptionService,
     private teamService: TeamService,
     private translate: TranslateService,
     private toastr: ToastrService,
@@ -743,7 +747,7 @@ export class NewCuotasComponent implements OnInit {
 
   openModalPago(player: any) {
     this.playerSelected = player.playerId;
-    this.addPago = {};
+    this.addPago = { metodo: 'Efectivo' };
     this.textoInfoTitlePagoPlayer = player.nombre;
 
     if (this.playerCuotasCache.has(player.playerId)) {
@@ -979,13 +983,15 @@ export class NewCuotasComponent implements OnInit {
     this.nuevaCuota = cuota;
     this.nuevaCuota.stripe = stripe;
     this.nuevaCuota.tipoPagoStripe = cuota.tipoPagoStripe;
-    this.clubComisionPct = cuota.comisionClub > 0 ? cuota.comisionClub : 2;
-    this.aplicarComisionClub = !!(cuota.comisionClub && cuota.comisionClub > 0);
+    this.clubComisionPct = cuota.comisionClub > 0 ? cuota.comisionClub : this.clubCommissionPercentFromPlan;
+    this.aplicarComisionClub = (stripe === 0 || stripe === 1) && !!(cuota.comisionClub && cuota.comisionClub > 0);
     this.importeCalculoPreview = Number(cuota.importe) || 50;
     this.rellenarCombo(cuota);
 
-    if (stripe == 0) {
-      this.cerrarDatosStripe();
+    if (stripe === 0 || stripe === 2) {
+      this.showStripeConfig = false;
+      this.isSubscription = false;
+      if (stripe === 0) this.cerrarDatosStripe();
     } else {
       // Sphaira Pay siempre = suscripción automática
       this.showStripeConfig = true;
@@ -1036,8 +1042,6 @@ export class NewCuotasComponent implements OnInit {
   abrirModalCuota() {
     this.listTeamsSelecteds = [];
     this.cuotaSeleccionada = false;
-    this.aplicarComisionClub = false;
-    this.clubComisionPct = 2;
     this.importeCalculoPreview = 50;
     this.showStripeConfig = false;
     this.isSubscription = false;
@@ -1060,6 +1064,29 @@ export class NewCuotasComponent implements OnInit {
     };
 
     this.rellenarCombo(null);
+
+    const applyConfigAndOpen = (clubPercent: number) => {
+      const pct = Number.isNaN(clubPercent) ? 2 : Math.max(0, Math.min(50, clubPercent));
+      this.clubCommissionPercentFromPlan = pct;
+      this.clubComisionPct = pct;
+      this.aplicarComisionClub = pct > 0;
+      this.showModalCuota = true;
+    };
+
+    if (!this.clubId) {
+      applyConfigAndOpen(this.clubCommissionPercentFromPlan || 2);
+      return;
+    }
+
+    // Siempre clubId (nunca userId): GET /club-plan/commission/{clubId} → club_plans.club_commission_percent
+    this.clubSubscriptionService.getClubCommissionPercent(this.clubId).subscribe({
+      next: (result) => {
+        console.log('[Nueva cuota] Comisión recibida del endpoint /commission:', result?.clubCommissionPercent);
+        const pct = result?.clubCommissionPercent ?? 2;
+        applyConfigAndOpen(Number.isNaN(Number(pct)) ? 2 : Number(pct));
+      },
+      error: () => applyConfigAndOpen(2),
+    });
   }
 
   cerrarModalCuota() {
@@ -1080,6 +1107,7 @@ export class NewCuotasComponent implements OnInit {
     } else {
       const fechaLimiteOk =
         this.nuevaCuota.stripe === 1 ||
+        this.nuevaCuota.stripe === 2 ||
         (this.nuevaCuota.fechaLimite != null && this.nuevaCuota.fechaLimite !== '');
 
       if (
@@ -1092,7 +1120,7 @@ export class NewCuotasComponent implements OnInit {
         this.nuevaCuota.importe = String(this.nuevaCuota.importe);
         this.nuevaCuota.obligatorio = this.nuevaCuota.obligatorio ? 1 : 0;
         this.nuevaCuota.listTeams = this.listTeamsSelecteds;
-        this.nuevaCuota.comisionClub = this.aplicarComisionClub ? this.clubComisionPct : 0;
+        this.nuevaCuota.comisionClub = (this.nuevaCuota.stripe === 0 || this.nuevaCuota.stripe === 1) && this.aplicarComisionClub ? this.clubComisionPct : 0;
 
         if (this.nuevaCuota.stripe == 1 && this.nuevaCuota.tipoCobro == 3) {
           if (!this.nuevaCuota.fechaInicio) {
@@ -1779,6 +1807,11 @@ export class NewCuotasComponent implements OnInit {
     return player.playerId;
   }
 
+  /** Muestra el bloque de comisiones (Pago puntual o Sphaira Pay). */
+  mostrarBloqueComisiones(): boolean {
+    return this.nuevaCuota?.stripe === 0 || this.nuevaCuota?.stripe === 1;
+  }
+
   seleccionarTipoPago(tipo: number): void {
     if (tipo === 0) {
       this.nuevaCuota.stripe = 0;
@@ -1788,6 +1821,20 @@ export class NewCuotasComponent implements OnInit {
       this.isSubscription = false;
       this.nuevaCuota.fechaInicio = null;
       this.nuevaCuota.fechaFin = null;
+      this.aplicarComisionClub = true;
+      this.clubComisionPct = this.clubCommissionPercentFromPlan;
+      return;
+    }
+
+    if (tipo === 2) {
+      this.nuevaCuota.stripe = 2;
+      this.nuevaCuota.tipoCobro = 0;
+      this.nuevaCuota.tipoPagoStripe = 0;
+      this.showStripeConfig = false;
+      this.isSubscription = false;
+      this.nuevaCuota.fechaInicio = null;
+      this.nuevaCuota.fechaFin = null;
+      this.nuevaCuota.fechaLimite = null;
       return;
     }
 
@@ -1814,6 +1861,8 @@ export class NewCuotasComponent implements OnInit {
               this.accountIdDelClub = this.infoClub.stripeId;
               this.nuevaCuota.stripe = 1;
               this.nuevaCuota.fechaLimite = null;
+              this.aplicarComisionClub = true;
+              this.clubComisionPct = this.clubCommissionPercentFromPlan;
               this.mostrarDatosStripe();
             } else {
               this.cerrarDatosStripe();
@@ -2000,3 +2049,4 @@ export class NewCuotasComponent implements OnInit {
     return null;
   }
 }
+

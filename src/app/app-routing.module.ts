@@ -4,13 +4,15 @@ import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { AuthGuard } from './auth.guard';
+import { AlreadyAuthGuard } from './already-auth.guard';
 import { ChangePasswordComponent } from './pages/change-password/change-password.component';
 import { ValidationUserComponent } from './pages/validation-user/validation-user.component';
 import { ParentChildrenComponent } from './pages/register/parent-children/parent-children.component';
 
 const appRoutes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
-  { path: 'home', component: HomeComponent },
+  { path: 'home', component: HomeComponent, canActivate: [AlreadyAuthGuard] },
+  { path: 'login', redirectTo: '/home', pathMatch: 'full' },
   { path: 'login/:token', component: LoginComponent },
   { path: 'registro', component: RegisterComponent },
   { path: 'registro/:playerId/:email/:isMenor', component: ParentChildrenComponent },

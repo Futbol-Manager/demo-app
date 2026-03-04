@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import {
@@ -25,11 +25,18 @@ interface CeldaTabla {
   templateUrl: './ropa-tabla-catalogo.component.html',
   styleUrls: ['./ropa-tabla-catalogo.component.scss'],
 })
-export class RopaTablaCartalogComponent implements OnInit, OnDestroy {
+export class RopaTablaCartalogComponent implements OnInit, OnDestroy, OnChanges {
   @Input() clubId!: number;
+  /** Temporada seleccionada (año de inicio, ej. "2025"). Si no se pasa, se usa la actual. */
+  @Input() set temporada(value: string) {
+    this._temporada = value != null && value !== '' ? value : getCurrentSeasonString();
+  }
+  get temporada(): string {
+    return this._temporada;
+  }
+  private _temporada = getCurrentSeasonString();
 
   private destroy$ = new Subject<void>();
-  temporada = getCurrentSeasonString();
   imageBaseUrlUser = environment.images + 'user/';
 
   equipos: Array<{ value: number; name: string }> = [];
@@ -40,6 +47,9 @@ export class RopaTablaCartalogComponent implements OnInit, OnDestroy {
   jugadores: JugadorTablaRopa[] = [];
   cargandoTabla = false;
   errorTabla = '';
+
+  /** Filtro por nombre/apellido/nick de jugador (solo afecta la lista mostrada, no los totales del equipo) */
+  filtroNombreJugador = '';
 
   tabla: { [playerId: number]: { [prendaId: number]: CeldaTabla } } = {};
 
@@ -57,6 +67,12 @@ export class RopaTablaCartalogComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['temporada'] && !changes['temporada'].firstChange && this.clubId) {
+      this.cargarEquipos(); // recarga equipos y tabla con la nueva temporada
+    }
+  }
+
   cargarEquipos(): void {
     this.cargandoEquipos = true;
     this.teamService
@@ -64,10 +80,12 @@ export class RopaTablaCartalogComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res: Response) => {
-          const equiposAPI = (res.data as Array<{ value: number; name: string }>) || [];
-          this.equipos = [{ value: 0, name: 'Todos los equipos' }, ...equiposAPI];
+          const raw = (res.data as Array<{ value?: number; name?: string; teamId?: number }>) || [];
+          this.equipos = [
+            { value: 0, name: 'Todos los equipos' },
+            ...raw.map((e: any) => ({ value: Number(e.value ?? e.teamId ?? 0), name: String(e.name ?? '') })),
+          ];
           this.cargandoEquipos = false;
-          // Comenzar siempre con "Todos los equipos"
           this.teamIdSeleccionado = 0;
           this.cargarTabla();
         },
@@ -79,21 +97,24 @@ export class RopaTablaCartalogComponent implements OnInit, OnDestroy {
   }
 
   onEquipoChange(): void {
+    const id = this.teamIdSeleccionado != null ? Number(this.teamIdSeleccionado) : 0;
+    this.teamIdSeleccionado = id;
     this.cargarTabla();
   }
 
   cargarTabla(): void {
-    if (this.teamIdSeleccionado === null || this.teamIdSeleccionado === undefined) return;
+    const teamId = this.teamIdSeleccionado != null ? Number(this.teamIdSeleccionado) : 0;
     this.cargandoTabla = true;
     this.errorTabla = '';
     this.ropaCatalogoService
-      .getTablaByTeam(this.clubId, this.teamIdSeleccionado, this.temporada)
+      .getTablaByTeam(this.clubId, teamId, this.temporada)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res: Response) => {
           if (res.status === 200) {
             const data = res.data as RopaTabla;
-            this.prendas = data.prendas || [];
+            const rawPrendas = data.prendas || [];
+            this.prendas = rawPrendas.map((p: any) => this.normalizePrenda(p));
             this.jugadores = data.jugadores || [];
             this.construirTabla(data.selecciones || []);
           } else {
@@ -178,6 +199,18 @@ export class RopaTablaCartalogComponent implements OnInit, OnDestroy {
     return equipo ? equipo.name : '';
   }
 
+  /** Jugadores visibles aplicando el filtro por nombre (nombre, apellido o nick). */
+  get jugadoresFiltrados(): JugadorTablaRopa[] {
+    const q = (this.filtroNombreJugador || '').trim().toLowerCase();
+    if (!q) return this.jugadores;
+    return this.jugadores.filter((j) => {
+      const nombre = (j.nombre || '').toLowerCase();
+      const apellido = (j.apellido || '').toLowerCase();
+      const nick = (j.nick || '').toLowerCase();
+      return nombre.includes(q) || apellido.includes(q) || nick.includes(q);
+    });
+  }
+
   contarRespuestas(prendaId: number): number {
     return this.jugadores.filter(
       (j) => this.tabla[j.playerId]?.[prendaId]?.tallaId != null
@@ -190,9 +223,61 @@ export class RopaTablaCartalogComponent implements OnInit, OnDestroy {
     ).length;
   }
 
+  /**
+   * Nombre de equipo a mostrar en la columna "Equipo" para un jugador.
+   * 1) teamName del DTO (backend); 2) si viene teamId, se resuelve desde el combo de equipos; 3) fallback al equipo seleccionado.
+   */
+  getNombreEquipoJugador(jugador: JugadorTablaRopa): string {
+    const dtoName = jugador.teamName ?? (jugador as any).teamName;
+    if (dtoName != null && String(dtoName).trim()) {
+      return String(dtoName).trim();
+    }
+    const tid = jugador.teamId ?? (jugador as any).teamId;
+    if (tid != null && tid !== 0) {
+      const fromCombo = this.getNombreEquipo(Number(tid));
+      if (fromCombo) return fromCombo;
+    }
+    if (this.teamIdSeleccionado != null && this.teamIdSeleccionado !== 0) {
+      return this.getNombreEquipo(this.teamIdSeleccionado);
+    }
+    return '';
+  }
+
+  /** Clase CSS del badge de equipo (colores Sphaira) según teamId; "Sin equipo" o vacío → estilo empty. */
+  getEquipoBadgeClass(jugador: JugadorTablaRopa): string {
+    const name = this.getNombreEquipoJugador(jugador);
+    if (!name || name.trim() === '' || name.trim().toLowerCase() === 'sin equipo') {
+      return 'equipo-badge equipo-badge--empty';
+    }
+    const tid = jugador.teamId ?? (jugador as any).teamId;
+    if (tid == null || tid === 0) return 'equipo-badge equipo-badge--empty';
+    const idx = Math.abs(Number(tid)) % 4;
+    const variants = ['equipo-badge--green', 'equipo-badge--navy', 'equipo-badge--teal', 'equipo-badge--warm'];
+    return `equipo-badge ${variants[idx]}`;
+  }
+
   getTallaLabel(prenda: RopaCatalogoPrenda, tallaId: number | null): string {
     if (!tallaId) return '—';
     const talla = (prenda.tallas || []).find((t) => t.tallaId === tallaId);
     return talla ? talla.nombreTalla : '?';
+  }
+
+  private normalizePrenda(p: any): RopaCatalogoPrenda {
+    const imagenUrl = p?.imagenUrl ?? p?.imagen_url ?? '';
+    const imagenNombre = p?.imagenNombre ?? p?.imagen_nombre ?? '';
+    return { ...p, imagenUrl: imagenUrl || '', imagenNombre: imagenNombre || '' } as RopaCatalogoPrenda;
+  }
+
+  /** URL de la imagen de la prenda: usa imagenUrl del API o la construye desde environment.images + imagenNombre */
+  getPrendaImageUrl(prenda: RopaCatalogoPrenda | null | undefined): string | null {
+    if (!prenda) return null;
+    const url = (prenda as any).imagenUrl ?? (prenda as any).imagen_url;
+    if (url && typeof url === 'string' && url.trim()) return url.trim();
+    const nombre = (prenda as any).imagenNombre ?? (prenda as any).imagen_nombre;
+    if (nombre && typeof nombre === 'string' && nombre.trim()) {
+      const base = (environment as { images?: string }).images ?? 'https://appsphairatech.com/images/';
+      return base.replace(/\/$/, '') + '/ropa-catalogo/' + nombre.trim();
+    }
+    return null;
   }
 }

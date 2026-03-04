@@ -40,6 +40,24 @@ body {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 }
 
+/* Snackbar estilo Sphaira (ropa-catalogo y otros) */
+.mat-mdc-snack-bar-container.sphaira-snackbar-success,
+.mat-snack-bar-container.sphaira-snackbar-success {
+  background: linear-gradient(135deg, #0d5c3a 0%, #31b270 100%) !important;
+  color: #fff !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(49, 178, 112, 0.35) !important;
+  font-weight: 500 !important;
+}
+.mat-mdc-snack-bar-container.sphaira-snackbar-error,
+.mat-snack-bar-container.sphaira-snackbar-error {
+  background: linear-gradient(135deg, #b71c1c 0%, #e63946 100%) !important;
+  color: #fff !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(230, 57, 70, 0.3) !important;
+  font-weight: 500 !important;
+}
+
 /* Overlay moderno para el modal de información del jugador */
 .player-info-dialog-backdrop {
   background: rgba(0, 44, 64, 0.5) !important;

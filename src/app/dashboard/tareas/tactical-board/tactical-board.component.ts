@@ -43,6 +43,7 @@ type ToolType = 'select' | 'pencil' | 'line' | 'arrow' | 'rect' | 'ellipse' | 't
 export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('boardContainer', { static: false }) boardContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('addPlayerBtn', { static: false }) addPlayerBtn!: ElementRef<HTMLButtonElement>;
 
   /** Modo tarea: la pizarra se abre embebida desde el editor de tarea */
   @Input() taskMode: boolean = false;
@@ -71,6 +72,8 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
   playerColor = '#2979ff';
   nextPlayerNumber = 1;
   showPlayerColorPicker = false;
+  /** Posición del dropdown de colores (fixed respecto al viewport). */
+  dropdownPosition = { top: 0, left: 0 };
 
   readonly PLAYER_COLORS = [
     '#2979ff', '#ff1744', '#ffea00', '#00e676',
@@ -355,7 +358,6 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
     this.activeTool = tool;
     this.showPlayerPanel = false;
     this.showColorPicker = false;
-    this.showPlayerColorPicker = false;
     if (tool !== 'select') { this.deselectAll(); }
     this.stage.container().style.cursor =
       tool === 'select' ? 'default' : 'crosshair';
@@ -368,6 +370,34 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
 
   setPlayerColor(c: string): void {
     this.playerColor = c;
+  }
+
+  /** Despliega/oculta la paleta de colores para añadir jugador (solo en toolbar). */
+  togglePlayerColorPicker(): void {
+    this.showPlayerColorPicker = !this.showPlayerColorPicker;
+    this.showPlayerPanel = false;
+    this.showColorPicker = false;
+    if (this.showPlayerColorPicker) {
+      this.activeTool = 'select';
+      setTimeout(() => this.updateDropdownPosition(), 0);
+    }
+  }
+
+  /** Actualiza la posición del dropdown para que quede debajo del botón "Añadir jugador". */
+  private updateDropdownPosition(): void {
+    const btn = this.addPlayerBtn?.nativeElement;
+    if (!btn) return;
+    const rect = btn.getBoundingClientRect();
+    this.dropdownPosition = {
+      top: rect.bottom + 4,
+      left: rect.left
+    };
+  }
+
+  /** Elige un color y añade un jugador (círculo) con ese color; el dropdown se mantiene abierto. */
+  addPlayerWithColor(c: string): void {
+    this.setPlayerColor(c);
+    this.addPlayer('color');
   }
 
   private bindDrawEvents(): void {
@@ -489,9 +519,6 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
     this.preventTouchScroll(e);
     const pos = this.getPointerPos();
     if (!pos) return;
-
-    /* close popups when clicking canvas */
-    this.showPlayerColorPicker = false;
 
     const target = e?.target;
     // No iniciar dibujo ni selección: dejar que Konva gestione el arrastre cuando se hace clic en marcador o figura

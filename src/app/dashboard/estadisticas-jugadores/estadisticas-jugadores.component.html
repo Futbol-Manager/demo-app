@@ -72,18 +72,30 @@
 <ng-container *ngIf="datosCargados || graficasPlayers">
   <div class="stats-page">
 
-    <!-- Vista Tabla -->
-    <section *ngIf="datosCargados" class="stats-section">
+    <!-- Vista Tabla: se muestra cuando hay datos cargados y no estamos en gráficas -->
+    <section *ngIf="datosCargados && !graficasPlayers" class="stats-section">
       <div class="card-sphaira table-card">
-        <div class="card-sphaira-header">
+        <div class="card-sphaira-header card-sphaira-header--flex">
           <h2 class="card-sphaira-title">{{ 'ESTADIS_JUGADORES.TABLA_JUGADORES' | translate }}</h2>
-          <div class="datatable-controls">
-            <div id="dt-length"></div>
-            <div id="dt-search"></div>
+          <div class="filtros-sphaira filtros-sphaira--inline">
+            <div class="filtro-busqueda">
+              <label class="filtro-label">
+                <i class="bi bi-search"></i>
+                <span>Buscar</span>
+              </label>
+              <div class="filtro-input-wrap">
+                <input type="text" class="filtro-input-sphaira" [(ngModel)]="searchPlayer"
+                       placeholder="Nombre o posición..." />
+                <button *ngIf="searchPlayer" type="button" class="filtro-clear" (click)="searchPlayer = ''" aria-label="Limpiar">
+                  <i class="bi bi-x"></i>
+                </button>
+              </div>
+            </div>
+            <span class="filtro-hint" *ngIf="searchPlayer">{{ filteredPlayers.length }}/{{ players.length }}</span>
           </div>
         </div>
         <div class="table-wrapper table-wrapper--modern">
-          <table id="dataTable" class="table-sphaira text-center">
+          <table class="table-sphaira table-sphaira--premium text-center">
             <thead>
               <tr>
                 <th>ID</th>
@@ -107,7 +119,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let player of players; let i = index">
+              <tr *ngFor="let player of paginatedPlayers; trackBy: trackByPlayerId">
                 <td>{{ player.playerId }}</td>
                 <td>{{ player.nombre }}</td>
                 <td>{{ player.posicion }}</td>
@@ -129,8 +141,29 @@
               </tr>
             </tbody>
           </table>
+          <div class="tabla-empty" *ngIf="filteredPlayers.length === 0">
+            <i class="bi bi-inbox"></i>
+            <p>{{ players.length === 0 ? 'No hay jugadores para el tipo de partido seleccionado.' : 'Ningún jugador coincide con la búsqueda.' }}</p>
+          </div>
         </div>
-        <div id="button_datatable"></div>
+        <!-- Paginación centrada debajo de la tabla (estilo new-cuotas) -->
+        <div class="pagination-wrapper" *ngIf="filteredPlayers.length > 0">
+          <div class="pagination-content">
+            <span class="pagination-info">{{ paginationInfoPlayer }}</span>
+            <select class="pagination-select" [(ngModel)]="pageSizePlayer" (ngModelChange)="onPageSizePlayerChange()">
+              <option *ngFor="let size of pageSizesPlayer" [value]="size">{{ size }}</option>
+            </select>
+            <div class="pagination-controls">
+              <button type="button" class="page-btn" (click)="prevPagePlayer()" [disabled]="pagePlayer <= 1" title="Anterior">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <span class="page-indicator">{{ pagePlayer }} / {{ totalPagesPlayer }}</span>
+              <button type="button" class="page-btn" (click)="nextPagePlayer()" [disabled]="pagePlayer >= totalPagesPlayer" title="Siguiente">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -159,22 +192,34 @@
       </div>
 
       <div class="card-sphaira goals-card">
-        <div class="card-sphaira-header">
+        <div class="card-sphaira-header card-sphaira-header--flex">
           <h2 class="card-sphaira-title">{{ 'ESTADIS_JUGADORES.GOLES_JUGADORES' | translate }}</h2>
-          <div class="filter-group">
-            <label for="selectJugadorGoles" class="filter-label">{{ 'ESTADIS_JUGADORES.SELECCIONA_JUGADOR' | translate }}</label>
-            <select class="form-select form-select-sphaira" id="selectJugadorGoles" (change)="seleccionarIndices($event)">
-              <option value="0">{{ 'ESTADIS_JUGADORES.VER_TODOS' | translate }}</option>
-              <option *ngFor="let player of players" [value]="player.playerId">{{ player.nombre }}</option>
-            </select>
-          </div>
-          <div class="datatable-controls">
-            <div id="dt-length"></div>
-            <div id="dt-search"></div>
+          <div class="filtros-sphaira filtros-sphaira--inline">
+            <div class="filter-group">
+              <label for="selectJugadorGoles" class="filter-label">{{ 'ESTADIS_JUGADORES.SELECCIONA_JUGADOR' | translate }}</label>
+              <select class="form-select form-select-sphaira" id="selectJugadorGoles" (change)="seleccionarIndices($event)">
+                <option value="0">{{ 'ESTADIS_JUGADORES.VER_TODOS' | translate }}</option>
+                <option *ngFor="let player of players" [value]="player.playerId">{{ player.nombre }}</option>
+              </select>
+            </div>
+            <div class="filtro-busqueda">
+              <label class="filtro-label">
+                <i class="bi bi-search"></i>
+                <span>Buscar</span>
+              </label>
+              <div class="filtro-input-wrap">
+                <input type="text" class="filtro-input-sphaira" [(ngModel)]="searchGol"
+                       placeholder="Goleador, rival, categoría..." />
+                <button *ngIf="searchGol" type="button" class="filtro-clear" (click)="searchGol = ''" aria-label="Limpiar">
+                  <i class="bi bi-x"></i>
+                </button>
+              </div>
+            </div>
+            <span class="filtro-hint" *ngIf="searchGol">{{ filteredGoles.length }}/{{ golesAvanzadoAFavor.length }}</span>
           </div>
         </div>
         <div class="table-wrapper table-wrapper--modern">
-          <table id="dataTableGoles" class="table-sphaira text-center">
+          <table class="table-sphaira table-sphaira--premium text-center">
             <thead>
               <tr>
                 <th>#</th>
@@ -189,8 +234,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let gol of golesAvanzadoAFavor; let i = index">
-                <td>{{ i + 1 }}</td>
+              <tr *ngFor="let gol of paginatedGoles; let i = index">
+                <td>{{ (pageGol - 1) * pageSizeGol + i + 1 }}</td>
                 <td>{{ gol.nombreGoleador }}</td>
                 <td>{{ gol.nombreAsistente }}</td>
                 <td>{{ gol.postPartido?.matchPreparation?.rivalName }}</td>
@@ -202,8 +247,29 @@
               </tr>
             </tbody>
           </table>
+          <div class="tabla-empty" *ngIf="filteredGoles.length === 0">
+            <i class="bi bi-inbox"></i>
+            <p>Ningún gol coincide con la búsqueda.</p>
+          </div>
         </div>
-        <div id="button_datatable"></div>
+        <!-- Paginación centrada debajo de la tabla (estilo new-cuotas) -->
+        <div class="pagination-wrapper" *ngIf="filteredGoles.length > 0">
+          <div class="pagination-content">
+            <span class="pagination-info">{{ paginationInfoGol }}</span>
+            <select class="pagination-select" [(ngModel)]="pageSizeGol" (ngModelChange)="onPageSizeGolChange()">
+              <option *ngFor="let size of pageSizesGol" [value]="size">{{ size }}</option>
+            </select>
+            <div class="pagination-controls">
+              <button type="button" class="page-btn" (click)="prevPageGol()" [disabled]="pageGol <= 1" title="Anterior">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <span class="page-indicator">{{ pageGol }} / {{ totalPagesGol }}</span>
+              <button type="button" class="page-btn" (click)="nextPageGol()" [disabled]="pageGol >= totalPagesGol" title="Siguiente">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   </div>

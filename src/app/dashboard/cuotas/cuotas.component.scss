@@ -864,8 +864,9 @@ $shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
   // ── Cobro automático Sphaira Pay (azul Sphaira — tarjeta vinculada y activa) ─
   &--sphaira-auto {
     cursor: default;
-    background: $primary;
-    border-color: $primary;
+    // Verde Sphaira (usa la variable de éxito/accent definida al inicio)
+    background: $success;
+    border-color: $success;
     color: #fff;
 
     &:hover { transform: none; box-shadow: none; }
@@ -981,6 +982,12 @@ $shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
   white-space: nowrap;
 }
 
+// Colores Sphaira para badges (sin azul): verde y teal corporativos
+$sphaira-green: #31b270;
+$sphaira-green-dark: #1a6b4a;
+$sphaira-teal: #1f8f8a;
+$sphaira-navy: #002c40;
+
 .cq-tipo-badge {
   display: inline-flex;
   align-items: center;
@@ -989,17 +996,30 @@ $shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
   border-radius: 20px;
   font-size: 0.73rem;
   font-weight: 600;
-  background: rgba($text-muted, 0.1);
-  color: $text-muted;
   white-space: nowrap;
   width: fit-content;
 
   i { font-size: 0.75rem; }
 
+  // Puntual: gris neutro cálido (por defecto)
+  background: rgba(55, 65, 81, 0.08);
+  color: #374151;
+  border: 1px solid rgba(55, 65, 81, 0.2);
+
+  // Sphaira Pay: solo colores Sphaira (verde/teal), sin azul
   &--sphaira {
-    background: linear-gradient(135deg, rgba($primary, 0.14), rgba($primary-dark, 0.08));
-    color: $primary;
-    border: 1px solid rgba($primary, 0.2);
+    background: linear-gradient(135deg, rgba($sphaira-green, 0.16), rgba($sphaira-teal, 0.1));
+    color: $sphaira-green-dark;
+    border: 1px solid rgba($sphaira-green, 0.35);
+    i { color: $sphaira-green; }
+  }
+
+  // Manual: badge diferenciado con tono beige (paleta Sphaira, neutro cálido)
+  &--manual {
+    background: #f5f1e6;
+    color: #8b5e3c;
+    border: 1px solid #e2d4bd;
+    i { color: #a26a3a; }
   }
 }
 

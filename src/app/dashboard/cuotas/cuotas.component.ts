@@ -131,9 +131,22 @@ export class CuotasComponent implements OnInit {
     return this.selectedCuotas.reduce((sum, c) => sum + (parseFloat(c.importe) || 0), 0);
   }
 
-  /** True si la cuota es Sphaira Pay: tipoCobro=3 (nuevo modelo) o stripe=1/tipoPagoStripe=1 (compatibilidad) */
+  /** True si la cuota es Sphaira Pay: tipoCobro=3 (nuevo modelo) o stripe=1/tipoPagoStripe=1 (compatibilidad). stripe=2 = "Otro" no es Sphaira. */
   isSphaira(c: any): boolean {
+    if (c?.stripe === 2) return false;
     return c?.tipoCobro === 3 || c?.stripe === 1 || c?.tipoPagoStripe === 1;
+  }
+
+  /** True si la cuota es tipo "Otros medios de pago" (Manual): stripe=2. No se puede pagar por Stripe. */
+  isManual(c: any): boolean {
+    return c?.stripe === 2;
+  }
+
+  /** Importe a mostrar al padre: para tipo "Otro" (stripe=2) solo el valor base; para el resto, base + comisiones. */
+  getDisplayAmount(cuota: any): number {
+    if (!cuota) return 0;
+    if (cuota.stripe === 2) return parseFloat(cuota.importe) || 0;
+    return this.calcGrossAmount(cuota.importe, cuota.comisionClub ?? 0);
   }
 
   /** True si hay al menos una cuota configurada como Sphaira Pay */
@@ -176,8 +189,14 @@ export class CuotasComponent implements OnInit {
           !c.nombre?.toLowerCase().includes(this.filtroConcepto.toLowerCase())) return false;
       if (this.filtroTipoPago !== '') {
         const t = parseInt(this.filtroTipoPago, 10);
-        const esSphaira = this.isSphaira(c) ? 1 : 0;
-        if (esSphaira !== t) return false;
+        if (t === 2) {
+          if (!this.isManual(c)) return false; // Manual = stripe 2
+        } else if (t === 1) {
+          if (!this.isSphaira(c)) return false;
+        } else {
+          // t === 0: Puntual (ni Sphaira ni Manual)
+          if (this.isSphaira(c) || this.isManual(c)) return false;
+        }
       }
       if (this.filtroEstadoPago) {
         const imp = parseFloat(c.importe) || 0;
@@ -210,7 +229,7 @@ export class CuotasComponent implements OnInit {
 
   get selectedCuotasGrossTotal(): string {
     return this.selectedCuotas
-      .reduce((sum, c) => sum + this.calcGrossAmount(c.importe, c.comisionClub ?? 0), 0)
+      .reduce((sum, c) => sum + this.getDisplayAmount(c), 0)
       .toFixed(2);
   }
 
@@ -228,12 +247,13 @@ export class CuotasComponent implements OnInit {
   getPagadoVisible(cuota: any): string {
     const pag = parseFloat(cuota.pagado) || 0;
     if (pag <= 0) return '0.00';
-    return this.calcGrossAmount(cuota.importe, cuota.comisionClub ?? 0).toFixed(2);
+    return this.getDisplayAmount(cuota).toFixed(2);
   }
 
   canSelectCuota(cuota: any): boolean {
     if (!cuota || cuota.desistido) return false;
     if (this.isSphaira(cuota)) return false;
+    if (this.isManual(cuota)) return false; // Otros medios de pago: no seleccionable para pagar
     return (parseFloat(cuota.pagado) || 0) < (parseFloat(cuota.importe) || 0);
   }
 
@@ -736,6 +756,17 @@ export class CuotasComponent implements OnInit {
       this.pagarOk = false;
       this.cantidadAPagar = 0;
       this.amount = 0;
+      return;
+    }
+
+    // Tipo "Otro" (stripe=2): solo importe base, sin comisiones
+    if (c.stripe === 2) {
+      const base = Number(c.importe ?? 0);
+      this.cantidadAPagar = base;
+      this.amount = base;
+      this.pagarOk = base > 0;
+      this.cuota = { clubId: c.clubId, accountId: c.accountId, nameClub: c.nameClub };
+      this.infoRecurrente = '';
       return;
     }
 

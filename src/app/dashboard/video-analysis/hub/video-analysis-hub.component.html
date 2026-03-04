@@ -1,84 +1,34 @@
-<!-- ===== PAGE HEADER ===== -->
-<div class="page-header">
+<!-- ===== PAGE HEADER (ancho completo + título centrado) ===== -->
+<div class="page-header-wrapper">
+<header class="page-header">
   <div class="back-container">
-    <button class="btn-back-clean" (click)="goBack()">
+    <button type="button" class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
     </button>
   </div>
-  <h2 class="table-title">Análisis de Vídeo</h2>
+  <div class="header-center">
+    <div class="header-icon">
+      <i class="bi bi-camera-reels"></i>
+    </div>
+    <div class="header-titles">
+      <h1 class="page-title">Análisis de Vídeo</h1>
+      <p class="header-subtitle">Crea proyectos de etiquetado, playlists y comparte con tu equipo</p>
+      <div class="header-meta" *ngIf="!isLoading && projects.length > 0">
+        <span class="meta-chip">
+          <i class="bi bi-camera-reels"></i>
+          {{ projects.length }} proyecto{{ projects.length !== 1 ? 's' : '' }}
+        </span>
+      </div>
+    </div>
+  </div>
   <div class="header-spacer"></div>
+</header>
 </div>
 
 <div class="hub-container">
 
-  <!-- Barra de acción con contador + botón nuevo análisis -->
-  <div class="hub-action-bar">
-    <span class="hub-count-pill">
-      <i class="bi bi-camera-reels me-1"></i>
-      {{ projects.length }} análisis
-    </span>
-    <button class="btn-new-analysis" (click)="openNewProjectModal()">
-      <i class="bi bi-plus-lg"></i>
-      Nuevo análisis
-    </button>
-  </div>
-
-  <!-- KPI Cards -->
-  <div class="kpi-row" *ngIf="projects.length > 0">
-    <div class="kpi-card" (click)="setFilter('ALL')" [class.active]="activeFilter === 'ALL'">
-      <div class="kpi-value">{{ projects.length }}</div>
-      <div class="kpi-label">Total</div>
-    </div>
-    <div class="kpi-card" (click)="setFilter('IN_PROGRESS')" [class.active]="activeFilter === 'IN_PROGRESS'">
-      <div class="kpi-value kpi-value--progress">{{ getStatusCount('IN_PROGRESS') }}</div>
-      <div class="kpi-label">En progreso</div>
-    </div>
-    <div class="kpi-card" (click)="setFilter('COMPLETED')" [class.active]="activeFilter === 'COMPLETED'">
-      <div class="kpi-value kpi-value--completed">{{ getStatusCount('COMPLETED') }}</div>
-      <div class="kpi-label">Completados</div>
-    </div>
-    <div class="kpi-card" (click)="setFilter('DRAFT')" [class.active]="activeFilter === 'DRAFT'">
-      <div class="kpi-value kpi-value--draft">{{ getStatusCount('DRAFT') }}</div>
-      <div class="kpi-label">Borradores</div>
-    </div>
-  </div>
-
-  <!-- Search -->
-  <div class="search-bar" *ngIf="projects.length > 0">
-    <i class="bi bi-search"></i>
-    <input type="text" class="form-control" placeholder="Buscar análisis por título..."
-           [(ngModel)]="searchQuery" (input)="onSearch()">
-  </div>
-
-  <!-- Loading -->
-  <div class="loading-state" *ngIf="isLoading">
-    <div class="spinner-border text-primary" role="status"></div>
-  </div>
-
-  <!-- Empty State -->
-  <div class="empty-state" *ngIf="!isLoading && projects.length === 0">
-    <div class="empty-card">
-      <i class="bi bi-camera-reels"></i>
-      <h5>Empieza a analizar tus vídeos</h5>
-      <p>Crea tu primer análisis de vídeo para etiquetar jugadas, crear playlists y compartir con tu equipo.</p>
-      <button class="btn btn-success" (click)="openNewProjectModal()">
-        <i class="bi bi-plus-lg"></i>
-        Crear primer análisis
-      </button>
-    </div>
-  </div>
-
-  <!-- No results -->
-  <div class="empty-state" *ngIf="!isLoading && projects.length > 0 && filteredProjects.length === 0">
-    <div class="empty-card">
-      <i class="bi bi-search"></i>
-      <h5>Sin resultados</h5>
-      <p>No se encontraron análisis con los filtros actuales.</p>
-    </div>
-  </div>
-
-  <!-- Quick Actions -->
+  <!-- Quick Actions: Plantillas, Playlists, Biblioteca -->
   <div class="quick-actions" *ngIf="!isLoading">
     <a class="quick-action" routerLink="/dashboard/video-analysis/templates">
       <div class="qa-icon qa-icon--navy">
@@ -107,6 +57,75 @@
         <span class="qa-desc">Vídeos del club</span>
       </div>
     </a>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-row" *ngIf="projects.length > 0">
+    <div class="kpi-card" (click)="setFilter('ALL')" [class.active]="activeFilter === 'ALL'">
+      <div class="kpi-value">{{ projects.length }}</div>
+      <div class="kpi-label">Total</div>
+    </div>
+    <div class="kpi-card" (click)="setFilter('IN_PROGRESS')" [class.active]="activeFilter === 'IN_PROGRESS'">
+      <div class="kpi-value kpi-value--progress">{{ getStatusCount('IN_PROGRESS') }}</div>
+      <div class="kpi-label">En progreso</div>
+    </div>
+    <div class="kpi-card" (click)="setFilter('COMPLETED')" [class.active]="activeFilter === 'COMPLETED'">
+      <div class="kpi-value kpi-value--completed">{{ getStatusCount('COMPLETED') }}</div>
+      <div class="kpi-label">Completados</div>
+    </div>
+    <div class="kpi-card" (click)="setFilter('DRAFT')" [class.active]="activeFilter === 'DRAFT'">
+      <div class="kpi-value kpi-value--draft">{{ getStatusCount('DRAFT') }}</div>
+      <div class="kpi-label">Borradores</div>
+    </div>
+  </div>
+
+  <!-- Barra premium: contador + búsqueda + Nuevo análisis (una línea, estilo premium) -->
+  <div class="hub-toolbar-premium" *ngIf="!isLoading && projects.length > 0">
+    <span class="hub-toolbar-pill">
+      <i class="bi bi-camera-reels"></i>
+      <span class="hub-toolbar-count">{{ projects.length }}</span>
+      <span class="hub-toolbar-label">análisis</span>
+    </span>
+    <div class="hub-toolbar-search">
+      <i class="bi bi-search"></i>
+      <input type="text" class="hub-toolbar-input" placeholder="Buscar análisis por título..."
+             [(ngModel)]="searchQuery" (input)="onSearch()">
+    </div>
+    <button type="button" class="hub-toolbar-btn-new" (click)="openNewProjectModal()">
+      <i class="bi bi-plus-lg"></i>
+      Nuevo análisis
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner-border text-primary" role="status"></div>
+  </div>
+
+  <!-- Empty State (premium) -->
+  <div class="empty-state" *ngIf="!isLoading && projects.length === 0">
+    <div class="empty-card">
+      <div class="empty-card-icon">
+        <i class="bi bi-camera-reels"></i>
+      </div>
+      <h3>Empieza a analizar tus vídeos</h3>
+      <p>Crea tu primer análisis de vídeo para etiquetar jugadas, crear playlists y compartir con tu equipo.</p>
+      <button type="button" class="btn-empty-cta" (click)="openNewProjectModal()">
+        <i class="bi bi-plus-lg"></i>
+        Crear primer análisis
+      </button>
+    </div>
+  </div>
+
+  <!-- No results -->
+  <div class="empty-state" *ngIf="!isLoading && projects.length > 0 && filteredProjects.length === 0">
+    <div class="empty-card">
+      <div class="empty-card-icon empty-card-icon--muted">
+        <i class="bi bi-search"></i>
+      </div>
+      <h3>Sin resultados</h3>
+      <p>No se encontraron análisis con los filtros actuales.</p>
+    </div>
   </div>
 
   <!-- Projects Grid -->
@@ -173,41 +192,39 @@
 
 </div>
 
-<!-- New Project Modal -->
-<div class="modal-overlay" *ngIf="showNewProjectModal" (click)="closeNewProjectModal()" appModalBackdrop>
-  <div class="modal-panel" (click)="$event.stopPropagation()">
-    <div class="modal-header-custom">
-      <h4><i class="bi bi-camera-reels"></i> Nuevo Análisis de Vídeo</h4>
-      <button class="btn-close-modal" (click)="closeNewProjectModal()">
+<!-- Modal Nuevo Análisis (premium Sphaira) -->
+<div class="modal-overlay modal-va-overlay" *ngIf="showNewProjectModal" (click)="closeNewProjectModal()" appModalBackdrop>
+  <div class="modal-panel modal-panel-premium" (click)="$event.stopPropagation()">
+    <div class="modal-panel-header">
+      <div class="modal-panel-header-icon">
+        <i class="bi bi-camera-reels"></i>
+      </div>
+      <div class="modal-panel-header-text">
+        <h4>Nuevo Análisis de Vídeo</h4>
+        <p>Título, archivo de vídeo y plantilla de etiquetado. El vídeo se reproduce desde tu equipo.</p>
+      </div>
+      <button type="button" class="modal-panel-close" (click)="closeNewProjectModal()" aria-label="Cerrar">
         <i class="bi bi-x-lg"></i>
       </button>
     </div>
-    <div class="modal-body-custom">
-
-      <!-- Título -->
-      <div class="form-group">
-        <label>Título del análisis *</label>
-        <input type="text" class="form-control" placeholder="Ej: Análisis partido vs Real Madrid"
+    <div class="modal-panel-body">
+      <div class="modal-panel-field">
+        <label class="modal-panel-label">Título del análisis <span class="required">*</span></label>
+        <input type="text" class="modal-panel-input" placeholder="Ej: Análisis partido vs Real Madrid"
                [(ngModel)]="newProject.title">
       </div>
-
-      <!-- Descripción -->
-      <div class="form-group">
-        <label>Descripción</label>
-        <textarea class="form-control" rows="2" placeholder="Notas adicionales..."
+      <div class="modal-panel-field">
+        <label class="modal-panel-label">Descripción</label>
+        <textarea class="modal-panel-input modal-panel-textarea" rows="2" placeholder="Notas adicionales..."
                   [(ngModel)]="newProject.description"></textarea>
       </div>
-
-      <!-- Origen del vídeo: solo archivo local -->
-      <div class="form-group">
-        <label>Archivo de vídeo *</label>
+      <div class="modal-panel-field">
+        <label class="modal-panel-label">Archivo de vídeo <span class="required">*</span></label>
         <div class="local-file-picker">
-          <input #fileInput type="file" accept="video/*" class="d-none"
-                 (change)="onLocalFileSelected($event)">
-          <button class="btn btn-outline-primary btn-sm w-100"
-                  (click)="fileInput.click()"
+          <input #fileInput type="file" accept="video/*" class="d-none" (change)="onLocalFileSelected($event)">
+          <button type="button" class="va-btn va-btn--outline va-btn--full" (click)="fileInput.click()"
                   [disabled]="isExtractingMeta">
-            <i class="bi bi-folder2-open me-1"></i>
+            <i class="bi bi-folder2-open"></i>
             {{ selectedFileMeta ? 'Cambiar archivo' : 'Seleccionar archivo de vídeo' }}
           </button>
           <div class="local-file-info" *ngIf="selectedFileMeta">
@@ -216,71 +233,62 @@
               <span class="file-name">{{ selectedFileMeta.fileName }}</span>
               <span class="file-meta">
                 {{ localVideoService.formatFileSize(selectedFileMeta.fileSize) }}
-                &middot;
-                {{ localVideoService.formatDuration(selectedFileMeta.durationMs) }}
+                · {{ localVideoService.formatDuration(selectedFileMeta.durationMs) }}
               </span>
             </div>
-            <i class="bi bi-check-circle-fill text-success"></i>
+            <i class="bi bi-check-circle-fill va-icon-success"></i>
           </div>
           <div class="extracting-meta" *ngIf="isExtractingMeta">
-            <span class="spinner-border spinner-border-sm me-1"></span>
+            <span class="spinner-inline"></span>
             Leyendo información del vídeo…
           </div>
         </div>
-        <small class="text-muted">
-          El vídeo no se sube a ningún servidor. Se reproduce directamente desde tu ordenador.
-        </small>
+        <span class="modal-panel-hint">El vídeo no se sube a ningún servidor. Se reproduce desde tu ordenador.</span>
       </div>
-
-      <!-- Plantilla de análisis -->
-      <div class="form-group">
-        <label>Plantilla de análisis *</label>
-        <select class="form-select" [(ngModel)]="newProject.templateId" [disabled]="templates.length === 0">
+      <div class="modal-panel-field">
+        <label class="modal-panel-label">Plantilla de análisis <span class="required">*</span></label>
+        <select class="modal-panel-input modal-panel-select" [(ngModel)]="newProject.templateId"
+                [disabled]="templates.length === 0">
           <option [ngValue]="0" disabled>Selecciona una plantilla</option>
           <option *ngFor="let tpl of templates" [ngValue]="tpl.id">
-            {{ tpl.name }}
-            <span *ngIf="tpl.isSystem"> (Sphaira)</span>
+            {{ tpl.name }}{{ tpl.isSystem ? ' (Sphaira)' : '' }}
           </option>
         </select>
         <div class="alert-no-templates" *ngIf="templates.length === 0">
           <i class="bi bi-exclamation-triangle-fill"></i>
-          No tienes plantillas creadas aún. Las plantillas definen la botonera de etiquetado (categorías y descriptores).
-          <a routerLink="/dashboard/video-analysis/templates" (click)="closeNewProjectModal()">
-            Crear mi primera plantilla
-          </a>
+          No tienes plantillas creadas aún.
+          <a routerLink="/dashboard/video-analysis/templates" (click)="closeNewProjectModal()">Crear mi primera plantilla</a>
         </div>
       </div>
-
-      <!-- Contexto -->
-      <div class="form-group">
-        <label>Contexto</label>
+      <div class="modal-panel-field">
+        <label class="modal-panel-label">Contexto</label>
         <div class="context-selector">
-          <button class="context-btn" [class.active]="newProject.contextType === 'free'"
+          <button type="button" class="context-btn" [class.active]="newProject.contextType === 'free'"
                   (click)="newProject.contextType = 'free'">
             <i class="bi bi-camera-video"></i> Libre
           </button>
-          <button class="context-btn" [class.active]="newProject.contextType === 'match'"
+          <button type="button" class="context-btn" [class.active]="newProject.contextType === 'match'"
                   (click)="newProject.contextType = 'match'">
             <i class="bi bi-trophy"></i> Partido
           </button>
-          <button class="context-btn" [class.active]="newProject.contextType === 'training'"
+          <button type="button" class="context-btn" [class.active]="newProject.contextType === 'training'"
                   (click)="newProject.contextType = 'training'">
             <i class="bi bi-clipboard-check"></i> Entrenamiento
           </button>
         </div>
       </div>
-
     </div>
-    <div *ngIf="createError" class="create-error-banner">
-      <i class="bi bi-exclamation-triangle-fill me-1"></i>{{ createError }}
+    <div class="modal-panel-error" *ngIf="createError">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <span>{{ createError }}</span>
     </div>
-    <div class="modal-footer-custom">
-      <button class="btn btn-outline-secondary" (click)="closeNewProjectModal()">Cancelar</button>
-      <button class="btn btn-primary" (click)="createProject()"
+    <div class="modal-panel-footer">
+      <button type="button" class="modal-panel-btn modal-panel-btn--secondary" (click)="closeNewProjectModal()">Cancelar</button>
+      <button type="button" class="modal-panel-btn modal-panel-btn--primary" (click)="createProject()"
               [disabled]="!newProject.title || !newProject.templateId || isCreating || !selectedFileMeta">
-        <span *ngIf="isCreating" class="spinner-border spinner-border-sm me-1"></span>
+        <span *ngIf="isCreating" class="spinner-inline"></span>
         <i class="bi bi-play-circle" *ngIf="!isCreating"></i>
-        {{ isCreating ? 'Creando...' : 'Crear y abrir workspace' }}
+        <span>{{ isCreating ? 'Creando...' : 'Crear y abrir workspace' }}</span>
       </button>
     </div>
   </div>

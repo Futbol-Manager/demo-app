@@ -8,7 +8,7 @@ import {
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Router } from '@angular/router';
+import { LoginService } from '../services/login/login.service';
 
 /** Rutas que no necesitan token y no deben redirigir en caso de error */
 const AUTH_PASSTHROUGH_URLS = [
@@ -42,19 +42,8 @@ export class AuthInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401 || error.status === 403) {
-          // Limpiar sesión local de forma defensiva antes de redirigir
-          localStorage.removeItem('token');
-          localStorage.removeItem('usuario');
-
-          const router = this.injector.get(Router);
-          const currentUrl = router.url;
-
-          // No redirigir si ya estamos en la página de login/home
-          if (!currentUrl.startsWith('/login') && !currentUrl.startsWith('/home')) {
-            router.navigate(['/login'], {
-              queryParams: { reason: 'session_expired', returnUrl: currentUrl }
-            });
-          }
+          const loginService = this.injector.get(LoginService);
+          loginService.cerrarSesion(true);
         }
         return throwError(() => error);
       })

@@ -1062,97 +1062,126 @@
             <div class="nc-block-tag">
               <span class="nc-tag-num nc-tag-num--stripe">2</span>
               <span class="nc-tag-label">Tipo de pago</span>
-              <span class="nc-stripe-badge" *ngIf="nuevaCuota.stripe !== 1">
+              <span class="nc-stripe-badge" *ngIf="nuevaCuota.stripe === 0">
                 <i class="bi bi-receipt me-1"></i>Pago puntual
               </span>
               <span class="nc-stripe-badge nc-stripe-badge--sphaira" *ngIf="nuevaCuota.stripe === 1">
                 Sphaira Pay
               </span>
+              <span class="nc-stripe-badge nc-stripe-badge--otro" *ngIf="nuevaCuota.stripe === 2">
+                <i class="bi bi-cash me-1"></i>Otros medios de pago
+              </span>
             </div>
 
             <div class="nc-block-body">
 
-              <!-- Selector de tipo de pago: dos opciones -->
+              <!-- Selector de tipo de pago: Pago puntual, Sphaira Pay, Otro -->
               <div class="nc-payment-selector">
 
-                <!-- Opción A: Pago puntual -->
+                <!-- Opción A: Pago puntual (Stripe) -->
                 <button type="button"
                   class="nc-payment-option"
-                  [class.nc-payment-option--active]="nuevaCuota.stripe !== 1"
+                  [class.nc-payment-option--active]="nuevaCuota.stripe === 0"
                   (click)="seleccionarTipoPago(0)">
-                  <div class="nc-payment-option-icon">
-                    <i class="bi bi-receipt"></i>
+                  <div class="nc-payment-option-icon nc-payment-option-icon--stripe">
+                    <i class="bi bi-credit-card-2-front"></i>
+                    <span class="nc-stripe-pill">Stripe</span>
                   </div>
                   <div class="nc-payment-option-body">
                     <span class="nc-payment-option-title">Pago puntual</span>
-                    <span class="nc-payment-option-sub">Cobro único, sin recurrencia</span>
+                    <span class="nc-payment-option-sub">Cobro único con Stripe, sin recurrencia</span>
                   </div>
                   <i class="bi bi-check-circle-fill nc-payment-option-check"
-                    *ngIf="nuevaCuota.stripe !== 1"></i>
+                    *ngIf="nuevaCuota.stripe === 0"></i>
                 </button>
 
-                <!-- Opción B: Sphaira Pay -->
+                <!-- Opción B: Sphaira Pay (Stripe) -->
                 <button type="button"
                   class="nc-payment-option nc-payment-option--sphaira"
                   [class.nc-payment-option--active]="nuevaCuota.stripe === 1"
                   (click)="seleccionarTipoPago(1)">
-                  <div class="nc-payment-option-icon nc-payment-option-icon--sphaira">
+                  <div class="nc-payment-option-icon nc-payment-option-icon--stripe nc-payment-option-icon--sphaira">
                     <i class="bi bi-lightning-charge-fill"></i>
+                    <span class="nc-stripe-pill">Stripe</span>
                   </div>
                   <div class="nc-payment-option-body">
                     <span class="nc-payment-option-title">Sphaira Pay</span>
-                    <span class="nc-payment-option-sub">Cobro automático con tarjeta</span>
+                    <span class="nc-payment-option-sub">Cobro automático con tarjeta vía Stripe</span>
                   </div>
                   <i class="bi bi-check-circle-fill nc-payment-option-check"
                     *ngIf="nuevaCuota.stripe === 1"></i>
                 </button>
 
+                <!-- Opción C: Otros medios de pago (no electrónico) -->
+                <button type="button"
+                  class="nc-payment-option nc-payment-option--otro"
+                  [class.nc-payment-option--active]="nuevaCuota.stripe === 2"
+                  (click)="seleccionarTipoPago(2)">
+                  <div class="nc-payment-option-icon nc-payment-option-icon--otro">
+                    <i class="bi bi-cash"></i>
+                  </div>
+                  <div class="nc-payment-option-body">
+                    <span class="nc-payment-option-title">Otros medios de pago</span>
+                    <span class="nc-payment-option-sub">Efectivo, transferencia bancaria o cualquier medio no electrónico; el cobro lo gestiona el club</span>
+                  </div>
+                  <i class="bi bi-check-circle-fill nc-payment-option-check"
+                    *ngIf="nuevaCuota.stripe === 2"></i>
+                </button>
+
               </div>
 
-              <!-- Fecha límite · solo cuando Pago puntual -->
-              <div class="nc-fecha-limite-field" *ngIf="nuevaCuota.stripe !== 1">
-                <div class="nc-field mb-0">
-                  <label class="nc-label">
-                    <i class="bi bi-calendar-event me-1 text-danger"></i>
-                    Fecha límite <span class="nc-req">*</span>
-                  </label>
+              <!-- Fecha límite · Pago puntual u Otros medios de pago (bloque premium) -->
+              <div class="nc-fecha-limite-field" *ngIf="nuevaCuota.stripe === 0 || nuevaCuota.stripe === 2">
+                <div class="nc-date-block">
+                  <div class="nc-date-block-header">
+                    <span class="nc-date-block-icon"><i class="bi bi-calendar-event"></i></span>
+                    <div class="nc-date-block-head">
+                      <span class="nc-date-block-title">Fecha límite <span class="nc-req">*</span></span>
+                      <span class="nc-date-block-hint">Fecha para que los padres realicen el pago</span>
+                    </div>
+                  </div>
                   <input type="date"
-                    class="form-control nc-input"
+                    class="form-control nc-input nc-input--date"
                     [(ngModel)]="nuevaCuota.fechaLimite"
                     name="fechaLimite">
-                  <span class="nc-input-hint">Fecha límite para que los padres realicen el pago</span>
                 </div>
               </div>
 
-              <!-- Panel de config Sphaira Pay — cobro único en fecha -->
+              <!-- Panel de config Sphaira Pay — cobro único en fecha (bloque premium) -->
               <div *ngIf="showStripeConfig" class="nc-stripe-panel">
 
-                <!-- Header -->
-                <div class="nc-billing-header">
-                  <div class="nc-billing-header-icon">
-                    <i class="bi bi-lightning-charge-fill"></i>
+                <div class="nc-stripe-panel-inner">
+                  <!-- Header -->
+                  <div class="nc-billing-header">
+                    <div class="nc-billing-header-icon">
+                      <i class="bi bi-lightning-charge-fill"></i>
+                    </div>
+                    <div class="nc-billing-header-text">
+                      <p class="nc-billing-header-title">Cobro automático</p>
+                      <p class="nc-billing-header-sub">El sistema cargará la tarjeta del padre/tutor en la fecha seleccionada</p>
+                    </div>
                   </div>
-                  <div>
-                    <p class="nc-billing-header-title">Cobro automático</p>
-                    <p class="nc-billing-header-sub">El sistema cargará la tarjeta del padre/tutor en la fecha seleccionada</p>
+
+                  <!-- Fecha de cobro -->
+                  <div class="nc-billing-fecha-cobro">
+                    <div class="nc-date-block-header">
+                      <span class="nc-date-block-icon nc-date-block-icon--green"><i class="bi bi-calendar-event"></i></span>
+                      <div class="nc-date-block-head">
+                        <span class="nc-date-block-title">Fecha de cobro</span>
+                        <span class="nc-date-block-hint">Fecha en la que se cargará automáticamente la cuota</span>
+                      </div>
+                    </div>
+                    <input type="date"
+                      class="form-control nc-input nc-input--date"
+                      [(ngModel)]="nuevaCuota.fechaInicio"
+                      name="fechaInicio" />
                   </div>
-                </div>
 
-                <!-- Fecha de cobro única -->
-                <div class="nc-billing-fecha-cobro">
-                  <label class="nc-label">
-                    <i class="bi bi-calendar-event me-1"></i>Fecha de cobro
-                  </label>
-                  <input type="date"
-                    class="form-control nc-input"
-                    [(ngModel)]="nuevaCuota.fechaInicio"
-                    name="fechaInicio" />
-                  <span class="nc-input-hint">Fecha en la que se cargará automáticamente la cuota</span>
-                </div>
-
-                <div class="nc-sub-note">
-                  <i class="bi bi-info-circle-fill"></i>
-                  <span>Solo se cobra a jugadores cuyo responsable haya vinculado una tarjeta.</span>
+                  <!-- Nota informativa -->
+                  <div class="nc-sub-note">
+                    <span class="nc-sub-note-icon"><i class="bi bi-info-circle"></i></span>
+                    <span class="nc-sub-note-text">Solo se cobra a jugadores cuyo responsable haya vinculado una tarjeta.</span>
+                  </div>
                 </div>
 
               </div><!-- /nc-stripe-panel -->
@@ -1167,7 +1196,7 @@
             <div class="nc-block-tag">
               <span class="nc-tag-num">3</span>
               <span class="nc-tag-label">Importe</span>
-              <span class="nc-tag-live" *ngIf="nuevaCuota.stripe === 1">
+              <span class="nc-tag-live" *ngIf="mostrarBloqueComisiones()">
                 <span class="nc-live-dot"></span>En tiempo real
               </span>
             </div>
@@ -1187,12 +1216,12 @@
                   <span class="nc-amount-currency">€</span>
                 </div>
                 <span class="nc-amount-hint">
-                  {{ nuevaCuota.stripe === 1 ? 'Importe base que recibirá el club (sin comisiones)' : 'Importe que pagarán los padres' }}
+                  {{ nuevaCuota.stripe === 2 ? 'Importe' : (nuevaCuota.stripe === 1 ? 'Importe base que recibirá el club (sin comisiones)' : 'Importe que pagarán los padres') }}
                 </span>
               </div>
 
-              <!-- ── Solo Sphaira Pay: comisiones + desglose ── -->
-              <ng-container *ngIf="nuevaCuota.stripe === 1">
+              <!-- ── Pago puntual o Sphaira Pay: comisiones + desglose ── -->
+              <ng-container *ngIf="mostrarBloqueComisiones()">
                 <div class="nc-amount-fee-layout">
 
                   <!-- Columna izquierda: tarjetas de comisión -->
@@ -1244,7 +1273,7 @@
                       </div>
                       <input type="range"
                         class="nc-slider"
-                        min="0" max="50" step="0.5"
+                        min="0" max="50" step="0.1"
                         [(ngModel)]="clubComisionPct"
                         name="clubComisionPct" />
                       <div class="nc-slider-marks">
@@ -1360,12 +1389,10 @@
         <div class="nc-footer-summary">
           <div class="nc-footer-summary-inner" *ngIf="nuevaCuota?.importe">
             <span class="nc-footer-label">
-              {{ nuevaCuota.stripe === 1 ? 'Total estimado (con comisiones)' : 'Importe base' }}
+              {{ nuevaCuota.stripe === 2 ? 'Importe' : 'Total estimado (con comisiones)' }}
             </span>
             <span class="nc-footer-total">
-              {{ nuevaCuota.stripe === 1
-                  ? (calcularTotalPadre() | number:'1.2-2')
-                  : (nuevaCuota.importe | number:'1.2-2') }}€
+              {{ nuevaCuota.stripe === 2 ? (nuevaCuota.importe | number:'1.2-2') : (calcularTotalPadre() | number:'1.2-2') }}€
             </span>
           </div>
           <span *ngIf="!nuevaCuota?.importe" class="nc-footer-empty-hint">
@@ -1388,96 +1415,116 @@
 </div>
 
 
-<!-- Modal para pagar la cuota de un jugador -->
-<!-- Modal Agregar Pago -->
-<div class="modal d-block modal-overlay" *ngIf="showModalAddPago" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content modern-modal" [class.modal-closing]="closingModals.has('addPago')">
+<!-- Modal Agregar Pago del jugador — Premium -->
+<div class="modal d-block modal-overlay ipm-overlay" *ngIf="showModalAddPago" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered ipm-dialog">
+    <div class="modal-content ipm-modal" [class.modal-closing]="closingModals.has('addPago')">
 
-      <!-- HEADER -->
-      <div class="modal-header modern-header">
-        <h5 class="modal-title">
-          <i class="bi bi-credit-card-2-front-fill me-2"></i>
-          Agregar pago del jugador
-        </h5>
-        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalAddPago()"></button>
+      <div class="ipm-header">
+        <div class="ipm-header-icon">
+          <i class="bi bi-wallet2"></i>
+        </div>
+        <div class="ipm-header-text">
+          <h5 class="ipm-title">Agregar pago del jugador</h5>
+          <p class="ipm-subtitle">Registrar un pago manual para el jugador</p>
+        </div>
+        <button type="button" class="ipm-close" aria-label="Cerrar" (click)="cerrarModalAddPago()">
+          <i class="bi bi-x-lg"></i>
+        </button>
       </div>
 
-      <!-- BODY -->
-      <div class="modal-body modern-body">
+      <div class="ipm-body">
+        <div class="ipm-intro">
+          <i class="bi bi-person-circle"></i>
+          <span>Vas a agregar un pago al jugador <strong>{{ textoInfoTitlePagoPlayer }}</strong></span>
+        </div>
 
-        <p class="text-muted mb-4">
-          Vas a agregar un pago al jugador
-          <strong>{{ textoInfoTitlePagoPlayer }}</strong>
-        </p>
+        <form class="ipm-form" (ngSubmit)="createUpdateHistoryCuotaJugador()">
 
-        <form (ngSubmit)="createUpdateHistoryCuotaJugador()">
-
-          <!-- CUOTA -->
-          <div class="mb-3">
-            <label class="modern-label">
+          <div class="ipm-field">
+            <label class="ipm-label">
+              <i class="bi bi-receipt"></i>
               Selecciona el pago
             </label>
-            <select class="form-select modern-input" [(ngModel)]="addPago.pagoClubId" name="cuota"
-              (change)="actualizarImporte()">
+            <select class="ipm-input ipm-select" [(ngModel)]="addPago.pagoClubId" name="cuota"
+              (change)="actualizarImporte()" required>
               <option value="0">Selecciona un pago</option>
               <option *ngFor="let cuota of listaCuotas" [value]="cuota.pagoClubId">
-                {{ cuota.titulo }} - {{ cuota.importe }}
+                {{ cuota.titulo }} — {{ cuota.importe }} €
               </option>
             </select>
           </div>
 
-          <!-- IMPORTE -->
-          <div class="mb-3">
-            <label class="modern-label">
-              Cantidad
-            </label>
-            <input type="number" class="form-control modern-input" [(ngModel)]="addPago.importe" name="importe"
-              placeholder="Ej. 50" required />
+          <div class="ipm-row">
+            <div class="ipm-field ipm-field--half">
+              <label class="ipm-label">
+                <i class="bi bi-currency-euro"></i>
+                Cantidad
+              </label>
+              <input type="number" class="ipm-input" [(ngModel)]="addPago.importe" name="importe"
+                placeholder="0,00" step="0.01" min="0" required />
+            </div>
+            <div class="ipm-field ipm-field--half">
+              <label class="ipm-label">
+                <i class="bi bi-calendar-event"></i>
+                Fecha de pago
+              </label>
+              <input type="date" class="ipm-input" [(ngModel)]="addPago.datePago" name="fecha" required />
+            </div>
           </div>
 
-          <!-- FECHA -->
-          <div class="mb-3">
-            <label class="modern-label">
-              Fecha de pago
-            </label>
-            <input type="date" class="form-control modern-input" [(ngModel)]="addPago.datePago" name="fecha" required />
-          </div>
-
-          <!-- MÉTODO -->
-          <div class="mb-3">
-            <label class="modern-label">
+          <div class="ipm-field">
+            <label class="ipm-label">
+              <i class="bi bi-credit-card"></i>
               Método de pago
             </label>
-            <select class="form-select modern-input" [(ngModel)]="addPago.metodo" name="metodo" required>
-              <option value="Tarjeta">Tarjeta</option>
-              <option value="Efectivo">Efectivo</option>
-              <option value="Transferencia">Transferencia</option>
-              <option value="Bizum">Bizum</option>
-              <option value="Otro">Otro</option>
-            </select>
+            <div class="ipm-method-grid">
+              <button type="button" class="ipm-method-pill" [class.ipm-method-pill--active]="addPago.metodo === 'Efectivo'"
+                (click)="addPago.metodo = 'Efectivo'">
+                <i class="bi bi-cash-coin"></i>
+                <span>Efectivo</span>
+              </button>
+              <button type="button" class="ipm-method-pill" [class.ipm-method-pill--active]="addPago.metodo === 'Transferencia'"
+                (click)="addPago.metodo = 'Transferencia'">
+                <i class="bi bi-bank"></i>
+                <span>Transferencia</span>
+              </button>
+              <button type="button" class="ipm-method-pill" [class.ipm-method-pill--active]="addPago.metodo === 'Bizum'"
+                (click)="addPago.metodo = 'Bizum'">
+                <i class="bi bi-phone"></i>
+                <span>Bizum</span>
+              </button>
+              <button type="button" class="ipm-method-pill" [class.ipm-method-pill--active]="addPago.metodo === 'Tarjeta'"
+                (click)="addPago.metodo = 'Tarjeta'">
+                <i class="bi bi-credit-card-2-front"></i>
+                <span>Tarjeta</span>
+              </button>
+              <button type="button" class="ipm-method-pill" [class.ipm-method-pill--active]="addPago.metodo === 'Otro'"
+                (click)="addPago.metodo = 'Otro'">
+                <i class="bi bi-three-dots"></i>
+                <span>Otro</span>
+              </button>
+            </div>
           </div>
 
-          <!-- COMENTARIO -->
-          <div class="mb-4">
-            <label class="modern-label">
-              Comentario
+          <div class="ipm-field">
+            <label class="ipm-label">
+              <i class="bi bi-chat-left-text"></i>
+              Comentario <span class="ipm-optional">(opcional)</span>
             </label>
-            <textarea class="form-control modern-input" rows="3" [(ngModel)]="addPago.comentario" name="comentario"
-              placeholder="Opcional..."></textarea>
+            <textarea class="ipm-input ipm-textarea" rows="3" [(ngModel)]="addPago.comentario" name="comentario"
+              placeholder="Añade una nota si lo deseas..."></textarea>
           </div>
 
-          <!-- FOOTER -->
-          <div class="modal-footer modern-footer">
-            <button type="button" class="btn btn-secondary" (click)="cerrarModalAddPago()">
+          <div class="ipm-footer">
+            <button type="button" class="ipm-btn ipm-btn--secondary" (click)="cerrarModalAddPago()">
               Cancelar
             </button>
-
-            <button type="submit" class="btn btn-success">
-              Guardar
+            <button type="submit" class="ipm-btn ipm-btn--primary">
+              <i class="bi bi-check-lg"></i>
+              Guardar pago
             </button>
           </div>
-
         </form>
       </div>
 

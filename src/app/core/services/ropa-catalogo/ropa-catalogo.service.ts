@@ -13,6 +13,9 @@ export interface JugadorTablaRopa {
   apellido: string;
   nick: string;
   picturePlayer: string;
+  /** Equipo al que pertenece el jugador en esta tabla (opcional para compatibilidad). */
+  teamId?: number | null;
+  teamName?: string | null;
 }
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';

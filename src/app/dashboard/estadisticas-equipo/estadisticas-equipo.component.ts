@@ -984,46 +984,46 @@ export class EstadisticasEquipoComponent implements OnInit, OnDestroy {
     return Array.from(fromSchema).sort();
   }
 
-  /** Paleta de colores para datasets de subcategoría (fallback plano) */
+  /** Paleta de colores para datasets de subcategoría: alta diferenciación entre series (y entre gráficas). */
   private readonly SUBCHART_COLORS = [
-    'rgba(49, 178, 112, 0.75)',
-    'rgba(0, 77, 110, 0.75)',
-    'rgba(235, 81, 54, 0.6)',
-    'rgba(250, 150, 0, 0.7)',
-    'rgba(108, 117, 125, 0.7)',
-    'rgba(14, 235, 198, 0.6)',
-    'rgba(62, 14, 235, 0.55)',
-    'rgba(250, 0, 250, 0.5)',
-    'rgba(133, 250, 0, 0.6)',
-    'rgba(0, 108, 250, 0.6)',
+    'rgba(49, 178, 112, 0.85)',   // 0: Verde Sphaira - Tiro a portería
+    'rgba(0, 100, 180, 0.85)',   // 1: Azul - Remate de cabeza
+    'rgba(230, 126, 34, 0.85)',  // 2: Naranja - Otra parte del cuerpo
+    'rgba(155, 89, 182, 0.8)',   // 3: Púrpura
+    'rgba(241, 196, 15, 0.85)',   // 4: Amarillo/ámbar
+    'rgba(0, 188, 212, 0.8)',     // 5: Cian
+    'rgba(233, 30, 99, 0.8)',    // 6: Magenta/rosa
+    'rgba(96, 125, 139, 0.8)',   // 7: Gris azulado
+    'rgba(76, 175, 80, 0.8)',    // 8: Verde claro
+    'rgba(255, 152, 0, 0.8)',    // 9: Naranja
   ];
 
-  /** Degradados premium [top, bottom] para barras de subcategoría (a favor: verdes/azules) */
+  /** Degradados para barras de subcategoría "Goles a favor": colores bien diferenciados (verde, azul, naranja, etc.). */
   private readonly SUBCHART_GRADIENT_FAVOR: [string, string][] = [
-    ['rgba(49, 178, 112, 0.95)', 'rgba(0, 77, 110, 0.85)'],
-    ['rgba(72, 195, 140, 0.9)', 'rgba(0, 44, 64, 0.8)'],
-    ['rgba(14, 235, 198, 0.85)', 'rgba(0, 77, 110, 0.75)'],
-    ['rgba(133, 250, 0, 0.75)', 'rgba(49, 178, 112, 0.7)'],
-    ['rgba(0, 108, 250, 0.8)', 'rgba(0, 44, 64, 0.7)'],
-    ['rgba(62, 14, 235, 0.7)', 'rgba(0, 44, 64, 0.65)'],
-    ['rgba(250, 150, 0, 0.8)', 'rgba(180, 100, 0, 0.7)'],
-    ['rgba(108, 117, 125, 0.75)', 'rgba(0, 44, 64, 0.6)'],
-    ['rgba(250, 0, 250, 0.55)', 'rgba(120, 0, 120, 0.5)'],
-    ['rgba(235, 81, 54, 0.7)', 'rgba(180, 40, 30, 0.65)'],
+    ['rgba(49, 178, 112, 0.95)', 'rgba(0, 77, 110, 0.85)'],   // Verde Sphaira
+    ['rgba(0, 120, 200, 0.9)', 'rgba(0, 44, 64, 0.85)'],     // Azul
+    ['rgba(230, 126, 34, 0.9)', 'rgba(160, 80, 20, 0.8)'],   // Naranja
+    ['rgba(155, 89, 182, 0.85)', 'rgba(90, 50, 120, 0.75)'], // Púrpura
+    ['rgba(241, 196, 15, 0.9)', 'rgba(180, 140, 10, 0.75)'], // Amarillo/ámbar
+    ['rgba(0, 188, 212, 0.85)', 'rgba(0, 100, 120, 0.75)'],  // Cian
+    ['rgba(233, 30, 99, 0.8)', 'rgba(160, 20, 70, 0.7)'],    // Magenta
+    ['rgba(96, 125, 139, 0.8)', 'rgba(0, 44, 64, 0.7)'],     // Gris azulado
+    ['rgba(76, 175, 80, 0.85)', 'rgba(40, 120, 50, 0.75)'],  // Verde claro
+    ['rgba(255, 152, 0, 0.85)', 'rgba(200, 100, 0, 0.75)'],  // Naranja claro
   ];
 
-  /** Degradados premium para barras de subcategoría (en contra: rojos/oscuros) */
+  /** Degradados para barras de subcategoría "Goles en contra": tonos rojos/naranjas/oscuros bien diferenciados. */
   private readonly SUBCHART_GRADIENT_CONTRA: [string, string][] = [
-    ['rgba(220, 53, 69, 0.9)', 'rgba(0, 44, 64, 0.85)'],
-    ['rgba(235, 81, 54, 0.85)', 'rgba(140, 30, 20, 0.8)'],
-    ['rgba(250, 100, 80, 0.75)', 'rgba(0, 44, 64, 0.7)'],
-    ['rgba(180, 80, 100, 0.75)', 'rgba(0, 44, 64, 0.65)'],
-    ['rgba(0, 77, 110, 0.7)', 'rgba(0, 44, 64, 0.6)'],
-    ['rgba(108, 117, 125, 0.7)', 'rgba(0, 44, 64, 0.6)'],
-    ['rgba(250, 150, 0, 0.7)', 'rgba(150, 80, 0, 0.6)'],
-    ['rgba(62, 14, 235, 0.6)', 'rgba(30, 0, 100, 0.55)'],
-    ['rgba(14, 235, 198, 0.6)', 'rgba(0, 77, 110, 0.55)'],
-    ['rgba(49, 178, 112, 0.6)', 'rgba(0, 44, 64, 0.5)'],
+    ['rgba(220, 53, 69, 0.92)', 'rgba(140, 30, 40, 0.85)'],  // Rojo
+    ['rgba(253, 126, 20, 0.9)', 'rgba(180, 70, 10, 0.8)'],   // Naranja oscuro
+    ['rgba(156, 39, 176, 0.85)', 'rgba(90, 20, 100, 0.75)'], // Púrpura
+    ['rgba(0, 44, 64, 0.9)', 'rgba(0, 30, 45, 0.8)'],       // Navy
+    ['rgba(108, 117, 125, 0.85)', 'rgba(60, 65, 72, 0.75)'], // Gris
+    ['rgba(200, 80, 100, 0.8)', 'rgba(120, 40, 60, 0.7)'],   // Rosa oscuro
+    ['rgba(255, 87, 34, 0.85)', 'rgba(180, 50, 20, 0.75)'], // Naranja-rojo
+    ['rgba(69, 90, 100, 0.8)', 'rgba(0, 44, 64, 0.7)'],      // Gris azul
+    ['rgba(183, 28, 28, 0.85)', 'rgba(120, 15, 15, 0.75)'], // Rojo oscuro
+    ['rgba(62, 39, 35, 0.8)', 'rgba(40, 25, 22, 0.7)'],      // Marrón oscuro
   ];
 
   /** Crea degradado vertical para una barra (estilo premium) */

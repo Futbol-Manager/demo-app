@@ -1023,6 +1023,49 @@
   }
 }
 
+// ─── Selector de temporada (como Equipos) ───────────────────────────────────────
+.ropa-season-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 1rem 16px;
+  margin-bottom: 4px;
+}
+
+.ropa-season-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #002c40;
+  margin: 0;
+
+  i {
+    font-size: 1.1rem;
+    color: #31b270;
+  }
+}
+
+.ropa-season-select {
+  border-radius: 10px;
+  border: 1px solid rgba(0, 44, 64, 0.2);
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #002c40;
+  background: #fff;
+  cursor: pointer;
+  min-width: 140px;
+
+  &:focus {
+    outline: none;
+    border-color: #31b270;
+    box-shadow: 0 0 0 2px rgba(49, 178, 112, 0.2);
+  }
+}
+
 // ─── Pestañas ropa ────────────────────────────────────────────────────────────
 .ropa-tabs {
   display: flex;

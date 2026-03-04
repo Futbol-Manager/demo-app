@@ -17,7 +17,7 @@ import { filter, take } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { PlayerInfoDialogComponent, PlayerInfoDialogData } from '../player-info-dialog/player-info-dialog.component';
-import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { getCurrentSeasonString, getSeasons } from 'src/app/core/utils/season.utils';
 
 @Component({
   selector: 'app-ropa',
@@ -59,6 +59,9 @@ export class RopaComponent implements OnInit, AfterViewChecked, OnDestroy {
   showModal = false;
   ropaClub: any;
   reloadPage = false;
+
+  /** Selector de temporada (como en Equipos): lista y valor actual para catálogo y tabla tallas */
+  seasons = getSeasons();
 
   prendas = [
     { label: 'Camiseta de Juego', property: 'camisetaJuego', index: 5, group: 'match1' },
@@ -385,6 +388,12 @@ export class RopaComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   goBack(): void {
     this.location.back();
+  }
+
+  /** Al cambiar la temporada: persistir y mantener coherencia con el resto de la app (Equipos, Cuotas, etc.). */
+  onTemporadaChangeRopa(): void {
+    localStorage.setItem('temporada', this.temporadaStoredValue);
+    // Los hijos app-ropa-catalogo y app-ropa-tabla-catalogo reciben [temporada] y recargan en ngOnChanges
   }
 
   /** Abre el modal de información del jugador (misma lógica que info-jugadores / new-cuotas). */

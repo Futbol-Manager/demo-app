@@ -1,31 +1,80 @@
-<div class="tabla-wrapper">
-  <!-- Filtros -->
-  <div class="tabla-filtros">
-    <div class="filtro-grupo">
-      <label>Equipo</label>
-      <select
-        [(ngModel)]="teamIdSeleccionado"
-        (ngModelChange)="onEquipoChange()"
-        [disabled]="cargandoEquipos"
-      >
-        <option *ngFor="let equipo of equipos" [ngValue]="equipo.value">
-          {{ equipo.name }}
-        </option>
-      </select>
-    </div>
-    <div class="filtro-info" *ngIf="!cargandoTabla && jugadores.length > 0">
-      {{ jugadores.length }} jugadores · {{ prendas.length }} prendas
+<div class="tabla-wrapper tabla-tallas-sphaira">
+  <!-- Barra de filtros premium -->
+  <div class="filtros-premium">
+    <div class="filtros-premium-inner">
+      <div class="filtros-row">
+        <div class="filtros-left">
+          <div class="filtro-block filtro-equipo">
+            <label class="filtro-label">
+              <i class="fas fa-users"></i>
+              <span>Equipo</span>
+            </label>
+            <select
+              [(ngModel)]="teamIdSeleccionado"
+              (ngModelChange)="onEquipoChange()"
+              [disabled]="cargandoEquipos"
+              class="filtro-select-premium"
+            >
+              <option *ngFor="let equipo of equipos" [ngValue]="equipo.value">
+                {{ equipo.name }}
+              </option>
+            </select>
+          </div>
+          <div class="filtro-block filtro-jugador">
+            <label class="filtro-label">
+              <i class="fas fa-search"></i>
+              <span>Buscar jugador</span>
+            </label>
+            <div class="filtro-input-wrap">
+              <i class="fas fa-user filtro-input-icon"></i>
+              <input
+                type="text"
+                class="filtro-input-premium"
+                [(ngModel)]="filtroNombreJugador"
+                placeholder="Nombre, apellido o nick..."
+                [disabled]="cargandoTabla || jugadores.length === 0"
+              />
+              <button
+                *ngIf="filtroNombreJugador"
+                type="button"
+                class="filtro-clear"
+                (click)="filtroNombreJugador = ''"
+                aria-label="Limpiar búsqueda"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="filtros-stats" *ngIf="!cargandoTabla && (jugadores.length > 0 || prendas.length > 0)">
+          <div class="stat-card stat-jugadores">
+            <i class="fas fa-user-friends"></i>
+            <span class="stat-value">{{ jugadores.length }}</span>
+            <span class="stat-label">Jugadores</span>
+          </div>
+          <div class="stat-card stat-prendas">
+            <i class="fas fa-tshirt"></i>
+            <span class="stat-value">{{ prendas.length }}</span>
+            <span class="stat-label">Prendas</span>
+          </div>
+          <span class="filtro-hint" *ngIf="filtroNombreJugador.trim()">
+            {{ jugadoresFiltrados.length }}/{{ jugadores.length }}
+          </span>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- Loading -->
   <div class="tabla-loading" *ngIf="cargandoTabla">
-    <span class="spinner"></span> Cargando datos…
+    <span class="spinner"></span>
+    <span>Cargando datos…</span>
   </div>
 
   <!-- Error -->
   <div class="tabla-error" *ngIf="errorTabla && !cargandoTabla">
-    <i class="fas fa-exclamation-circle"></i> {{ errorTabla }}
+    <i class="fas fa-exclamation-circle"></i>
+    <span>{{ errorTabla }}</span>
   </div>
 
   <!-- Sin datos -->
@@ -40,27 +89,47 @@
     <table class="tabla-tallas">
       <thead>
         <tr>
-          <th class="col-jugador">Jugador</th>
+          <th class="col-jugador">
+            <span class="th-label">Jugador</span>
+          </th>
+          <th class="col-equipo">
+            <span class="th-label">Equipo</span>
+          </th>
           <th *ngFor="let prenda of prendas" class="col-prenda">
             <div class="prenda-header">
-              <img
-                *ngIf="prenda.imagenUrl"
-                [src]="prenda.imagenUrl"
-                [alt]="prenda.nombre"
-                class="prenda-thumb"
-              />
+              <div class="prenda-header-img-wrap">
+                <img
+                  *ngIf="getPrendaImageUrl(prenda)"
+                  [src]="getPrendaImageUrl(prenda)"
+                  [alt]="prenda.nombre"
+                  class="prenda-thumb"
+                />
+                <span *ngIf="!getPrendaImageUrl(prenda)" class="prenda-thumb-placeholder">
+                  <i class="fas fa-tshirt"></i>
+                </span>
+              </div>
               <span class="prenda-nombre">{{ prenda.nombre }}</span>
-              <span class="prenda-stats">
-                {{ contarRespuestas(prenda.prendaId) }}/{{ jugadores.length }}
-                <i class="fas fa-check-circle ok-icon" title="confirmados"></i>
-                {{ contarConfirmados(prenda.prendaId) }}
-              </span>
+              <div class="prenda-stats">
+                <span class="prenda-stat respuestas">{{ contarRespuestas(prenda.prendaId) }}/{{ jugadores.length }}</span>
+                <span class="prenda-stat confirmados" title="Confirmados">
+                  <i class="fas fa-check-circle"></i>
+                  {{ contarConfirmados(prenda.prendaId) }}
+                </span>
+              </div>
             </div>
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let jugador of jugadores">
+        <tr *ngIf="filtroNombreJugador.trim() && jugadoresFiltrados.length === 0" class="fila-sin-resultados">
+          <td [attr.colspan]="prendas.length + 2">
+            <div class="sin-resultados-msg">
+              <i class="fas fa-search"></i>
+              <span>Ningún jugador coincide con "{{ filtroNombreJugador.trim() }}"</span>
+            </div>
+          </td>
+        </tr>
+        <tr *ngFor="let jugador of jugadoresFiltrados">
           <td class="col-jugador">
             <div class="jugador-info">
               <img
@@ -73,10 +142,20 @@
                 {{ jugador.nombre?.charAt(0) }}{{ jugador.apellido?.charAt(0) }}
               </span>
               <div class="jugador-texto">
-                <span class="jugador-nombre">{{ jugador.nombre }} {{ jugador.apellido }}</span>
+                <span class="jugador-nombre">
+                  {{ jugador.nombre }} {{ jugador.apellido }}
+                </span>
                 <span class="jugador-nick" *ngIf="jugador.nick">{{ jugador.nick }}</span>
               </div>
             </div>
+          </td>
+          <td class="col-equipo">
+            <span
+              class="equipo-badge"
+              [ngClass]="getEquipoBadgeClass(jugador)"
+            >
+              {{ getNombreEquipoJugador(jugador) || '—' }}
+            </span>
           </td>
           <td
             *ngFor="let prenda of prendas"
@@ -98,15 +177,18 @@
               </select>
               <button
                 *ngIf="celda.tallaId != null"
-                class="btn-confirmar"
-                [class.confirmado]="celda.estado === 'confirmado'"
+                type="button"
+                class="delivery-chip delivery-chip-icon-only"
+                [class.delivered]="celda.estado === 'confirmado'"
+                [class.pending]="celda.estado !== 'confirmado'"
                 [disabled]="celda.guardando"
                 (click)="toggleConfirmacion(jugador, prenda)"
+                [attr.aria-label]="celda.estado === 'confirmado' ? 'Marcar como pendiente' : 'Confirmar entrega'"
                 [title]="celda.estado === 'confirmado' ? 'Marcar como pendiente' : 'Confirmar entrega'"
               >
-                <i [class]="celda.estado === 'confirmado' ? 'fas fa-check-circle' : 'far fa-circle'"></i>
+                <i class="fas" [ngClass]="celda.estado === 'confirmado' ? 'fa-check-circle' : 'fa-clock'"></i>
               </button>
-              <span class="celda-spinner" *ngIf="celda.guardando"></span>
+              <span class="celda-spinner" *ngIf="celda.guardando" aria-hidden="true"></span>
             </div>
           </td>
         </tr>

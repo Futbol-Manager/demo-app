@@ -3,9 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { PlayerEstadistica } from 'src/app/core/services/player/player.model';
-import * as $ from 'jquery';
-import 'datatables.net';
-import { HttpClient } from '@angular/common/http';
 import { Chart, registerables } from 'chart.js/auto';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { Location } from '@angular/common';
@@ -40,11 +37,22 @@ export class EstadisticasJugadoresComponent implements OnInit, OnDestroy {
 
   tipoPartidoSelected: string = 'Liga';
 
+  /* Paginación y filtros tipo Sphaira – tabla jugadores */
+  searchPlayer = '';
+  pagePlayer = 1;
+  pageSizePlayer = 25;
+  readonly pageSizesPlayer = [10, 25, 50, 100];
+
+  /* Paginación y filtros tipo Sphaira – tabla goles */
+  searchGol = '';
+  pageGol = 1;
+  pageSizeGol = 10;
+  readonly pageSizesGol = [10, 25, 50];
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private playerService: PlayerService,
-    private http: HttpClient,
     private trainingService: TrainingService,
     private elementRef: ElementRef,
     private location: Location) { }
@@ -82,139 +90,139 @@ export class EstadisticasJugadoresComponent implements OnInit, OnDestroy {
   cargarTablaJugadores(tipoPartido: string) {
     this.playerService.getListPlayersEstadisticsByTeam(this.teamId, tipoPartido).subscribe(
       (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response && response.data && Array.isArray(response.data.listDto)) {
-          let resp = response;
-          let list = (resp.data as { listDto: PlayerEstadistica[] }).listDto;
-          // Mapea los datos bajo 'data' a instancias del modelo Team
-          this.players = list; //.map((post: PostPartido) => new PostPartido(post));
-          this.totalMatchs = resp.data.matchs;
-          // Inicializar el DataTable después de cargar los datos
-          //this.inicializarDataTable();
+        if (response && response.data) {
+          const data = response.data as { listDto?: PlayerEstadistica[]; matchs?: number };
+          const list = Array.isArray(data.listDto) ? data.listDto : [];
+          this.players = list;
+          this.totalMatchs = data.matchs ?? 0;
+          this.pagePlayer = 1;
+          this.searchPlayer = '';
           this.datosCargados = true;
         } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          this.players = [];
+          this.totalMatchs = 0;
+          this.datosCargados = true;
         }
       },
       (error) => {
-        console.error('Error al cargar el listado de equipos', error);
+        console.error('Error al cargar el listado de jugadores', error);
+        this.players = [];
+        this.totalMatchs = 0;
+        this.datosCargados = true;
       }
     );
   }
 
-  // Método para inicializar el DataTable
-  inicializarDataTable(): void {
-    // Destruir el DataTable si ya existe
-    const $dataTable = $('#dataTable');
-    if ($dataTable.hasClass('dataTable')) {
-      $dataTable.DataTable().destroy();
-    }
-
-    this.http.get('assets/dataTable/Spanish.json').subscribe((translation) => {
-      $(document).ready(function () {
-        $('#dataTable').DataTable({
-          paging: true,
-          pageLength: 25,
-          searching: true,
-          ordering: true,
-          order: [[0, 'desc']],
-          columnDefs: [
-            {
-              targets: [0],
-              visible: false
-            }
-          ],
-          language: translation
-        });
-      });
-    });
-
-    this.moverElementosDataTable('dataTable');
+  /** Texto normalizado para búsqueda (sin acentos, minúsculas). */
+  private normalizeText(text: string): string {
+    if (!text) return '';
+    return String(text).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
   }
 
-
-  moverElementosDataTable(name: string) {
-    // **Move buttons outside the table after initialization**
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const layoutRowElements = this.elementRef.nativeElement.querySelectorAll('.dt-layout-row:not(.dt-layout-table)');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#button_datatable');
-
-        if (layoutRowElements.length >= 2 && buttonDatatableElement) {
-          const layoutRowElement = layoutRowElements[1]; // Obtener el segundo elemento
-          $(layoutRowElement).appendTo(buttonDatatableElement);
-          observer.disconnect(); // Detiene la observación después de encontrar los elementos
-        }
-      });
+  /** Jugadores filtrados por búsqueda (nombre, posición). */
+  get filteredPlayers(): any[] {
+    const term = this.normalizeText(this.searchPlayer);
+    if (!term) return this.players;
+    return this.players.filter(p => {
+      const nombre = this.normalizeText(p.nombre || '');
+      const posicion = this.normalizeText(p.posicion || '');
+      return nombre.includes(term) || posicion.includes(term);
     });
+  }
 
-    observer.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+  get totalPagesPlayer(): number {
+    const total = this.filteredPlayers.length;
+    return total <= 0 ? 1 : Math.ceil(total / this.pageSizePlayer);
+  }
 
-    //esto es para agregar una clase
-    const textcenter = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const dataTableElement = document.querySelector('#' + name);
+  get paginatedPlayers(): any[] {
+    const list = this.filteredPlayers;
+    const start = (this.pagePlayer - 1) * this.pageSizePlayer;
+    return list.slice(start, start + this.pageSizePlayer);
+  }
 
-        if (dataTableElement) {
-          dataTableElement.classList.add('text-center');
-          textcenter.disconnect(); // Detiene la observación después de encontrar el elemento
-        }
-      });
+  get paginationInfoPlayer(): string {
+    const total = this.filteredPlayers.length;
+    if (total === 0) return 'Sin registros';
+    const start = (this.pagePlayer - 1) * this.pageSizePlayer + 1;
+    const end = Math.min(this.pagePlayer * this.pageSizePlayer, total);
+    return `Mostrando ${start}–${end} de ${total}`;
+  }
+
+  nextPagePlayer(): void {
+    if (this.pagePlayer < this.totalPagesPlayer) this.pagePlayer++;
+  }
+
+  prevPagePlayer(): void {
+    if (this.pagePlayer > 1) this.pagePlayer--;
+  }
+
+  onPageSizePlayerChange(): void {
+    this.pagePlayer = 1;
+  }
+
+  /** Goles filtrados por búsqueda (goleador, asistente, rival, categoría). */
+  get filteredGoles(): any[] {
+    const term = this.normalizeText(this.searchGol);
+    if (!term) return this.golesAvanzadoAFavor;
+    return this.golesAvanzadoAFavor.filter(g => {
+      const goleador = this.normalizeText(g.nombreGoleador || '');
+      const asistente = this.normalizeText(g.nombreAsistente || '');
+      const rival = this.normalizeText((g.postPartido?.matchPreparation?.rivalName) || '');
+      const cat = this.normalizeText(g.category || '');
+      const sub = this.normalizeText(g.subCategory || '');
+      return goleador.includes(term) || asistente.includes(term) || rival.includes(term) || cat.includes(term) || sub.includes(term);
     });
+  }
 
-    textcenter.observe(document.body, { childList: true, subtree: true });
+  get totalPagesGol(): number {
+    const total = this.filteredGoles.length;
+    return total <= 0 ? 1 : Math.ceil(total / this.pageSizeGol);
+  }
 
+  get paginatedGoles(): any[] {
+    const list = this.filteredGoles;
+    const start = (this.pageGol - 1) * this.pageSizeGol;
+    return list.slice(start, start + this.pageSizeGol);
+  }
 
-    //esto es para la parte donde pones las filas a ver
-    const length = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-length');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-length');
+  get paginationInfoGol(): string {
+    const total = this.filteredGoles.length;
+    if (total === 0) return 'Sin registros';
+    const start = (this.pageGol - 1) * this.pageSizeGol + 1;
+    const end = Math.min(this.pageGol * this.pageSizeGol, total);
+    return `Mostrando ${start}–${end} de ${total}`;
+  }
 
-        if (layoutRowElement && buttonDatatableElement) {
-          $(layoutRowElement).appendTo(buttonDatatableElement);
-          length.disconnect(); // Detiene la observación después de encontrar los elementos
-        }
-      });
-    });
+  nextPageGol(): void {
+    if (this.pageGol < this.totalPagesGol) this.pageGol++;
+  }
 
-    length.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+  prevPageGol(): void {
+    if (this.pageGol > 1) this.pageGol--;
+  }
 
-    //esto es para el input del buscador
-    const search = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-search');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-search');
+  onPageSizeGolChange(): void {
+    this.pageGol = 1;
+  }
 
-        if (layoutRowElement && buttonDatatableElement) {
-          $(layoutRowElement).appendTo(buttonDatatableElement);
-          search.disconnect(); // Detiene la observación después de encontrar los elementos
-        }
-      });
-    });
-
-    search.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+  trackByPlayerId(_index: number, player: any): number {
+    return player?.playerId ?? _index;
   }
 
   verGraficaPlayers() {
+    this.graficasPlayers = true;
+    this.showGolesForPlayer();
     setTimeout(() => {
       this.graficaUnica(this.players.map(player => player.minTotales), 'Minutos totales de los jugadores', 'Minutos');
     }, 100);
-
-    /*setTimeout(() => {
-      this.cargarMinutosGraficoBarras();
-      this.cargarGolesGraficoBarras();
-    }, 100);*/
-    this.graficasPlayers = true;
-    this.datosCargados = false;
-    this.showGolesForPlayer();
   }
 
   verTablaPlayers() {
-    this.inicializarDataTable();
     this.graficasPlayers = false;
-    this.datosCargados = true;
-
+    if (this.players.length === 0 && this.teamId) {
+      this.cargarTablaJugadores(this.tipoPartidoSelected);
+    }
   }
 
   cargarMinutosGraficoBarras() {
@@ -540,7 +548,7 @@ export class EstadisticasJugadoresComponent implements OnInit, OnDestroy {
             
           }
           this.golesAvanzadoAFavor = this.golesTodosAvanzadoAFavor;
-          this.updateDataTable();
+          this.pageGol = 1;
         }
       },
       (error) => {
@@ -550,49 +558,13 @@ export class EstadisticasJugadoresComponent implements OnInit, OnDestroy {
   }
 
   seleccionarIndices(event: any): void {
-    let playerId = event !== 0 ? event.target.value : "0";
-    if (playerId === "0") {
+    const playerId = event !== 0 ? event.target.value : '0';
+    if (playerId === '0') {
       this.golesAvanzadoAFavor = this.golesTodosAvanzadoAFavor;
     } else {
       this.golesAvanzadoAFavor = this.golesTodosAvanzadoAFavor.filter(gol => gol.playerId.toString() === playerId);
     }
-
-    if(this.graficasPlayers)
-      this.updateDataTable();
-  } 
-  
-  updateDataTable(): void {
-    const table = $('#dataTableGoles').DataTable();
-    if (table) {
-      table.clear().destroy();
-    }
-
-    this.http.get('assets/dataTable/Spanish.json').subscribe((translation: any) => {
-      $(document).ready(() => {
-        $('#dataTableGoles').DataTable({
-          paging: true,
-          pageLength: 10,
-          searching: true,
-          ordering: true,
-          language: translation,
-          data: this.golesAvanzadoAFavor,
-          columns: [
-            { data: null, render: (data, type, row, meta) => meta.row + 1 },
-            { data: 'nombreGoleador' },
-            { data: 'nombreAsistente' },
-            { data: 'postPartido.matchPreparation.rivalName' },
-            { data: 'minuto' },
-            { data: 'postPartido.matchPreparation.matchDate' },
-            { data: 'category' },
-            { data: 'subCategory' },
-            { data: 'option' }
-          ]
-        });
-      });
-    });
-
-    
-    this.moverElementosDataTable('dataTableGoles');
+    this.pageGol = 1;
   }
 
   showNamePlayer(playerId: number): string {

@@ -33,19 +33,16 @@
 </header>
 
 <div class="board-wrapper">
-  <!-- Atajo jugadores y balón en la parte superior -->
-  <div class="players-shortcut-bar">
-    <div class="players-shortcut-label">{{ 'TBOARD.ADD_PLAYER' | translate }}:</div>
-    <div class="players-shortcut-actions">
-      <div class="player-color-options player-color-options--inline">
-        <button *ngFor="let c of PLAYER_COLORS" type="button" class="player-color-dot"
-                [style.background]="c" [class.active]="c === playerColor"
-                (click)="setPlayerColor(c)" [attr.title]="'TBOARD.COLOR' | translate"></button>
-      </div>
-      <button type="button" class="shortcut-btn shortcut-btn--player" (click)="addPlayer('color'); showPlayerPanel = false"
-              [title]="'TBOARD.ADD_PLAYER' | translate">
+  <!-- ═══════════ TOOLBAR ÚNICO (jugadores + herramientas en una línea premium) ═══════════ -->
+  <div class="toolbar toolbar-premium">
+    <!-- Jugadores: botón despliega colores; al elegir color se inserta el jugador -->
+    <div class="tool-group tool-group--players">
+      <button type="button" class="shortcut-btn shortcut-btn--player" #addPlayerBtn
+              (click)="togglePlayerColorPicker()"
+              [class.expanded]="showPlayerColorPicker" [title]="'TBOARD.ADD_PLAYER' | translate">
         <i class="bi bi-person-plus-fill"></i>
         <span>{{ 'TBOARD.ADD_PLAYER' | translate }}</span>
+        <i class="bi bi-chevron-down dropdown-chevron" [class.rotated]="showPlayerColorPicker"></i>
       </button>
       <button type="button" class="shortcut-btn shortcut-btn--ball" (click)="addPlayer('ball'); showPlayerPanel = false"
               [disabled]="ballPlaced" [title]="'TBOARD.BALL' | translate">
@@ -53,10 +50,9 @@
         <span>{{ 'TBOARD.BALL' | translate }}</span>
       </button>
     </div>
-  </div>
 
-  <!-- ═══════════ TOOLBAR ═══════════ -->
-  <div class="toolbar">
+    <div class="tool-separator"></div>
+
     <!-- Drawing tools -->
     <div class="tool-group">
       <button class="tool-btn" [class.active]="activeTool === 'select'"
@@ -97,7 +93,7 @@
 
     <!-- Colour picker -->
     <div class="tool-group color-group">
-      <button class="tool-btn color-swatch" (click)="showColorPicker = !showColorPicker; showPlayerPanel = false; showPlayerColorPicker = false"
+      <button class="tool-btn color-swatch" (click)="showColorPicker = !showColorPicker; showPlayerPanel = false"
               [title]="'TBOARD.COLOR' | translate">
         <span class="swatch-circle" [style.background]="strokeColor"></span>
       </button>
@@ -201,6 +197,16 @@
               [title]="'TBOARD.CLEAR' | translate">
         <i class="bi bi-x-circle"></i>
       </button>
+    </div>
+  </div>
+
+  <!-- Dropdown de colores fuera del toolbar para que no lo recorte overflow -->
+  <div class="player-color-dropdown player-color-dropdown--fixed" *ngIf="showPlayerColorPicker"
+       [style.top.px]="dropdownPosition.top" [style.left.px]="dropdownPosition.left">
+    <div class="player-color-options player-color-options--inline">
+      <button *ngFor="let c of PLAYER_COLORS" type="button" class="player-color-dot"
+              [style.background]="c" [class.active]="c === playerColor"
+              (click)="addPlayerWithColor(c)" [attr.title]="'TBOARD.COLOR' | translate"></button>
     </div>
   </div>
 

@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -331,6 +331,6 @@ export class VideoAnalysisHubComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void {
-    window.history.back();
+    this.router.navigate(['/dashboard/inicio']);
   }
 }

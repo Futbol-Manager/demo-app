@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, BehaviorSubject } from 'rxjs';
 import { delay, map, catchError } from 'rxjs/operators';
@@ -600,6 +600,19 @@ export class ClubSubscriptionService {
   /**
    * Obtiene la configuración de Stripe Connect de un club
    */
+  /**
+   * Consulta en BD la comisión del club (tabla club_plans, campo club_commission_percent).
+   * Siempre se pasa clubId (nunca userId). Para el modal de nuevo pago.
+   */
+  getClubCommissionPercent(clubId: number): Observable<{ clubCommissionPercent: number }> {
+    return this.http.get<{ status: number; data: { clubCommissionPercent: number } }>(`${this.apiUrl}club-plan/commission/${clubId}`).pipe(
+      map(res => ({
+        clubCommissionPercent: res?.data?.clubCommissionPercent ?? 0
+      })),
+      catchError(() => of({ clubCommissionPercent: 0 }))
+    );
+  }
+
   getGratuitoConfig(clubId: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}club-plan/gratuito/config/${clubId}`)
       .pipe(

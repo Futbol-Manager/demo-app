@@ -96,11 +96,24 @@ export class SuscripcionClubComponent implements OnInit {
           stripeConnectAccountId: result.plan.stripeConnectAccountId,
           stripeConnectOnboardingUrl: result.plan.stripeConnectOnboardingUrl,
           stripeConnectStatus: result.plan.stripeConnectStatus || 'not_started',
-          clubCommissionPercent: result.plan.clubCommissionPercent || 0
+          clubCommissionPercent: result.plan.clubCommissionPercent ?? 0
         };
-        this.commissionDraft = this.subscription.clubCommissionPercent || 0;
+        this.commissionDraft = this.subscription.clubCommissionPercent ?? 0;
         this.editingClubCommission = false;
         this.commissionEditError = '';
+        // Si el plan es gratuito, sobreescribir comisión con getGratuitoConfig (mismo valor que se guarda y que ve Nueva cuota)
+        if (this.subscription.planType === 'gratuito') {
+          this.subscriptionService.getGratuitoConfig(this.clubId).subscribe(configResult => {
+            const pct = configResult?.config?.clubPercent;
+            if (pct != null && pct !== undefined && this.subscription) {
+              const val = Number(pct);
+              if (!Number.isNaN(val)) {
+                this.subscription.clubCommissionPercent = val;
+                this.commissionDraft = val;
+              }
+            }
+          });
+        }
       } else {
         this.subscription = null;
         this.activePlanInfo = null;

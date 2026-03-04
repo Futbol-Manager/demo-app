@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject, lastValueFrom } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -11,17 +11,25 @@ import {
 } from 'src/app/core/services/ropa-catalogo/ropa-catalogo.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-ropa-catalogo',
   templateUrl: './ropa-catalogo.component.html',
   styleUrls: ['./ropa-catalogo.component.scss'],
 })
-export class RopaCatalogoComponent implements OnInit, OnDestroy {
+export class RopaCatalogoComponent implements OnInit, OnDestroy, OnChanges {
   @Input() clubId!: number;
+  /** Temporada seleccionada (año de inicio, ej. "2025"). Si no se pasa, se usa la actual. */
+  @Input() set temporada(value: string) {
+    this._temporada = value != null && value !== '' ? value : getCurrentSeasonString();
+  }
+  get temporada(): string {
+    return this._temporada;
+  }
+  private _temporada = getCurrentSeasonString();
 
   private destroy$ = new Subject<void>();
-  temporada = getCurrentSeasonString();
 
   prendas: RopaCatalogoPrenda[] = [];
   documentos: RopaDocumentoGeneral[] = [];
@@ -55,6 +63,14 @@ export class RopaCatalogoComponent implements OnInit, OnDestroy {
   docTeamId: number | null = null;
   archivoSeleccionado: File | null = null;
 
+  // ─── Modal confirmación (estilo Sphaira) ───────────────────────────────────
+  confirmacionAbierta = false;
+  confirmacionTitulo = '';
+  confirmacionMensaje = '';
+  confirmacionTipo: 'prenda' | 'documento' | null = null;
+  confirmacionId: number | null = null;
+  confirmando = false;
+
   constructor(
     private ropaCatalogoService: RopaCatalogoService,
     private teamService: TeamService,
@@ -70,6 +86,21 @@ export class RopaCatalogoComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['temporada'] && !changes['temporada'].firstChange && this.clubId) {
+      this.cargarPrendas();
+      this.cargarDocumentos();
+      this.cargarEquipos();
+    }
+  }
+
+  /** Etiqueta de temporada para mostrar (ej. "2025/2026"). */
+  get temporadaLabel(): string {
+    const y = parseInt(this.temporada, 10);
+    if (isNaN(y)) return this.temporada;
+    return `${y}/${y + 1}`;
   }
 
   // ─── CARGA ────────────────────────────────────────────────────────────────
@@ -93,7 +124,8 @@ export class RopaCatalogoComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
-          this.prendas = (res.data as RopaCatalogoPrenda[]) || [];
+          const raw = (res.data as any[]) || [];
+          this.prendas = raw.map((p: any) => this.normalizePrenda(p));
           this.cargandoPrendas = false;
         },
         error: (err) => {
@@ -156,7 +188,7 @@ export class RopaCatalogoComponent implements OnInit, OnDestroy {
   abrirFormEditarPrenda(prenda: RopaCatalogoPrenda): void {
     this.editandoPrenda = { ...prenda };
     this.imagenSeleccionada = null;
-    this.imagenPreview = prenda.imagenUrl || null;
+    this.imagenPreview = this.getPrendaImageUrl(prenda) || null;
     this.tallasForm = (prenda.tallas || []).map((t) => ({ nombre: t.nombreTalla, orden: t.orden }));
     this.nuevaTalla = '';
     this.errorModal = '';
@@ -174,7 +206,7 @@ export class RopaCatalogoComponent implements OnInit, OnDestroy {
       const file = input.files[0];
       const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
       if (!allowedTypes.includes(file.type)) {
-        this.snackBar.open('Solo se permiten imágenes JPG, PNG o WebP', 'Cerrar', { duration: 3000 });
+        this.mostrarMensaje('Solo se permiten imágenes JPG, PNG o WebP', 'error');
         return;
       }
       this.imagenSeleccionada = file;
@@ -217,7 +249,7 @@ export class RopaCatalogoComponent implements OnInit, OnDestroy {
           );
           this.guardando = false;
           this.cerrarFormPrenda();
-          this.snackBar.open('Prenda guardada correctamente', 'Cerrar', { duration: 2500 });
+          this.mostrarMensaje('Prenda guardada correctamente', 'success');
           this.cargarPrendas();
         } else {
           this.guardando = false;
@@ -263,17 +295,78 @@ export class RopaCatalogoComponent implements OnInit, OnDestroy {
   }
 
   eliminarPrenda(prendaId: number): void {
-    if (!confirm('¿Seguro que quieres eliminar esta prenda?')) return;
-    this.ropaCatalogoService
-      .deletePrenda(prendaId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.snackBar.open('Prenda eliminada', 'Cerrar', { duration: 2500 });
-          this.cargarPrendas();
-        },
-        error: (err) => console.error('[RopaCatalogo] Error eliminando prenda:', err),
-      });
+    this.confirmacionTitulo = 'Eliminar prenda';
+    this.confirmacionMensaje = '¿Estás seguro de que quieres eliminar esta prenda? Esta acción no se puede deshacer.';
+    this.confirmacionTipo = 'prenda';
+    this.confirmacionId = prendaId;
+    this.confirmacionAbierta = true;
+  }
+
+  eliminarDocumento(documentoId: number): void {
+    this.confirmacionTitulo = 'Eliminar documento';
+    this.confirmacionMensaje = '¿Estás seguro de que quieres eliminar este documento?';
+    this.confirmacionTipo = 'documento';
+    this.confirmacionId = documentoId;
+    this.confirmacionAbierta = true;
+  }
+
+  cerrarConfirmacion(): void {
+    if (!this.confirmando) {
+      this.confirmacionAbierta = false;
+      this.confirmacionTipo = null;
+      this.confirmacionId = null;
+    }
+  }
+
+  confirmarEliminacion(): void {
+    if (this.confirmacionTipo === 'prenda' && this.confirmacionId != null) {
+      this.confirmando = true;
+      this.ropaCatalogoService
+        .deletePrenda(this.confirmacionId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.mostrarMensaje('Prenda eliminada correctamente', 'success');
+            this.confirmacionAbierta = false;
+            this.confirmacionTipo = null;
+            this.confirmacionId = null;
+            this.confirmando = false;
+            this.cargarPrendas();
+          },
+          error: (err) => {
+            console.error('[RopaCatalogo] Error eliminando prenda:', err);
+            this.mostrarMensaje('No se pudo eliminar la prenda. Inténtalo de nuevo.', 'error');
+            this.confirmando = false;
+          },
+        });
+    } else if (this.confirmacionTipo === 'documento' && this.confirmacionId != null) {
+      this.confirmando = true;
+      this.ropaCatalogoService
+        .deleteDocumento(this.confirmacionId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.mostrarMensaje('Documento eliminado correctamente', 'success');
+            this.confirmacionAbierta = false;
+            this.confirmacionTipo = null;
+            this.confirmacionId = null;
+            this.confirmando = false;
+            this.cargarDocumentos();
+          },
+          error: (err) => {
+            console.error('[RopaCatalogo] Error eliminando documento:', err);
+            this.mostrarMensaje('No se pudo eliminar el documento. Inténtalo de nuevo.', 'error');
+            this.confirmando = false;
+          },
+        });
+    }
+  }
+
+  private mostrarMensaje(mensaje: string, tipo: 'success' | 'error'): void {
+    this.snackBar.open(mensaje, 'Cerrar', {
+      duration: 3200,
+      panelClass: tipo === 'success' ? 'sphaira-snackbar-success' : 'sphaira-snackbar-error',
+    });
   }
 
   toggleSeleccionesPrenda(prendaId: number): void {
@@ -335,7 +428,7 @@ export class RopaCatalogoComponent implements OnInit, OnDestroy {
         next: (res) => {
           this.guardando = false;
           if (res.status === 200) {
-            this.snackBar.open('Documento subido correctamente', 'Cerrar', { duration: 2500 });
+            this.mostrarMensaje('Documento subido correctamente', 'success');
             this.resetFormDocumento();
             this.cargarDocumentos();
           } else {
@@ -350,19 +443,6 @@ export class RopaCatalogoComponent implements OnInit, OnDestroy {
       });
   }
 
-  eliminarDocumento(documentoId: number): void {
-    if (!confirm('¿Seguro que quieres eliminar este documento?')) return;
-    this.ropaCatalogoService
-      .deleteDocumento(documentoId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.snackBar.open('Documento eliminado', 'Cerrar', { duration: 2500 });
-          this.cargarDocumentos();
-        },
-        error: (err) => console.error('[RopaCatalogo] Error eliminando documento:', err),
-      });
-  }
 
   private resetFormDocumento(): void {
     this.mostrarFormDocumento = false;
@@ -384,5 +464,30 @@ export class RopaCatalogoComponent implements OnInit, OnDestroy {
 
   contarSelecciones(prendaId: number): number {
     return this.seleccionesPorPrenda[prendaId]?.length || 0;
+  }
+
+  /** Normaliza una prenda del API (camelCase o snake_case) para tener siempre imagenUrl e imagenNombre */
+  private normalizePrenda(p: any): RopaCatalogoPrenda {
+    const imagenUrl = p?.imagenUrl ?? p?.imagen_url ?? '';
+    const imagenNombre = p?.imagenNombre ?? p?.imagen_nombre ?? '';
+    return {
+      ...p,
+      imagenUrl: imagenUrl || '',
+      imagenNombre: imagenNombre || '',
+    } as RopaCatalogoPrenda;
+  }
+
+  /** URL de la imagen de la prenda: usa imagenUrl del API o la construye desde environment.images + imagenNombre */
+  getPrendaImageUrl(prenda: RopaCatalogoPrenda | null | undefined): string | null {
+    if (!prenda) return null;
+    const url = (prenda as any).imagenUrl ?? (prenda as any).imagen_url;
+    if (url && typeof url === 'string' && url.trim()) return url.trim();
+    const nombre = (prenda as any).imagenNombre ?? (prenda as any).imagen_nombre;
+    if (nombre && typeof nombre === 'string' && nombre.trim()) {
+      const base = (environment as { images?: string }).images ?? 'https://appsphairatech.com/images/';
+      const baseClean = base.replace(/\/$/, '');
+      return `${baseClean}/ropa-catalogo/${nombre.trim()}`;
+    }
+    return null;
   }
 }

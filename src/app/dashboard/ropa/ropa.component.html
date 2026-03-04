@@ -15,6 +15,17 @@
   <div class="header-spacer"></div>
 </div>
 
+<!-- Selector de temporada (como en Equipos) -->
+<div class="ropa-season-bar">
+  <label class="ropa-season-label">
+    <i class="bi bi-calendar-event"></i>
+    <span>{{ 'TITLES.SEASON' | translate }}</span>
+  </label>
+  <select class="ropa-season-select" [(ngModel)]="temporadaStoredValue" (change)="onTemporadaChangeRopa()">
+    <option *ngFor="let s of seasons" [value]="s.value">{{ s.label }}</option>
+  </select>
+</div>
+
 <!-- ═══════════════════ PESTAÑAS ═══════════════════ -->
 <div class="ropa-tabs">
   <button class="ropa-tab" [class.active]="activeRopaTab === 'tablaTallas'" (click)="activeRopaTab = 'tablaTallas'">
@@ -31,12 +42,12 @@
 
 <!-- ═══════════════════ CONTENIDO PESTAÑA: TABLA TALLAS CATÁLOGO ══════ -->
 <div *ngIf="activeRopaTab === 'tablaTallas'" class="catalogo-tab-content">
-  <app-ropa-tabla-catalogo [clubId]="clubId"></app-ropa-tabla-catalogo>
+  <app-ropa-tabla-catalogo [clubId]="clubId" [temporada]="temporadaStoredValue"></app-ropa-tabla-catalogo>
 </div>
 
 <!-- ═══════════════════ CONTENIDO PESTAÑA: CATÁLOGO ═══════════════════ -->
 <div *ngIf="activeRopaTab === 'catalogo'" class="catalogo-tab-content">
-  <app-ropa-catalogo [clubId]="clubId"></app-ropa-catalogo>
+  <app-ropa-catalogo [clubId]="clubId" [temporada]="temporadaStoredValue"></app-ropa-catalogo>
 </div>
 
 <!-- ═══════════════════ CONTENIDO PESTAÑA: TALLAS ═══════════════════ -->

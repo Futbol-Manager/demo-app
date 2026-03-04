@@ -1203,6 +1203,283 @@ th:hover i {
   gap: 0.75rem;
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+//  MODAL AGREGAR PAGO DEL JUGADOR — Premium UX/UI
+// ═══════════════════════════════════════════════════════════════════════════
+.ipm-overlay {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+}
+
+.ipm-dialog {
+  max-width: 520px;
+}
+
+.ipm-modal {
+  border: none;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18), 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.ipm-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.35rem 1.5rem;
+  background: linear-gradient(135deg, #0d5c5d 0%, #0a4546 100%);
+  color: #fff;
+  position: relative;
+}
+
+.ipm-header-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  flex-shrink: 0;
+}
+
+.ipm-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.ipm-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 0.15rem;
+  letter-spacing: -0.02em;
+}
+
+.ipm-subtitle {
+  font-size: 0.8rem;
+  margin: 0;
+  opacity: 0.88;
+  font-weight: 400;
+}
+
+.ipm-close {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-size: 1rem;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+}
+
+.ipm-body {
+  padding: 1.5rem 1.5rem 1.75rem;
+  background: #fafbfc;
+}
+
+.ipm-intro {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  margin-bottom: 1.35rem;
+  font-size: 0.9rem;
+  color: #374151;
+
+  i {
+    font-size: 1.25rem;
+    color: #0d5c5d;
+    flex-shrink: 0;
+  }
+
+  strong {
+    color: #111827;
+  }
+}
+
+.ipm-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.ipm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  &--half {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.ipm-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.ipm-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #1f2937;
+
+  i {
+    font-size: 0.9rem;
+    color: #0d5c5d;
+    opacity: 0.9;
+  }
+}
+
+.ipm-optional {
+  font-weight: 400;
+  color: #6b7280;
+  font-size: 0.78rem;
+}
+
+.ipm-input {
+  border-radius: 12px;
+  border: 1.5px solid #e5e7eb;
+  padding: 0.65rem 1rem;
+  font-size: 0.95rem;
+  color: #111827;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &::placeholder {
+    color: #9ca3af;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #0d5c5d;
+    box-shadow: 0 0 0 3px rgba(13, 92, 93, 0.12);
+  }
+}
+
+.ipm-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+
+.ipm-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.ipm-method-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+}
+
+.ipm-method-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.65rem 0.4rem;
+  border-radius: 12px;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #4b5563;
+
+  i {
+    font-size: 1.1rem;
+    color: #6b7280;
+  }
+
+  &:hover {
+    border-color: #0d5c5d;
+    background: rgba(13, 92, 93, 0.05);
+    color: #0d5c5d;
+    i { color: #0d5c5d; }
+  }
+
+  &--active {
+    border-color: #0d5c5d;
+    background: rgba(13, 92, 93, 0.1);
+    color: #0d5c5d;
+    i { color: #0d5c5d; }
+  }
+}
+
+.ipm-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.ipm-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+
+  &--secondary {
+    background: #fff;
+    color: #4b5563;
+    border: 1.5px solid #d1d5db;
+
+    &:hover {
+      background: #f9fafb;
+      border-color: #9ca3af;
+    }
+  }
+
+  &--primary {
+    background: linear-gradient(135deg, #0d5c5d 0%, #0a4546 100%);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(13, 92, 93, 0.35);
+
+    &:hover {
+      box-shadow: 0 6px 20px rgba(13, 92, 93, 0.4);
+      transform: translateY(-1px);
+    }
+  }
+}
+
+@media (max-width: 560px) {
+  .ipm-method-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .ipm-row {
+    flex-direction: column;
+  }
+}
+
 /* FILA PRINCIPAL */
 .payment-row {
   display: flex;
@@ -3538,6 +3815,13 @@ $nc-primary-dark: #002c40;
     background: rgba($nc-primary, 0.1);
     border-color: rgba($nc-primary, 0.25);
   }
+
+  // Variante Otro
+  &--otro {
+    color: #6b7280;
+    background: rgba(107, 114, 128, 0.1);
+    border-color: rgba(107, 114, 128, 0.25);
+  }
 }
 
 .nc-tag-live {
@@ -4003,75 +4287,138 @@ $nc-primary-dark: #002c40;
   }
 }
 
-// ── Payment type selector (Pago puntual / Sphaira Pay) ───────────────
+// ── Payment type selector: 3 columnas, opciones grandes, iconos premium ───────────────
 .nc-payment-selector {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
   margin-bottom: 0;
 }
 
 .nc-payment-option {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.95rem 1rem;
+  padding: 1.25rem 1rem;
   border-radius: 14px;
   border: 1.5px solid $nc-border;
   background: $nc-white;
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.22s ease;
   position: relative;
-  text-align: left;
+  text-align: center;
   outline: none;
 
   &:hover:not(.nc-payment-option--active) {
-    border-color: rgba($nc-green, 0.4);
+    border-color: rgba($nc-green, 0.45);
     background: rgba($nc-green, 0.04);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba($nc-navy, 0.07);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba($nc-navy, 0.08);
   }
 
+  // Estilo activo unificado: las tres opciones se ven igual al seleccionar (como Sphaira Pay)
   &--active {
-    border-color: rgba($nc-green, 0.55);
-    background: rgba($nc-green, 0.06);
-    box-shadow: 0 4px 14px rgba($nc-green, 0.12);
+    border-color: $nc-green;
+    background: linear-gradient(135deg, rgba($nc-green, 0.12), rgba($nc-navy, 0.04));
+    box-shadow: 0 8px 28px rgba($nc-green, 0.22);
   }
 
-  // Sphaira Pay activo: gradiente premium verde/navy
   &--sphaira#{&}--active {
     border-color: $nc-green;
-    background: linear-gradient(135deg, rgba($nc-green, 0.08), rgba($nc-navy, 0.04));
-    box-shadow: 0 6px 20px rgba($nc-green, 0.2);
+    background: linear-gradient(135deg, rgba($nc-green, 0.12), rgba($nc-navy, 0.04));
+    box-shadow: 0 8px 28px rgba($nc-green, 0.22);
+  }
+
+  &--otro#{&}--active {
+    border-color: $nc-green;
+    background: linear-gradient(135deg, rgba($nc-green, 0.12), rgba($nc-navy, 0.04));
+    box-shadow: 0 8px 28px rgba($nc-green, 0.22);
   }
 }
 
+// Iconos premium: contenedor grande con sombra suave y gradiente sutil
 .nc-payment-option-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 11px;
-  background: rgba($nc-beige, 0.5);
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
-  color: $nc-navy;
   flex-shrink: 0;
-  transition: all 0.18s ease;
+  transition: all 0.22s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
 
-  .nc-payment-option--active & {
-    background: rgba($nc-green, 0.14);
-    color: $nc-green;
+  .bi {
+    font-size: 1.5rem;
+    display: block;
+    line-height: 1;
   }
 
+  .nc-payment-option--active & {
+    box-shadow: 0 6px 20px rgba($nc-green, 0.2);
+  }
+
+  // Pago puntual: estilo tarjeta / Stripe
+  &--stripe {
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px;
+    background: linear-gradient(145deg, #f8f9fc 0%, #eef0f5 100%);
+    border: 1px solid rgba(103, 114, 229, 0.15);
+    color: #32325d;
+
+    .bi { font-size: 1.35rem; color: #32325d; }
+    .nc-stripe-pill {
+      font-size: 0.55rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: #6772e5;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    // Al seleccionar: mismo aspecto que Sphaira Pay (icono verde sólido, texto blanco)
+    .nc-payment-option--active & {
+      background: linear-gradient(145deg, $nc-green 0%, darken($nc-green, 6%) 100%);
+      border-color: $nc-green;
+      box-shadow: 0 8px 24px rgba($nc-green, 0.35);
+      .bi, .nc-stripe-pill { color: #fff; }
+    }
+  }
+
+  // Sphaira Pay: verde premium
   &--sphaira {
-    background: rgba($nc-green, 0.1);
+    background: linear-gradient(145deg, rgba($nc-green, 0.14) 0%, rgba($nc-green, 0.06) 100%);
+    border: 1px solid rgba($nc-green, 0.25);
     color: $nc-green;
 
+    .bi { color: $nc-green; font-size: 1.5rem; }
+    .nc-stripe-pill { color: darken($nc-green, 10%); font-size: 0.55rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+
     .nc-payment-option--active & {
-      background: linear-gradient(135deg, $nc-green, $nc-primary-dark);
+      background: linear-gradient(145deg, $nc-green 0%, darken($nc-green, 6%) 100%);
+      border-color: $nc-green;
       color: #fff;
-      box-shadow: 0 4px 12px rgba($nc-green, 0.38);
+      box-shadow: 0 8px 24px rgba($nc-green, 0.35);
+      .bi, .nc-stripe-pill { color: #fff; }
+    }
+  }
+
+  // Otros medios: al seleccionar mismo aspecto que Sphaira Pay (icono verde sólido, texto blanco)
+  &--otro {
+    background: linear-gradient(145deg, #f5f5f7 0%, #e8e8ec 100%);
+    border: 1px solid rgba(107, 114, 128, 0.2);
+    color: #4b5563;
+
+    .bi { font-size: 1.5rem; }
+
+    .nc-payment-option--active & {
+      background: linear-gradient(145deg, $nc-green 0%, darken($nc-green, 6%) 100%);
+      border-color: $nc-green;
+      color: #fff;
+      box-shadow: 0 8px 24px rgba($nc-green, 0.35);
+      .bi { color: #fff; }
     }
   }
 }
@@ -4079,39 +4426,52 @@ $nc-primary-dark: #002c40;
 .nc-payment-option-body {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.2rem;
   flex: 1;
   min-width: 0;
+  width: 100%;
 }
 
 .nc-payment-option-title {
   display: block;
-  font-size: 0.86rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: $nc-text;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .nc-payment-option-sub {
   display: block;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: $nc-muted;
   line-height: 1.3;
 }
 
 .nc-payment-option-check {
-  font-size: 0.9rem;
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  font-size: 1rem;
   color: $nc-primary;
   flex-shrink: 0;
-  transition: all 0.18s ease;
+  transition: all 0.2s ease;
 }
 
-// ── Stripe config panel ───────────────────────────────────────────────
+// ── Stripe config panel (Cobro automático) — bloque premium ─────────────
 .nc-stripe-panel {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1.5px dashed $nc-beige;
-  animation: nc-fade-in 0.2s ease;
+  margin-top: 1.25rem;
+  animation: nc-fade-in 0.25s ease;
+}
+
+.nc-stripe-panel-inner {
+  background: linear-gradient(145deg, rgba($nc-green, 0.04) 0%, rgba($nc-navy, 0.02) 100%);
+  border: 1px solid rgba($nc-green, 0.18);
+  border-radius: 14px;
+  padding: 1.15rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  box-shadow: 0 4px 16px rgba($nc-green, 0.06);
 }
 
 @keyframes nc-fade-in {
@@ -4234,40 +4594,55 @@ $nc-primary-dark: #002c40;
 .nc-billing-header {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
-  padding: 1rem 1.1rem;
-  background: linear-gradient(135deg, rgba($nc-primary, 0.07) 0%, rgba($nc-primary, 0.13) 100%);
-  border-radius: 14px;
-  border: 1px solid rgba($nc-primary, 0.25);
-  margin-bottom: 1rem;
+  gap: 1rem;
+  padding: 0;
+  margin-bottom: 0;
 }
 
 .nc-billing-header-icon {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
-  background: linear-gradient(135deg, $nc-primary, $nc-primary-dark);
+  background: linear-gradient(145deg, $nc-green 0%, darken($nc-green, 8%) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   color: #fff;
   flex-shrink: 0;
-  box-shadow: 0 4px 14px rgba($nc-primary, 0.38);
+  box-shadow: 0 4px 16px rgba($nc-green, 0.35);
+}
+
+.nc-billing-header-text {
+  flex: 1;
+  min-width: 0;
 }
 
 .nc-billing-header-title {
-  font-size: 0.86rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  color: $nc-primary-dark;
-  margin: 0 0 0.15rem;
+  color: $nc-navy;
+  margin: 0 0 0.2rem;
+  letter-spacing: -0.01em;
 }
 
 .nc-billing-header-sub {
-  font-size: 0.73rem;
-  color: $nc-primary;
+  font-size: 0.78rem;
+  color: $nc-muted;
   margin: 0;
-  opacity: 0.85;
+  line-height: 1.4;
+}
+
+.nc-billing-fecha-cobro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 0;
+  border-top: 1px solid rgba($nc-green, 0.12);
+
+  .nc-input--date {
+    max-width: 200px;
+  }
 }
 
 // ── Period cards grid ─────────────────────────────────────────────────
@@ -4411,20 +4786,35 @@ $nc-primary-dark: #002c40;
 .nc-sub-note {
   display: flex;
   align-items: flex-start;
-  gap: 0.55rem;
-  background: rgba($nc-beige, 0.3);
-  border: 1px solid rgba($nc-beige, 0.8);
+  gap: 0.7rem;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba($nc-green, 0.15);
   border-radius: 10px;
-  padding: 0.65rem 0.9rem;
-  font-size: 0.79rem;
+  padding: 0.85rem 1rem;
+  font-size: 0.8rem;
   color: $nc-navy;
   line-height: 1.5;
+  margin-top: 0.25rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+}
 
-  i {
-    color: $nc-green;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
+.nc-sub-note-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba($nc-green, 0.12);
+  color: $nc-green;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.nc-sub-note-text {
+  flex: 1;
+  min-width: 0;
+  padding-top: 0.15rem;
 }
 
 // ── Comisiones layout (legacy, kept for compatibility) ────────────────
@@ -4820,13 +5210,70 @@ $nc-primary-dark: #002c40;
   grid-template-columns: 1fr;
 }
 
-// ── Fecha límite — aparece con animación al elegir Pago puntual ─────────
+// ── Fecha límite — bloque premium organizado ─────────────────────────────
 .nc-fecha-limite-field {
   animation: nc-slide-down 0.22s cubic-bezier(0.34, 1.2, 0.64, 1);
+  margin-top: 1rem;
+}
 
-  .nc-input {
-    max-width: 220px;
+.nc-date-block {
+  background: linear-gradient(145deg, #fafbfc 0%, #f4f6f8 100%);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  padding: 1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.nc-date-block-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nc-date-block-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+
+  &--green {
+    background: rgba($nc-green, 0.12);
+    color: $nc-green;
   }
+}
+
+.nc-date-block-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.nc-date-block-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: $nc-navy;
+  line-height: 1.3;
+}
+
+.nc-date-block-hint {
+  font-size: 0.72rem;
+  color: $nc-muted;
+  line-height: 1.35;
+}
+
+.nc-input--date {
+  max-width: 200px;
+  border-radius: 10px;
+  font-weight: 500;
 }
 
 @keyframes nc-slide-down {

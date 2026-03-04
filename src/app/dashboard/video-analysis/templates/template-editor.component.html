@@ -1,4 +1,4 @@
-﻿<div class="editor-page" *ngIf="!isLoading; else loadingTpl">
+<div class="editor-page" *ngIf="!isLoading; else loadingTpl">
 
   <!-- Save success toast -->
   <div class="save-toast" [class.show]="savedOk">
@@ -15,41 +15,43 @@
     <i class="bi bi-exclamation-triangle-fill"></i> {{ saveInfoError }}
   </div>
 
-  <!-- Header -->
-  <div class="editor-header">
-    <div class="editor-header-left">
-      <button class="btn-back-clean" (click)="goBack()">
-        <i class="bi bi-arrow-left"></i> Plantillas
-      </button>
-      <div class="header-title-group">
-        <input *ngIf="!isSystemTemplate" type="text" class="title-input"
-               [(ngModel)]="editName" (ngModelChange)="onTemplateNameChange()"
-               placeholder="Nombre de la plantilla" />
-        <h3 *ngIf="isSystemTemplate" class="system-title">{{ template?.name }}</h3>
-        <span class="badge-system" *ngIf="isSystemTemplate">
-          <i class="bi bi-shield-check"></i> Plantilla Sphaira
-        </span>
-        <span class="badge-cats">{{ categoryCount }} cat. · {{ descriptorCount }} desc.</span>
-        <span class="badge-saving" *ngIf="isSavingTemplate">
-          <i class="bi bi-arrow-repeat spin"></i> Guardando...
-        </span>
+  <!-- Header premium (Sphaira) -->
+  <div class="editor-header-bar">
+    <div class="editor-header">
+      <div class="editor-header-left">
+        <button type="button" class="btn-back-clean" (click)="goBack()">
+          <i class="bi bi-arrow-left"></i> Plantillas
+        </button>
+        <div class="header-title-group">
+          <input *ngIf="!isSystemTemplate" type="text" class="title-input title-input--light"
+                 [(ngModel)]="editName" (ngModelChange)="onTemplateNameChange()"
+                 placeholder="Nombre de la plantilla" />
+          <h3 *ngIf="isSystemTemplate" class="system-title">{{ template?.name }}</h3>
+          <span class="badge-system badge-system--light" *ngIf="isSystemTemplate">
+            <i class="bi bi-shield-check"></i> Plantilla Sphaira
+          </span>
+          <span class="badge-cats badge-cats--light">{{ categoryCount }} cat. · {{ descriptorCount }} desc.</span>
+          <span class="badge-saving badge-saving--light" *ngIf="isSavingTemplate">
+            <i class="bi bi-arrow-repeat spin"></i> Guardando...
+          </span>
+        </div>
       </div>
-    </div>
-    <div class="editor-header-right">
-      <button *ngIf="isSystemTemplate" class="btn-duplicate" (click)="duplicateTemplate()">
-        <i class="bi bi-copy"></i> Duplicar para editar
-      </button>
-      <ng-container *ngIf="!isSystemTemplate">
-        <button class="btn-add-cat" (click)="addNewCategory()">
-          <i class="bi bi-plus-lg"></i> Añadir botón
+      <div class="editor-header-right">
+        <button *ngIf="isSystemTemplate" type="button" class="btn-bar btn-bar--outline" (click)="duplicateTemplate()">
+          <i class="bi bi-copy"></i> Duplicar para editar
         </button>
-        <button class="btn-save-all" [disabled]="isSavingAll" (click)="saveAll()">
-          <span class="spinner-btn" *ngIf="isSavingAll"></span>
-          <i class="bi bi-floppy-fill" *ngIf="!isSavingAll"></i>
-          {{ isSavingAll ? 'Guardando...' : 'Guardar plantilla' }}
-          <span class="unsaved-dot" *ngIf="hasUnsavedChanges && !isSavingAll"></span>
-        </button>
-      </ng-container>
+        <ng-container *ngIf="!isSystemTemplate">
+          <button type="button" class="btn-bar btn-bar--outline" (click)="addNewCategory()">
+            <i class="bi bi-plus-lg"></i> Añadir botón
+          </button>
+          <button type="button" class="btn-bar btn-bar--primary" [disabled]="isSavingAll" (click)="saveAll()">
+            <span class="spinner-btn" *ngIf="isSavingAll"></span>
+            <i class="bi bi-floppy-fill" *ngIf="!isSavingAll"></i>
+            {{ isSavingAll ? 'Guardando...' : 'Guardar plantilla' }}
+            <span class="unsaved-dot" *ngIf="hasUnsavedChanges && !isSavingAll"></span>
+          </button>
+        </ng-container>
+      </div>
     </div>
   </div>
 

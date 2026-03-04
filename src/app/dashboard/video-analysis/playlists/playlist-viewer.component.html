@@ -1,26 +1,47 @@
-﻿<div class="viewer-page">
-
-  <!-- Header -->
-  <div class="viewer-topbar">
-    <button class="btn-back-clean" (click)="goBack()">
-      <i class="bi bi-arrow-left"></i> Playlists
-    </button>
-    <div class="viewer-title-area" *ngIf="playlist">
-      <h5>{{ playlist.title }}</h5>
-      <span class="clip-badge">{{ items.length }} clips</span>
+<div class="viewer-page">
+  <!-- Header a ancho completo + título centrado -->
+  <div class="page-header-wrapper">
+  <header class="page-header">
+    <div class="back-container">
+      <button type="button" class="btn-back-clean" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+        <span>Playlists</span>
+      </button>
     </div>
+    <div class="header-center">
+      <div class="header-icon">
+        <i class="bi bi-collection-play"></i>
+      </div>
+      <div class="header-titles">
+        <h1 class="page-title">{{ playlist?.title || 'Playlist' }}</h1>
+        <p class="header-subtitle">Reproduce y gestiona los clips de esta playlist</p>
+        <div class="header-meta" *ngIf="playlist && items.length > 0">
+          <span class="meta-chip">
+            <i class="bi bi-film"></i>
+            {{ items.length }} clip{{ items.length !== 1 ? 's' : '' }}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="header-spacer"></div>
+  </header>
   </div>
 
   <!-- Loading -->
   <div class="viewer-loading" *ngIf="isLoading">
-    <div class="spinner-border text-primary" role="status"></div>
+    <div class="loading-spinner"></div>
+    <span>Cargando playlist...</span>
   </div>
 
   <!-- Error / empty playlist -->
   <div class="viewer-empty-page" *ngIf="!isLoading && !playlist">
-    <i class="bi bi-exclamation-circle"></i>
+    <div class="empty-card-icon empty-card-icon--muted">
+      <i class="bi bi-exclamation-circle"></i>
+    </div>
     <p>Playlist no encontrada.</p>
-    <button class="btn btn-primary btn-sm" (click)="goBack()">Volver</button>
+    <button type="button" class="btn-empty-cta" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i> Volver
+    </button>
   </div>
 
   <!-- Content -->
@@ -117,8 +138,8 @@
           </button>
         </div>
 
-        <button class="btn-open-workspace" (click)="goToWorkspace(currentItem, $event)">
-          <i class="bi bi-box-arrow-up-right me-1"></i>
+        <button type="button" class="btn-open-workspace" (click)="goToWorkspace(currentItem, $event)">
+          <i class="bi bi-box-arrow-up-right"></i>
           Abrir en workspace
         </button>
       </div>

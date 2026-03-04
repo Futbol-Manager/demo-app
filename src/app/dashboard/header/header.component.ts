@@ -3,9 +3,9 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBarConfig } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Subject, fromEvent } from 'rxjs';
 import { interval } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import {
   GenreTypeModel,
   ProfileTypeModel,
@@ -203,6 +203,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         if (this.userId > 0 && this.userId !== 9 && this.canShowUserNotificationsBell()) {
           this.loadHeaderNotifications();
+        }
+      });
+
+    // Al volver a la pestaña, verificar que la sesión siga válida; si el token expiró (401), el interceptor cierra sesión
+    fromEvent(document, 'visibilitychange')
+      .pipe(
+        takeUntil(this.destroy$),
+        filter(() => document.visibilityState === 'visible')
+      )
+      .subscribe(() => {
+        if (this.userId > 0) {
+          this.registerService.getUserById(this.userId).subscribe({ error: () => {} });
         }
       });
   }
