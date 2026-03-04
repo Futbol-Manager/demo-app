@@ -46,6 +46,9 @@
 }
 .kpi-value { font-size: 1.7rem; font-weight: 700; color: var(--sphaira-night); font-family: 'Archivo', sans-serif; }
 .kpi-label { font-size: 0.7rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-top: 0.2rem; }
+.kpi-warning { border-top-color: #f59e0b !important; }
+.kpi-warning .kpi-icon { background: rgba(245, 158, 11, 0.1) !important; color: #f59e0b !important; }
+.kpi-hint { font-size: 0.68rem; line-height: 1.2; }
 .kpi-clubs { border-top-color: var(--sphaira-night); }
 .kpi-clubs .kpi-icon { background: rgba(0, 44, 64, 0.08); color: var(--sphaira-night); }
 .kpi-teams { border-top-color: var(--sphaira-green); }

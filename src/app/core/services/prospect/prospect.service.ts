@@ -245,16 +245,21 @@ export class ProspectService {
   }
 
   // Pipeline actions
-  discover(campaignId: number, provinces?: string[], useIsquad = true, useFutbolteca = true, useWebSearch = false): Observable<any> {
+  discover(campaignId: number, provinces?: string[], sources?: string[]): Observable<any> {
     return this.http.post<any>(`${this.base}discover`, {
-      campaign_id: campaignId, provinces, use_isquad: useIsquad,
-      use_futbolteca: useFutbolteca, use_web_search: useWebSearch
+      campaign_id: campaignId, provinces: provinces?.length ? provinces : undefined,
+      sources: sources?.length ? sources : undefined
     });
   }
 
-  enrich(campaignId: number, maxClubs = 50, searchWeb = false, delay = 1.5): Observable<any> {
+  getDiscoverSources(): Observable<{sources: {id: string, region: string, note: string}[]}> {
+    return this.http.get<any>(`${this.base}discover/sources`);
+  }
+
+  enrich(campaignId: number, maxClubs = 50, searchWeb = true, delay = 1.5, forceReEnrich = false): Observable<any> {
     return this.http.post<any>(`${this.base}enrich`, {
-      campaign_id: campaignId, max_clubs: maxClubs, search_web: searchWeb, delay
+      campaign_id: campaignId, max_clubs: maxClubs, search_web: searchWeb,
+      delay, force_re_enrich: forceReEnrich
     });
   }
 

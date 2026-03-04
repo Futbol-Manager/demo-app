@@ -25,7 +25,11 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
 
   // Pipeline
   pipelineProvinces = '';
+  federationSources: {id: string, region: string, note: string, selected: boolean}[] = [];
+  federationSourcesLoaded = false;
   pipelineMaxEnrich = 50;
+  pipelineSearchWeb = true;
+  pipelineForceReEnrich = false;
   pipelineAbRatio = 0.5;
   currentJob: any = null;
   jobPollingInterval: any = null;
@@ -1288,19 +1292,34 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
     return false;
   }
 
+  loadFederationSources(): void {
+    if (this.federationSourcesLoaded) return;
+    this.prospectService.getDiscoverSources().subscribe({
+      next: (data) => {
+        this.federationSources = (data.sources || []).map((s: any) => ({...s, selected: true}));
+        this.federationSourcesLoaded = true;
+      }
+    });
+  }
+
   runDiscover(): void {
     if (!this.campaignId) return;
     const provinces = this.pipelineProvinces.trim()
       ? this.pipelineProvinces.split(',').map(p => p.trim())
       : undefined;
-    this.prospectService.discover(this.campaignId, provinces).subscribe({
+    const selectedSources = this.federationSources.filter(s => s.selected).map(s => s.id);
+    const sources = selectedSources.length > 0 ? selectedSources : undefined;
+    this.prospectService.discover(this.campaignId, provinces, sources).subscribe({
       next: (res) => { this.startJobPolling(res.job_id, 'discover'); }
     });
   }
 
   runEnrich(): void {
     if (!this.campaignId) return;
-    this.prospectService.enrich(this.campaignId, this.pipelineMaxEnrich).subscribe({
+    this.prospectService.enrich(
+      this.campaignId, this.pipelineMaxEnrich,
+      this.pipelineSearchWeb, 1.5, this.pipelineForceReEnrich
+    ).subscribe({
       next: (res) => { this.startJobPolling(res.job_id, 'enrich'); }
     });
   }

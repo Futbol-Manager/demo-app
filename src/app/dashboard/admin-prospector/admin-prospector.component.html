@@ -75,10 +75,18 @@
       </div>
     </div>
     <div class="col-6 col-md-3">
-      <div class="kpi-card kpi-teams">
-        <div class="kpi-icon"><i class="bi bi-envelope-check"></i></div>
+      <div class="kpi-card kpi-teams"
+           [class.kpi-warning]="campaignStats.with_email === 0 && campaignStats.total > 0"
+           [title]="campaignStats.with_email === 0 && campaignStats.total > 0 ? 'Ejecuta el paso 2 con \'Buscar web y email\' activo para encontrar emails' : ''">
+        <div class="kpi-icon">
+          <i class="bi" [ngClass]="campaignStats.with_email > 0 ? 'bi-envelope-check' : 'bi-envelope-x'"></i>
+        </div>
         <div class="kpi-value">{{ campaignStats.with_email || 0 }}</div>
         <div class="kpi-label">Con email de contacto</div>
+        <div *ngIf="campaignStats.with_email === 0 && campaignStats.total > 0"
+             class="kpi-hint text-warning small mt-1">
+          <i class="bi bi-arrow-down-circle me-1"></i>Re-enriquecer en paso 2
+        </div>
       </div>
     </div>
     <div class="col-6 col-md-3">
@@ -391,8 +399,8 @@
         <div class="pipeline-card-header">
           <div class="step-badge">1</div>
           <div class="step-info">
-            <div class="step-title"><i class="bi bi-search me-2"></i>Descubrir clubes</div>
-            <div class="step-subtitle">Scrapea federaciones y directorios online</div>
+            <div class="step-title"><i class="bi bi-building me-2"></i>Descubrir desde federaciones</div>
+            <div class="step-subtitle">Solo directorios oficiales de federaciones españolas</div>
           </div>
           <div class="step-state-badge">
             <span *ngIf="pipelineStepStates['discover'] === 'done'" class="badge badge-done"><i class="bi bi-check2"></i> {{ stepDoneCount('discover') }} clubes</span>
@@ -401,18 +409,40 @@
           </div>
         </div>
         <div class="pipeline-card-body">
+          <!-- Fuentes de federaciones -->
           <div class="mb-3">
-            <label class="form-label small fw-semibold">Provincias a buscar <span class="text-muted fw-normal">(separadas por coma, vacío = todas)</span></label>
-            <input type="text" class="form-control form-control-sm" [(ngModel)]="pipelineProvinces"
-                   placeholder="Ej: Asturias, Madrid, Barcelona">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <label class="form-label small fw-semibold mb-0">Fuentes de federaciones</label>
+              <button class="btn btn-link btn-sm p-0 text-muted small" (click)="loadFederationSources()"
+                      *ngIf="!federationSourcesLoaded">
+                <i class="bi bi-arrow-clockwise me-1"></i>Cargar fuentes
+              </button>
+            </div>
+            <ng-container *ngIf="federationSourcesLoaded && federationSources.length > 0">
+              <div *ngFor="let src of federationSources" class="form-check form-check-sm mb-1">
+                <input class="form-check-input" type="checkbox" [id]="'src_'+src.id"
+                       [(ngModel)]="src.selected">
+                <label class="form-check-label small" [for]="'src_'+src.id">
+                  <strong>{{ src.region }}</strong>
+                  <span class="text-muted ms-1 fst-italic" style="font-size:.68rem">{{ src.note }}</span>
+                </label>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="!federationSourcesLoaded">
+              <div class="text-muted small fst-italic">
+                <i class="bi bi-info-circle me-1"></i>
+                Solo se importan clubs con email o teléfono. Los clubs sin datos de contacto se descartan automáticamente.
+              </div>
+            </ng-container>
           </div>
-          <div class="d-flex gap-2 align-items-center">
-            <button class="btn btn-refresh btn-sm" (click)="runDiscover()" [disabled]="isJobRunning">
+          <div class="d-flex gap-2 align-items-center flex-wrap">
+            <button class="btn btn-refresh btn-sm" (click)="loadFederationSources(); runDiscover()"
+                    [disabled]="isJobRunning">
               <i class="bi bi-search"></i>
               {{ pipelineStepStates['discover'] === 'done' ? 'Redescubrir' : 'Descubrir' }}
             </button>
             <span *ngIf="pipelineStepStates['discover'] === 'done'" class="text-muted small">
-              <i class="bi bi-info-circle me-1"></i>Ya tienes {{ stepDoneCount('discover') }} clubes. Puedes redescubrir si quieres más.
+              <i class="bi bi-info-circle me-1"></i>{{ stepDoneCount('discover') }} clubes con contacto.
             </span>
           </div>
           <div *ngIf="stepResults['discover']?.status === 'FAILED'" class="alert alert-danger mt-2 mb-0 small">
@@ -437,19 +467,43 @@
           </div>
         </div>
         <div class="pipeline-card-body">
-          <div class="mb-3">
+          <div class="mb-2">
             <label class="form-label small fw-semibold">Máx. clubes a enriquecer ahora</label>
             <input type="number" class="form-control form-control-sm" [(ngModel)]="pipelineMaxEnrich" min="1" max="500"
                    style="max-width:120px;">
           </div>
+          <!-- Opciones de enriquecimiento -->
+          <div class="mb-3 d-flex flex-column gap-1">
+            <div class="form-check form-switch form-check-sm">
+              <input class="form-check-input" type="checkbox" id="searchWebToggle" [(ngModel)]="pipelineSearchWeb">
+              <label class="form-check-label small" for="searchWebToggle">
+                <i class="bi bi-globe2 me-1 text-primary"></i>Buscar web y email de contacto
+                <span class="text-muted fst-italic">(recomendado, más lento)</span>
+              </label>
+            </div>
+            <div class="form-check form-switch form-check-sm">
+              <input class="form-check-input" type="checkbox" id="forceReEnrichToggle" [(ngModel)]="pipelineForceReEnrich">
+              <label class="form-check-label small" for="forceReEnrichToggle">
+                <i class="bi bi-arrow-repeat me-1 text-warning"></i>Re-enriquecer clubs sin web/email
+                <span class="text-muted fst-italic">(procesa también ya analizados)</span>
+              </label>
+            </div>
+          </div>
           <div class="d-flex gap-2 align-items-center flex-wrap">
             <button class="btn btn-refresh btn-sm" (click)="runEnrich()"
-                    [disabled]="isJobRunning || !canRunStep('enrich')">
+                    [disabled]="isJobRunning || (!canRunStep('enrich') && !pipelineForceReEnrich)">
               <i class="bi bi-database"></i> Enriquecer
             </button>
             <span *ngIf="stepPendingCount('enrich') > 0" class="text-muted small">
               {{ stepPendingCount('enrich') }} clubes sin enriquecer en esta campaña
             </span>
+          </div>
+          <!-- Alerta si hay clubs sin email tras enriquecer -->
+          <div *ngIf="campaignStats?.status_analyzed > 0 && campaignStats?.with_email === 0"
+               class="alert alert-warning mt-2 mb-0 small py-2">
+            <i class="bi bi-exclamation-triangle me-1"></i>
+            <strong>{{ campaignStats.status_analyzed }} clubs analizados pero sin email.</strong>
+            Activa "Buscar web y email" + "Re-enriquecer" y vuelve a ejecutar este paso.
           </div>
           <div *ngIf="stepResults['enrich']?.status === 'FAILED'" class="alert alert-danger mt-2 mb-0 small">
             <i class="bi bi-exclamation-triangle me-1"></i>{{ stepResults['enrich'].error_msg }}
