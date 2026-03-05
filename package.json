@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "generate-tutorial-audio": "node scripts/generate-tutorial-audio.mjs"
   },
   "private": true,
   "dependencies": {

@@ -48,96 +48,136 @@
 }
 
 /* ========================= */
-/* CTA SUSCRIBIRSE (premium, dinámico, pulsaciones y movimiento – todos los roles) */
+/* CTA SUSCRIBIRSE (azul Sphaira: muy dinámico y atractivo) */
 /* ========================= */
+$sphaira-blue: #002c40;
+$sphaira-blue-light: #00465f;
+$sphaira-blue-bright: #0a5f7a;
+
 .header-cta-subscribe {
   position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.55rem 1.15rem;
+  padding: 0.6rem 1.35rem;
   border-radius: 999px;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 0.9rem;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   text-decoration: none;
   color: #fff !important;
-  background: linear-gradient(135deg, #2dd875 0%, #16a34a 35%, #15803d 70%, #14532d 100%);
-  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.5),
-              inset 0 1px 0 rgba(255, 255, 255, 0.35),
+  background: linear-gradient(145deg, $sphaira-blue-light 0%, $sphaira-blue 50%, #001a28 100%);
+  background-size: 200% 200%;
+  box-shadow: 0 4px 20px rgba(0, 44, 64, 0.5),
+              inset 0 1px 0 rgba(255, 255, 255, 0.15),
               0 0 0 1px rgba(255, 255, 255, 0.1);
   border: none;
   cursor: pointer;
   overflow: hidden;
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
   animation: header-cta-breathe 2.2s ease-in-out infinite;
 }
 
-/* Anillo de pulso exterior (premium) */
+/* Anillo de pulso exterior — más visible en reposo */
 .header-cta-subscribe::before {
   content: '';
   position: absolute;
-  inset: -3px;
+  inset: -4px;
   border-radius: 999px;
-  border: 2px solid rgba(45, 216, 117, 0.6);
+  border: 2px solid rgba(0, 90, 120, 0.6);
   opacity: 0;
   animation: header-cta-ring-pulse 2.2s ease-out infinite;
   pointer-events: none;
 }
 
 .header-cta-subscribe:hover {
-  transform: scale(1.08);
-  box-shadow: 0 8px 28px rgba(34, 197, 94, 0.6),
-              inset 0 1px 0 rgba(255, 255, 255, 0.4),
+  transform: scale(1.1) translateY(-3px);
+  background: linear-gradient(145deg, #0d7a9e 0%, $sphaira-blue-bright 40%, $sphaira-blue-light 75%, $sphaira-blue 100%);
+  background-position: 100% 50%;
+  box-shadow: 0 12px 36px rgba(0, 44, 64, 0.6),
+              0 0 24px rgba(0, 90, 120, 0.35),
+              inset 0 1px 0 rgba(255, 255, 255, 0.25),
               0 0 0 1px rgba(255, 255, 255, 0.15);
   color: #fff !important;
   animation: none;
 }
 
 .header-cta-subscribe:active {
-  transform: scale(1.03);
+  transform: scale(1.04) translateY(-1px);
 }
 
 .header-cta-subscribe:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.6), 0 4px 20px rgba(34, 197, 94, 0.5);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5), 0 4px 20px rgba(0, 44, 64, 0.5);
 }
 
-/* Shimmer en movimiento continuo */
+/* Shimmer continuo — más ancho y visible */
 .header-cta-subscribe-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    transparent 30%,
+    rgba(255, 255, 255, 0.12) 42%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.12) 58%,
+    transparent 70%,
+    transparent 100%
+  );
+  background-size: 250% 100%;
+  animation: header-cta-shimmer 2.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.header-cta-subscribe:hover .header-cta-subscribe-glow {
+  animation: header-cta-shine 0.55s ease forwards;
+}
+
+/* Barrido de luz al hacer hover — muy dinámico */
+.header-cta-subscribe-sweep {
   position: absolute;
   inset: 0;
   border-radius: 999px;
   background: linear-gradient(
     105deg,
     transparent 0%,
-    transparent 35%,
-    rgba(255, 255, 255, 0.2) 45%,
-    rgba(255, 255, 255, 0.35) 50%,
-    rgba(255, 255, 255, 0.2) 55%,
-    transparent 65%,
+    transparent 45%,
+    rgba(255, 255, 255, 0) 48%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 52%,
+    transparent 55%,
     transparent 100%
   );
   background-size: 200% 100%;
-  animation: header-cta-shimmer 3s ease-in-out infinite;
+  background-position: 200% 0;
+  opacity: 0;
   pointer-events: none;
+  z-index: 1;
 }
 
-.header-cta-subscribe:hover .header-cta-subscribe-glow {
-  animation: header-cta-shine 0.7s ease forwards;
+.header-cta-subscribe:hover .header-cta-subscribe-sweep {
+  opacity: 1;
+  animation: header-cta-sweep 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes header-cta-sweep {
+  0% { background-position: 200% 0; opacity: 1; }
+  100% { background-position: -200% 0; opacity: 0; }
 }
 
 @keyframes header-cta-breathe {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 4px 20px rgba(34, 197, 94, 0.5),
-                inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    box-shadow: 0 4px 20px rgba(0, 44, 64, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
                 0 0 0 1px rgba(255, 255, 255, 0.1);
   }
   50% {
-    transform: scale(1.03);
-    box-shadow: 0 6px 26px rgba(34, 197, 94, 0.6),
-                inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    transform: scale(1.04);
+    box-shadow: 0 6px 28px rgba(0, 44, 64, 0.55),
+                inset 0 1px 0 rgba(255, 255, 255, 0.18),
                 0 0 0 1px rgba(255, 255, 255, 0.12);
   }
 }
@@ -148,52 +188,70 @@
     opacity: 0.7;
   }
   100% {
-    transform: scale(1.15);
+    transform: scale(1.25);
     opacity: 0;
   }
 }
 
 @keyframes header-cta-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% { background-position: 250% 0; }
+  100% { background-position: -250% 0; }
 }
 
 @keyframes header-cta-shine {
-  0% { background-position: 200% 0; opacity: 1; }
-  100% { background-position: -200% 0; opacity: 0; }
+  0% { background-position: 250% 0; opacity: 1; }
+  100% { background-position: -250% 0; opacity: 0; }
 }
 
 .header-cta-subscribe-inner {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
 }
 
 .header-cta-subscribe-inner i {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
+  opacity: 1;
   animation: header-cta-icon-float 2s ease-in-out infinite;
+  transition: transform 0.25s cubic-bezier(0.34, 1.5, 0.64, 1);
+  display: inline-block;
 }
 
+/* Hover: cohete “despega” con más recorrido y ligera inclinación */
 .header-cta-subscribe:hover .header-cta-subscribe-inner i {
-  animation: header-cta-icon-pop 0.4s ease;
+  animation: header-cta-icon-takeoff 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.header-cta-subscribe:active .header-cta-subscribe-inner i {
+  transform: translateY(-3px) translateX(2px) scale(1.08) rotate(2deg);
 }
 
 @keyframes header-cta-icon-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-2px); }
+  0%, 100% { transform: translateY(0) translateX(0) scale(1) rotate(0deg); }
+  50% { transform: translateY(-3px) translateX(0) scale(1.02) rotate(0deg); }
 }
 
-@keyframes header-cta-icon-pop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
+@keyframes header-cta-icon-takeoff {
+  0% {
+    transform: translateY(0) translateX(0) scale(1) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) translateX(6px) scale(1.25) rotate(4deg);
+  }
+  50% {
+    transform: translateY(-8px) translateX(5px) scale(1.18) rotate(3deg);
+  }
+  100% {
+    transform: translateY(-6px) translateX(4px) scale(1.15) rotate(2deg);
+  }
 }
 
 .header-cta-subscribe-text {
   white-space: nowrap;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  letter-spacing: 0.02em;
 }
 
 @media (max-width: 768px) {
@@ -205,6 +263,28 @@
   }
   .header-cta-subscribe-inner i {
     font-size: 1.3rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header-cta-subscribe {
+    animation: none;
+  }
+  .header-cta-subscribe::before {
+    animation: none;
+  }
+  .header-cta-subscribe-glow {
+    animation: none;
+  }
+  .header-cta-subscribe-sweep {
+    display: none;
+  }
+  .header-cta-subscribe-inner i {
+    animation: none;
+  }
+  .header-cta-subscribe:hover .header-cta-subscribe-inner i {
+    animation: none;
+    transform: translateY(-4px) translateX(3px) scale(1.1);
   }
 }
 
@@ -232,7 +312,7 @@
   font-size: 1.1rem;
 }
 
-/* ===== VER TUTORIAL (premium: circular + pulso, dinámico) ===== */
+/* ===== VER TUTORIAL (azul Sphaira, circular + pulso, dinámico y elegante) ===== */
 .header-tutorial-btn {
   display: inline-flex;
   align-items: center;
@@ -257,9 +337,9 @@
   position: absolute;
   inset: -4px;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.35) 0%, transparent 70%);
-  opacity: 0.8;
-  animation: headerTutorialPulse 2s ease-out infinite;
+  background: radial-gradient(circle, rgba(0, 70, 95, 0.4) 0%, transparent 65%);
+  opacity: 0.85;
+  animation: headerTutorialPulse 2.2s ease-out infinite;
   pointer-events: none;
 }
 
@@ -272,28 +352,32 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: linear-gradient(145deg, #3dd68c 0%, #22a86a 40%, #1a8b54 100%);
+  background: linear-gradient(145deg, #00465f 0%, $sphaira-blue 45%, #001a28 100%);
   color: #fff;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.2),
-    0 6px 20px rgba(34, 168, 106, 0.45);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 4px 16px rgba(0, 44, 64, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1), box-shadow 0.25s ease, background 0.25s ease;
 
   i {
     font-size: 1.15rem;
     margin-left: 2px;
+    opacity: 0.95;
   }
 }
 
 .header-tutorial-btn:hover .header-tutorial-btn__circle {
-  transform: scale(1.08);
+  transform: scale(1.1) translateY(-1px);
+  background: linear-gradient(145deg, #0a5f7a 0%, #00465f 50%, $sphaira-blue 100%);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.25),
-    0 8px 24px rgba(34, 168, 106, 0.55);
+    0 0 0 1px rgba(255, 255, 255, 0.15),
+    0 8px 24px rgba(0, 44, 64, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .header-tutorial-btn:active .header-tutorial-btn__circle {
-  transform: scale(0.98);
+  transform: scale(0.98) translateY(0);
 }
 
 .header-tutorial-btn__label {
@@ -301,22 +385,23 @@
   z-index: 1;
   font-weight: 600;
   font-size: 0.9rem;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
   white-space: nowrap;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
 }
 
 @keyframes headerTutorialPulse {
   0% {
-    opacity: 0.8;
+    opacity: 0.85;
     transform: scale(1);
   }
   70% {
     opacity: 0;
-    transform: scale(1.4);
+    transform: scale(1.35);
   }
   100% {
     opacity: 0;
-    transform: scale(1.4);
+    transform: scale(1.35);
   }
 }
 

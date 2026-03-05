@@ -7,6 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import Konva from 'konva';
 import { gsap } from 'gsap';
 import { TrainingService } from 'src/app/core/services/training/training.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 /* ──────────────── Interfaces ──────────────── */
 interface PlayerMarker {
@@ -148,11 +149,14 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
     private router: Router,
     private route: ActivatedRoute,
     public t: TranslateService,
-    private trainingService: TrainingService
+    private trainingService: TrainingService,
+    private tutorialService: TutorialService
   ) {}
 
   /* ────────────────── Lifecycle ────────────────── */
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('tactical-board', true), 600);
+
     this.route.params.subscribe(p => {
       this.teamId = +p['teamId'] || 0;
     });

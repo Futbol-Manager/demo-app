@@ -4,6 +4,7 @@ import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Location } from '@angular/common';
 import { LoginService } from 'src/app/core/services/login/login.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 import { User } from 'src/app/core/models/users/user.model';
 
 @Component({
@@ -30,9 +31,11 @@ export class DocumentosEntrenadorComponent implements OnInit {
     private clubService: ClubService,
     private route: ActivatedRoute,
     private loginService: LoginService,
+    private tutorialService: TutorialService
   ) {}
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('documentos-entrenador', true), 600);
     this.route.params.subscribe((params) => {
       this.clubId = +params['clubId'];
     });

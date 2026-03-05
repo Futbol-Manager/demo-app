@@ -16,6 +16,7 @@ import { getSeasons, getCurrentSeasonString } from 'src/app/core/utils/season.ut
 import { environment } from 'src/environments/environment';
 import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
 import { DEMO_IDS } from 'src/app/core/services/demo/demo.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 @Component({
   selector: 'app-inicio',
@@ -92,6 +93,8 @@ export class InicioComponent implements OnInit {
   private readonly CLUB_PLAN_TYPE_KEY = 'clubPlanType';
 
   private userSub: Subscription | null = null;
+  /** Evita lanzar el tutorial automático más de una vez por entrada a inicio */
+  private tutorialAutoStarted = false;
 
   constructor(
     private loginService: LoginService,
@@ -100,6 +103,7 @@ export class InicioComponent implements OnInit {
     private playerservice: PlayerService,
     private aiPageContext: AiPageContextService,
     private clubSubscriptionService: ClubSubscriptionService,
+    private tutorialService: TutorialService,
   ) { }
 
   // =========================
@@ -138,6 +142,14 @@ export class InicioComponent implements OnInit {
     });
   }
 
+  /** screenId del tutorial de inicio según el rol (club, coach, player). */
+  private getInicioTutorialScreenId(): string | null {
+    if (this.profileId === 1) return 'dashboard-inicio';
+    if (this.profileId === 2 || this.profileId === 6 || this.profileId === 7) return 'dashboard-inicio-coach';
+    if (this.profileId === 3) return 'dashboard-inicio-player';
+    return null;
+  }
+
   /**
    * Aplica el usuario actual al estado del componente y carga los datos del rol.
    * Se llama en la suscripción inicial y cada vez que cambia el rol (p. ej. desde el header).
@@ -160,6 +172,15 @@ export class InicioComponent implements OnInit {
     this.listTeam = [];
     this.datosCargando = true;
     this.yaRedirigido = false;
+
+    // Tutorial automático al cargar inicio (una vez por entrada; según rol: club, coach o player)
+    if (!this.tutorialAutoStarted) {
+      this.tutorialAutoStarted = true;
+      const screenId = this.getInicioTutorialScreenId();
+      if (screenId) {
+        setTimeout(() => this.tutorialService.start(screenId, true), 600);
+      }
+    }
 
     if (this.profileId === 1) {
       this.clubId = Number(sessionStorage.getItem(this.CLUB_ID_KEY) || '0');
@@ -200,6 +221,7 @@ export class InicioComponent implements OnInit {
     }
     return user.userId;
   }
+
   private resolverCargaInicialPorPerfil(): void {
     switch (true) {
       case this.profileId === 2:

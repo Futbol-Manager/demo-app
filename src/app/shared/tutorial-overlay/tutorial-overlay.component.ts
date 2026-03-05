@@ -1,6 +1,7 @@
 import { Component, HostListener, OnDestroy, OnInit, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { TutorialService } from '../../core/services/tutorial/tutorial.service';
+import { ElevenlabsTtsService } from '../../core/services/elevenlabs-tts/elevenlabs-tts.service';
 
 const HIGHLIGHT_CLASS = 'sphaira-tutorial-highlight';
 const SPOTLIGHT_PADDING = 10;
@@ -40,6 +41,10 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
   /** Estado del audio */
   audioPlaying = false;
   audioEnabled = true;
+  /** Si el navegador bloqueó el play (falta gesto de usuario); al hacer clic en Reproducir se reintenta */
+  audioPlayBlocked = false;
+  /** Nombre del archivo de audio del paso actual (para reintentar tras gesto de usuario) */
+  currentStepAudioFile: string | null = null;
 
   /** Rectángulo del "hueco" para efecto spotlight (resto de pantalla oscuro) */
   spotlightRect: SpotlightRect | null = null;
@@ -55,10 +60,13 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
   private sub = new Subscription();
   private autoAdvanceTimer: ReturnType<typeof setTimeout> | null = null;
   private currentAudio: HTMLAudioElement | null = null;
+  private currentScreenId: string | null = null;
+  private currentTtsUrl: string | null = null;
 
   constructor(
     public tutorial: TutorialService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private elevenLabs: ElevenlabsTtsService
   ) {}
 
   ngOnInit(): void {
@@ -84,6 +92,8 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
           this.isFirst = true;
           this.isLast = false;
           this.spotlightRect = null;
+          this.currentStepAudioFile = null;
+          this.audioPlayBlocked = false;
           this.updateCardPosition();
           return;
         }
@@ -93,6 +103,8 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
         this.stepTotal = payload.total;
         this.isFirst = payload.index === 1;
         this.isLast = payload.index === payload.total;
+        this.currentStepAudioFile = payload.step.audioFile || null;
+        this.audioPlayBlocked = false;
         // Al cambiar de paso, reseteamos la posición manual del drag
         this.draggedThisStep = false;
         setTimeout(() => this.applyHighlight(payload.step.targetSelector), 150);
@@ -106,6 +118,7 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
     this.sub.add(
       this.tutorial.getState$().subscribe(state => {
         this.dontShowAgain = state?.dontShowAgain ?? false;
+        this.currentScreenId = state?.screenId ?? null;
       })
     );
   }
@@ -122,27 +135,85 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
   private playAudio(filename: string): void {
     this.stopAudio();
     const audio = new Audio(AUDIO_BASE + filename);
+    audio.volume = 1;
     this.currentAudio = audio;
     this.audioPlaying = true;
+    this.audioPlayBlocked = false;
+    this.cdr.markForCheck();
     audio.play().catch(() => {
-      // El navegador bloqueó el autoplay: fallback a avance automático
+      // Navegadores bloquean audio sin gesto de usuario; permitir reintento con el botón Reproducir
       this.audioPlaying = false;
+      this.audioPlayBlocked = true;
+      this.cdr.markForCheck();
       if (!this.isLast) {
         this.autoAdvanceTimer = setTimeout(() => this.tutorial.next(), AUTO_ADVANCE_MS);
       }
     });
     audio.onended = () => {
       this.audioPlaying = false;
+      this.cdr.markForCheck();
       if (!this.isLast) {
         this.autoAdvanceTimer = setTimeout(() => this.tutorial.next(), 800);
       }
     };
     audio.onerror = () => {
       this.audioPlaying = false;
+      this.cdr.markForCheck();
       if (!this.isLast) {
         this.autoAdvanceTimer = setTimeout(() => this.tutorial.next(), AUTO_ADVANCE_MS);
       }
     };
+  }
+
+  /** Reproduce el texto del paso con ElevenLabs TTS (solo para demo-role). */
+  private playTtsForStep(text: string): void {
+    this.stopAudio();
+    this.elevenLabs.speak(text).subscribe(blob => {
+      if (!blob || blob.size === 0) {
+        if (!this.isLast) {
+          this.autoAdvanceTimer = setTimeout(() => this.tutorial.next(), AUTO_ADVANCE_MS);
+        }
+        this.cdr.markForCheck();
+        return;
+      }
+      const url = URL.createObjectURL(blob);
+      this.currentTtsUrl = url;
+      const audio = new Audio(url);
+      this.currentAudio = audio;
+      this.audioPlaying = true;
+      this.cdr.markForCheck();
+      audio.play().catch(() => {
+        this.audioPlaying = false;
+        this.revokeTtsUrl();
+        this.cdr.markForCheck();
+        if (!this.isLast) {
+          this.autoAdvanceTimer = setTimeout(() => this.tutorial.next(), AUTO_ADVANCE_MS);
+        }
+      });
+      audio.onended = () => {
+        this.audioPlaying = false;
+        this.revokeTtsUrl();
+        this.cdr.markForCheck();
+        if (!this.isLast) {
+          this.autoAdvanceTimer = setTimeout(() => this.tutorial.next(), 800);
+        }
+      };
+      audio.onerror = () => {
+        this.audioPlaying = false;
+        this.revokeTtsUrl();
+        this.cdr.markForCheck();
+        if (!this.isLast) {
+          this.autoAdvanceTimer = setTimeout(() => this.tutorial.next(), AUTO_ADVANCE_MS);
+        }
+      };
+    });
+  }
+
+  private revokeTtsUrl(): void {
+    if (this.currentTtsUrl) {
+      URL.revokeObjectURL(this.currentTtsUrl);
+      this.currentTtsUrl = null;
+    }
   }
 
   private stopAudio(): void {
@@ -152,6 +223,7 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
       this.currentAudio.onerror = null;
       this.currentAudio = null;
     }
+    this.revokeTtsUrl();
     this.audioPlaying = false;
   }
 
@@ -163,14 +235,22 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
   }
 
   togglePlayPause(): void {
+    // Reintentar reproducción si el navegador bloqueó por falta de gesto de usuario
+    if (this.audioPlayBlocked && this.currentStepAudioFile) {
+      this.audioPlayBlocked = false;
+      this.playAudio(this.currentStepAudioFile);
+      return;
+    }
     if (!this.currentAudio) return;
     if (this.audioPlaying) {
       this.currentAudio.pause();
       this.audioPlaying = false;
     } else {
+      this.currentAudio.volume = 1;
       this.currentAudio.play().catch(() => {});
       this.audioPlaying = true;
     }
+    this.cdr.markForCheck();
   }
 
   // ── Spotlight ──────────────────────────────────────────────────────────────

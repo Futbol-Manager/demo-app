@@ -913,6 +913,11 @@ th:hover i {
 /* Overlay */
 .modal-overlay {
   background: rgba(0, 0, 0, 0.5);
+
+  /* Durante el tutorial, el modal debe verse por encima del overlay del tutorial (z-index 99999) */
+  &.tutorial-modal-visible {
+    z-index: 100001;
+  }
 }
 
 /* Contenedor */

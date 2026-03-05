@@ -15,6 +15,7 @@ import { getSeasons, getCurrentSeasonString } from 'src/app/core/utils/season.ut
 import { TranslateService } from '@ngx-translate/core';
 import { NotificationService } from 'src/app/core/services/notification/notification.service';
 import { ConfirmationService } from 'src/app/core/services/confirmation/confirmation.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -251,7 +252,8 @@ export class EquiposComponent implements OnInit {
     private translate: TranslateService,
     private notificationService: NotificationService,
     private confirmationService: ConfirmationService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private tutorialService: TutorialService
   ) {
     this.excelForm = this.fb.group({
       excelFile: [null],
@@ -269,6 +271,8 @@ export class EquiposComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('equipos', true), 600);
+
     const userAgent = navigator.userAgent || navigator.vendor;
 
     this.isAndroid = /android/i.test(userAgent);

@@ -48,6 +48,9 @@
 
     <!-- Cuerpo -->
     <div class="tutorial-card-body">
+      <p *ngIf="audioPlayBlocked && currentStepAudioFile" class="tutorial-audio-hint">
+        <i class="fas fa-volume-up"></i> Pulsa el botón <i class="fas fa-play"></i> para escuchar el audio.
+      </p>
       <h2 id="tutorial-title" class="tutorial-title">{{ title }}</h2>
       <p id="tutorial-desc" class="tutorial-text">{{ text }}</p>
     </div>

@@ -10,6 +10,7 @@ import { HorarioTeam, TeamNew } from 'src/app/core/services/team/team.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { Location } from '@angular/common';
 import { ClubService } from 'src/app/core/services/club/club.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -145,7 +146,8 @@ export class InformacionEquipoComponent implements OnInit {
     private registerService: RegisterService,
     private loginService: LoginService,
     private clubService: ClubService,
-    private location: Location
+    private location: Location,
+    private tutorialService: TutorialService
   ) {
     this.editarEquipoForm = this.fb.group({
       teamId: ["", Validators.required],
@@ -160,6 +162,8 @@ export class InformacionEquipoComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('informacion-equipo', true), 600);
+
     // Inicialización del objeto diasTeam
     this.diasTeam = {
       lunes: { inicio: '', fin: '', activo: 0 },

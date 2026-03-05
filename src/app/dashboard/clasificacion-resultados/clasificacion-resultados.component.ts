@@ -4,6 +4,7 @@ import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { ActivatedRoute } from '@angular/router';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 import * as bootstrap from 'bootstrap';
 
 type WizardStep = 'url' | 'loading' | 'success' | 'error';
@@ -56,7 +57,8 @@ export class ClasificacionResultadosComponent implements OnInit {
     private location: Location,
     private route: ActivatedRoute,
     private clubService: ClubService,
-    private sanitizer: DomSanitizer) { }
+    private sanitizer: DomSanitizer,
+    private tutorialService: TutorialService) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -64,6 +66,7 @@ export class ClasificacionResultadosComponent implements OnInit {
     });
     this.jornadaSeleccionada = 1;
     this.loadTableTodo(1);
+    setTimeout(() => this.tutorialService.start('clasificacion-resultados', true), 600);
   }
 
   loadTableTodo(jornada: number) {

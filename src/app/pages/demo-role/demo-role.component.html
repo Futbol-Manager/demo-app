@@ -5,15 +5,18 @@
   </div>
 
   <div class="demo-role-container">
-    <header class="demo-role-header">
+    <header class="demo-role-header" data-tutorial="dr-header">
       <span class="demo-role-badge">Modo demostración</span>
       <img [src]="logoSrc" alt="Sphaira Tech" class="demo-role-logo" />
       <h1 class="demo-role-title">Elige tu experiencia</h1>
       <p class="demo-role-subtitle">Selecciona el rol con el que quieres explorar la plataforma. Verás el panel y las opciones propias de cada perfil.</p>
+      <button type="button" class="demo-role-tutorial-btn" (click)="openTutorial()" aria-label="Ver tutorial">
+        <i class="bi bi-play-circle"></i> Ver tutorial
+      </button>
     </header>
 
     <div class="demo-role-cards">
-      <button type="button" class="demo-role-card demo-role-card-1" (click)="selectRole('club')" [attr.aria-label]="'Explorar como Club'">
+      <button type="button" class="demo-role-card demo-role-card-1" (click)="selectRole('club')" [attr.aria-label]="'Explorar como Club'" data-tutorial="dr-club">
         <span class="demo-role-card-accent" aria-hidden="true"></span>
         <span class="demo-role-icon" aria-hidden="true">
           <i class="bi bi-building"></i>
@@ -23,7 +26,7 @@
         <span class="demo-role-card-cta">Explorar como Club</span>
       </button>
 
-      <button type="button" class="demo-role-card demo-role-card-2" (click)="selectRole('coach')" [attr.aria-label]="'Explorar como Entrenador'">
+      <button type="button" class="demo-role-card demo-role-card-2" (click)="selectRole('coach')" [attr.aria-label]="'Explorar como Entrenador'" data-tutorial="dr-coach">
         <span class="demo-role-card-accent" aria-hidden="true"></span>
         <span class="demo-role-icon" aria-hidden="true">
           <i class="bi bi-person-badge"></i>
@@ -33,7 +36,7 @@
         <span class="demo-role-card-cta">Explorar como Entrenador</span>
       </button>
 
-      <button type="button" class="demo-role-card demo-role-card-3" (click)="selectRole('player')" [attr.aria-label]="'Explorar como Jugador'">
+      <button type="button" class="demo-role-card demo-role-card-3" (click)="selectRole('player')" [attr.aria-label]="'Explorar como Jugador'" data-tutorial="dr-player">
         <span class="demo-role-card-accent" aria-hidden="true"></span>
         <span class="demo-role-icon" aria-hidden="true">
           <i class="bi bi-person"></i>

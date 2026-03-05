@@ -11,6 +11,7 @@ import { AsistenciaTraining, Task, Training } from 'src/app/core/services/models
 import { Response } from 'src/app/core/services/models/response.model';
 import { MatchPreparation } from 'src/app/core/services/models/match.model';
 import { environment } from 'src/environments/environment';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 @Component({
   selector: 'app-menu-entrenador',
@@ -93,11 +94,14 @@ export class MenuEntrenadorComponent implements OnInit {
     private clubService: ClubService,
     private cdr: ChangeDetectorRef,
     private location: Location,
+    private tutorialService: TutorialService,
   ) {
 
   }
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('menu-entrenador', true), 600);
+
     // Suscríbete al observable del servicio para obtener el usuario actual
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;

@@ -10,6 +10,7 @@ import { AiChatService, AiCreditsInfo, AiPendingAction } from 'src/app/core/serv
 import { AiPageContextService, BackgroundStatsContext } from 'src/app/core/services/ai-chat/ai-page-context.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { VoiceRecognitionService } from 'src/app/core/services/voice-recognition/voice-recognition.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 @Pipe({ name: 'nl2br' })
 export class Nl2brPipe implements PipeTransform {
@@ -114,10 +115,13 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
     private translate: TranslateService,
     private aiChatService: AiChatService,
     private voiceRecognition: VoiceRecognitionService,
-    private aiPageContext: AiPageContextService
+    private aiPageContext: AiPageContextService,
+    private tutorialService: TutorialService
   ) {}
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('asistente-ia', true), 600);
+
     // Comprueba si hay una conversación pendiente de sincronizar desde el FAB
     const fabSync = this.aiPageContext.consumeFabSync();
     const hasSyncedMessages = !!(fabSync && fabSync.messages && fabSync.messages.length > 1);

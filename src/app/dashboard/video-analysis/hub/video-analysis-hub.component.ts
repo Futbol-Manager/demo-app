@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { VideoAnalysisService } from '../../../core/services/video-analysis/video-analysis.service';
 import { LoginService } from '../../../core/services/login/login.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 import { LocalVideoService, LocalVideoMeta } from '../services/local-video.service';
 import { AnalysisProject, AnalysisTemplate, ProjectStatus, PROJECT_STATUS_LABELS, PROJECT_STATUS_COLORS } from '../models/analysis.models';
 
@@ -53,10 +54,13 @@ export class VideoAnalysisHubComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private analysisService: VideoAnalysisService,
     private loginService: LoginService,
-    public localVideoService: LocalVideoService
+    public localVideoService: LocalVideoService,
+    private tutorialService: TutorialService
   ) {}
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('video-analysis', true), 600);
+
     this.clubId = Number(sessionStorage.getItem('clubId')) || Number(localStorage.getItem('clubId')) || 0;
     this.loginService.usuarioActual.pipe(takeUntil(this.destroy$)).subscribe(user => {
       if (user) { this.userId = user.userId; }

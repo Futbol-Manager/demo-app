@@ -6,6 +6,7 @@ import { TaskStorageService, StoredTask } from 'src/app/core/services/training/t
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { environment } from 'src/environments/environment';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 @Component({
   selector: 'app-mis-tareas',
@@ -80,10 +81,13 @@ export class MisTareasComponent implements OnInit, OnDestroy {
     public taskStorage: TaskStorageService,
     private loginService: LoginService,
     private trainingService: TrainingService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private tutorialService: TutorialService
   ) {}
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('tareas-mis', true), 600);
+
     this.route.params.subscribe(p => this.teamId = +p['teamId']);
     this.loginService.usuarioActual.subscribe(user => {
       if (user?.userId) {

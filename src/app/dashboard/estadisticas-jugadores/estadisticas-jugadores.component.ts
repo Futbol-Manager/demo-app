@@ -6,6 +6,7 @@ import { PlayerEstadistica } from 'src/app/core/services/player/player.model';
 import { Chart, registerables } from 'chart.js/auto';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { Location } from '@angular/common';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 Chart.register(...registerables);
 
 const CHART_COLOR_PRIMARY = '#31b270';
@@ -55,13 +56,15 @@ export class EstadisticasJugadoresComponent implements OnInit, OnDestroy {
     private playerService: PlayerService,
     private trainingService: TrainingService,
     private elementRef: ElementRef,
-    private location: Location) { }
+    private location: Location,
+    private tutorialService: TutorialService) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.teamId = +params['teamId'];
     });
     this.cargarTablaJugadores('Liga');
+    setTimeout(() => this.tutorialService.start('estadisticas-jugadores', true), 600);
   }
 
   ngOnDestroy(): void {

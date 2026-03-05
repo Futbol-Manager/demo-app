@@ -11,6 +11,7 @@ import { NotificationService } from 'src/app/core/services/notification/notifica
 import { getCurrentSeasonString, getSeasons } from 'src/app/core/utils/season.utils';
 import { AiChatService } from 'src/app/core/services/ai-chat/ai-chat.service';
 import { AiPageContextService } from 'src/app/core/services/ai-chat/ai-page-context.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 /* =========================
    INTERFACES
@@ -191,6 +192,7 @@ export class InfoEntrenadoresComponent implements OnInit {
     private location: Location,
     private aiChatService: AiChatService,
     private aiPageContext: AiPageContextService,
+    private tutorialService: TutorialService,
   ) {}
 
   ngOnInit(): void {
@@ -209,6 +211,7 @@ export class InfoEntrenadoresComponent implements OnInit {
     }
 
     this.cargarListadoEntrenadores();
+    setTimeout(() => this.tutorialService.start('info-entrenadores', true), 600);
   }
 
   /* =========================

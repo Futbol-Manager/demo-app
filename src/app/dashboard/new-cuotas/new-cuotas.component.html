@@ -29,7 +29,7 @@
       <i class="bi bi-table"></i>
       <span>Historial</span>
     </button>
-    <button class="header-action-btn" (click)="openModalAutoPayments()" title="Sphaira Pay">
+    <button class="header-action-btn" (click)="openModalAutoPayments()" title="Sphaira Pay" data-tutorial="cq-sphaira-pay">
       <i class="bi bi-lightning-charge-fill"></i>
       <span>Sphaira Pay</span>
     </button>
@@ -2321,9 +2321,9 @@
 <!-- ═══════════════════════════════════════════════════════════════════════════
      MODAL: PAGOS AUTOMÁTICOS POR SUSCRIPCIÓN
 ═══════════════════════════════════════════════════════════════════════════ -->
-<div class="modal d-block modal-overlay" *ngIf="showModalAutoPayments" tabindex="-1">
+<div class="modal d-block modal-overlay" *ngIf="showModalAutoPayments" tabindex="-1" [class.tutorial-modal-visible]="tutorialModalCobrosSphaira">
   <div class="modal-dialog modal-xl modal-dialog-centered apm-dialog">
-    <div class="modal-content apm-modal" [class.modal-closing]="closingModals.has('autoPayments')">
+    <div class="modal-content apm-modal" [class.modal-closing]="closingModals.has('autoPayments')" data-tutorial="cq-cobros-sphaira">
 
       <!-- ── HEADER ── -->
       <div class="apm-header">

@@ -108,6 +108,33 @@ $sphaira-teal: #1f8f8a;
   margin-right: auto;
 }
 
+.demo-role-tutorial-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $sphaira-navy;
+  background: rgba($sphaira-beige, 0.95);
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.demo-role-tutorial-btn:hover {
+  background: $sphaira-beige;
+  transform: translateY(-1px);
+}
+
+.demo-role-tutorial-btn:focus-visible {
+  outline: 2px solid $sphaira-primary;
+  outline-offset: 2px;
+}
+
 /* Grid de tarjetas */
 .demo-role-cards {
   display: grid;

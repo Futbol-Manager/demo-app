@@ -325,6 +325,8 @@ export class RopaComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
     }
 
+    setTimeout(() => this.tutorialService.start('ropa', true), 600);
+
     // Sincronizar pestaña con el paso del tutorial: tabla primero, luego catálogo
     this.tutorialSub = this.tutorialService.currentStep$.subscribe((payload) => {
       const stepId = payload?.step?.id;

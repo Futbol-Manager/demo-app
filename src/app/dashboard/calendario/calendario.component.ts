@@ -50,6 +50,7 @@ import { FormTemplateService } from 'src/app/core/services/form-template/form-te
 import { finalize } from 'rxjs/operators';
 import { IndividualTrainingService } from 'src/app/core/services/individual-training/individual-training.service';
 import { ACTIVITY_COLORS } from 'src/app/core/services/individual-training/individual-training.model';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 declare var html2pdf: any;
 
@@ -925,9 +926,12 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     private formTemplateService: FormTemplateService,
     private translate: TranslateService,
     private individualTrainingSvc: IndividualTrainingService,
+    private tutorialService: TutorialService,
   ) { }
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('calendario', true), 600);
+
     window.addEventListener('ai-data-changed', this.aiDataChangedHandler);
     // Suscríbete al observable del servicio para obtener el usuario actual
     console.log(this.today);

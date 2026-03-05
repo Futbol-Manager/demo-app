@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DebriefService } from '../../../core/services/debrief/debrief.service';
+import { TutorialService } from '../../../core/services/tutorial/tutorial.service';
 import { DebriefHistoryItem } from '../../../core/models/debrief/debrief.model';
 
 @Component({
@@ -20,12 +21,14 @@ export class DebriefHistoryComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private debriefService: DebriefService
+    private debriefService: DebriefService,
+    private tutorialService: TutorialService
   ) {}
 
   ngOnInit(): void {
     this.teamId = +(this.route.snapshot.paramMap.get('teamId') || '0');
     this.loadHistory();
+    setTimeout(() => this.tutorialService.start('debrief-history', true), 600);
   }
 
   private loadHistory(): void {

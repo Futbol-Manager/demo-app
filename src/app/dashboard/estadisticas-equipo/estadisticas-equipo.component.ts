@@ -9,6 +9,7 @@ import { HttpClient } from '@angular/common/http';
 import { Chart, registerables } from 'chart.js/auto';
 import { GolPostPartido } from 'src/app/core/services/team/team.model';
 import { Location } from '@angular/common';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 Chart.register(...registerables);
 import * as $ from 'jquery';
 import 'datatables.net';
@@ -314,13 +315,15 @@ export class EstadisticasEquipoComponent implements OnInit, OnDestroy {
     private teamService: TeamService,
     private http: HttpClient,
     private elementRef: ElementRef,
-    private location: Location) { }
+    private location: Location,
+    private tutorialService: TutorialService) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.teamId = +params['teamId'];
     });
     this.cargarNombreEquipo();
+    setTimeout(() => this.tutorialService.start('estadisticas-equipo', true), 600);
   }
 
   ngOnDestroy(): void {

@@ -5,6 +5,7 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { environment } from 'src/environments/environment';
 import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
 import { DemoDataService } from 'src/app/core/services/demo/demo-data.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 interface StaffUser {
   userId: number;
@@ -102,9 +103,12 @@ export class StaffClubComponent implements OnInit {
     private http: HttpClient,
     private loginService: LoginService,
     private location: Location,
+    private tutorialService: TutorialService,
   ) {}
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('staff-club', true), 600);
+
     const cached = sessionStorage.getItem('clubId');
     const fromStorage = cached ? Number(cached) : Number(localStorage.getItem('clubId'));
     if (fromStorage) {

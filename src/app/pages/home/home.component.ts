@@ -51,6 +51,8 @@ export class HomeComponent implements OnInit {
       this.returnUrl = params.get('returnUrl') ?? '';
     });
     this.loadAssistantPosition();
+    // Tutorial automático al cargar la pantalla de login
+    setTimeout(() => this.tutorial.start('login', true), 500);
   }
 
   private loadAssistantPosition(): void {

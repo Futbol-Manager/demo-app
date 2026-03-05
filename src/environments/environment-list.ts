@@ -17,7 +17,10 @@ export const demoenvironment = {
     scoutingAnnual: 'price_1QCzw9HzMBDrutQnYz3ctq3A',
     coachMonthly: 'price_1Q5x7MHzMBDrutQnaF1WOHLm',
     coachAnnual: 'price_1Q5x7uHzMBDrutQnCnc54UjO'
-  }
+  },
+  /** ElevenLabs TTS para voces del tutorial demo. Voice ID: cambia en elevenlabs.io si quieres otra voz. */
+  elevenLabsApiKey: 'sk_f7c4288883b554c1650b4bd1aec01f082aaca09258796c52',
+  elevenLabsVoiceId: '21m00Tcm4TlvDq8ikWAM' // Rachel (multilingual). Puedes usar otro voice_id desde tu cuenta ElevenLabs.
 };
 
 export const localenvironment = {
@@ -39,7 +42,7 @@ export const localenvironment = {
     scoutingAnnual: 'price_1QCzw9HzMBDrutQnYz3ctq3A',
     coachMonthly: 'price_1Q5x7MHzMBDrutQnaF1WOHLm',
     coachAnnual: 'price_1Q5x7uHzMBDrutQnCnc54UjO'
-  }
+  },
 
   //para apuntar a la api local y la bbdd de desa
   /*apiUrl: `${APIURLLOCAL}${ApiEnvironments.LOCAL}`,
@@ -52,6 +55,9 @@ export const localenvironment = {
   //para apuntar a la api-desa (requiere CORS actualizado en backend de desarrollo)
   /*apiUrl: `${APIURLPROD2}${ApiEnvironments.DESA}`,
   images: `${APIURLPROD2}${ImageEnvironments.DESA}/`,*/
+
+  elevenLabsApiKey: undefined as string | undefined,
+  elevenLabsVoiceId: undefined as string | undefined
 }
 
 export const prodenvironment = {
@@ -69,10 +75,13 @@ export const prodenvironment = {
     scoutingAnnual: 'price_1QCzw9HzMBDrutQnYz3ctq3A',
     coachMonthly: 'price_1QCzwDHzMBDrutQnzNPTj1G9',
     coachAnnual: 'price_1QCzw9HzMBDrutQnYz3ctq3A'
-  }
+  },
 
   //para apuntar a la api-desa
   /*apiUrl: `${APIURLPROD2}${ApiEnvironments.DESA}`,
   images: `${APIURLPROD2}${ImageEnvironments.DESA}/`,*/
+
+  elevenLabsApiKey: undefined as string | undefined,
+  elevenLabsVoiceId: undefined as string | undefined
 }
 

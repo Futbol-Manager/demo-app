@@ -4,6 +4,7 @@ import { Location } from '@angular/common';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { InjuryService } from 'src/app/core/services/injury/injury.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 import { User } from 'src/app/core/models/users/user.model';
 
 /**
@@ -267,7 +268,8 @@ export class LesionesEquipoComponent implements OnInit {
     private location: Location,
     private loginService: LoginService,
     private playerService: PlayerService,
-    private injuryService: InjuryService
+    private injuryService: InjuryService,
+    private tutorialService: TutorialService
   ) {}
 
   ngOnInit(): void {
@@ -284,6 +286,7 @@ export class LesionesEquipoComponent implements OnInit {
         this.loadPlayers();
       }
     });
+    setTimeout(() => this.tutorialService.start('lesiones', true), 600);
   }
 
   goBack(): void {

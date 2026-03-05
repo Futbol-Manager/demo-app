@@ -8,6 +8,7 @@ import { ClubPlanType } from 'src/app/core/models/subscription/club-subscription
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 import { environment } from 'src/environments/environment';
 import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 /* =========================
    MODELOS
@@ -107,6 +108,7 @@ export class CuadroComponent implements OnInit, OnDestroy {
     private clubService: ClubService,
     private notification: NotificationService,
     private loginService: LoginService,
+    private tutorialService: TutorialService,
   ) {}
 
   /** Para staff (profileId=4) comprueba el permiso; para el resto siempre true */
@@ -137,6 +139,7 @@ export class CuadroComponent implements OnInit, OnDestroy {
     this.cargarDatosDashboard();
     this.updateCurrentTimeLine();
     this.timeInterval = setInterval(() => this.updateCurrentTimeLine(), 60000);
+    setTimeout(() => this.tutorialService.start('cuadro-de-mandos', true), 600);
   }
 
   ngOnDestroy(): void {

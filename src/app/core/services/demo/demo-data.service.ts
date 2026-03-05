@@ -435,6 +435,92 @@ export class DemoDataService {
     };
   }
 
+  /** Detalle de completados por documento (modal Documentos). response.data = array de { nombre, apellido, completado, fechaSubida }. */
+  static getDemoDocCompletionDetail(docClubesId: number, tipo: string): any[] {
+    if (tipo === 'entrenadores') {
+      const segundoCompletado = docClubesId === 10;
+      return [
+        { nombre: 'Juan', apellido: 'Demo', completado: true, fechaSubida: '2025-01-15' },
+        { nombre: 'Ana', apellido: 'Ayudante', completado: segundoCompletado, fechaSubida: segundoCompletado ? '2025-01-18' : null },
+      ];
+    }
+    const meta = DEMO_TEAMS_META[0];
+    const players = buildDemoPlayersForTeam(meta.teamId, 0, meta.name);
+    const totalCompletados = docClubesId === 1 ? 12 : docClubesId === 2 ? 15 : 18;
+    return players.map((p, i) => ({
+      nombre: p.nombre,
+      apellido: p.apellido,
+      completado: i < totalCompletados,
+      fechaSubida: i < totalCompletados ? `2025-0${1 + (i % 3)}-${String(10 + (i % 18)).padStart(2, '0')}` : null,
+    }));
+  }
+
+  /** Cobros Sphaira Pay programados por cuota (modal Cuotas). response.data = array de cuotas con players. */
+  static getDemoSphairaPayScheduled(_temporada: string): any[] {
+    const meta1 = DEMO_TEAMS_META[0];
+    const meta2 = DEMO_TEAMS_META[1];
+    const players1 = buildDemoPlayersForTeam(meta1.teamId, 0, meta1.name);
+    const players2 = buildDemoPlayersForTeam(meta2.teamId, 1, meta2.name);
+    const baseDate = new Date();
+    baseDate.setDate(baseDate.getDate() + 5);
+    const fechaCobro = baseDate.toISOString().slice(0, 10);
+    const toPlayer = (p: any, teamName: string, tieneTarjeta: boolean, cobrado: boolean) => ({
+      playerId: p.playerId,
+      playerName: `${p.nombre} ${p.apellido}`,
+      teamName,
+      tieneTarjeta,
+      cardLast4: tieneTarjeta ? String(1000 + (p.playerId % 9000)).slice(-4) : null,
+      cardBrand: tieneTarjeta ? 'Visa' : null,
+      cobrado,
+      ultimoPago: cobrado ? '2025-02-01 10:30:00' : null,
+      facturaId: cobrado ? 'in_demo' : null,
+      receiptUrl: cobrado ? 'https://demo.example.com/receipt' : null,
+      importe: cobrado ? '45,00' : null,
+    });
+    const cuota1Players = players1.slice(0, 6).map((p, i) => {
+      const tieneTarjeta = i < 4;
+      const cobrado = i < 2;
+      return toPlayer(p, meta1.name, tieneTarjeta, cobrado);
+    });
+    const cuota2Players = players2.slice(0, 5).map((p, i) => {
+      const tieneTarjeta = i < 3;
+      const cobrado = i < 1;
+      return toPlayer(p, meta2.name, tieneTarjeta, cobrado);
+    });
+    return [
+      {
+        pagoClubId: 101,
+        titulo: 'Cuota marzo 2025',
+        descripcion: 'Cuota mensual temporada 2024-2025',
+        importe: '45,00',
+        importeTotal: '45,00',
+        comisionClub: 1.5,
+        fechaCobro,
+        tipoCobro: 3,
+        totalJugadores: 6,
+        conTarjeta: 4,
+        sinTarjeta: 2,
+        cobrados: 2,
+        players: cuota1Players,
+      },
+      {
+        pagoClubId: 102,
+        titulo: 'Cuota abril 2025',
+        descripcion: 'Segunda cuota del trimestre',
+        importe: '45,00',
+        importeTotal: '45,00',
+        comisionClub: 1.5,
+        fechaCobro: baseDate.toISOString().slice(0, 8) + '15',
+        tipoCobro: 3,
+        totalJugadores: 5,
+        conTarjeta: 3,
+        sinTarjeta: 2,
+        cobrados: 1,
+        players: cuota2Players,
+      },
+    ];
+  }
+
   /** Post-partidos para galería (partidos-entrevistas). response.data = array con id, letra, name, resultado, totalFotos, totalVideos, etc. */
   static getDemoPostPartidosForGalery(): any[] {
     return [

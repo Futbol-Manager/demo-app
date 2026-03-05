@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { TaskStorageService, StoredTask } from 'src/app/core/services/training/task-storage.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { environment } from 'src/environments/environment';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 @Component({
   selector: 'app-historial',
@@ -43,10 +44,13 @@ export class HistorialComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     public taskStorage: TaskStorageService,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private tutorialService: TutorialService
   ) {}
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('tareas-historial', true), 600);
+
     this.route.params.subscribe(p => this.teamId = +p['teamId']);
     this.loginService.usuarioActual.subscribe(user => {
       if (user?.userId) {

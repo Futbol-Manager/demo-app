@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
 import { AiChatService } from 'src/app/core/services/ai-chat/ai-chat.service';
 import { AiPageContextService } from 'src/app/core/services/ai-chat/ai-page-context.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 @Component({
   selector: 'app-estadisticas-equipos-club',
@@ -60,6 +61,7 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
     private aiChatService: AiChatService,
     private aiPageContext: AiPageContextService,
     private loginService: LoginService,
+    private tutorialService: TutorialService,
   ) {}
 
   ngOnInit(): void {
@@ -71,6 +73,7 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
     });
     this.getListaPostpartidos();
     this.initVoiceRecognition();
+    setTimeout(() => this.tutorialService.start('estadisticas-equipos-club', true), 600);
   }
 
   private initVoiceRecognition(): void {

@@ -41,9 +41,10 @@
         <a class="header-cta-subscribe" (click)="goSuscripcionClub()" role="button" tabindex="0"
            (keydown.enter)="goSuscripcionClub()" (keydown.space)="goSuscripcionClub(); $event.preventDefault()"
            [attr.aria-label]="'Suscribirse a Sphaira'">
-          <span class="header-cta-subscribe-glow"></span>
+          <span class="header-cta-subscribe-glow" aria-hidden="true"></span>
+          <span class="header-cta-subscribe-sweep" aria-hidden="true"></span>
           <span class="header-cta-subscribe-inner">
-            <i class="bi bi-rocket-takeoff-fill"></i>
+            <i class="bi bi-rocket-takeoff-fill" aria-hidden="true"></i>
             <span class="header-cta-subscribe-text">{{ 'HEADER.SUBSCRIBE_CTA' | translate }}</span>
           </span>
         </a>

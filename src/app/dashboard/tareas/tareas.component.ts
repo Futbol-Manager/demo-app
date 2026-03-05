@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { User } from 'src/app/core/models/users/user.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { TaskStorageService } from 'src/app/core/services/training/task-storage.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 @Component({
   selector: 'app-tareas',
@@ -19,10 +20,13 @@ export class TareasComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private loginService: LoginService,
-    private taskStorage: TaskStorageService
+    private taskStorage: TaskStorageService,
+    private tutorialService: TutorialService
   ) {}
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('tareas', true), 600);
+
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
       this.userId = user?.userId;

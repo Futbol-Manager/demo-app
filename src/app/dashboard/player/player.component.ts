@@ -20,6 +20,7 @@ import { ClubService } from 'src/app/core/services/club/club.service';
 import * as XLSX from 'xlsx';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 import { RopaCatalogoService, RopaCatalogoPrenda, RopaCatalogoSeleccion } from 'src/app/core/services/ropa-catalogo/ropa-catalogo.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 // Registra los complementos necesarios
 Chart.register(...registerables);
 
@@ -215,7 +216,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
     private playerService: PlayerService,
     private clubService: ClubService,
     private location: Location,
-    private cdr: ChangeDetectorRef) { }
+    private cdr: ChangeDetectorRef,
+    private tutorialService: TutorialService) { }
 
   getPositionShort(position: string | null | undefined): string {
     const pos = (position || '').toLowerCase().trim();
@@ -373,6 +375,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('jugadores', true), 600);
+
     const userAgent = navigator.userAgent || navigator.vendor;
 
     this.isAndroid = /android/i.test(userAgent);

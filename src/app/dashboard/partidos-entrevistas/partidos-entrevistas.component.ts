@@ -11,6 +11,7 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { environment } from 'src/environments/environment';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { VideoStorageService } from 'src/app/core/services/video-storage/video-storage.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 @Component({
   selector: 'app-partidos-entrevistas',
@@ -105,7 +106,8 @@ export class PartidosEntrevistasComponent implements OnInit, AfterViewInit {
     private playerService: PlayerService,
     private location: Location,
     private sanitizer: DomSanitizer,
-    private videoService: VideoStorageService) { }
+    private videoService: VideoStorageService,
+    private tutorialService: TutorialService) { }
 
   ngAfterViewInit(): void {
     this.recalcPageSize();
@@ -142,6 +144,7 @@ export class PartidosEntrevistasComponent implements OnInit, AfterViewInit {
     });
 
     this.getListaPostpartidos();
+    setTimeout(() => this.tutorialService.start('partidos-entrevistas', true), 600);
   }
 
   private resolveClubId(): void {

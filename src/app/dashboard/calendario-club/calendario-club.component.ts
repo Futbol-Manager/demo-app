@@ -13,6 +13,7 @@ import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 import { User } from 'src/app/core/models/users/user.model';
 import { NotificationService } from 'src/app/core/services/notification/notification.service';
 import { ConfirmationService } from 'src/app/core/services/confirmation/confirmation.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 /* ═══════════════════════════════════════
    PALETA DE 30 COLORES PARA EQUIPOS
@@ -125,7 +126,8 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
     private loginService: LoginService,
     private translate: TranslateService,
     private notificationService: NotificationService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private tutorialService: TutorialService,
   ) {}
 
   /* ═══════════════════════════════════════
@@ -156,6 +158,7 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
     this.currentMonth = today.getMonth();
 
     this.loadTeams();
+    setTimeout(() => this.tutorialService.start('calendario-club', true), 600);
   }
 
   ngOnDestroy(): void {

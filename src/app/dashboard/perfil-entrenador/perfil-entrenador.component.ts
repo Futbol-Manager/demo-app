@@ -10,6 +10,7 @@ import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 export interface CoachProfile {
   entrenadorPerfilId: number;
@@ -137,9 +138,11 @@ export class PerfilEntrenadorComponent implements OnInit {
     private snackBar: MatSnackBar,
     private location: Location,
     private sanitizer: DomSanitizer,
+    private tutorialService: TutorialService
   ) {}
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('perfil-entrenador', true), 600);
     this.route.params.subscribe((params) => {
       this.teamId = +params['teamId'] || 0;
       if (params['playerId']) {

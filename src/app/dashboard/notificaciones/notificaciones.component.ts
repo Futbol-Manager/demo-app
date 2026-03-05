@@ -11,6 +11,7 @@ import { RegisterService } from 'src/app/core/services/register/register.service
 import { Location } from '@angular/common';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 import { environment } from 'src/environments/environment';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 declare var $: any; // Declaración para usar jQuery
 
 interface RecipientChip {
@@ -125,9 +126,12 @@ export class NotificacionesComponent implements OnInit {
     private clubService: ClubService,
     private registerService: RegisterService,
     private location: Location,
+    private tutorialService: TutorialService,
   ) { }
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('notificaciones', true), 600);
+
     this.loadingCorreos = true;
     if (
       localStorage.getItem('temporada') != null &&

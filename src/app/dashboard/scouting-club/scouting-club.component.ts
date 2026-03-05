@@ -222,6 +222,8 @@ export class ScoutingClubComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('scouting-club', true), 600);
+
     this.route.params.subscribe(params => {
       this.clubId = +params['clubId'] || 0;
       if (!this.clubId) {

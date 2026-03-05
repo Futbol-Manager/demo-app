@@ -8,6 +8,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs/operators';
 import { HttpEventType } from '@angular/common/http';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 @Component({
   selector: 'app-documentos-club',
@@ -80,7 +81,8 @@ export class DocumentosClubComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private fb: FormBuilder,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private tutorialService: TutorialService
   ) {
     this.formDocumento = this.fb.group({
       nombre: ['', Validators.required],
@@ -98,6 +100,8 @@ export class DocumentosClubComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('documentos-club', true), 600);
+
     this.route.paramMap.subscribe((params) => {
       this.clubId = Number(params.get('clubId'));
       this.loadDocuments();

@@ -2453,6 +2453,9 @@ export class ClubService {
   }
 
   getDocCompletionDetail(docClubesId: number, clubId: number, tipo: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoDocCompletionDetail(docClubesId, tipo)) as Response);
+    }
     return this.http.get<Response>(
       environment.apiUrl + 'club/doc-completion-detail/' + docClubesId + '/' + clubId + '/' + tipo,
       { headers: this.getAuthHeaders() }

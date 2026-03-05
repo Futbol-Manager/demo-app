@@ -12,6 +12,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { PlayerInfoDialogComponent, PlayerInfoDialogData } from '../player-info-dialog/player-info-dialog.component';
 import { combineLatest, forkJoin, of } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 import { environment } from 'src/environments/environment';
 
@@ -24,6 +25,11 @@ export class NewCuotasComponent implements OnInit {
 
   /** IDs de modales en proceso de cierre (para animar la salida) */
   closingModals = new Set<string>();
+
+  /** True cuando el tutorial muestra el modal Gestión de pagos (z-index por encima del overlay). */
+  tutorialModalGestionPagos = false;
+  /** True cuando el tutorial muestra el modal Cobros Sphaira Pay (z-index por encima del overlay). */
+  tutorialModalCobrosSphaira = false;
 
   /** Diálogo de confirmación premium — reemplaza window.confirm() */
   confirmDialog = {
@@ -228,7 +234,8 @@ export class NewCuotasComponent implements OnInit {
     private teamService: TeamService,
     private translate: TranslateService,
     private toastr: ToastrService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private tutorialService: TutorialService
   ) {}
 
   ngOnInit(): void {
@@ -256,6 +263,51 @@ export class NewCuotasComponent implements OnInit {
       this.loadPagosClub();
       this.loadStripeFeeConfig();
     });
+
+    // Sincronizar modales con los pasos del tutorial (Gestión de pagos, Cobros Sphaira Pay, Sphaira Pay)
+    combineLatest([
+      this.tutorialService.getState$(),
+      this.tutorialService.currentStep$,
+    ]).subscribe(([state, payload]) => {
+      if (!state || state.screenId !== 'new-cuotas') {
+        this.closeTutorialModals();
+        return;
+      }
+      if (!payload) {
+        this.closeTutorialModals();
+        return;
+      }
+      const stepId = payload.step.id;
+      if (stepId === 'cq-gestion-pagos') {
+        this.tutorialModalCobrosSphaira = false;
+        this.showModalAutoPayments = false;
+        this.tutorialModalGestionPagos = true;
+        this.openModalCuotas();
+      } else if (stepId === 'cq-cobros-sphaira') {
+        this.tutorialModalGestionPagos = false;
+        this.showModalCuotas = false;
+        this.tutorialModalCobrosSphaira = true;
+        this.showModalAutoPayments = true;
+      } else if (stepId === 'cq-sphaira-pay') {
+        this.tutorialModalGestionPagos = false;
+        this.tutorialModalCobrosSphaira = false;
+        this.showModalAutoPayments = false;
+        this.showModalCuotas = false;
+      } else {
+        this.closeTutorialModals();
+      }
+    });
+
+    // Auto-iniciar tutorial al entrar en la pantalla
+    setTimeout(() => this.tutorialService.start('new-cuotas', true), 600);
+  }
+
+  /** Cierra los modales abiertos por el tutorial y resetea flags. */
+  private closeTutorialModals(): void {
+    this.tutorialModalGestionPagos = false;
+    this.tutorialModalCobrosSphaira = false;
+    this.showModalCuotas = false;
+    this.showModalAutoPayments = false;
   }
 
   loadTabla() {

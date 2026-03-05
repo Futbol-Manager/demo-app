@@ -14,6 +14,7 @@ import { Location } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 import { ConfirmationService } from 'src/app/core/services/confirmation/confirmation.service';
 import { NotificationService } from 'src/app/core/services/notification/notification.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 declare var bootstrap: any;
 
 @Component({
@@ -67,9 +68,12 @@ export class PatrocinadoresComponent implements OnInit {
     private toastr: ToastrService,
     private confirmationService: ConfirmationService,
     private notification: NotificationService,
+    private tutorialService: TutorialService,
   ) {}
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('patrocinadores', true), 600);
+
     this.loginService.usuarioActual.subscribe((user) => {
       this.usuarioActual = user;
       this.userId = user?.userId ?? 0;

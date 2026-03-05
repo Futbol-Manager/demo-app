@@ -11,6 +11,7 @@ import { InjuryService } from 'src/app/core/services/injury/injury.service';
 import { Injury } from 'src/app/core/services/injury/injury.model';
 import { User } from 'src/app/core/models/users/user.model';
 import { VoiceRecognitionService } from 'src/app/core/services/voice-recognition/voice-recognition.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 /* ═══════════════════════════════════════
    INTERFACES
@@ -192,10 +193,12 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     private aiChatService: AiChatService,
     private aiPageContextService: AiPageContextService,
     private voiceRecognition: VoiceRecognitionService,
-    private injuryService: InjuryService
+    private injuryService: InjuryService,
+    private tutorialService: TutorialService
   ) {}
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('asistente-ia-coach', true), 600);
     this.loginService.usuarioActual.subscribe((user) => {
       this.usuarioActual = user;
       if (user) {

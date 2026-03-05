@@ -167,6 +167,7 @@ export class InfoJugadoresComponent implements OnInit, OnDestroy {
         setTimeout(() => this.abrirModalInfoJugador(this.filteredPlayers[0]), 400);
       }
     });
+    setTimeout(() => this.tutorialService.start('info-jugadores', true), 600);
   }
 
   ngOnDestroy(): void {
