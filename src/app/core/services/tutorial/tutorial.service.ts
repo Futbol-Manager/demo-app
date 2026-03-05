@@ -120,14 +120,14 @@ export class TutorialService {
       {
         id: 'inicio-bienvenida',
         title: 'Bienvenido al dashboard del club',
-        text: 'Bienvenido a tu panel de gestión. Desde aquí tienes acceso a todos los módulos del club: equipos, documentos, pagos, equipación y mucho más. En los próximos pasos te explicamos qué hace cada sección.',
+        text: 'Bienvenido a tu panel de gestión. Desde aquí tienes acceso a todos los módulos del club, equipos, documentos, pagos, equipación y mucho más. En los próximos pasos te explicamos qué hace cada sección.',
         audioFile: 'inicio_01.mp3',
         position: 'bottom'
       },
       {
         id: 'inicio-cuadro',
         title: 'Cuadro de mando',
-        text: 'Tu centro de control del club. Aquí encuentras el resumen de equipos, jugadores y entrenadores, los próximos partidos y entrenamientos, y alertas sobre pagos pendientes, lesiones o documentos sin entregar. Pulsa en cualquier elemento para ver su detalle.',
+        text: 'Empecemos por el Cuadro de mando, tu centro de control del club. Aquí encuentras el resumen de equipos, jugadores y entrenadores, los próximos partidos y entrenamientos, y alertas sobre pagos pendientes, lesiones o documentos sin entregar. Pulsa en cualquier elemento para ver su detalle.',
         audioFile: 'inicio_02.mp3',
         targetSelector: '[data-tutorial="inicio-cuadro"]',
         position: 'left'
@@ -135,7 +135,7 @@ export class TutorialService {
       {
         id: 'inicio-equipos',
         title: 'Equipos',
-        text: 'Gestiona toda la estructura deportiva del club. Crea equipos por categoría, asigna jugadores y entrenadores, y accede al detalle completo de cada uno: estadísticas, calendario y plantilla.',
+        text: 'Continuamos con Equipos. Gestiona toda la estructura deportiva del club: crea equipos por categoría, asigna jugadores y entrenadores, y accede al detalle completo de cada uno con estadísticas, calendario y plantilla.',
         audioFile: 'inicio_03.mp3',
         targetSelector: '[data-tutorial="inicio-equipos"]',
         position: 'left'
@@ -143,7 +143,7 @@ export class TutorialService {
       {
         id: 'inicio-documentos',
         title: 'Documentos',
-        text: 'Centraliza toda la documentación del club: autorizaciones, contratos, fichas médicas y formularios personalizados. Publica documentos para que los jugadores los firmen y haz seguimiento de quién ha entregado cada uno.',
+        text: 'Ahora, Documentos. Centraliza toda la documentación del club, autorizaciones, contratos, fichas médicas y formularios personalizados. Publica documentos para que los jugadores los firmen y haz seguimiento de quién ha entregado cada uno.',
         audioFile: 'inicio_04.mp3',
         targetSelector: '[data-tutorial="inicio-documentos"]',
         position: 'left'
@@ -151,7 +151,7 @@ export class TutorialService {
       {
         id: 'inicio-pagos',
         title: 'Pagos y cuotas',
-        text: 'Gestiona todas las cuotas del club desde un único lugar. Consulta qué jugadores están al día y cuáles tienen pagos pendientes, configura los importes y acepta pagos online de forma sencilla.',
+        text: 'Pasamos a Pagos y cuotas. Gestiona todas las cuotas del club desde un único lugar: consulta quién está al día y quién tiene pagos pendientes, configura los importes y acepta pagos online de forma sencilla.',
         audioFile: 'inicio_05.mp3',
         targetSelector: '[data-tutorial="inicio-pagos"]',
         position: 'left'
@@ -159,7 +159,7 @@ export class TutorialService {
       {
         id: 'inicio-ropa',
         title: 'Ropa / Equipación',
-        text: 'Controla la equipación de todos los jugadores del club. Consulta o edita las tallas de camiseta, pantalón y medias de cada jugador, y lleva un seguimiento de los pedidos realizados a proveedores.',
+        text: 'Seguimos con Ropa y Equipación. Los padres pueden indicar las tallas de sus hijos directamente desde la app, y el club las recibe al instante. Además, puedes subir imágenes de la ropa para que las familias la vean antes de hacer el pedido.',
         audioFile: 'inicio_06.mp3',
         targetSelector: '[data-tutorial="inicio-ropa"]',
         position: 'left'
@@ -167,7 +167,7 @@ export class TutorialService {
       {
         id: 'inicio-patrocinadores',
         title: 'Patrocinadores',
-        text: 'Lleva un control profesional de los patrocinios del club. Registra patrocinadores con nombre, importe, logotipo y fechas de contrato, y recibe alertas automáticas antes de que expire cada acuerdo.',
+        text: 'Y hablemos de Patrocinadores. Registra cada patrocinador con nombre, importe, logotipo y fechas de contrato, y dale visibilidad mostrándolo a todos los usuarios del club.',
         audioFile: 'inicio_07.mp3',
         targetSelector: '[data-tutorial="inicio-patrocinadores"]',
         position: 'left'
@@ -175,7 +175,7 @@ export class TutorialService {
       {
         id: 'inicio-notificaciones',
         title: 'Notificaciones',
-        text: 'Comunícate de forma directa con todos o con un equipo concreto. Redacta mensajes, adjunta archivos como documentos o imágenes, y programa el momento exacto en que quieres que se entreguen.',
+        text: 'Siguiente, Notificaciones. Comunícate de forma directa con todos o con un equipo concreto: redacta mensajes, adjunta archivos y programa el momento exacto en que quieres que se entreguen.',
         audioFile: 'inicio_08.mp3',
         targetSelector: '[data-tutorial="inicio-notificaciones"]',
         position: 'left'
@@ -183,7 +183,7 @@ export class TutorialService {
       {
         id: 'inicio-staff',
         title: 'Gestión de Staff',
-        text: 'Define quién tiene acceso a cada parte del panel del club. Añade miembros del staff, asígnales permisos concretos por módulo —pagos, documentos, estadísticas, calendario— y gestiona sus roles de forma granular.',
+        text: 'Pasamos a Gestión de Staff. Define quién tiene acceso a cada parte del panel: añade miembros, asígnales permisos por módulo —pagos, documentos, estadísticas, calendario— y gestiona sus roles con total precisión.',
         audioFile: 'inicio_09.mp3',
         targetSelector: '[data-tutorial="inicio-staff"]',
         position: 'left'
@@ -191,7 +191,7 @@ export class TutorialService {
       {
         id: 'inicio-scouting',
         title: 'Scouting',
-        text: 'Organiza tu proceso de captación de talento. Añade jugadores a tu lista de observación y sigue su evolución a través del pipeline de scouting: desde el primer vistazo hasta el contacto formal con el club.',
+        text: 'Ahora, Scouting. Organiza tu proceso de captación de talento: añade jugadores a tu lista de observación y sigue su evolución desde el primer vistazo hasta el contacto formal con el club.',
         audioFile: 'inicio_10.mp3',
         targetSelector: '[data-tutorial="inicio-scouting"]',
         position: 'left'
@@ -199,7 +199,7 @@ export class TutorialService {
       {
         id: 'inicio-biblioteca-videos',
         title: 'Biblioteca de vídeos',
-        text: 'Tu videoteca deportiva en la nube. Sube grabaciones de partidos y entrenamientos, enlaza vídeos de YouTube o Vimeo, y organízalos en carpetas por equipo o temporada para acceder a ellos cuando los necesites.',
+        text: 'Continuamos con la Biblioteca de vídeos, tu videoteca deportiva en la nube. Sube grabaciones, enlaza vídeos de YouTube o Vimeo, y organízalos en carpetas por equipo o temporada.',
         audioFile: 'inicio_11.mp3',
         targetSelector: '[data-tutorial="inicio-biblioteca-videos"]',
         position: 'left'
@@ -207,7 +207,7 @@ export class TutorialService {
       {
         id: 'inicio-video-analysis',
         title: 'Análisis de vídeo',
-        text: 'Lleva el análisis táctico al siguiente nivel. Crea sesiones de trabajo sobre tus vídeos, añade anotaciones, dibuja sobre el campo y extrae clips clave para compartir con el cuerpo técnico.',
+        text: 'Y si quieres ir más allá, tienes el Análisis de vídeo. Crea sesiones tácticas sobre tus grabaciones, añade anotaciones, dibuja sobre el campo y extrae clips clave para compartir con el cuerpo técnico.',
         audioFile: 'inicio_12.mp3',
         targetSelector: '[data-tutorial="inicio-video-analysis"]',
         position: 'left'
@@ -215,7 +215,7 @@ export class TutorialService {
       {
         id: 'inicio-asistente-ia',
         title: 'Asistente de IA',
-        text: 'Tu asistente inteligente, siempre disponible. Hazle preguntas sobre el club, pídele que genere informes, cree sesiones de entrenamiento o prepare convocatorias. Lo encontrarás en el botón circular de la esquina inferior derecha.',
+        text: 'Y para terminar, el Asistente de IA, siempre disponible en todas las pantallas. Hazle preguntas, pídele informes, sesiones de entrenamiento o convocatorias. Lo tienes en el botón circular de la esquina inferior derecha.',
         audioFile: 'inicio_13.mp3',
         targetSelector: '[data-tutorial="inicio-asistente-ia"]',
         position: 'left'
@@ -237,14 +237,14 @@ export class TutorialService {
       {
         id: 'cuadro-bienvenida',
         title: 'Cuadro de mandos',
-        text: 'Bienvenido al centro de control de tu club. A la izquierda tienes acceso rápido a jugadores, entrenadores, estadísticas y calendario; a la derecha, un resumen en tiempo real de resultados, entrenamientos del día y próximos partidos.',
+        text: 'Bienvenido al centro de control de tu club. A la izquierda tienes acceso rápido a jugadores, entrenadores, estadísticas y calendario. A la derecha, un resumen en tiempo real de resultados, entrenamientos del día y próximos partidos.',
         audioFile: 'cuadro_01.mp3',
         position: 'bottom'
       },
       {
         id: 'cuadro-volver',
         title: 'Volver',
-        text: 'Cuando quieras volver al panel principal del club, pulsa aquí. Desde ahí podrás acceder al resto de módulos.',
+        text: 'Antes de empezar, fíjate en este botón. Cuando quieras volver al panel principal del club, pulsa aquí y accederás al resto de módulos.',
         audioFile: 'cuadro_02.mp3',
         targetSelector: '[data-tutorial="cuadro-volver"]',
         position: 'bottom'
@@ -252,7 +252,7 @@ export class TutorialService {
       {
         id: 'cuadro-jugadores',
         title: 'Info jugadores',
-        text: 'Accede al directorio completo de todos los jugadores del club. Consulta fichas individuales con datos personales, estadísticas de rendimiento, historial de lesiones, estado de pagos y documentación asociada.',
+        text: 'Empecemos por el panel izquierdo. Aquí tienes Info jugadores, donde accedes al directorio completo del club. Consulta fichas individuales con datos personales, estadísticas, historial de lesiones, pagos y documentación.',
         audioFile: 'cuadro_03.mp3',
         targetSelector: '[data-tutorial="cuadro-jugadores"]',
         position: 'right'
@@ -260,7 +260,7 @@ export class TutorialService {
       {
         id: 'cuadro-entrenadores',
         title: 'Info entrenadores',
-        text: 'Consulta y gestiona todo el cuerpo técnico del club. Revisa el listado de entrenadores, su asignación a cada equipo y sus datos de contacto de manera centralizada.',
+        text: 'A continuación, Info entrenadores. Consulta y gestiona todo el cuerpo técnico del club: listado de entrenadores, su asignación a cada equipo y sus datos de contacto, todo en un mismo lugar.',
         audioFile: 'cuadro_04.mp3',
         targetSelector: '[data-tutorial="cuadro-entrenadores"]',
         position: 'right'
@@ -268,7 +268,7 @@ export class TutorialService {
       {
         id: 'cuadro-stats-jugadores',
         title: 'Estadísticas jugadores',
-        text: 'Analiza el rendimiento individual de cada jugador. Consulta goles, asistencias, minutos jugados y tarjetas recibidas, y aplica filtros por equipo, posición o temporada.',
+        text: 'Seguimos con Estadísticas de jugadores. Analiza el rendimiento individual de cada jugador: goles, asistencias, minutos jugados y tarjetas. Aplica filtros por equipo, posición o temporada.',
         audioFile: 'cuadro_05.mp3',
         targetSelector: '[data-tutorial="cuadro-stats-jugadores"]',
         position: 'right'
@@ -276,7 +276,7 @@ export class TutorialService {
       {
         id: 'cuadro-stats-equipos',
         title: 'Estadísticas equipos',
-        text: 'Evalúa el rendimiento colectivo de cada equipo del club. Visualiza clasificaciones, resultados y tendencias por temporada para tomar mejores decisiones tácticas.',
+        text: 'Y también tienes Estadísticas por equipo. Evalúa el rendimiento colectivo, visualiza clasificaciones, resultados y tendencias por temporada para tomar mejores decisiones tácticas.',
         audioFile: 'cuadro_06.mp3',
         targetSelector: '[data-tutorial="cuadro-stats-equipos"]',
         position: 'right'
@@ -284,7 +284,7 @@ export class TutorialService {
       {
         id: 'cuadro-entrenamientos',
         title: 'Entrenamientos',
-        text: 'El módulo de planificación de entrenamientos estará disponible muy pronto. Podrás diseñar sesiones completas, asignar tareas tácticas y ver el calendario de trabajo en un solo lugar.',
+        text: 'Pasamos a Entrenamientos. Los entrenadores ya pueden crear y gestionar sus sesiones desde la app. Muy pronto el club también tendrá aquí un resumen de toda la actividad de entrenamiento.',
         audioFile: 'cuadro_07.mp3',
         targetSelector: '[data-tutorial="cuadro-entrenamientos"]',
         position: 'right'
@@ -292,7 +292,7 @@ export class TutorialService {
       {
         id: 'cuadro-calendario',
         title: 'Calendario',
-        text: 'Visualiza toda la actividad del club en un único calendario. Partidos, entrenamientos y eventos organizados de forma clara; crea o edita cualquier entrada desde la vista mensual o semanal.',
+        text: 'Sigamos con el Calendario. Visualiza toda la actividad del club en un único lugar: partidos, entrenamientos y eventos organizados de forma clara. Crea o edita cualquier entrada desde la vista mensual o semanal.',
         audioFile: 'cuadro_08.mp3',
         targetSelector: '[data-tutorial="cuadro-calendario"]',
         position: 'right'
@@ -300,7 +300,7 @@ export class TutorialService {
       {
         id: 'cuadro-lesiones',
         title: 'Lesiones',
-        text: 'El módulo de gestión de lesiones llegará próximamente. Con él podrás registrar bajas, hacer seguimiento del estado de recuperación y planificar el retorno de cada jugador a la competición.',
+        text: 'También encontrarás Lesiones. Los entrenadores ya pueden registrar y gestionar las bajas de sus jugadores desde la app. Próximamente el club tendrá aquí un resumen centralizado de todo el estado de lesiones del club.',
         audioFile: 'cuadro_09.mp3',
         targetSelector: '[data-tutorial="cuadro-lesiones"]',
         position: 'right'
@@ -308,7 +308,7 @@ export class TutorialService {
       {
         id: 'cuadro-resultados',
         title: 'Resultados',
-        text: 'Consulta los últimos resultados del club de un vistazo: marcador, equipo y resultado —victoria, empate o derrota—. Pulsa en cualquier partido para ver el detalle completo o actualizar el marcador.',
+        text: 'Ahora fíjate en el panel derecho. Aquí tienes los Resultados del club: marcador y resultado de cada partido, victoria, empate o derrota. Pulsa en cualquiera para ver el detalle completo o actualizar el marcador.',
         audioFile: 'cuadro_10.mp3',
         targetSelector: '[data-tutorial="cuadro-resultados"]',
         position: 'left'
@@ -316,7 +316,7 @@ export class TutorialService {
       {
         id: 'cuadro-entrenamientos-hoy',
         title: 'Entrenamientos de hoy',
-        text: 'Conoce de un vistazo qué equipos entrenan hoy y a qué hora. La línea de tiempo te indica en qué momento del día estás respecto a los entrenamientos programados.',
+        text: 'A la derecha tienes los Entrenamientos de hoy. De un vistazo ves qué equipos entrenan y a qué hora, y la línea de tiempo te indica en qué momento del día te encuentras respecto a los entrenamientos programados.',
         audioFile: 'cuadro_11.mp3',
         targetSelector: '[data-tutorial="cuadro-entrenamientos-hoy"]',
         position: 'left'
@@ -324,7 +324,7 @@ export class TutorialService {
       {
         id: 'cuadro-proximos-partidos',
         title: 'Próximos partidos',
-        text: 'Anticipa los próximos compromisos del club. Consulta fecha, hora y rival, y pulsa en cualquier partido para acceder a la convocatoria, editar los datos o preparar el análisis previo.',
+        text: 'Y para cerrar este panel, los Próximos partidos. Anticipa los compromisos del club consultando fecha, hora y rival, y pulsa en cualquier partido para acceder a la convocatoria o preparar el análisis previo.',
         audioFile: 'cuadro_12.mp3',
         targetSelector: '[data-tutorial="cuadro-proximos-partidos"]',
         position: 'left'
@@ -345,34 +345,39 @@ export class TutorialService {
       {
         id: 'inicio-coach-bienvenida',
         title: 'Mis equipos',
-        text: 'Esta es tu pantalla principal como entrenador. Aquí ves todos los equipos que tienes asignados en la temporada seleccionada. Pulsa en una tarjeta para entrar al menú de ese equipo (calendario, tareas, jugadores, estadísticas, notificaciones, etc.).',
+        text: 'Esta es tu pantalla principal como entrenador. Aquí ves todos los equipos que tienes asignados en la temporada seleccionada. Pulsa en una tarjeta para entrar al menú de ese equipo.',
+        audioFile: 'coach_01.mp3',
         position: 'bottom'
       },
       {
         id: 'inicio-coach-temporada',
         title: 'Temporada',
-        text: 'Selecciona la temporada para ver los equipos asignados. Al cambiar de temporada se actualiza el listado.',
+        text: 'Fíjate en el selector de temporada. Cámbialo para ver los equipos asignados en otro curso; el listado se actualiza al instante.',
+        audioFile: 'coach_02.mp3',
         targetSelector: '[data-tutorial="inicio-coach-temporada"]',
         position: 'bottom'
       },
       {
         id: 'inicio-coach-grid',
         title: 'Tarjetas de equipos',
-        text: 'Cada tarjeta muestra el equipo: categoría, nombre, liga, horario de entrenamiento y número de jugadores. Pulsa en una tarjeta para acceder al menú del entrenador de ese equipo (calendario, tareas, jugadores, info equipo, estadísticas, notificaciones, galería, lesiones, asistente IA, historial debrief, perfil, documentos y análisis de vídeo).',
+        text: 'Aquí tienes tus equipos. Cada tarjeta muestra categoría, nombre, liga, horario de entrenamiento y número de jugadores. Pulsa en una para acceder al calendario, tareas, jugadores, estadísticas, notificaciones y mucho más.',
+        audioFile: 'coach_03.mp3',
         targetSelector: '[data-tutorial="inicio-coach-grid"]',
         position: 'left'
       },
       {
         id: 'inicio-coach-empty',
         title: 'Sin equipos',
-        text: 'Si no tienes equipos asignados para esta temporada, verás un mensaje y el botón "Crear equipo" para ir a la gestión de equipos del club.',
+        text: 'Si aún no tienes equipos asignados en esta temporada, verás un mensaje orientativo y el botón para ir a la gestión de equipos del club.',
+        audioFile: 'coach_04.mp3',
         targetSelector: '[data-tutorial="inicio-coach-empty"]',
         position: 'bottom'
       },
       {
         id: 'inicio-coach-fin',
         title: 'Listo',
-        text: 'Ya conoces tu panel de entrenador. Elige un equipo para acceder a su calendario, tareas, jugadores y el resto de opciones.',
+        text: 'Ya conoces tu panel de entrenador. Elige un equipo y accede a su calendario, tareas, jugadores y el resto de opciones cuando quieras.',
+        audioFile: 'coach_05.mp3',
         position: 'bottom'
       }
     ];
@@ -384,34 +389,39 @@ export class TutorialService {
       {
         id: 'inicio-player-bienvenida',
         title: 'Inicio',
-        text: 'Esta es tu pantalla principal. Aquí ves los jugadores vinculados a tu cuenta (tus hijos o tutelados) en la temporada seleccionada. Pulsa en una tarjeta para acceder a las opciones de ese jugador: datos personales, calendario, cuotas, documentación, clasificación, estadísticas, galería, notificaciones, patrocinadores, lesiones y ropa.',
+        text: 'Esta es tu pantalla principal. Aquí ves los jugadores vinculados a tu cuenta en la temporada seleccionada. Pulsa en una tarjeta para acceder a las opciones de ese jugador: calendario, cuotas, documentación, estadísticas, galería y mucho más.',
+        audioFile: 'player_01.mp3',
         position: 'bottom'
       },
       {
         id: 'inicio-player-temporada',
         title: 'Temporada',
-        text: 'Selecciona la temporada para ver los jugadores y equipos correspondientes. Al cambiar de temporada se actualiza el listado.',
+        text: 'Fíjate en el selector de temporada. Cámbialo para ver los jugadores y equipos de otro curso; el listado se actualiza al instante.',
+        audioFile: 'player_02.mp3',
         targetSelector: '[data-tutorial="inicio-player-temporada"]',
         position: 'bottom'
       },
       {
         id: 'inicio-player-list',
         title: 'Tarjetas de jugadores',
-        text: 'Cada tarjeta muestra un jugador: nombre, equipo, horario de entrenamiento y próximo partido. Pulsa en la tarjeta o en "Ver jugador" para acceder a todas las opciones de ese jugador (datos personales, calendario, pagar cuotas, documentación, clasificación, estadísticas, galería, notificaciones, patrocinadores, lesiones, ropa).',
+        text: 'Aquí ves tus jugadores. Cada tarjeta muestra nombre, equipo, horario de entrenamiento y próximo partido. Pulsa en una tarjeta o en Ver jugador para acceder a todas sus opciones.',
+        audioFile: 'player_03.mp3',
         targetSelector: '[data-tutorial="inicio-player-list"]',
         position: 'left'
       },
       {
         id: 'inicio-player-empty',
         title: 'Sin jugadores',
-        text: 'Si no tienes jugadores vinculados para esta temporada, verás un mensaje indicándolo. Contacta con tu club para dar de alta a los jugadores.',
+        text: 'Y si no tienes jugadores vinculados en esta temporada, verás un mensaje orientativo. Contacta con tu club para dar de alta a los jugadores.',
+        audioFile: 'player_04.mp3',
         targetSelector: '[data-tutorial="inicio-player-empty"]',
         position: 'bottom'
       },
       {
         id: 'inicio-player-fin',
         title: 'Listo',
-        text: 'Ya conoces tu panel. Pulsa en un jugador para ver su calendario, cuotas, documentación y el resto de opciones.',
+        text: 'Ya conoces tu panel. Pulsa en un jugador para ver su calendario, cuotas, documentación y el resto de opciones cuando quieras.',
+        audioFile: 'player_05.mp3',
         position: 'bottom'
       }
     ];
@@ -424,54 +434,62 @@ export class TutorialService {
         id: 'equipos-bienvenida',
         title: 'Equipos del club',
         text: 'En esta pantalla gestionas todos los equipos de la temporada: categorías, jugadores por equipo, horarios de entrenamiento y acceso rápido al calendario de cada equipo.',
+        audioFile: 'equipos_01.mp3',
         position: 'bottom'
       },
       {
         id: 'equipos-volver',
         title: 'Volver',
-        text: 'Pulsa aquí para regresar al inicio del dashboard del club.',
+        text: 'Antes de explorar las opciones, este botón te lleva de vuelta al inicio del dashboard del club cuando lo necesites.',
+        audioFile: 'equipos_02.mp3',
         targetSelector: '[data-tutorial="equipos-volver"]',
         position: 'bottom'
       },
       {
         id: 'equipos-excel',
         title: 'Subir jugadores desde Excel',
-        text: 'Importa un listado de jugadores desde una hoja Excel. Descarga la plantilla, rellena los datos y súbela aquí para dar de alta a varios jugadores a la vez.',
+        text: 'Empecemos por las acciones superiores. Puedes importar un listado de jugadores desde Excel: descarga la plantilla, rellena los datos y súbela para dar de alta a varios jugadores a la vez.',
+        audioFile: 'equipos_03.mp3',
         targetSelector: '[data-tutorial="equipos-excel"]',
         position: 'bottom'
       },
       {
         id: 'equipos-invitar',
         title: 'Invitar jugadores',
-        text: 'Genera un enlace de invitación para que los jugadores se registren y se asignen al club. Comparte el enlace por WhatsApp o correo.',
+        text: 'También puedes invitar jugadores generando un enlace de registro. Compártelo por WhatsApp o correo y los jugadores se asignarán al club directamente.',
+        audioFile: 'equipos_04.mp3',
         targetSelector: '[data-tutorial="equipos-invitar"]',
         position: 'bottom'
       },
       {
         id: 'equipos-crear',
         title: 'Crear equipo',
-        text: 'Crea un nuevo equipo: elige categoría, nivel y letra (A, B, C…). Puedes crear categorías nuevas si no existe la que buscas.',
+        text: 'Para crear un nuevo equipo, pulsa aquí: elige categoría, nivel y letra. Si la categoría no existe, puedes crearla en el momento.',
+        audioFile: 'equipos_05.mp3',
         targetSelector: '[data-tutorial="equipos-crear"]',
         position: 'bottom'
       },
       {
         id: 'equipos-temporada',
         title: 'Temporada',
-        text: 'Cambia de temporada para ver los equipos de otro curso. El listado y las estadísticas se actualizan según la temporada seleccionada.',
+        text: 'Si quieres ver los equipos de otro curso, cambia la temporada desde este selector. El listado y las estadísticas se actualizan al instante.',
+        audioFile: 'equipos_06.mp3',
         targetSelector: '[data-tutorial="equipos-temporada"]',
         position: 'bottom'
       },
       {
         id: 'equipos-listado',
         title: 'Listado de equipos',
-        text: 'Cada tarjeta es un equipo. Verás el escudo, nombre, horario de entrenamientos y número de jugadores. Pulsa en una tarjeta para abrir el calendario y el detalle de ese equipo.',
+        text: 'Y aquí tienes el listado de todos los equipos. Cada tarjeta muestra el escudo, nombre, horario de entrenamientos y número de jugadores. Pulsa en una para abrir el calendario y el detalle.',
+        audioFile: 'equipos_07.mp3',
         targetSelector: '[data-tutorial="equipos-listado"]',
         position: 'left'
       },
       {
         id: 'equipos-fin',
         title: 'Listo',
-        text: 'Ya conoces la pantalla de equipos. Usa las acciones superiores para importar jugadores, invitar o crear equipos, y pulsa en cualquier tarjeta para ver su calendario.',
+        text: 'Ya conoces la pantalla de equipos. Usa las acciones superiores para importar, invitar o crear equipos, y pulsa en cualquier tarjeta para ver su calendario.',
+        audioFile: 'equipos_08.mp3',
         position: 'bottom'
       }
     ];
@@ -483,48 +501,55 @@ export class TutorialService {
       {
         id: 'docs-bienvenida',
         title: 'Documentos del club',
-        text: 'Aquí almacenas y organizas toda la documentación del club: autorizaciones, fichas médicas, contratos y formularios personalizados. Puedes subir documentos, solicitarlos a jugadores o entrenadores y hacer seguimiento de las entregas.',
+        text: 'Aquí almacenas y organizas toda la documentación del club: autorizaciones, fichas médicas, contratos y formularios personalizados. Puedes subir documentos, solicitarlos y hacer seguimiento de las entregas.',
+        audioFile: 'docs_01.mp3',
         position: 'bottom'
       },
       {
         id: 'docs-volver',
         title: 'Volver',
-        text: 'Pulsa aquí para regresar al inicio del dashboard del club.',
+        text: 'Antes de continuar, recuerda que este botón te devuelve al inicio del dashboard cuando lo necesites.',
+        audioFile: 'docs_02.mp3',
         targetSelector: '[data-tutorial="docs-volver"]',
         position: 'bottom'
       },
       {
         id: 'docs-tabs',
         title: 'Pestañas Jugadores / Entrenadores',
-        text: 'Cambia entre la documentación de jugadores y la de entrenadores. Cada pestaña muestra los documentos y el estado de entrega correspondiente.',
+        text: 'La pantalla tiene dos pestañas. Cambia entre la documentación de jugadores y la de entrenadores; cada una muestra los documentos y el estado de entrega correspondiente.',
+        audioFile: 'docs_03.mp3',
         targetSelector: '[data-tutorial="docs-tabs"]',
         position: 'bottom'
       },
       {
         id: 'docs-acciones',
         title: 'Acciones rápidas',
-        text: 'Subir documento: añade un archivo (PDF, imagen, etc.) al club. Solicitar documento: exige la entrega de un tipo de documento a jugadores o entrenadores. Crear formulario: diseña un formulario personalizado con campos a rellenar.',
+        text: 'En la parte superior tienes las tres acciones disponibles. Subir documento añade un archivo al club, Solicitar documento exige la entrega a jugadores o entrenadores, y Crear formulario diseña un formulario personalizado con campos a rellenar.',
+        audioFile: 'docs_04.mp3',
         targetSelector: '[data-tutorial="docs-acciones"]',
         position: 'bottom'
       },
       {
         id: 'docs-busqueda',
         title: 'Buscar y filtrar',
-        text: 'Busca documentos por nombre o descripción y filtra por equipo. El contador muestra cuántos documentos hay en la lista actual.',
+        text: 'También puedes buscar documentos por nombre o descripción y filtrar por equipo. El contador muestra cuántos documentos hay en la lista actual.',
+        audioFile: 'docs_05.mp3',
         targetSelector: '[data-tutorial="docs-busqueda"]',
         position: 'bottom'
       },
       {
         id: 'docs-tabla',
         title: 'Tabla de documentos',
-        text: 'Cada fila es un documento: verás el estado de completado (entregados/total), equipos asignados, nombre, descripción y fecha. Desde las acciones puedes ver visibilidad, solicitar subida, editar, abrir el archivo o eliminar.',
+        text: 'Y aquí ves la tabla completa. Cada fila muestra el estado de completado, equipos asignados, nombre, descripción y fecha. Desde las acciones puedes ver visibilidad, solicitar subida, editar, abrir el archivo o eliminar.',
+        audioFile: 'docs_06.mp3',
         targetSelector: '[data-tutorial="docs-tabla"]',
         position: 'left'
       },
       {
         id: 'docs-fin',
         title: 'Listo',
-        text: 'Ya conoces la pantalla de documentos. Usa las tarjetas superiores para subir, solicitar o crear formularios, y la tabla para revisar y gestionar cada documento.',
+        text: 'Ya conoces la pantalla de documentos. Usa las acciones superiores para subir, solicitar o crear formularios, y la tabla para revisar y gestionar cada documento.',
+        audioFile: 'docs_07.mp3',
         position: 'bottom'
       }
     ];
@@ -536,41 +561,47 @@ export class TutorialService {
       {
         id: 'cuotas-bienvenida',
         title: 'Gestión de Cuotas',
-        text: 'En esta pantalla gestionas los pagos y cuotas del club: configuración de pagos, Stripe, historial, Sphaira Pay, cuenta bancaria y notificaciones. Verás el resumen de jugadores, total a cobrar, cobrado y pendiente, y el listado de jugadores con su estado de pago.',
+        text: 'En esta pantalla gestionas todos los pagos y cuotas del club: configuración de pagos, Stripe, historial, Sphaira Pay, cuenta bancaria y notificaciones. Tendrás el resumen de cobros y el listado completo de jugadores con su estado de pago.',
+        audioFile: 'cuotas_01.mp3',
         position: 'bottom'
       },
       {
         id: 'cuotas-volver',
         title: 'Volver',
-        text: 'Pulsa aquí para regresar al inicio del dashboard del club.',
+        text: 'Antes de continuar, recuerda que este botón te devuelve al inicio del dashboard cuando lo necesites.',
+        audioFile: 'cuotas_02.mp3',
         targetSelector: '[data-tutorial="cuotas-volver"]',
         position: 'bottom'
       },
       {
         id: 'cuotas-acciones',
         title: 'Acciones rápidas',
-        text: 'Pagos: configura las cuotas del club. Stripe: conecta tu cuenta para cobros online. Historial: consulta todos los movimientos. Sphaira Pay: pagos integrados. Banco: datos de la cuenta bancaria. Notif.: configura recordatorios de pago.',
+        text: 'Empecemos por las acciones rápidas. Pagos configura las cuotas del club, Stripe conecta tu cuenta para cobros online, Historial muestra todos los movimientos, y también tienes Sphaira Pay, datos de Banco y Notificaciones de pago.',
+        audioFile: 'cuotas_03.mp3',
         targetSelector: '[data-tutorial="cuotas-acciones"]',
         position: 'bottom'
       },
       {
         id: 'cuotas-resumen',
         title: 'Resumen',
-        text: 'Tarjetas con el total de jugadores, importe total a cobrar, cantidad ya cobrada (con barra de progreso) e importe pendiente. Te dan una visión rápida del estado de las cuotas.',
+        text: 'A continuación tienes el resumen. Las tarjetas muestran el total de jugadores, el importe a cobrar, lo ya cobrado con su barra de progreso y el importe pendiente. Te dan una visión rápida del estado de las cuotas.',
+        audioFile: 'cuotas_04.mp3',
         targetSelector: '[data-tutorial="cuotas-resumen"]',
         position: 'bottom'
       },
       {
         id: 'cuotas-filtros',
         title: 'Buscar y filtrar',
-        text: 'Busca jugadores por nombre, filtra por tipo de cuota y restablece los datos. El filtro por cuota permite ver solo los jugadores de una o varias cuotas concretas.',
+        text: 'Para encontrar un jugador concreto, busca por nombre o filtra por tipo de cuota. El filtro permite ver solo los jugadores de una o varias cuotas específicas.',
+        audioFile: 'cuotas_05.mp3',
         targetSelector: '[data-tutorial="cuotas-filtros"]',
         position: 'bottom'
       },
       {
         id: 'cuotas-listado',
         title: 'Listado de jugadores',
-        text: 'Tabla con cada jugador: nombre, equipo, estado, total a pagar, pagado, restante y progreso por cuota. Desde las acciones puedes editar, registrar un pago o ver el historial de pagos del jugador.',
+        text: 'Y aquí tienes el listado completo. Cada fila muestra nombre, equipo, estado, total a pagar, pagado, restante y progreso por cuota. Desde las acciones puedes editar, registrar un pago o ver el historial del jugador.',
+        audioFile: 'cuotas_06.mp3',
         targetSelector: '[data-tutorial="cuotas-listado"]',
         position: 'left'
       },
@@ -578,6 +609,7 @@ export class TutorialService {
         id: 'cuotas-fin',
         title: 'Listo',
         text: 'Ya conoces la gestión de cuotas. Usa la barra superior para configurar pagos y Stripe, y la tabla para revisar y registrar cobros por jugador.',
+        audioFile: 'cuotas_07.mp3',
         position: 'bottom'
       }
     ];
@@ -589,55 +621,63 @@ export class TutorialService {
       {
         id: 'ropa-bienvenida',
         title: 'Gestión de Ropa',
-        text: 'Aquí gestionas la equipación del club: tabla de tallas por jugador (camiseta, pantalón, medias), catálogo de prendas y exportación a Excel. Puedes cambiar de temporada y personalizar las columnas visibles.',
+        text: 'Aquí gestionas la equipación del club: el catálogo de prendas, las tallas disponibles y la tabla de tallas por jugador. Los padres pueden indicar las tallas de sus hijos y el club recibe esa información directamente aquí.',
+        audioFile: 'ropa_01.mp3',
         position: 'bottom'
       },
       {
         id: 'ropa-volver',
         title: 'Volver',
-        text: 'Pulsa aquí para regresar al inicio del dashboard del club.',
+        text: 'Antes de continuar, recuerda que este botón te devuelve al inicio del dashboard cuando lo necesites.',
+        audioFile: 'ropa_02.mp3',
         targetSelector: '[data-tutorial="ropa-volver"]',
         position: 'bottom'
       },
       {
         id: 'ropa-temporada',
         title: 'Temporada',
-        text: 'Selecciona la temporada para ver y editar las tallas del catálogo y de los jugadores de ese curso.',
+        text: 'Fíjate en el selector de temporada. Cámbialo para ver y editar las tallas del catálogo y de los jugadores del curso correspondiente.',
+        audioFile: 'ropa_03.mp3',
         targetSelector: '[data-tutorial="ropa-temporada"]',
         position: 'bottom'
       },
       {
         id: 'ropa-tabs',
         title: 'Pestañas',
-        text: 'Tallas catálogo: gestiona las tallas del catálogo del club. Catálogo de prendas: define las prendas disponibles. Tallas jugadores: tabla clásica con las tallas de cada jugador (sección antigua).',
+        text: 'La pantalla tiene tres pestañas. Tallas catálogo gestiona las tallas disponibles, Catálogo de prendas define las prendas del club con sus imágenes, y Tallas jugadores muestra la tabla clásica con las tallas de cada jugador.',
+        audioFile: 'ropa_04.mp3',
         targetSelector: '[data-tutorial="ropa-tabs"]',
         position: 'bottom'
       },
       {
         id: 'ropa-tabla-tallas',
         title: 'Tabla de tallas catálogo',
-        text: 'En esta pestaña ves la tabla de tallas del catálogo del club: cada prenda (camiseta, pantalón, medias, etc.) con las tallas disponibles. Puedes editar las tallas del catálogo y gestionar el contenido que verán los jugadores.',
+        text: 'En la primera pestaña ves la tabla de tallas del catálogo: cada prenda con las tallas disponibles. Puedes editar las tallas y gestionar el contenido que verán los jugadores desde la app.',
+        audioFile: 'ropa_05.mp3',
         targetSelector: '[data-tutorial="ropa-contenido"]',
         position: 'left'
       },
       {
         id: 'ropa-catalogo-tab',
         title: 'Catálogo de prendas',
-        text: 'Pulsa aquí para ver el catálogo de prendas del club: define las prendas disponibles (camiseta, pantalón, medias, etc.) y sus tallas. El tutorial cambiará a esta pestaña para mostrarte el contenido.',
+        text: 'Si pulsas en la segunda pestaña, accedes al catálogo de prendas: define las prendas disponibles y sube las imágenes de cada una para que los jugadores y padres las vean directamente en la app.',
+        audioFile: 'ropa_06.mp3',
         targetSelector: '[data-tutorial="ropa-tab-catalogo"]',
         position: 'bottom'
       },
       {
         id: 'ropa-contenido',
         title: 'Contenido',
-        text: 'Según la pestaña activa verás la tabla de tallas del catálogo, el catálogo de prendas o la tabla de jugadores con sus tallas. Desde aquí puedes exportar a Excel y personalizar columnas visibles.',
+        text: 'En cada pestaña puedes exportar el contenido a Excel y personalizar las columnas visibles según lo que necesites consultar.',
+        audioFile: 'ropa_07.mp3',
         targetSelector: '[data-tutorial="ropa-contenido"]',
         position: 'left'
       },
       {
         id: 'ropa-fin',
         title: 'Listo',
-        text: 'Ya conoces la gestión de ropa. Cambia de pestaña para trabajar con el catálogo o con las tallas de los jugadores.',
+        text: 'Ya conoces la gestión de ropa. Cambia de pestaña para trabajar con el catálogo, subir imágenes de las prendas o revisar las tallas de los jugadores.',
+        audioFile: 'ropa_08.mp3',
         position: 'bottom'
       }
     ];
@@ -649,41 +689,47 @@ export class TutorialService {
       {
         id: 'patro-bienvenida',
         title: 'Patrocinadores',
-        text: 'En esta pantalla administras los patrocinadores del club: logos, datos de contacto, beneficios y visibilidad en el carrusel de la web. Puedes añadir, editar y mostrar u ocultar cada patrocinador.',
+        text: 'En esta pantalla gestionas los patrocinadores del club. Añade el logo, nombre, descripción y datos de contacto de cada uno para que todos los miembros del club los vean y puedas darles la visibilidad que merecen.',
+        audioFile: 'patro_01.mp3',
         position: 'bottom'
       },
       {
         id: 'patro-volver',
         title: 'Volver',
-        text: 'Pulsa aquí para regresar al inicio del dashboard del club.',
+        text: 'Antes de continuar, recuerda que este botón te devuelve al inicio del dashboard cuando lo necesites.',
+        audioFile: 'patro_02.mp3',
         targetSelector: '[data-tutorial="patro-volver"]',
         position: 'bottom'
       },
       {
         id: 'patro-carrusel',
         title: 'Carrusel de logos',
-        text: 'Los patrocinadores visibles aparecen aquí en un carrusel. Los usuarios pueden hacer clic en un logo para ver su ficha. Solo se muestran los que tienen "Mostrar en carrusel" activado.',
+        text: 'Empecemos por el carrusel de logos. Los patrocinadores con visibilidad activada aparecen aquí. Cualquier usuario del club puede hacer clic en un logo para ver la ficha completa del patrocinador.',
+        audioFile: 'patro_03.mp3',
         targetSelector: '[data-tutorial="patro-carrusel"]',
         position: 'bottom'
       },
       {
         id: 'patro-nuevo',
         title: 'Nuevo patrocinador',
-        text: 'Añade un patrocinador: sube el logo, nombre, descripción, web, email, teléfono y beneficios para el club. Después podrás activar o desactivar su aparición en el carrusel.',
+        text: 'Para añadir un nuevo patrocinador, pulsa aquí. Sube el logo, rellena nombre, descripción, web, email y teléfono para que los miembros del club puedan conocerlo. Después podrás activar o desactivar su aparición en el carrusel.',
+        audioFile: 'patro_04.mp3',
         targetSelector: '[data-tutorial="patro-nuevo"]',
         position: 'bottom'
       },
       {
         id: 'patro-grid',
         title: 'Fichas de patrocinadores',
-        text: 'Cada tarjeta muestra un patrocinador con su logo, nombre, descripción, enlaces de contacto y beneficios. Puedes ver la ficha completa, mostrar u ocultar en el carrusel y eliminar.',
+        text: 'Y aquí ves las fichas de todos los patrocinadores registrados. Cada tarjeta muestra logo, nombre, descripción, contacto y beneficios. Puedes ver la ficha completa, controlar su visibilidad o eliminarlo.',
+        audioFile: 'patro_05.mp3',
         targetSelector: '[data-tutorial="patro-grid"]',
         position: 'left'
       },
       {
         id: 'patro-fin',
         title: 'Listo',
-        text: 'Ya conoces la pantalla de patrocinadores. Usa el botón "Nuevo" para añadir patrocinadores y las tarjetas para editar o gestionar su visibilidad.',
+        text: 'Ya conoces la pantalla de patrocinadores. Usa el botón Nuevo para añadir patrocinadores y las tarjetas para editar o gestionar su visibilidad.',
+        audioFile: 'patro_06.mp3',
         position: 'bottom'
       }
     ];
@@ -696,61 +742,70 @@ export class TutorialService {
         id: 'notif-bienvenida',
         title: 'Gestión de Notificaciones',
         text: 'Desde aquí envías y gestionas las notificaciones del club. Tienes bandeja de entrada, enviados y mensajes programados. Puedes redactar mensajes a jugadores, entrenadores o equipos completos, y programar envíos para más tarde.',
+        audioFile: 'notif_01.mp3',
         position: 'bottom'
       },
       {
         id: 'notif-volver',
         title: 'Volver',
-        text: 'Pulsa aquí para regresar al inicio del dashboard del club.',
+        text: 'Antes de continuar, recuerda que este botón te devuelve al inicio del dashboard cuando lo necesites.',
+        audioFile: 'notif_02.mp3',
         targetSelector: '[data-tutorial="notif-volver"]',
         position: 'bottom'
       },
       {
         id: 'notif-redactar',
         title: 'Redactar mensaje',
-        text: 'Abre el formulario para escribir una nueva notificación. Elige destinatarios (jugadores, entrenadores o equipos), asunto y cuerpo del mensaje. Puedes enviar al momento o programar la fecha y hora de envío.',
+        text: 'Empecemos por el botón principal: Redactar. Abre el formulario para escribir una nueva notificación; elige destinatarios, asunto y cuerpo, y decide si envías al momento o programas el envío.',
+        audioFile: 'notif_03.mp3',
         targetSelector: '[data-tutorial="notif-redactar"]',
         position: 'right'
       },
       {
         id: 'notif-sidebar',
         title: 'Bandejas',
-        text: 'Entrada: mensajes recibidos (con contador de no leídos). Enviados: mensajes que has enviado. Programados: mensajes con envío programado; desde aquí puedes editar o cancelar la programación.',
+        text: 'A la izquierda tienes las tres bandejas. Entrada muestra los mensajes recibidos con el contador de no leídos, Enviados los que ya has mandado, y Programados los que tienen un envío futuro planificado.',
+        audioFile: 'notif_04.mp3',
         targetSelector: '[data-tutorial="notif-sidebar"]',
         position: 'right'
       },
       {
         id: 'notif-toolbar',
         title: 'Búsqueda y marcar todo como leído',
-        text: 'Busca en la lista por remitente, asunto o contenido. Si tienes mensajes sin leer en la bandeja de entrada, el botón "Marcar todo como leído" los marcará de una vez.',
+        text: 'En la parte superior puedes buscar mensajes por remitente, asunto o contenido. Si tienes mensajes sin leer, el botón Marcar todo como leído los marca de una sola vez.',
+        audioFile: 'notif_05.mp3',
         targetSelector: '[data-tutorial="notif-toolbar"]',
         position: 'bottom'
       },
       {
         id: 'notif-filtros',
         title: 'Filtros (Entrada)',
-        text: 'En la bandeja de entrada puedes filtrar por: Todos, Leídos o No leídos. Útil para localizar rápidamente los mensajes pendientes de leer.',
+        text: 'Además puedes filtrar los mensajes de entrada por Todos, Leídos o No leídos. Muy útil para localizar rápidamente los pendientes de leer.',
+        audioFile: 'notif_06.mp3',
         targetSelector: '[data-tutorial="notif-filtros"]',
         position: 'bottom'
       },
       {
         id: 'notif-lista',
         title: 'Lista de mensajes',
-        text: 'Cada fila muestra remitente o destinatario, asunto y fecha. Los no leídos tienen un indicador. Pulsa en un mensaje para abrirlo en el panel de lectura. Desde aquí también puedes marcar como leído o eliminar.',
+        text: 'Y aquí ves la lista de mensajes. Cada fila muestra remitente, asunto y fecha; los no leídos tienen un indicador visual. Pulsa en uno para abrirlo en el panel de lectura.',
+        audioFile: 'notif_07.mp3',
         targetSelector: '[data-tutorial="notif-lista"]',
         position: 'left'
       },
       {
         id: 'notif-lector',
         title: 'Panel de lectura',
-        text: 'Al seleccionar un mensaje verás aquí el asunto, remitente o destinatario, fecha y el cuerpo del mensaje. En móvil puedes volver atrás para ver de nuevo la lista.',
+        text: 'Al seleccionar un mensaje verás aquí el asunto, remitente, fecha y el cuerpo completo. En móvil puedes volver atrás para ver de nuevo la lista.',
+        audioFile: 'notif_08.mp3',
         targetSelector: '[data-tutorial="notif-lector"]',
         position: 'left'
       },
       {
         id: 'notif-fin',
         title: 'Listo',
-        text: 'Ya conoces la gestión de notificaciones. Usa "Redactar" para enviar mensajes, cambia de bandeja en el menú lateral y aprovecha la búsqueda y los filtros para encontrar lo que necesitas.',
+        text: 'Ya conoces la gestión de notificaciones. Usa Redactar para enviar mensajes, cambia de bandeja en el menú lateral y aprovecha la búsqueda y los filtros para encontrar lo que necesitas.',
+        audioFile: 'notif_09.mp3',
         position: 'bottom'
       }
     ];
@@ -762,41 +817,47 @@ export class TutorialService {
       {
         id: 'staff-bienvenida',
         title: 'Gestión de Staff',
-        text: 'Aquí creas y gestionas los usuarios con acceso al panel del club. Cada usuario Staff tiene permisos por módulo (jugadores, estadísticas, calendario, documentos, pagos, etc.). Puedes habilitar o deshabilitar el acceso y editar los permisos en cualquier momento.',
+        text: 'Aquí creas y gestionas los usuarios con acceso al panel del club. Cada usuario Staff tiene permisos por módulo: jugadores, estadísticas, calendario, documentos, pagos y más. Puedes habilitar o deshabilitar el acceso y editar los permisos en cualquier momento.',
+        audioFile: 'staff_01.mp3',
         position: 'bottom'
       },
       {
         id: 'staff-volver',
         title: 'Volver',
-        text: 'Pulsa aquí para regresar al inicio del dashboard del club.',
+        text: 'Antes de continuar, recuerda que este botón te devuelve al inicio del dashboard cuando lo necesites.',
+        audioFile: 'staff_02.mp3',
         targetSelector: '[data-tutorial="staff-volver"]',
         position: 'bottom'
       },
       {
         id: 'staff-toolbar',
         title: 'Barra de acciones',
-        text: 'Se muestra el número de usuarios Staff y el botón "Nuevo Staff" para crear un usuario. Al crear indicarás nombre, apellidos, email y contraseña, y seleccionarás los módulos a los que tendrá acceso.',
+        text: 'En la parte superior ves el número de usuarios Staff y el botón Nuevo Staff para crear uno nuevo. Al crearlo indicarás nombre, apellidos, email, contraseña y los módulos a los que tendrá acceso.',
+        audioFile: 'staff_03.mp3',
         targetSelector: '[data-tutorial="staff-toolbar"]',
         position: 'bottom'
       },
       {
         id: 'staff-grid',
         title: 'Tarjetas de usuarios',
-        text: 'Cada tarjeta corresponde a un usuario Staff: identidad (nombre, email), estado (Activo/Inhabilitado), interruptor de acceso y permisos asignados. Desde las acciones puedes editar permisos o eliminar al usuario.',
+        text: 'Y aquí ves las tarjetas de todos los usuarios Staff. Cada una muestra identidad, estado Activo o Inhabilitado, el interruptor de acceso y los permisos asignados. Desde las acciones puedes editar permisos o eliminar al usuario.',
+        audioFile: 'staff_04.mp3',
         targetSelector: '[data-tutorial="staff-grid"]',
         position: 'left'
       },
       {
         id: 'staff-tarjeta',
         title: 'Contenido de cada tarjeta',
-        text: 'En cada tarjeta verás el nombre, email y badge de estado. El interruptor "Acceso" habilita o deshabilita el acceso al panel (con confirmación). Los chips muestran los permisos por módulo. Los botones de lápiz y papelera permiten editar permisos o eliminar al usuario.',
+        text: 'Fíjate en cada tarjeta: verás nombre, email y el badge de estado. El interruptor Acceso habilita o deshabilita el panel con confirmación, y los chips muestran los módulos a los que tiene acceso ese usuario.',
+        audioFile: 'staff_05.mp3',
         targetSelector: '[data-tutorial="staff-tarjeta"]',
         position: 'left'
       },
       {
         id: 'staff-fin',
         title: 'Listo',
-        text: 'Ya conoces la gestión de Staff. Crea usuarios con "Nuevo Staff", asigna solo los módulos que necesiten y usa el interruptor de acceso para activar o desactivar el panel sin borrar al usuario.',
+        text: 'Ya conoces la gestión de Staff. Crea usuarios con Nuevo Staff, asigna solo los módulos que necesiten y usa el interruptor de acceso para activar o desactivar sin borrar al usuario.',
+        audioFile: 'staff_06.mp3',
         position: 'bottom'
       }
     ];
@@ -808,55 +869,63 @@ export class TutorialService {
       {
         id: 'scout-bienvenida',
         title: 'Scouting del club',
-        text: 'Aquí gestionas la lista de jugadores en observación: tu lista de seguimiento (watchlist), el pipeline por estados (Identificado, Observado, Evaluado, etc.) y la opción de comparar jugadores. Puedes añadir jugadores externos, evaluarlos y generar informes con IA.',
+        text: 'Aquí gestionas la lista de jugadores en observación: tu watchlist, el pipeline por estados y la opción de comparar jugadores. Puedes añadir jugadores externos, evaluarlos y generar informes con IA.',
+        audioFile: 'scout_01.mp3',
         position: 'bottom'
       },
       {
         id: 'scout-volver',
         title: 'Volver',
-        text: 'Pulsa aquí para regresar al inicio del dashboard del club.',
+        text: 'Antes de continuar, recuerda que este botón te devuelve al inicio del dashboard cuando lo necesites.',
+        audioFile: 'scout_02.mp3',
         targetSelector: '[data-tutorial="scout-volver"]',
         position: 'bottom'
       },
       {
         id: 'scout-config',
         title: 'Configuración',
-        text: 'Abre la configuración del módulo: activa o desactiva el Pipeline (vista Kanban por estados), los informes y la comparativa de jugadores. Los cambios se aplican al guardar.',
+        text: 'Empecemos por la configuración del módulo. Desde aquí activas o desactivas el Pipeline, los informes y la comparativa de jugadores. Los cambios se aplican al guardar.',
+        audioFile: 'scout_03.mp3',
         targetSelector: '[data-tutorial="scout-config"]',
         position: 'bottom'
       },
       {
         id: 'scout-tabs',
         title: 'Pestañas',
-        text: 'Lista de seguimiento: tabla con todos los jugadores en observación, filtros por estado y búsqueda. Pipeline: vista por columnas (estados) para mover jugadores entre fases. El badge muestra cuántos hay en la lista.',
+        text: 'La pantalla tiene dos vistas. La lista de seguimiento muestra todos los jugadores en observación con filtros y búsqueda, y el Pipeline presenta una vista por columnas para mover jugadores entre fases.',
+        audioFile: 'scout_04.mp3',
         targetSelector: '[data-tutorial="scout-tabs"]',
         position: 'bottom'
       },
       {
         id: 'scout-watchlist-header',
         title: 'Barra de la lista de seguimiento',
-        text: 'Busca por nombre, filtra por estado del pipeline (Todos, Identificado, Observado, etc.), añade jugadores externos (no registrados en Sphaira) con "Añadir externo" y activa el modo comparación para elegir hasta 4 jugadores y ver una comparativa.',
+        text: 'En la lista de seguimiento puedes buscar por nombre, filtrar por estado del pipeline, añadir jugadores externos con Añadir externo, y activar el modo comparación para elegir hasta cuatro jugadores y compararlos.',
+        audioFile: 'scout_05.mp3',
         targetSelector: '[data-tutorial="scout-watchlist-header"]',
         position: 'bottom'
       },
       {
         id: 'scout-tabla',
         title: 'Tabla de jugadores',
-        text: 'Cada fila muestra nombre, edad, posición, equipo, estado (selector para cambiar de fase), valoración media y acciones: ver ficha, añadir evaluación y quitar de la lista. Pulsa en el nombre para abrir la ficha completa.',
+        text: 'Aquí ves a todos los jugadores en observación. Cada fila muestra nombre, edad, posición, equipo, estado, valoración media y acciones para ver la ficha, añadir una evaluación o quitar de la lista.',
+        audioFile: 'scout_06.mp3',
         targetSelector: '[data-tutorial="scout-tabla"]',
         position: 'left'
       },
       {
         id: 'scout-pipeline',
         title: 'Vista Pipeline',
-        text: 'Si está activada en configuración, verás columnas por estado (Identificado, Observado, Evaluado, Contactado, etc.). Arrastra o usa las flechas para mover jugadores entre columnas. La sección "Descartados" agrupa los que has descartado; puedes restaurarlos.',
+        text: 'Y si tienes el pipeline activado, verás columnas por estado: Identificado, Observado, Evaluado, Contactado y más. Arrastra o usa las flechas para mover jugadores entre fases. Los descartados se agrupan en una sección separada y puedes restaurarlos.',
+        audioFile: 'scout_07.mp3',
         targetSelector: '[data-tutorial="scout-pipeline"]',
         position: 'left'
       },
       {
         id: 'scout-fin',
         title: 'Listo',
-        text: 'Ya conoces el módulo de Scouting. Usa la lista de seguimiento para evaluar jugadores, el pipeline para organizar por fase y la comparativa para analizar varios jugadores a la vez. Desde la ficha de cada jugador puedes añadir evaluaciones, vídeos e informes con IA.',
+        text: 'Ya conoces el módulo de Scouting. Usa la watchlist para evaluar jugadores, el pipeline para organizar por fase y la comparativa para analizar varios a la vez.',
+        audioFile: 'scout_08.mp3',
         position: 'bottom'
       }
     ];
@@ -868,55 +937,63 @@ export class TutorialService {
       {
         id: 'videos-bienvenida',
         title: 'Biblioteca de Vídeos',
-        text: 'Aquí gestionas todos los vídeos de scouting del club: subir desde tu equipo, importar desde Google Drive, añadir enlaces de YouTube/Vimeo/VEO y organizarlos en carpetas por temporada. Puedes reproducir, mover, exportar a Drive o abrir un vídeo en Análisis de Vídeo.',
+        text: 'Aquí gestionas todos los vídeos del club: sube archivos desde tu equipo, importa desde Google Drive, añade enlaces de YouTube o Vimeo y organízalos en carpetas por temporada.',
+        audioFile: 'videos_01.mp3',
         position: 'bottom'
       },
       {
         id: 'videos-volver',
         title: 'Volver',
-        text: 'Pulsa aquí para regresar al dashboard del club.',
+        text: 'Antes de continuar, recuerda que este botón te devuelve al dashboard del club cuando lo necesites.',
+        audioFile: 'videos_02.mp3',
         targetSelector: '[data-tutorial="videos-volver"]',
         position: 'bottom'
       },
       {
         id: 'videos-header-acciones',
         title: 'Acciones del header',
-        text: '"Gestionar plan" o "Contratar almacenamiento" abre los planes de vídeo. "Subir vídeo" sube un archivo desde tu equipo (requiere plan). "Importar desde Drive" trae vídeos desde Google Drive. "Añadir enlace" agrega un vídeo por URL de YouTube, Vimeo o VEO sin consumir espacio.',
+        text: 'Empecemos por las acciones del header. Gestionar plan o Contratar almacenamiento abre los planes disponibles. Subir vídeo sube un archivo desde tu equipo, Importar desde Drive trae vídeos de Google Drive, y Añadir enlace agrega una URL de YouTube o Vimeo sin consumir espacio.',
+        audioFile: 'videos_03.mp3',
         targetSelector: '[data-tutorial="videos-header-acciones"]',
         position: 'bottom'
       },
       {
         id: 'videos-plan-bar',
         title: 'Uso de almacenamiento',
-        text: 'La barra muestra el plan activo, el espacio usado y el límite. El porcentaje y el número de vídeos te ayudan a controlar el consumo. Si no tienes plan, verás un banner para contratar almacenamiento.',
+        text: 'Justo debajo ves el estado de tu almacenamiento: plan activo, espacio usado y límite total. Si no tienes plan, aparecerá un banner para contratar almacenamiento.',
+        audioFile: 'videos_04.mp3',
         targetSelector: '[data-tutorial="videos-plan-bar"]',
         position: 'bottom'
       },
       {
         id: 'videos-sidebar',
         title: 'Carpetas',
-        text: 'Selector de temporada y lista de carpetas: "Todos los vídeos", "Sin carpeta" y las carpetas creadas. El botón de personas sincroniza carpetas por equipo; el de carpeta plus crea una nueva. En cada carpeta (no de equipo) puedes renombrar o eliminar.',
+        text: 'A la izquierda tienes el organizador de carpetas. Puedes ver todos los vídeos, los que no tienen carpeta, o las carpetas que hayas creado. El botón de personas sincroniza carpetas por equipo y el de carpeta más crea una nueva.',
+        audioFile: 'videos_05.mp3',
         targetSelector: '[data-tutorial="videos-sidebar"]',
         position: 'right'
       },
       {
         id: 'videos-busqueda',
         title: 'Búsqueda y filtro por carpeta',
-        text: 'Busca por título, jugador o etiqueta. Si has seleccionado una carpeta, aparece el breadcrumb; puedes quitarlo para ver todos los vídeos de nuevo.',
+        text: 'Para encontrar un vídeo concreto, busca por título, jugador o etiqueta. Si tienes una carpeta seleccionada, aparece un breadcrumb que puedes quitar para ver todos los vídeos de nuevo.',
+        audioFile: 'videos_06.mp3',
         targetSelector: '[data-tutorial="videos-busqueda"]',
         position: 'bottom'
       },
       {
         id: 'videos-grid',
         title: 'Grid de vídeos',
-        text: 'Cada tarjeta muestra miniatura, título, jugador, carpeta, etiquetas y fecha. Acciones: "Ver" para reproducir, "Exportar a Drive", "Analizar vídeo" (abre en Análisis de Vídeo), "Mover a carpeta" y "Eliminar". Los enlaces externos muestran badge de YouTube/Vimeo/VEO.',
+        text: 'Y aquí tienes todos tus vídeos. Cada tarjeta muestra miniatura, título, jugador, carpeta, etiquetas y fecha. Desde las acciones puedes reproducir, exportar a Drive, analizar el vídeo, moverlo de carpeta o eliminarlo.',
+        audioFile: 'videos_07.mp3',
         targetSelector: '[data-tutorial="videos-grid"]',
         position: 'left'
       },
       {
         id: 'videos-fin',
         title: 'Listo',
-        text: 'Ya conoces la Biblioteca de Vídeos. Sube o enlaza vídeos, organízalos en carpetas y usa "Analizar vídeo" para etiquetar jugadas en el módulo de Análisis de Vídeo.',
+        text: 'Ya conoces la Biblioteca de Vídeos. Sube o enlaza vídeos, organízalos en carpetas y usa Analizar vídeo para etiquetar jugadas en el módulo de Análisis de Vídeo.',
+        audioFile: 'videos_08.mp3',
         position: 'bottom'
       }
     ];
@@ -928,48 +1005,55 @@ export class TutorialService {
       {
         id: 'va-bienvenida',
         title: 'Análisis de Vídeo',
-        text: 'Desde aquí creas y gestionas proyectos de etiquetado de vídeo: subes un archivo local (se reproduce en tu equipo, no se sube al servidor), eliges una plantilla de categorías y etiquetas jugadas. Puedes crear playlists y compartir con el equipo.',
+        text: 'Desde aquí creas y gestionas proyectos de etiquetado de vídeo. Subes un archivo local, eliges una plantilla de categorías, etiquetas jugadas y creas playlists que puedes compartir con el equipo.',
+        audioFile: 'va_01.mp3',
         position: 'bottom'
       },
       {
         id: 'va-volver',
         title: 'Volver',
-        text: 'Pulsa aquí para regresar al dashboard.',
+        text: 'Antes de continuar, recuerda que este botón te devuelve al dashboard cuando lo necesites.',
+        audioFile: 'va_02.mp3',
         targetSelector: '[data-tutorial="va-volver"]',
         position: 'bottom'
       },
       {
         id: 'va-quick-actions',
         title: 'Acciones rápidas',
-        text: 'Plantillas: gestiona las categorías de etiquetado (tipos de jugadas, eventos). Playlists: crea y comparte listas de clips. Biblioteca: enlace a la Biblioteca de Vídeos del club para subir o ver vídeos.',
+        text: 'Empecemos por las acciones rápidas. Plantillas gestiona las categorías de etiquetado, Playlists crea y comparte listas de clips, y Biblioteca enlaza con la Biblioteca de Vídeos del club.',
+        audioFile: 'va_03.mp3',
         targetSelector: '[data-tutorial="va-quick-actions"]',
         position: 'bottom'
       },
       {
         id: 'va-kpi',
         title: 'Filtros por estado',
-        text: 'Las tarjetas Total, En progreso, Completados y Borradores filtran la lista de proyectos. Pulsa en una para ver solo los análisis en ese estado.',
+        text: 'Las tarjetas de estado te permiten filtrar la lista de proyectos. Pulsa en Total, En progreso, Completados o Borradores para ver solo los análisis en ese estado.',
+        audioFile: 'va_04.mp3',
         targetSelector: '[data-tutorial="va-kpi"]',
         position: 'bottom'
       },
       {
         id: 'va-toolbar',
         title: 'Barra de proyectos',
-        text: 'Contador de análisis, búsqueda por título y el botón "Nuevo análisis" para crear un proyecto: título, descripción, archivo de vídeo local y plantilla. Puedes elegir contexto Libre, Partido o Entrenamiento.',
+        text: 'En la barra de proyectos tienes el contador de análisis, la búsqueda por título y el botón Nuevo análisis para crear un proyecto: título, descripción, archivo de vídeo local y plantilla.',
+        audioFile: 'va_05.mp3',
         targetSelector: '[data-tutorial="va-toolbar"]',
         position: 'bottom'
       },
       {
         id: 'va-grid',
         title: 'Proyectos de análisis',
-        text: 'Cada tarjeta muestra estado (color), título, descripción, origen del vídeo (local, online, partido, entrenamiento) y fecha. Acciones: archivar o eliminar. Pulsa en la tarjeta para abrir el workspace de etiquetado.',
+        text: 'Y aquí ves todos tus proyectos de análisis. Cada tarjeta muestra el estado, título, descripción, origen del vídeo y fecha. Pulsa en una tarjeta para abrir el workspace de etiquetado.',
+        audioFile: 'va_06.mp3',
         targetSelector: '[data-tutorial="va-grid"]',
         position: 'left'
       },
       {
         id: 'va-fin',
         title: 'Listo',
-        text: 'Crea tu primer análisis con "Nuevo análisis", elige una plantilla en Plantillas si hace falta, y abre un proyecto para etiquetar jugadas y crear clips.',
+        text: 'Crea tu primer análisis con Nuevo análisis, configura tus plantillas si hace falta, y abre un proyecto para etiquetar jugadas y crear clips.',
+        audioFile: 'va_07.mp3',
         position: 'bottom'
       }
     ];
@@ -981,62 +1065,71 @@ export class TutorialService {
       {
         id: 'asistente-bienvenida',
         title: 'Asistente IA',
-        text: 'Chat con inteligencia artificial del club: haz preguntas, pide resúmenes o que ejecute acciones (consultar datos, crear elementos). Las respuestas pueden incluir acciones que debes confirmar. Usa créditos por mensaje; el saldo se muestra en la cabecera.',
+        text: 'Este es el chat de inteligencia artificial del club. Haz preguntas, pide resúmenes o que ejecute acciones como consultar datos o crear elementos. Cada mensaje consume créditos; el saldo se muestra en la cabecera.',
+        audioFile: 'asistente_01.mp3',
         position: 'bottom'
       },
       {
         id: 'asistente-volver',
         title: 'Volver',
-        text: 'Pulsa aquí para regresar al dashboard.',
+        text: 'Antes de continuar, recuerda que este botón te devuelve al dashboard cuando lo necesites.',
+        audioFile: 'asistente_02.mp3',
         targetSelector: '[data-tutorial="asistente-volver"]',
         position: 'bottom'
       },
       {
         id: 'asistente-sidebar',
         title: 'Historial de conversaciones',
-        text: 'El panel lateral lista tus conversaciones anteriores. El botón "+" inicia una nueva conversación. Pulsa en una entrada para cargarla; el botón de papelera la elimina.',
+        text: 'A la izquierda tienes el historial de conversaciones anteriores. El botón más inicia una nueva conversación; pulsa en una entrada para cargarla, y la papelera la elimina.',
+        audioFile: 'asistente_03.mp3',
         targetSelector: '[data-tutorial="asistente-sidebar"]',
         position: 'right'
       },
       {
         id: 'asistente-toggle',
         title: 'Mostrar u ocultar historial',
-        text: 'Este botón abre o cierra el panel del historial de conversaciones para ganar espacio en pantalla.',
+        text: 'Este botón abre o cierra el panel del historial para ganar espacio en pantalla cuando lo necesites.',
+        audioFile: 'asistente_04.mp3',
         targetSelector: '[data-tutorial="asistente-toggle"]',
         position: 'right'
       },
       {
         id: 'asistente-header',
         title: 'Cabecera del chat',
-        text: 'Título del asistente, indicador de estado (en línea) y créditos disponibles. Pulsa en los créditos para ver detalles o comprar más. El botón "+" inicia una nueva conversación.',
+        text: 'En la cabecera del chat ves el título del asistente, el indicador de estado y los créditos disponibles. Pulsa en los créditos para ver detalles o comprar más.',
+        audioFile: 'asistente_05.mp3',
         targetSelector: '[data-tutorial="asistente-header"]',
         position: 'bottom'
       },
       {
         id: 'asistente-body',
         title: 'Mensajes',
-        text: 'Aquí se muestran tus mensajes y las respuestas del asistente. Las respuestas pueden incluir acciones pendientes de confirmar (ejecutar o cancelar). El asistente puede mostrar "escribiendo..." mientras genera la respuesta.',
+        text: 'Aquí se van mostrando tus mensajes y las respuestas del asistente. Las respuestas pueden incluir acciones que debes confirmar o cancelar. El asistente mostrará un indicador mientras genera la respuesta.',
+        audioFile: 'asistente_06.mp3',
         targetSelector: '[data-tutorial="asistente-body"]',
         position: 'left'
       },
       {
         id: 'asistente-sugerencias',
         title: 'Sugerencias',
-        text: 'Al iniciar una conversación verás chips de sugerencias: preguntas o tareas frecuentes. Pulsa en uno para enviarlo como mensaje y obtener una respuesta rápida.',
+        text: 'Para empezar rápido, al iniciar una conversación verás chips de sugerencias con preguntas o tareas frecuentes. Pulsa en uno para enviarlo directamente y obtener una respuesta inmediata.',
+        audioFile: 'asistente_07.mp3',
         targetSelector: '[data-tutorial="asistente-sugerencias"]',
         position: 'top'
       },
       {
         id: 'asistente-input',
         title: 'Escribir y enviar',
-        text: 'Escribe en el área de texto y pulsa Enviar (o Intro). Si el asistente admite voz, el botón del micrófono permite dictar. Durante la respuesta puedes cancelar con el botón X. El aviso legal recuerda que la IA puede equivocarse.',
+        text: 'Y para escribir tu consulta, usa el área de texto y pulsa Enviar o Intro. Si admite voz, el micrófono te permite dictar. Durante la respuesta puedes cancelar con el botón X.',
+        audioFile: 'asistente_08.mp3',
         targetSelector: '[data-tutorial="asistente-input"]',
         position: 'top'
       },
       {
         id: 'asistente-fin',
         title: 'Listo',
-        text: 'Ya conoces el Asistente IA. Usa las sugerencias o escribe libremente, revisa los créditos y confirma las acciones que el asistente te proponga cuando aparezcan.',
+        text: 'Ya conoces el Asistente IA. Usa las sugerencias o escribe libremente, revisa tus créditos y confirma las acciones que el asistente te proponga.',
+        audioFile: 'asistente_09.mp3',
         position: 'bottom'
       }
     ];
@@ -1045,127 +1138,127 @@ export class TutorialService {
   /** Pasos del tutorial de Info Jugadores (cuadro de mandos). */
   private getInfoJugadoresSteps(): TutorialStep[] {
     return [
-      { id: 'ij-bienvenida', title: 'Info Jugadores', text: 'Consulta y gestiona el perfil de cada jugador del club: datos personales, padre/madre, DNI, documentos, equipo asignado. Puedes mover jugadores de equipo, cambiar temporada, exportar a Excel y personalizar columnas.', position: 'bottom' },
-      { id: 'ij-volver', title: 'Volver', text: 'Regresa al cuadro de mandos del club.', targetSelector: '[data-tutorial="ij-volver"]', position: 'bottom' },
-      { id: 'ij-consultar-ia', title: 'Consultar IA', text: 'Abre el panel lateral del Asistente IA para hacer preguntas sobre el listado de jugadores (datos anonimizados): distribución por posición, por equipo, posiciones con déficit, jugadores sin dorsal, etc.', targetSelector: '[data-tutorial="ij-consultar-ia"]', position: 'left' },
-      { id: 'ij-toolbar', title: 'Barra de controles', text: 'Busca por nombre o datos, filtra por equipo (Todos los equipos o uno concreto), exporta la tabla a Excel y personaliza los campos visibles con "Campos personalizados".', targetSelector: '[data-tutorial="ij-toolbar"]', position: 'bottom' },
-      { id: 'ij-tabla', title: 'Tabla de jugadores', text: 'Cada fila: foto, nombre (clic para ver ficha completa), equipo con botones Mover jugador y Cambiar temporada, fecha nacimiento, teléfono, DNI, botón DNI (subir caras), botón Documentos, datos padre/madre, IBAN y campos personalizados (firma/archivo).', targetSelector: '[data-tutorial="ij-tabla"]', position: 'left' },
-      { id: 'ij-modal-jugador', title: 'Información del jugador', text: 'Haz clic en el nombre de un jugador para abrir el modal con su ficha completa: información personal, datos financieros (si aplica), documentos, DNI y campos personalizados.', targetSelector: '[data-tutorial="ij-tabla"]', position: 'left' },
-      { id: 'ij-panel-ia', title: 'Panel Asistente IA', text: 'Sugerencias rápidas (distribución por posición, por equipo, etc.), historial de mensajes y área para escribir consultas. Shift+Enter nueva línea, Enter enviar.', targetSelector: '[data-tutorial="ij-panel-ia"]', position: 'left' },
-      { id: 'ij-fin', title: 'Listo', text: 'Ya conoces Info Jugadores. Usa la búsqueda y el filtro por equipo, exporta a Excel, personaliza columnas y haz clic en un nombre para ver la ficha completa del jugador o abre el panel IA para consultas.', position: 'bottom' }
+      { id: 'ij-bienvenida', title: 'Info Jugadores', text: 'Aquí consultas y gestionas el perfil de cada jugador del club: datos personales, padre o madre, DNI, documentos y equipo asignado. Puedes mover jugadores de equipo, cambiar temporada, exportar a Excel y personalizar columnas.', audioFile: 'ij_01.mp3', position: 'bottom' },
+      { id: 'ij-volver', title: 'Volver', text: 'Antes de continuar, recuerda que este botón te devuelve al cuadro de mandos del club.', audioFile: 'ij_02.mp3', targetSelector: '[data-tutorial="ij-volver"]', position: 'bottom' },
+      { id: 'ij-consultar-ia', title: 'Consultar IA', text: 'Puedes también consultar el Asistente IA sobre el listado de jugadores con datos anonimizados: distribución por posición, por equipo, posiciones con déficit, jugadores sin dorsal y mucho más.', audioFile: 'ij_03.mp3', targetSelector: '[data-tutorial="ij-consultar-ia"]', position: 'left' },
+      { id: 'ij-toolbar', title: 'Barra de controles', text: 'En la barra superior tienes los controles. Busca por nombre o datos, filtra por equipo, exporta la tabla a Excel y personaliza los campos visibles con Campos personalizados.', audioFile: 'ij_04.mp3', targetSelector: '[data-tutorial="ij-toolbar"]', position: 'bottom' },
+      { id: 'ij-tabla', title: 'Tabla de jugadores', text: 'Y aquí ves la tabla completa de jugadores. Cada fila muestra foto, nombre, equipo con opciones de mover o cambiar temporada, fecha de nacimiento, teléfono, DNI, documentos, datos del padre o madre e IBAN.', audioFile: 'ij_05.mp3', targetSelector: '[data-tutorial="ij-tabla"]', position: 'left' },
+      { id: 'ij-modal-jugador', title: 'Información del jugador', text: 'Al hacer clic en el nombre de un jugador se abre su ficha completa: información personal, datos financieros si aplica, documentos, DNI y campos personalizados.', audioFile: 'ij_06.mp3', targetSelector: '[data-tutorial="ij-tabla"]', position: 'left' },
+      { id: 'ij-panel-ia', title: 'Panel Asistente IA', text: 'El panel del Asistente IA incluye sugerencias rápidas, historial de mensajes y un área de consulta. Pulsa Intro para enviar y Shift más Intro para añadir una nueva línea.', audioFile: 'ij_07.mp3', targetSelector: '[data-tutorial="ij-panel-ia"]', position: 'left' },
+      { id: 'ij-fin', title: 'Listo', text: 'Ya conoces Info Jugadores. Usa la búsqueda y los filtros, exporta a Excel, personaliza columnas y haz clic en cualquier nombre para ver la ficha completa.', audioFile: 'ij_08.mp3', position: 'bottom' }
     ];
   }
 
   /** Pasos del tutorial de Info Entrenadores (cuadro de mandos). */
   private getInfoEntrenadoresSteps(): TutorialStep[] {
     return [
-      { id: 'ie-bienvenida', title: 'Info Entrenadores', text: 'Consulta y gestiona el perfil de cada entrenador del club: datos personales, rol (entrenador, fisio, nutricionista), equipos asignados, certificados (delitos sexuales, antecedentes, seguro, primeros auxilios), documentos e historial deportivo.', position: 'bottom' },
-      { id: 'ie-volver', title: 'Volver', text: 'Regresa al cuadro de mandos del club.', targetSelector: '[data-tutorial="ie-volver"]', position: 'bottom' },
-      { id: 'ie-consultar-ia', title: 'Consultar IA', text: 'Abre el panel del Asistente IA para preguntas sobre el cuerpo técnico (datos anonimizados): total de entrenadores, equipos con entrenador, distribución de perfiles, equipos sin entrenador.', targetSelector: '[data-tutorial="ie-consultar-ia"]', position: 'left' },
-      { id: 'ie-toolbar', title: 'Barra de controles', text: 'Selecciona temporada, busca por nombre, filtra por equipo, exporta a Excel y configura los campos personalizados visibles en la tabla.', targetSelector: '[data-tutorial="ie-toolbar"]', position: 'bottom' },
-      { id: 'ie-tabla', title: 'Tabla de entrenadores', text: 'Columnas ordenables: imagen, nombre (clic para ver ficha), rol, equipo(s), email, teléfono, fecha nacimiento, DNI, nacionalidad, licencia federativa, titulación, certificados (botón), contacto emergencia, campos personalizados, DNI (imágenes), Documentos. Pulsa en el nombre para ver la ficha completa.', targetSelector: '[data-tutorial="ie-tabla"]', position: 'left' },
-      { id: 'ie-panel-ia', title: 'Panel Asistente IA', text: 'Sugerencias (total entrenadores, equipos con entrenador, perfiles, equipos sin entrenador), mensajes y área de consulta.', targetSelector: '[data-tutorial="ie-panel-ia"]', position: 'left' },
-      { id: 'ie-fin', title: 'Listo', text: 'Ya conoces Info Entrenadores. Ordena por cualquier columna, abre la ficha con el nombre y usa el panel IA para análisis del cuerpo técnico.', position: 'bottom' }
+      { id: 'ie-bienvenida', title: 'Info Entrenadores', text: 'Aquí consultas y gestionas el perfil de cada entrenador del club: datos personales, rol, equipos asignados, certificados obligatorios, documentos e historial deportivo.', audioFile: 'ie_01.mp3', position: 'bottom' },
+      { id: 'ie-volver', title: 'Volver', text: 'Antes de continuar, recuerda que este botón te devuelve al cuadro de mandos del club.', audioFile: 'ie_02.mp3', targetSelector: '[data-tutorial="ie-volver"]', position: 'bottom' },
+      { id: 'ie-consultar-ia', title: 'Consultar IA', text: 'También puedes consultar la IA sobre el cuerpo técnico con datos anonimizados: total de entrenadores, equipos con entrenador asignado, distribución de perfiles y equipos sin entrenador.', audioFile: 'ie_03.mp3', targetSelector: '[data-tutorial="ie-consultar-ia"]', position: 'left' },
+      { id: 'ie-toolbar', title: 'Barra de controles', text: 'En la barra superior selecciona la temporada, busca por nombre, filtra por equipo, exporta a Excel y configura los campos personalizados visibles en la tabla.', audioFile: 'ie_04.mp3', targetSelector: '[data-tutorial="ie-toolbar"]', position: 'bottom' },
+      { id: 'ie-tabla', title: 'Tabla de entrenadores', text: 'Y aquí ves la tabla de entrenadores con columnas ordenables: nombre, rol, equipos, email, teléfono, DNI, certificados, documentos y campos personalizados. Pulsa en el nombre de un entrenador para ver su ficha completa.', audioFile: 'ie_05.mp3', targetSelector: '[data-tutorial="ie-tabla"]', position: 'left' },
+      { id: 'ie-panel-ia', title: 'Panel Asistente IA', text: 'El panel del Asistente IA incluye sugerencias sobre el cuerpo técnico, historial de mensajes y un área de consulta para preguntas más específicas.', audioFile: 'ie_06.mp3', targetSelector: '[data-tutorial="ie-panel-ia"]', position: 'left' },
+      { id: 'ie-fin', title: 'Listo', text: 'Ya conoces Info Entrenadores. Ordena por cualquier columna, abre la ficha pulsando el nombre y usa el panel IA para análisis del cuerpo técnico.', audioFile: 'ie_07.mp3', position: 'bottom' }
     ];
   }
 
   /** Pasos del tutorial de Estadísticas Jugadores Club. */
   private getEstadisticasJugadoresClubSteps(): TutorialStep[] {
     return [
-      { id: 'ej-bienvenida', title: 'Estadísticas Jugadores', text: 'Métricas y análisis de rendimiento de los jugadores del club: partidos jugados, minutos, goles, asistencias, penaltis, tarjetas. Todas las columnas son ordenables. Incluye paginación y panel de consultas con IA.', position: 'bottom' },
-      { id: 'ej-volver', title: 'Volver', text: 'Regresa al cuadro de mandos.', targetSelector: '[data-tutorial="ej-volver"]', position: 'bottom' },
-      { id: 'ej-consultar-ia', title: 'Consultar IA', text: 'Abre el panel IA para preguntas como: goleador, gráfica de asistencias, rendimiento, jugadores con más tarjetas, comparativa goles vs asistencias, media de minutos.', targetSelector: '[data-tutorial="ej-consultar-ia"]', position: 'left' },
-      { id: 'ej-tabla', title: 'Tabla de estadísticas', text: 'Columnas ordenables: nombre, equipo, posición, partidos, minutos totales, media minutos/partido, goles, media goles/partido, asistencias, goles+asistencias, penaltis, tiros libres, penaltis fallados, tarjetas (amarilla/roja). Pulsa en el encabezado para ordenar.', targetSelector: '[data-tutorial="ej-tabla"]', position: 'left' },
-      { id: 'ej-paginacion', title: 'Paginación', text: 'Cambia el tamaño de página (filas visibles), avanza o retrocede con los botones y consulta el indicador de página actual.', targetSelector: '[data-tutorial="ej-paginacion"]', position: 'top' },
-      { id: 'ej-panel-ia', title: 'Panel Asistente IA', text: 'Sugerencias (goleador, asistencias, rendimiento, tarjetas, comparativa, media minutos), mensajes y envío por texto o voz si está disponible.', targetSelector: '[data-tutorial="ej-panel-ia"]', position: 'left' },
-      { id: 'ej-fin', title: 'Listo', text: 'Ya conoces las estadísticas de jugadores. Ordena por cualquier métrica y usa el panel IA para análisis rápidos.', position: 'bottom' }
+      { id: 'ej-bienvenida', title: 'Estadísticas Jugadores', text: 'Aquí tienes las métricas de rendimiento de todos los jugadores del club: partidos jugados, minutos, goles, asistencias, penaltis y tarjetas. Todas las columnas son ordenables e incluye un panel de consultas con IA.', audioFile: 'ej_01.mp3', position: 'bottom' },
+      { id: 'ej-volver', title: 'Volver', text: 'Antes de continuar, recuerda que este botón te devuelve al cuadro de mandos del club.', audioFile: 'ej_02.mp3', targetSelector: '[data-tutorial="ej-volver"]', position: 'bottom' },
+      { id: 'ej-consultar-ia', title: 'Consultar IA', text: 'Para análisis más profundos, abre el panel IA y pregunta por el goleador del club, la gráfica de asistencias, los jugadores con más tarjetas o la media de minutos por partido.', audioFile: 'ej_03.mp3', targetSelector: '[data-tutorial="ej-consultar-ia"]', position: 'left' },
+      { id: 'ej-tabla', title: 'Tabla de estadísticas', text: 'Aquí tienes la tabla de estadísticas. Columnas ordenables: nombre, equipo, posición, partidos, minutos totales, media por partido, goles, asistencias, penaltis, tiros libres y tarjetas. Pulsa en el encabezado de cualquier columna para ordenar.', audioFile: 'ej_04.mp3', targetSelector: '[data-tutorial="ej-tabla"]', position: 'left' },
+      { id: 'ej-paginacion', title: 'Paginación', text: 'Si hay muchos jugadores, usa la paginación para cambiar el tamaño de página y navegar entre páginas con los botones de avance y retroceso.', audioFile: 'ej_05.mp3', targetSelector: '[data-tutorial="ej-paginacion"]', position: 'top' },
+      { id: 'ej-panel-ia', title: 'Panel Asistente IA', text: 'El panel del Asistente IA incluye sugerencias sobre goleadores, asistencias, rendimiento, tarjetas y comparativas. Escribe tu consulta o usa las sugerencias directamente.', audioFile: 'ej_06.mp3', targetSelector: '[data-tutorial="ej-panel-ia"]', position: 'left' },
+      { id: 'ej-fin', title: 'Listo', text: 'Ya conoces las estadísticas de jugadores. Ordena por cualquier métrica para encontrar los mejores rendimientos y usa el panel IA para análisis más detallados.', audioFile: 'ej_07.mp3', position: 'bottom' }
     ];
   }
 
   /** Pasos del tutorial de Estadísticas Equipos Club. */
   private getEstadisticasEquiposClubSteps(): TutorialStep[] {
     return [
-      { id: 'ee-bienvenida', title: 'Estadísticas Equipos', text: 'Métricas de rendimiento de todos los equipos del club: posición, partidos jugados, puntos, victorias, empates, derrotas, goles a favor y en contra, diferencia de goles y últimos resultados. Pulsa en un equipo para ver el detalle de sus partidos.', position: 'bottom' },
-      { id: 'ee-volver', title: 'Volver', text: 'Regresa al cuadro de mandos.', targetSelector: '[data-tutorial="ee-volver"]', position: 'bottom' },
-      { id: 'ee-consultar-ia', title: 'Consultar IA', text: 'Abre el panel IA para consultas sobre equipos: el que más victorias tiene, gráfica de puntos, análisis de rendimiento, comparativa goles, promedio de victorias, últimas rachas.', targetSelector: '[data-tutorial="ee-consultar-ia"]', position: 'left' },
-      { id: 'ee-cabecera', title: 'Cabecera y leyenda', text: 'Título del módulo, número de equipos y leyenda de colores: Victoria, Empate, Derrota para interpretar la columna de últimos resultados.', targetSelector: '[data-tutorial="ee-cabecera"]', position: 'bottom' },
-      { id: 'ee-tabla', title: 'Tabla de equipos', text: 'Posición (#), categoría del equipo (clic para abrir modal de partidos), PJ, PTS, victorias, empates, derrotas, GF, GA, diferencia de goles y última racha (V/E/D). Las tres primeras filas destacan con estilo podio.', targetSelector: '[data-tutorial="ee-tabla"]', position: 'left' },
-      { id: 'ee-panel-ia', title: 'Panel Asistente IA', text: 'Sugerencias y consultas sobre estadísticas de equipos. Puedes usar voz si está disponible.', targetSelector: '[data-tutorial="ee-panel-ia"]', position: 'left' },
-      { id: 'ee-fin', title: 'Listo', text: 'Ya conoces las estadísticas de equipos. Haz clic en un equipo para ver sus partidos en el modal.', position: 'bottom' }
+      { id: 'ee-bienvenida', title: 'Estadísticas Equipos', text: 'Aquí ves las métricas de rendimiento de todos los equipos del club: posición, partidos jugados, puntos, victorias, empates, derrotas, goles a favor y en contra y últimos resultados. Pulsa en un equipo para ver el detalle de sus partidos.', audioFile: 'ee_01.mp3', position: 'bottom' },
+      { id: 'ee-volver', title: 'Volver', text: 'Antes de continuar, recuerda que este botón te devuelve al cuadro de mandos del club.', audioFile: 'ee_02.mp3', targetSelector: '[data-tutorial="ee-volver"]', position: 'bottom' },
+      { id: 'ee-consultar-ia', title: 'Consultar IA', text: 'Para análisis más profundos, abre el panel IA y pregunta por el equipo con más victorias, la gráfica de puntos, el rendimiento general o la comparativa de goles entre equipos.', audioFile: 'ee_03.mp3', targetSelector: '[data-tutorial="ee-consultar-ia"]', position: 'left' },
+      { id: 'ee-cabecera', title: 'Cabecera y leyenda', text: 'En la cabecera tienes el número total de equipos y la leyenda de colores que indica Victoria, Empate o Derrota, para interpretar la columna de últimos resultados de cada equipo.', audioFile: 'ee_04.mp3', targetSelector: '[data-tutorial="ee-cabecera"]', position: 'bottom' },
+      { id: 'ee-tabla', title: 'Tabla de equipos', text: 'Y aquí ves la tabla completa de equipos. Verás posición, categoría, partidos jugados, puntos, victorias, empates, derrotas, goles a favor, goles en contra, diferencia y última racha. Las tres primeras posiciones destacan con estilo podio.', audioFile: 'ee_05.mp3', targetSelector: '[data-tutorial="ee-tabla"]', position: 'left' },
+      { id: 'ee-panel-ia', title: 'Panel Asistente IA', text: 'El panel del Asistente IA incluye sugerencias sobre estadísticas de equipos y un área de consulta para preguntas más específicas sobre el rendimiento del club.', audioFile: 'ee_06.mp3', targetSelector: '[data-tutorial="ee-panel-ia"]', position: 'left' },
+      { id: 'ee-fin', title: 'Listo', text: 'Ya conoces las estadísticas de equipos. Haz clic en cualquier equipo para ver el detalle de sus partidos en el modal.', audioFile: 'ee_07.mp3', position: 'bottom' }
     ];
   }
 
   /** Pasos del tutorial de Calendario Club. */
   private getCalendarioClubSteps(): TutorialStep[] {
     return [
-      { id: 'cal-bienvenida', title: 'Calendario Club', text: 'Vista mensual de partidos y entrenamientos de todos los equipos del club. Filtra por equipo con los chips, navega entre meses y pulsa en un día o en un evento para ver el detalle.', position: 'bottom' },
-      { id: 'cal-volver', title: 'Volver', text: 'Regresa al cuadro de mandos.', targetSelector: '[data-tutorial="cal-volver"]', position: 'bottom' },
-      { id: 'cal-filtro', title: 'Filtro de equipos', text: 'Cada chip es un equipo; el color y el ojo indican si está visible. "Mostrar todos" / "Ocultar todos" para ver o ocultar todos a la vez. Arrastra los chips para reordenar. Pulsa en un chip o en el ojo para mostrar u ocultar ese equipo.', targetSelector: '[data-tutorial="cal-filtro"]', position: 'bottom' },
-      { id: 'cal-nav', title: 'Navegación del mes', text: 'Flechas para mes anterior y siguiente, título del mes y año, y botón "Hoy" para volver al mes actual.', targetSelector: '[data-tutorial="cal-nav"]', position: 'bottom' },
-      { id: 'cal-grid', title: 'Calendario y leyenda', text: 'Grid con días de la semana y celdas por día. Los puntos de color indican eventos (entrenamiento: forma de pesa; partido: forma de balón). Pulsa en una celda para abrir el panel del día. La leyenda explica los tipos de evento.', targetSelector: '[data-tutorial="cal-grid"]', position: 'left' },
-      { id: 'cal-panel-dia', title: 'Panel del día', text: 'Al pulsar un día se abre el panel lateral con los eventos de ese día agrupados por equipo. Cada evento (entrenamiento o partido) puede abrirse para ver detalles. El enlace lleva al calendario del equipo.', targetSelector: '[data-tutorial="cal-panel-dia"]', position: 'left' },
-      { id: 'cal-fin', title: 'Listo', text: 'Ya conoces el Calendario. Filtra equipos, cambia de mes y pulsa en un día o evento para ver toda la información.', position: 'bottom' }
+      { id: 'cal-bienvenida', title: 'Calendario Club', text: 'Aquí tienes la vista mensual de partidos y entrenamientos de todos los equipos del club. Filtra por equipo con los chips, navega entre meses y pulsa en un día o en un evento para ver el detalle.', audioFile: 'cal_01.mp3', position: 'bottom' },
+      { id: 'cal-volver', title: 'Volver', text: 'Antes de continuar, recuerda que este botón te devuelve al cuadro de mandos del club.', audioFile: 'cal_02.mp3', targetSelector: '[data-tutorial="cal-volver"]', position: 'bottom' },
+      { id: 'cal-filtro', title: 'Filtro de equipos', text: 'Empecemos por el filtro de equipos. Cada chip corresponde a un equipo; el color y el icono de ojo indican si está visible. Pulsa en un chip para mostrarlo u ocultarlo, o usa los botones de mostrar y ocultar todos.', audioFile: 'cal_03.mp3', targetSelector: '[data-tutorial="cal-filtro"]', position: 'bottom' },
+      { id: 'cal-nav', title: 'Navegación del mes', text: 'Para navegar entre meses usa las flechas de anterior y siguiente. El botón Hoy te lleva directamente al mes actual.',  audioFile: 'cal_04.mp3', targetSelector: '[data-tutorial="cal-nav"]', position: 'bottom' },
+      { id: 'cal-grid', title: 'Calendario y leyenda', text: 'Y aquí tienes el calendario en sí. Los puntos de color indican eventos; los de forma de pesa son entrenamientos y los de forma de balón son partidos. Pulsa en una celda para abrir el panel del día.', audioFile: 'cal_05.mp3', targetSelector: '[data-tutorial="cal-grid"]', position: 'left' },
+      { id: 'cal-panel-dia', title: 'Panel del día', text: 'Al pulsar en cualquier día se abre el panel lateral con todos los eventos de ese día agrupados por equipo. Cada evento puede abrirse para ver sus detalles completos.', audioFile: 'cal_06.mp3', targetSelector: '[data-tutorial="cal-panel-dia"]', position: 'left' },
+      { id: 'cal-fin', title: 'Listo', text: 'Ya conoces el Calendario del club. Filtra los equipos que quieras ver, navega entre meses y pulsa en cualquier día o evento para acceder a todos los detalles.', audioFile: 'cal_07.mp3', position: 'bottom' }
     ];
   }
 
   /** Pasos del tutorial Menu Club: una opción por paso, sin omitir ninguna. */
   private getMenuClubSteps(): TutorialStep[] {
     return [
-      { id: 'mc-bienvenida', title: 'Menú del equipo', text: 'Desde aquí accedes a todas las secciones del equipo. Cada tarjeta lleva a una pantalla distinta: calendario, jugadores, estadísticas, galería, etc.', position: 'bottom' },
-      { id: 'mc-volver', title: 'Volver', text: 'Regresa a la pantalla anterior.', targetSelector: '[data-tutorial="mc-volver"]', position: 'bottom' },
-      { id: 'mc-calendar', title: 'Calendario', text: 'Accede al calendario del equipo: partidos y entrenamientos.', targetSelector: '[data-tutorial="mc-calendar"]', position: 'bottom' },
-      { id: 'mc-players', title: 'Jugadores', text: 'Listado e información de los jugadores del equipo.', targetSelector: '[data-tutorial="mc-players"]', position: 'bottom' },
-      { id: 'mc-stats-players', title: 'Estadísticas jugadores', text: 'Métricas y rendimiento de los jugadores del equipo.', targetSelector: '[data-tutorial="mc-stats-players"]', position: 'bottom' },
-      { id: 'mc-stats-team', title: 'Estadísticas equipo', text: 'Métricas y resultados del equipo (puntos, victorias, goles, etc.).', targetSelector: '[data-tutorial="mc-stats-team"]', position: 'bottom' },
-      { id: 'mc-ranking', title: 'Ranking y resultados', text: 'Clasificación y resultados de partidos del equipo.', targetSelector: '[data-tutorial="mc-ranking"]', position: 'bottom' },
-      { id: 'mc-gallery', title: 'Galería', text: 'Fotos y galería del equipo.', targetSelector: '[data-tutorial="mc-gallery"]', position: 'bottom' },
-      { id: 'mc-team-info', title: 'Info equipo', text: 'Información general del equipo.', targetSelector: '[data-tutorial="mc-team-info"]', position: 'bottom' },
-      { id: 'mc-injuries', title: 'Lesiones', text: 'Registro y seguimiento de lesiones del equipo.', targetSelector: '[data-tutorial="mc-injuries"]', position: 'bottom' },
-      { id: 'mc-fin', title: 'Listo', text: 'Ya conoces todas las opciones del menú del equipo. Pulsa en cualquier tarjeta para entrar en esa sección.', position: 'bottom' }
+      { id: 'mc-bienvenida', title: 'Menú del equipo', text: 'Desde aquí accedes a todas las secciones del equipo. Cada tarjeta te lleva a una pantalla distinta con información y herramientas específicas.', audioFile: 'mc_01.mp3', position: 'bottom' },
+      { id: 'mc-volver', title: 'Volver', text: 'Si en algún momento quieres volver atrás, este botón te lleva a la pantalla anterior.', audioFile: 'mc_02.mp3', targetSelector: '[data-tutorial="mc-volver"]', position: 'bottom' },
+      { id: 'mc-calendar', title: 'Calendario', text: 'Empecemos por el Calendario: aquí ves todos los partidos y entrenamientos del equipo organizados por fecha.', audioFile: 'mc_03.mp3', targetSelector: '[data-tutorial="mc-calendar"]', position: 'bottom' },
+      { id: 'mc-players', title: 'Jugadores', text: 'Continuamos con Jugadores, donde tienes el listado completo con la información de cada jugador del equipo.', audioFile: 'mc_04.mp3', targetSelector: '[data-tutorial="mc-players"]', position: 'bottom' },
+      { id: 'mc-stats-players', title: 'Estadísticas jugadores', text: 'Después tienes las Estadísticas de jugadores: goles, asistencias, minutos y mucho más para analizar el rendimiento individual.', audioFile: 'mc_05.mp3', targetSelector: '[data-tutorial="mc-stats-players"]', position: 'bottom' },
+      { id: 'mc-stats-team', title: 'Estadísticas equipo', text: 'Y también las Estadísticas del equipo, con los puntos acumulados, victorias, empates, derrotas y goles a favor y en contra.', audioFile: 'mc_06.mp3', targetSelector: '[data-tutorial="mc-stats-team"]', position: 'bottom' },
+      { id: 'mc-ranking', title: 'Ranking y resultados', text: 'Pasamos a Ranking y resultados, donde consultas la clasificación actual y el historial de partidos del equipo.', audioFile: 'mc_07.mp3', targetSelector: '[data-tutorial="mc-ranking"]', position: 'bottom' },
+      { id: 'mc-gallery', title: 'Galería', text: 'Siguiente, la Galería: fotos y momentos del equipo que puedes compartir con jugadores y familias.', audioFile: 'mc_08.mp3', targetSelector: '[data-tutorial="mc-gallery"]', position: 'bottom' },
+      { id: 'mc-team-info', title: 'Info equipo', text: 'También tienes Info del equipo, con toda la información general: nombre, categoría, liga y horarios.', audioFile: 'mc_09.mp3', targetSelector: '[data-tutorial="mc-team-info"]', position: 'bottom' },
+      { id: 'mc-injuries', title: 'Lesiones', text: 'Y para cerrar el menú, Lesiones: registra y haz seguimiento del estado de recuperación de los jugadores lesionados.', audioFile: 'mc_10.mp3', targetSelector: '[data-tutorial="mc-injuries"]', position: 'bottom' },
+      { id: 'mc-fin', title: 'Listo', text: 'Ya conoces todas las opciones del menú del equipo. Pulsa en cualquier tarjeta para entrar en esa sección cuando lo necesites.', audioFile: 'mc_11.mp3', position: 'bottom' }
     ];
   }
 
   /** Pasos del tutorial Menu Entrenador: una opción por paso, sin omitir ninguna. */
   private getMenuEntrenadorSteps(): TutorialStep[] {
     return [
-      { id: 'me-bienvenida', title: 'Menú entrenador', text: 'Panel del entrenador: acceso a calendario, tareas, jugadores, estadísticas, notificaciones, galería, lesiones, asistente IA, historial de debrief, perfil, documentos y análisis de vídeo.', position: 'bottom' },
-      { id: 'me-volver', title: 'Volver', text: 'Regresa a la pantalla anterior.', targetSelector: '[data-tutorial="me-volver"]', position: 'bottom' },
-      { id: 'me-calendar', title: 'Calendario', text: 'Calendario de entrenamientos y partidos del equipo.', targetSelector: '[data-tutorial="me-calendar"]', position: 'bottom' },
-      { id: 'me-tasks', title: 'Tareas', text: 'Gestión de tareas y sesiones de entrenamiento.', targetSelector: '[data-tutorial="me-tasks"]', position: 'bottom' },
-      { id: 'me-players', title: 'Jugadores', text: 'Listado e información de los jugadores del equipo.', targetSelector: '[data-tutorial="me-players"]', position: 'bottom' },
-      { id: 'me-team-info', title: 'Info equipo', text: 'Información general del equipo.', targetSelector: '[data-tutorial="me-team-info"]', position: 'bottom' },
-      { id: 'me-team-stats', title: 'Estadísticas equipo', text: 'Métricas y resultados del equipo.', targetSelector: '[data-tutorial="me-team-stats"]', position: 'bottom' },
-      { id: 'me-player-stats', title: 'Estadísticas jugadores', text: 'Rendimiento y estadísticas de cada jugador.', targetSelector: '[data-tutorial="me-player-stats"]', position: 'bottom' },
-      { id: 'me-rankings', title: 'Rankings', text: 'Clasificaciones y rankings del equipo.', targetSelector: '[data-tutorial="me-rankings"]', position: 'bottom' },
-      { id: 'me-notifications', title: 'Notificaciones', text: 'Centro de notificaciones del entrenador.', targetSelector: '[data-tutorial="me-notifications"]', position: 'bottom' },
-      { id: 'me-gallery', title: 'Galería', text: 'Fotos y galería del equipo.', targetSelector: '[data-tutorial="me-gallery"]', position: 'bottom' },
-      { id: 'me-injuries', title: 'Lesiones', text: 'Registro y seguimiento de lesiones.', targetSelector: '[data-tutorial="me-injuries"]', position: 'bottom' },
-      { id: 'me-ai-assistant', title: 'Asistente IA', text: 'Chat con inteligencia artificial para consultas y ayuda.', targetSelector: '[data-tutorial="me-ai-assistant"]', position: 'bottom' },
-      { id: 'me-debrief', title: 'Historial debrief', text: 'Historial de reuniones y debriefs post-partido.', targetSelector: '[data-tutorial="me-debrief"]', position: 'bottom' },
-      { id: 'me-coach-profile', title: 'Perfil entrenador', text: 'Tu perfil y datos como entrenador.', targetSelector: '[data-tutorial="me-coach-profile"]', position: 'bottom' },
-      { id: 'me-coach-documents', title: 'Documentos entrenador', text: 'Documentación y archivos del entrenador.', targetSelector: '[data-tutorial="me-coach-documents"]', position: 'bottom' },
-      { id: 'me-video-analysis', title: 'Análisis de vídeo', text: 'Herramientas de análisis de vídeo para entrenamientos y partidos.', targetSelector: '[data-tutorial="me-video-analysis"]', position: 'bottom' },
-      { id: 'me-fin', title: 'Listo', text: 'Ya conoces todas las opciones del menú del entrenador.', position: 'bottom' }
+      { id: 'me-bienvenida', title: 'Menú entrenador', text: 'Este es tu panel como entrenador. Desde aquí accedes a todo lo que necesitas: calendario, tareas, jugadores, estadísticas, notificaciones, galería, lesiones, asistente IA, debrief, perfil, documentos y análisis de vídeo.', audioFile: 'me_01.mp3', position: 'bottom' },
+      { id: 'me-volver', title: 'Volver', text: 'Si en algún momento quieres volver atrás, este botón te lleva a la pantalla anterior.', audioFile: 'me_02.mp3', targetSelector: '[data-tutorial="me-volver"]', position: 'bottom' },
+      { id: 'me-calendar', title: 'Calendario', text: 'Empecemos por el Calendario: aquí tienes todos los entrenamientos y partidos del equipo organizados por fecha.', audioFile: 'me_03.mp3', targetSelector: '[data-tutorial="me-calendar"]', position: 'bottom' },
+      { id: 'me-tasks', title: 'Tareas', text: 'Continuamos con Tareas, donde diseñas y gestionas las sesiones de entrenamiento: ejercicios, objetivos y planificación táctica.', audioFile: 'me_04.mp3', targetSelector: '[data-tutorial="me-tasks"]', position: 'bottom' },
+      { id: 'me-players', title: 'Jugadores', text: 'Siguiente, Jugadores: el listado completo con la información de cada jugador del equipo.', audioFile: 'me_05.mp3', targetSelector: '[data-tutorial="me-players"]', position: 'bottom' },
+      { id: 'me-team-info', title: 'Info equipo', text: 'Pasamos a Info del equipo, con toda la información general: nombre, categoría, liga, horarios y plantilla.', audioFile: 'me_06.mp3', targetSelector: '[data-tutorial="me-team-info"]', position: 'bottom' },
+      { id: 'me-team-stats', title: 'Estadísticas equipo', text: 'También tienes las Estadísticas del equipo: victorias, empates, derrotas, goles y la evolución del rendimiento colectivo.', audioFile: 'me_07.mp3', targetSelector: '[data-tutorial="me-team-stats"]', position: 'bottom' },
+      { id: 'me-player-stats', title: 'Estadísticas jugadores', text: 'Y las Estadísticas de jugadores, con métricas individuales como goles, asistencias, minutos jugados y mucho más.', audioFile: 'me_08.mp3', targetSelector: '[data-tutorial="me-player-stats"]', position: 'bottom' },
+      { id: 'me-rankings', title: 'Rankings', text: 'Seguimos con Rankings: la clasificación del equipo en la competición y el historial de resultados.', audioFile: 'me_09.mp3', targetSelector: '[data-tutorial="me-rankings"]', position: 'bottom' },
+      { id: 'me-notifications', title: 'Notificaciones', text: 'Ahora las Notificaciones: tu centro de mensajes y avisos del club y de los jugadores del equipo.', audioFile: 'me_10.mp3', targetSelector: '[data-tutorial="me-notifications"]', position: 'bottom' },
+      { id: 'me-gallery', title: 'Galería', text: 'Pasamos a la Galería: fotos y momentos del equipo que puedes compartir con jugadores y familias.', audioFile: 'me_11.mp3', targetSelector: '[data-tutorial="me-gallery"]', position: 'bottom' },
+      { id: 'me-injuries', title: 'Lesiones', text: 'También tienes Lesiones para registrar y hacer seguimiento del estado de recuperación de cada jugador.', audioFile: 'me_12.mp3', targetSelector: '[data-tutorial="me-injuries"]', position: 'bottom' },
+      { id: 'me-ai-assistant', title: 'Asistente IA', text: 'Y el Asistente IA: un chat de inteligencia artificial para consultar datos del equipo, pedir análisis o resolver dudas al instante.', audioFile: 'me_13.mp3', targetSelector: '[data-tutorial="me-ai-assistant"]', position: 'bottom' },
+      { id: 'me-debrief', title: 'Historial debrief', text: 'Siguiente, el Historial de debrief: reuniones y análisis post-partido guardados para revisarlos cuando quieras.', audioFile: 'me_14.mp3', targetSelector: '[data-tutorial="me-debrief"]', position: 'bottom' },
+      { id: 'me-coach-profile', title: 'Perfil entrenador', text: 'Pasamos a tu Perfil: aquí tienes y editas tus datos personales como entrenador.', audioFile: 'me_15.mp3', targetSelector: '[data-tutorial="me-coach-profile"]', position: 'bottom' },
+      { id: 'me-coach-documents', title: 'Documentos entrenador', text: 'Y tus Documentos: todos los archivos y certificados vinculados a tu perfil de entrenador.', audioFile: 'me_16.mp3', targetSelector: '[data-tutorial="me-coach-documents"]', position: 'bottom' },
+      { id: 'me-video-analysis', title: 'Análisis de vídeo', text: 'Y para terminar, Análisis de vídeo: etiqueta jugadas de tus partidos o entrenamientos y crea playlists para compartir con el equipo.', audioFile: 'me_17.mp3', targetSelector: '[data-tutorial="me-video-analysis"]', position: 'bottom' },
+      { id: 'me-fin', title: 'Listo', text: 'Ya conoces todas las opciones del menú del entrenador. Tienes todo lo que necesitas para gestionar tu equipo en un solo lugar.', audioFile: 'me_18.mp3', position: 'bottom' }
     ];
   }
 
   /** Pasos del tutorial Opciones Jugador: una opción por paso, sin omitir ninguna. */
   private getOpcionesjugadorSteps(): TutorialStep[] {
     return [
-      { id: 'oj-bienvenida', title: 'Opciones del jugador', text: 'Desde aquí el jugador accede a sus datos personales, calendario, cuotas, documentación, clasificación, estadísticas, galería, notificaciones, patrocinadores, lesiones y ropa.', position: 'bottom' },
-      { id: 'oj-volver', title: 'Volver', text: 'Regresa a la pantalla anterior.', targetSelector: '[data-tutorial="oj-volver"]', position: 'bottom' },
-      { id: 'oj-datos-personales', title: 'Datos personales', text: 'Ver y editar los datos personales del jugador.', targetSelector: '[data-tutorial="oj-datos-personales"]', position: 'bottom' },
-      { id: 'oj-calendario', title: 'Calendario', text: 'Calendario de entrenamientos y partidos del jugador.', targetSelector: '[data-tutorial="oj-calendario"]', position: 'bottom' },
-      { id: 'oj-pagar-cuotas', title: 'Pagar cuotas', text: 'Gestión y pago de cuotas del jugador.', targetSelector: '[data-tutorial="oj-pagar-cuotas"]', position: 'bottom' },
-      { id: 'oj-documentacion', title: 'Documentación', text: 'Documentos y archivos del jugador.', targetSelector: '[data-tutorial="oj-documentacion"]', position: 'bottom' },
-      { id: 'oj-clasificacion', title: 'Clasificación y resultados', text: 'Clasificación del equipo y resultados de partidos.', targetSelector: '[data-tutorial="oj-clasificacion"]', position: 'bottom' },
-      { id: 'oj-mis-estadisticas', title: 'Mis estadísticas', text: 'Estadísticas personales del jugador.', targetSelector: '[data-tutorial="oj-mis-estadisticas"]', position: 'bottom' },
-      { id: 'oj-galeria', title: 'Galería', text: 'Fotos y galería del equipo.', targetSelector: '[data-tutorial="oj-galeria"]', position: 'bottom' },
-      { id: 'oj-notificaciones', title: 'Notificaciones', text: 'Notificaciones y avisos del jugador.', targetSelector: '[data-tutorial="oj-notificaciones"]', position: 'bottom' },
-      { id: 'oj-patrocinadores', title: 'Patrocinadores', text: 'Información de patrocinadores del club.', targetSelector: '[data-tutorial="oj-patrocinadores"]', position: 'bottom' },
-      { id: 'oj-lesiones', title: 'Lesiones', text: 'Registro de lesiones del jugador.', targetSelector: '[data-tutorial="oj-lesiones"]', position: 'bottom' },
-      { id: 'oj-ropa', title: 'Ropa', text: 'Catálogo de ropa y equipación del club.', targetSelector: '[data-tutorial="oj-ropa"]', position: 'bottom' },
-      { id: 'oj-fin', title: 'Listo', text: 'Ya conoces todas las opciones disponibles para el jugador.', position: 'bottom' }
+      { id: 'oj-bienvenida', title: 'Opciones del jugador', text: 'Desde aquí el jugador accede a todo lo que necesita: datos personales, calendario, cuotas, documentación, clasificación, estadísticas, galería, notificaciones, patrocinadores, lesiones y ropa.', audioFile: 'oj_01.mp3', position: 'bottom' },
+      { id: 'oj-volver', title: 'Volver', text: 'Si en algún momento quieres volver atrás, este botón te lleva a la pantalla anterior.', audioFile: 'oj_02.mp3', targetSelector: '[data-tutorial="oj-volver"]', position: 'bottom' },
+      { id: 'oj-datos-personales', title: 'Datos personales', text: 'Empecemos por los Datos personales: aquí el jugador consulta y edita su información personal como nombre, fecha de nacimiento, posición y contacto.', audioFile: 'oj_03.mp3', targetSelector: '[data-tutorial="oj-datos-personales"]', position: 'bottom' },
+      { id: 'oj-calendario', title: 'Calendario', text: 'Continuamos con el Calendario: el jugador ve todos sus entrenamientos y partidos organizados por fecha.', audioFile: 'oj_04.mp3', targetSelector: '[data-tutorial="oj-calendario"]', position: 'bottom' },
+      { id: 'oj-pagar-cuotas', title: 'Pagar cuotas', text: 'Pasamos a Pagar cuotas, donde el jugador o la familia gestiona y abona las cuotas del club de forma segura.', audioFile: 'oj_05.mp3', targetSelector: '[data-tutorial="oj-pagar-cuotas"]', position: 'bottom' },
+      { id: 'oj-documentacion', title: 'Documentación', text: 'Siguiente, la Documentación: todos los archivos y documentos del jugador que el club puede solicitar.', audioFile: 'oj_06.mp3', targetSelector: '[data-tutorial="oj-documentacion"]', position: 'bottom' },
+      { id: 'oj-clasificacion', title: 'Clasificación y resultados', text: 'También tienes Clasificación y resultados: el jugador sigue la tabla de su equipo en la competición y consulta los últimos resultados.', audioFile: 'oj_07.mp3', targetSelector: '[data-tutorial="oj-clasificacion"]', position: 'bottom' },
+      { id: 'oj-mis-estadisticas', title: 'Mis estadísticas', text: 'Pasamos a Mis estadísticas: goles, asistencias, minutos y otras métricas de rendimiento personal del jugador.', audioFile: 'oj_08.mp3', targetSelector: '[data-tutorial="oj-mis-estadisticas"]', position: 'bottom' },
+      { id: 'oj-galeria', title: 'Galería', text: 'Después, la Galería: fotos y momentos del equipo que el jugador puede ver y descargar.', audioFile: 'oj_09.mp3', targetSelector: '[data-tutorial="oj-galeria"]', position: 'bottom' },
+      { id: 'oj-notificaciones', title: 'Notificaciones', text: 'Seguimos con Notificaciones: mensajes y avisos del club y del entrenador dirigidos al jugador.', audioFile: 'oj_10.mp3', targetSelector: '[data-tutorial="oj-notificaciones"]', position: 'bottom' },
+      { id: 'oj-patrocinadores', title: 'Patrocinadores', text: 'También puedes ver los Patrocinadores del club: logos, información de contacto y beneficios que ofrecen a los jugadores.', audioFile: 'oj_11.mp3', targetSelector: '[data-tutorial="oj-patrocinadores"]', position: 'bottom' },
+      { id: 'oj-lesiones', title: 'Lesiones', text: 'Y el registro de Lesiones: el jugador puede consultar su historial de lesiones y el estado de su recuperación.', audioFile: 'oj_12.mp3', targetSelector: '[data-tutorial="oj-lesiones"]', position: 'bottom' },
+      { id: 'oj-ropa', title: 'Ropa', text: 'Y para cerrar, la Ropa del club: el catálogo de equipación y la opción de indicar las tallas para que el club lo gestione desde el panel.', audioFile: 'oj_13.mp3', targetSelector: '[data-tutorial="oj-ropa"]', position: 'bottom' },
+      { id: 'oj-fin', title: 'Listo', text: 'Ya conoces todas las opciones disponibles para el jugador. Todo lo que necesitas está a un solo toque de distancia.', audioFile: 'oj_14.mp3', position: 'bottom' }
     ];
   }
 
