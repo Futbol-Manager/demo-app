@@ -31,11 +31,12 @@
           <p class="sidebar-label">{{ 'INFO_EQUIPO.LOGO' | translate }}</p>
 
           <div class="logo-preview-wrap">
-            <img *ngIf="teamLogoUrl || logoPreview"
-                 [src]="teamLogoUrl || logoPreview"
+            <img *ngIf="getDisplayLogoUrl()"
+                 [src]="getDisplayLogoUrl()"
                  alt="Logo equipo"
-                 class="logo-preview" />
-            <div *ngIf="!teamLogoUrl && !logoPreview" class="logo-placeholder">
+                 class="logo-preview"
+                 (error)="$any($event.target).src='assets/images/user/demo-club-logo.svg'" />
+            <div *ngIf="!getDisplayLogoUrl()" class="logo-placeholder">
               <i class="bi bi-shield-fill"></i>
               <span>{{ 'INFO_EQUIPO.LOGO_UPLOAD' | translate }}</span>
             </div>
@@ -50,7 +51,7 @@
                    class="d-none" (change)="onLogoSelected($event)" #logoInput />
             <button type="button" class="btn-logo" (click)="logoInput.click()">
               <i class="bi bi-upload"></i>
-              {{ (teamLogoUrl || logoPreview) ? ('INFO_EQUIPO.LOGO_CHANGE' | translate) : ('INFO_EQUIPO.LOGO_UPLOAD' | translate) }}
+              {{ getDisplayLogoUrl() ? ('INFO_EQUIPO.LOGO_CHANGE' | translate) : ('INFO_EQUIPO.LOGO_UPLOAD' | translate) }}
             </button>
           </div>
 
@@ -201,7 +202,7 @@
             <div class="coach-card-inner" *ngIf="coach.profile == 2 || coach.profile == 6 || coach.profile == 7">
               <div class="coach-avatar">
                 <img *ngIf="coach.picture"
-                     src="https://appsphairatech.com/images/user/{{ coach.picture }}"
+                     [src]="imageBaseUrlUser + coach.picture"
                      alt="" />
                 <i *ngIf="!coach.picture" class="bi bi-person"></i>
               </div>

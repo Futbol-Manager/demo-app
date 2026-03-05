@@ -1,6 +1,10 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { EMPTY, Observable } from 'rxjs';
+import { EMPTY, Observable, of } from 'rxjs';
+import { environment } from 'src/environments/environment';
+import { DemoDataService } from '../demo/demo-data.service';
+import { isDemoMode } from '../demo/demo-mode';
+import { Response } from 'src/app/core/services/models/response.model';
 export interface RopaTabla {
   prendas: RopaCatalogoPrenda[];
   jugadores: JugadorTablaRopa[];
@@ -17,8 +21,6 @@ export interface JugadorTablaRopa {
   teamId?: number | null;
   teamName?: string | null;
 }
-import { environment } from 'src/environments/environment';
-import { Response } from 'src/app/core/services/models/response.model';
 
 export interface RopaCatalogoPrenda {
   prendaId: number;
@@ -81,18 +83,27 @@ export class RopaCatalogoService {
   // ─── PRENDAS ──────────────────────────────────────────────────────────────
 
   getPrendasByClub(clubId: number, temporada: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoPrendasByClub()) as Response);
+    }
     const headers = this.getHeaders();
     if (!headers) return EMPTY;
     return this.http.get<Response>(`${environment.apiUrl}ropa-catalogo/prendas/${clubId}/${temporada}`, { headers });
   }
 
   getPrendasByTeam(clubId: number, teamId: number, temporada: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoPrendasByClub()) as Response);
+    }
     const headers = this.getHeaders();
     if (!headers) return EMPTY;
     return this.http.get<Response>(`${environment.apiUrl}ropa-catalogo/prendas/team/${clubId}/${teamId}/${temporada}`, { headers });
   }
 
   createPrenda(data: Partial<RopaCatalogoPrenda>, imagen?: File): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ prendaId: 99, ...data }) as Response);
+    }
     const headers = this.getHeaders();
     if (!headers) return EMPTY;
     const formData = new FormData();
@@ -102,6 +113,9 @@ export class RopaCatalogoService {
   }
 
   updatePrenda(data: Partial<RopaCatalogoPrenda>, imagen?: File): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ data: true }) as Response);
+    }
     const headers = this.getHeaders();
     if (!headers) return EMPTY;
     const formData = new FormData();
@@ -111,6 +125,9 @@ export class RopaCatalogoService {
   }
 
   deletePrenda(prendaId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ data: true }) as Response);
+    }
     const headers = this.getHeaders();
     if (!headers) return EMPTY;
     return this.http.delete<Response>(`${environment.apiUrl}ropa-catalogo/prendas/${prendaId}`, { headers });
@@ -119,12 +136,18 @@ export class RopaCatalogoService {
   // ─── TALLAS ───────────────────────────────────────────────────────────────
 
   addTalla(talla: Partial<RopaCatalogoTalla>): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ tallaId: 99, ...talla }) as Response);
+    }
     const headers = this.getHeaders();
     if (!headers) return EMPTY;
     return this.http.post<Response>(`${environment.apiUrl}ropa-catalogo/tallas`, talla, { headers });
   }
 
   deleteTalla(tallaId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ data: true }) as Response);
+    }
     const headers = this.getHeaders();
     if (!headers) return EMPTY;
     return this.http.delete<Response>(`${environment.apiUrl}ropa-catalogo/tallas/${tallaId}`, { headers });
@@ -133,18 +156,27 @@ export class RopaCatalogoService {
   // ─── SELECCIONES ─────────────────────────────────────────────────────────
 
   getSeleccionesPlayer(playerId: number, temporada: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoSeleccionesPlayer()) as Response);
+    }
     const headers = this.getHeaders();
     if (!headers) return EMPTY;
     return this.http.get<Response>(`${environment.apiUrl}ropa-catalogo/selecciones/player/${playerId}/${temporada}`, { headers });
   }
 
   getSeleccionesByPrenda(prendaId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoSeleccionesByPrenda()) as Response);
+    }
     const headers = this.getHeaders();
     if (!headers) return EMPTY;
     return this.http.get<Response>(`${environment.apiUrl}ropa-catalogo/selecciones/prenda/${prendaId}`, { headers });
   }
 
   saveSeleccion(seleccion: Partial<RopaCatalogoSeleccion>): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ seleccionId: 99, ...seleccion }) as Response);
+    }
     const headers = this.getHeaders();
     if (!headers) return EMPTY;
     return this.http.post<Response>(`${environment.apiUrl}ropa-catalogo/selecciones`, seleccion, { headers });
@@ -153,6 +185,9 @@ export class RopaCatalogoService {
   // ─── TABLA TALLAS (VISTA CLUB) ────────────────────────────────────────────
 
   getTablaByTeam(clubId: number, teamId: number, temporada: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoTablaByTeam()) as Response);
+    }
     const headers = this.getHeaders();
     if (!headers) return EMPTY;
     return this.http.get<Response>(`${environment.apiUrl}ropa-catalogo/tabla/${clubId}/${teamId}/${temporada}`, { headers });
@@ -161,12 +196,18 @@ export class RopaCatalogoService {
   // ─── DOCUMENTOS ───────────────────────────────────────────────────────────
 
   getDocumentosByClub(clubId: number, temporada: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoDocumentosRopaByClub()) as Response);
+    }
     const headers = this.getHeaders();
     if (!headers) return EMPTY;
     return this.http.get<Response>(`${environment.apiUrl}ropa-catalogo/documentos/${clubId}/${temporada}`, { headers });
   }
 
   uploadDocumento(data: Partial<RopaDocumentoGeneral>, archivo: File): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ documentoId: 99, ...data }) as Response);
+    }
     const headers = this.getHeaders();
     if (!headers) return EMPTY;
     const formData = new FormData();
@@ -176,6 +217,9 @@ export class RopaCatalogoService {
   }
 
   deleteDocumento(documentoId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ data: true }) as Response);
+    }
     const headers = this.getHeaders();
     if (!headers) return EMPTY;
     return this.http.delete<Response>(`${environment.apiUrl}ropa-catalogo/documentos/${documentoId}`, { headers });

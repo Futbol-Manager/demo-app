@@ -31,7 +31,9 @@ app-root {
   display: flex;
   padding-top: 25px;
   flex-direction: column;
+  position: relative;
 }
+
 .dashboard-content {
   flex: 1;
 }

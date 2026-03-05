@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { User } from 'src/app/core/models/users/user.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { TeamNew } from 'src/app/core/services/team/team.model';
@@ -14,6 +15,7 @@ import { getSeasons, getCurrentSeasonString } from 'src/app/core/utils/season.ut
 import { TranslateService } from '@ngx-translate/core';
 import { NotificationService } from 'src/app/core/services/notification/notification.service';
 import { ConfirmationService } from 'src/app/core/services/confirmation/confirmation.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-inicio',
@@ -33,6 +35,31 @@ export class EquiposComponent implements OnInit {
   clubId: number = 0;
   pictureClub = '';
   noPicture = false;
+
+  /** Base URL para imagen del club (en demo: assets/images/user/) */
+  get imageBaseUrlUser(): string {
+    return environment.images + 'user/';
+  }
+
+  /** True cuando la app está en modo demo (para mostrar siempre el logo del club en las tarjetas). */
+  get isDemo(): boolean {
+    return !!(environment as { demo?: boolean }).demo;
+  }
+
+  /** URL del escudo para la tarjeta. En demo usa URL absoluta y SafeResourceUrl para que Angular no bloquee la carga. */
+  getShieldImageSrc(team: { imgClub?: string }): string | SafeResourceUrl {
+    const isDemoMode = (environment as { demo?: boolean }).demo;
+    if (isDemoMode) {
+      const path = '/assets/images/user/demo-club-logo.png';
+      const fullUrl = typeof window !== 'undefined' && window.location?.origin
+        ? window.location.origin + path
+        : path;
+      return this.sanitizer.bypassSecurityTrustResourceUrl(fullUrl);
+    }
+    const name = team?.imgClub || this.pictureClub;
+    if (!name) return '';
+    return this.imageBaseUrlUser + name;
+  }
   showModalSubirJugadores = false;
   showModalSubirJugadoresGesDesk = false;
   excelForm: FormGroup;
@@ -223,7 +250,8 @@ export class EquiposComponent implements OnInit {
     private location: Location,
     private translate: TranslateService,
     private notificationService: NotificationService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private sanitizer: DomSanitizer
   ) {
     this.excelForm = this.fb.group({
       excelFile: [null],

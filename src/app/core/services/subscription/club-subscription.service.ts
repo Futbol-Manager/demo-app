@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of, BehaviorSubject } from 'rxjs';
 import { delay, map, catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { isDemoMode } from '../demo/demo-mode';
 import {
   ClubSubscription,
   ClubPlan,
@@ -698,6 +699,13 @@ export class ClubSubscriptionService {
    * Obtiene el plan actual del club desde la tabla club_plan
    */
   getCurrentClubPlan(clubId: number): Observable<any> {
+    if (isDemoMode()) {
+      // En demo devolvemos plan gratuito para que se muestre la vista de selección de planes (Familia + Club), no la tarjeta única "Gratuito ACTIVO"
+      return of({
+        success: true,
+        plan: { planType: 'gratuito', id: 1, clubId, status: 'active' },
+      });
+    }
     return this.http.get<any>(`${this.apiUrl}club-plan/${clubId}/current`)
       .pipe(
         map(response => {

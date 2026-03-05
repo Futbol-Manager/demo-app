@@ -19,7 +19,7 @@ export class SuscripcionClubComponent implements OnInit {
   clubId = 0;
   profileId = 0;
 
-  // Plan selection
+  // Plan selection (Familia, Club, Gratuito)
   plans: ClubPlan[] = [];
   selectedPlan: ClubPlanType | null = null;
   activePlanInfo: ClubPlan | null = null;

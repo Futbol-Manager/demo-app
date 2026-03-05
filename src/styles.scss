@@ -973,3 +973,12 @@ body.dark {
   strong { font-weight: 700; }
   em { font-style: italic; }
 }
+
+/* ——— Tutorial asistido: resaltado del elemento enfocado (premium) ——— */
+.sphaira-tutorial-highlight {
+  position: relative;
+  z-index: 10001 !important;
+  box-shadow: 0 0 0 3px var(--color-primary, #1e8832), 0 0 0 1px rgba(255, 255, 255, 0.4), 0 0 24px rgba(30, 136, 50, 0.35) !important;
+  border-radius: 12px;
+  transition: box-shadow 0.25s ease;
+}

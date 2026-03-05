@@ -6,7 +6,9 @@ import { DriveService } from 'src/app/core/services/drive/drive.service';
 import { LocalVideoService } from 'src/app/dashboard/video-analysis/services/local-video.service';
 import { timeout } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
 import { getSeasons, getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { DemoDataService } from 'src/app/core/services/demo/demo-data.service';
 
 @Component({
   selector: 'app-club-video-library',
@@ -98,6 +100,17 @@ export class ClubVideoLibraryComponent implements OnInit {
       || 0;
     // Inicializar temporada desde localStorage (coherencia con el resto de la app)
     this.selectedTemporada = localStorage.getItem('temporada') ?? getCurrentSeasonString();
+    if (isDemoMode() && this.clubId) {
+      const plan = DemoDataService.getDemoClubVideoPlan();
+      this.plan = plan;
+      this.hasPlan = plan?.hasPlan ?? true;
+      this.planLoading = false;
+      this.videos = DemoDataService.getDemoClubVideos();
+      this.filteredVideos = [...this.videos];
+      this.folders = DemoDataService.getDemoClubFolders();
+      this.loading = false;
+      return;
+    }
     this.loadPlan();
     this.loadVideos();
     this.loadFolders();

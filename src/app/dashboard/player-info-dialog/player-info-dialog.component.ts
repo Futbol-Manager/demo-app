@@ -63,7 +63,7 @@ export class PlayerInfoDialogComponent implements OnInit, OnDestroy, AfterViewIn
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(u => this.usuarioActual = u);
-    this.edadSeleccionada = this.fechaEnEspañol(this.selectedPlayer?.fechaDeNacimiento || '') + ' (' + this.calcularEdad(this.selectedPlayer?.fechaDeNacimiento || '') + ')';
+    this.actualizarEdadSeleccionada();
     this.getInfoAsistencia();
     this.getDatosPlayer();
     if (this.infoModalActiveTab === 'financiera') {
@@ -81,7 +81,7 @@ export class PlayerInfoDialogComponent implements OnInit, OnDestroy, AfterViewIn
             const full = Array.isArray(list) ? list.find((p: any) => p.playerId === this.selectedPlayer.playerId) : null;
             if (full) {
               this.selectedPlayer = { ...this.selectedPlayer, ...full };
-              this.edadSeleccionada = this.fechaEnEspañol(this.selectedPlayer?.fechaDeNacimiento || '') + ' (' + this.calcularEdad(this.selectedPlayer?.fechaDeNacimiento || '') + ')';
+              this.actualizarEdadSeleccionada();
               this.cdr.detectChanges();
               setTimeout(() => this.cargarGraficoRadar(), 100);
             }
@@ -116,9 +116,23 @@ export class PlayerInfoDialogComponent implements OnInit, OnDestroy, AfterViewIn
     return d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
   }
 
+  private actualizarEdadSeleccionada(): void {
+    const fechaNac = this.selectedPlayer?.fechaDeNacimiento;
+    if (fechaNac && String(fechaNac).trim()) {
+      const edad = this.calcularEdad(fechaNac);
+      const fechaStr = this.fechaEnEspañol(fechaNac);
+      this.edadSeleccionada = Number.isFinite(edad) && fechaStr ? `${fechaStr} (${edad} años)` : '—';
+    } else {
+      this.edadSeleccionada = '—';
+    }
+  }
+
   calcularEdad(fechaNacimientoString: string): number {
-    if (!fechaNacimientoString) return 0;
+    if (!fechaNacimientoString || typeof fechaNacimientoString !== 'string' || !fechaNacimientoString.trim()) {
+      return NaN;
+    }
     const fechaNacimiento = new Date(fechaNacimientoString);
+    if (Number.isNaN(fechaNacimiento.getTime())) return NaN;
     const hoy = new Date();
     let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
     const mes = hoy.getMonth() - fechaNacimiento.getMonth();

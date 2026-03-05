@@ -1,0 +1,47 @@
+<div class="demo-role-page">
+  <div class="demo-role-bg" aria-hidden="true">
+    <div class="demo-role-bg-gradient"></div>
+    <div class="demo-role-bg-pattern"></div>
+  </div>
+
+  <div class="demo-role-container">
+    <header class="demo-role-header">
+      <span class="demo-role-badge">Modo demostración</span>
+      <img [src]="logoSrc" alt="Sphaira Tech" class="demo-role-logo" />
+      <h1 class="demo-role-title">Elige tu experiencia</h1>
+      <p class="demo-role-subtitle">Selecciona el rol con el que quieres explorar la plataforma. Verás el panel y las opciones propias de cada perfil.</p>
+    </header>
+
+    <div class="demo-role-cards">
+      <button type="button" class="demo-role-card demo-role-card-1" (click)="selectRole('club')" [attr.aria-label]="'Explorar como Club'">
+        <span class="demo-role-card-accent" aria-hidden="true"></span>
+        <span class="demo-role-icon" aria-hidden="true">
+          <i class="bi bi-building"></i>
+        </span>
+        <h2 class="demo-role-card-title">Club</h2>
+        <p class="demo-role-card-desc">Gestión del club: equipos, cuadro de mandos, cuotas, documentos y más.</p>
+        <span class="demo-role-card-cta">Explorar como Club</span>
+      </button>
+
+      <button type="button" class="demo-role-card demo-role-card-2" (click)="selectRole('coach')" [attr.aria-label]="'Explorar como Entrenador'">
+        <span class="demo-role-card-accent" aria-hidden="true"></span>
+        <span class="demo-role-icon" aria-hidden="true">
+          <i class="bi bi-person-badge"></i>
+        </span>
+        <h2 class="demo-role-card-title">Entrenador</h2>
+        <p class="demo-role-card-desc">Vista de entrenador: equipos, tareas, calendario, jugadores y estadísticas.</p>
+        <span class="demo-role-card-cta">Explorar como Entrenador</span>
+      </button>
+
+      <button type="button" class="demo-role-card demo-role-card-3" (click)="selectRole('player')" [attr.aria-label]="'Explorar como Jugador'">
+        <span class="demo-role-card-accent" aria-hidden="true"></span>
+        <span class="demo-role-icon" aria-hidden="true">
+          <i class="bi bi-person"></i>
+        </span>
+        <h2 class="demo-role-card-title">Jugador</h2>
+        <p class="demo-role-card-desc">Vista de jugador: mis datos, calendario, cuotas, documentos y galería.</p>
+        <span class="demo-role-card-cta">Explorar como Jugador</span>
+      </button>
+    </div>
+  </div>
+</div>

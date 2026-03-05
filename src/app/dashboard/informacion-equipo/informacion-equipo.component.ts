@@ -10,6 +10,7 @@ import { HorarioTeam, TeamNew } from 'src/app/core/services/team/team.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { Location } from '@angular/common';
 import { ClubService } from 'src/app/core/services/club/club.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-informacion-equipo',
@@ -563,6 +564,19 @@ export class InformacionEquipoComponent implements OnInit {
         console.error('Error al cargar el listado de equipos', error);
       }
     );
+  }
+
+  get imageBaseUrlUser(): string {
+    return environment.images + 'user/';
+  }
+
+  /** URL final del logo para mostrar: en demo usa asset estático; si es solo nombre de archivo, añade la base. */
+  getDisplayLogoUrl(): string | null {
+    if (this.logoPreview) return this.logoPreview;
+    if (!this.teamLogoUrl) return null;
+    if (this.teamLogoUrl.startsWith('http') || this.teamLogoUrl.startsWith('/')) return this.teamLogoUrl;
+    if ((environment as { demo?: boolean }).demo) return 'assets/images/user/demo-club-logo.png';
+    return this.imageBaseUrlUser + this.teamLogoUrl;
   }
 
   get hasStaffCoaches(): boolean {

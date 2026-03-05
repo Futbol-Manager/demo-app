@@ -10,6 +10,7 @@ import { Location } from '@angular/common';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 
 import { environment } from 'src/environments/environment';
+import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
 import { firstValueFrom } from 'rxjs';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
@@ -1402,9 +1403,14 @@ export class CuotasComponent implements OnInit {
         this.cancelCuotaLoading = false;
         this.cancelCuotaSuccess =
           `Tu solicitud de cancelación para "${this.cuotaToCancel.nombre}" ha sido registrada. El club recibirá la notificación.`;
+        if (isDemoMode() && this.cuotaToCancel) {
+          const pagoClubId = this.cuotaToCancel.pagoClubId;
+          this.cuotasObligatorias = (this.cuotasObligatorias || []).filter((c: any) => c.pagoClubId !== pagoClubId);
+          this.cuotasNoObligatorias = (this.cuotasNoObligatorias || []).filter((c: any) => c.pagoClubId !== pagoClubId);
+        } else {
+          this.loadCuotasData();
+        }
         this.cuotaToCancel = null;
-        // Recargar tablas para reflejar el estado desistido inmediatamente
-        this.loadCuotasData();
         setTimeout(() => {
           this.showCancelCuotaDialog = false;
           this.cancelCuotaSuccess = '';

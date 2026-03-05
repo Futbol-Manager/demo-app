@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { isDemoMode } from '../demo/demo-mode';
 
 @Injectable({ providedIn: 'root' })
 export class CoachSubscriptionService {
@@ -39,6 +40,9 @@ export class CoachSubscriptionService {
   // ── Admin endpoints ──────────────────────────────────────────
 
   getAdminCoaches(): Observable<any> {
+    if (isDemoMode()) {
+      return of({ data: [{ userId: 1, belongsToClub: true, subscriptionPlan: '', dateFinal: '', monthsSubscribed: 0 }] });
+    }
     const headers = this.authHeaders();
     if (!headers) return throwError(() => new Error('No auth token'));
     return this.http.get<any>(`${this.base}stripe/admin/coaches`, { headers });

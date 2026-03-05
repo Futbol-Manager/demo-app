@@ -18,6 +18,7 @@ import {
 } from '@angular/material/snack-bar';
 import { User } from 'src/app/core/models/users/user.model';
 import { take } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -45,6 +46,18 @@ export class LoginComponent implements OnInit {
 
   token = '';
 
+  /** True si el build es demo o si la app se carga desde el dominio de demo (ej. demo.sphairatech.com) */
+  private static isDemoByHostname(): boolean {
+    if (typeof window === 'undefined') return false;
+    const h = window.location.hostname.toLowerCase();
+    return h === 'demo.sphairatech.com' || h.startsWith('demo.');
+  }
+
+  /** En modo demo solo se pide email y se llama a demo-login (build demo o URL de demo) */
+  get isDemoMode(): boolean {
+    return !!(environment as { demo?: boolean }).demo || LoginComponent.isDemoByHostname();
+  }
+
   constructor(
     private loginService: LoginService,
     private router: Router,
@@ -53,9 +66,11 @@ export class LoginComponent implements OnInit {
     private route: ActivatedRoute, //private translate: TranslateService
     private cdr: ChangeDetectorRef
   ) {
+    const isDemo = !!(environment as { demo?: boolean }).demo || LoginComponent.isDemoByHostname();
+    const passwordValidators = isDemo ? [] : [Validators.required];
     this.loginForm = new FormGroup({
       mail: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', [Validators.required]),
+      password: new FormControl('', passwordValidators),
     });
 
     /*const saved = localStorage.getItem('lang') || 'es';
@@ -113,6 +128,18 @@ export class LoginComponent implements OnInit {
 
   login() {
     this.loginError = false;
+
+    if (this.isDemoMode) {
+      const email = (this.loginForm.get('mail')?.value as string)?.trim();
+      if (!email) {
+        this.loginError = true;
+        this.loginErrorKey = 'LOGIN.EMAIL_REQUIRED';
+        this.cdr.detectChanges();
+        return;
+      }
+      this.loginService.loginDemoLocal(email);
+      return;
+    }
 
     if (this.loginForm.valid) {
       const fv = this.loginForm.value;

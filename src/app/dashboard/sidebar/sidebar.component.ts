@@ -10,6 +10,8 @@ import { ClubSubscriptionService } from 'src/app/core/services/subscription/club
 import { User } from 'src/app/core/models/users/user.model';
 import { Response } from 'src/app/core/services/models/response.model';
 import { ClubPlanType } from 'src/app/core/models/subscription/club-subscription.model';
+import { environment } from 'src/environments/environment';
+import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
 
 export interface SidebarItem {
   id: string;
@@ -323,14 +325,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   private getClubAccessType(): 'no-subscription' | 'free-plan' | 'other-plan' {
-    // DEBUG: Logs temporales
-    console.log('[SIDEBAR DEBUG] getClubAccessType called:');
-    console.log('  profileId:', this.profileId);
-    console.log('  clubPlanType:', this.clubPlanType);
-    console.log('  isLoadingSubscription:', this.isLoadingSubscription);
-    
+    // En modo demo mostrar siempre el menú completo (Ropa, Patrocinadores, Notificaciones, Scouting)
+    if (isDemoMode()) return 'no-subscription';
+
     if (this.profileId !== 1) return 'no-subscription';
-    
+
     if (this.clubPlanType === null) {
       console.log('  → returning: no-subscription (planType is null)');
       return 'no-subscription';

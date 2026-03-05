@@ -9,6 +9,7 @@ import { TeamService } from 'src/app/core/services/team/team.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Patrocinador } from 'src/app/core/services/models/club.model';
 import { environment } from 'src/environments/environment';
+import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
 import { Location } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 import { ConfirmationService } from 'src/app/core/services/confirmation/confirmation.service';
@@ -42,7 +43,18 @@ export class PatrocinadoresComponent implements OnInit {
   showModalVerPatrocinador = false;
   profileId = 0;
   userId: any = 0;
-  imageBaseUrl: string = environment.images + 'patrocinadores/';
+  get imageBaseUrl(): string {
+    return isDemoMode()
+      ? '/assets/images/patrocinadores/'
+      : environment.images + 'patrocinadores/';
+  }
+
+  /** URL de la imagen del patrocinador; resuelve '../nombre.png' a /assets/images/nombre.png */
+  getSponsorImageSrc(s: { imagen?: string }): string {
+    if (!s?.imagen) return '';
+    if (s.imagen.startsWith('../')) return '/assets/images/' + s.imagen.slice(3);
+    return this.imageBaseUrl + s.imagen;
+  }
 
   constructor(
     private loginService: LoginService,

@@ -84,6 +84,18 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "demo": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.demo.ts"
+                }
+              ],
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "sourceMap": true
             }
           },
           "defaultConfiguration": "production"
@@ -99,6 +111,9 @@
             },
             "development": {
               "browserTarget": "rep-espi:build:development"
+            },
+            "demo": {
+              "browserTarget": "rep-espi:build:demo"
             }
           },
           "defaultConfiguration": "development"

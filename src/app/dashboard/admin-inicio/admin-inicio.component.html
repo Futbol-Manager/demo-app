@@ -144,7 +144,7 @@
                         <div class="team-header">
                             <div class="team-logo">
                                 <img *ngIf="team.imgClub"
-                                    [src]="'https://appsphairatech.com/images/user/' + team.imgClub" />
+                                    [src]="imageBaseUrlUser + team.imgClub" />
                                 <span *ngIf="!team.imgClub" class="bi bi-people-fill"></span>
                             </div>
 
@@ -234,7 +234,7 @@
 
                             <div class="avatar-wrapper">
                                 <img *ngIf="hijo.picturePlayer"
-                                    src="https://appsphairatech.com/images/user/{{ hijo.picturePlayer }}"
+                                    [src]="imageBaseUrlUser + hijo.picturePlayer"
                                     alt="player" />
                                 <i *ngIf="!hijo.picturePlayer" class="bi bi-person-fill avatar-placeholder"></i>
                             </div>

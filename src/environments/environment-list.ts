@@ -1,7 +1,28 @@
 import { APIURLPROD, APIURLLOCAL, ApiEnvironments, APIURLPROD2, ImageEnvironments } from "src/app/core/models/master/masters.enum";
 
+/** Entorno para la app demo: login solo con email y datos hardcodeados en pantalla. Imágenes desde assets. */
+export const demoenvironment = {
+  production: false,
+  demo: true,
+  apiUrl: `${APIURLLOCAL}${ApiEnvironments.LOCAL}`,
+  prospectorApiUrl: 'http://localhost:8100/api/',
+  /** Ruta absoluta para que el logo del club y demás imágenes carguen bien desde cualquier ruta (ej. /dashboard/equipos). */
+  images: '/assets/images/',
+  stripePublicKey: 'pk_test_51PIUivHzMBDrutQnxB3X6RlNQ2DR65e3hoDglo8Vo8zU23tmRuviJcQWGrLLUqFP4LK9RPa6czfJSh2w6V3eW7iL008i311mCU',
+  stripePrices: {
+    clubMonthly: 'price_1QC6W3HzMBDrutQnKitrxLpV',
+    clubAnnual: 'price_1QC6VpHzMBDrutQnbCKNmItj',
+    clubFree: 'price_1QkkOTHzMBDrutQnAQ8zchAz',
+    scoutingMonthly: 'price_1QCzwDHzMBDrutQnzNPTj1G9',
+    scoutingAnnual: 'price_1QCzw9HzMBDrutQnYz3ctq3A',
+    coachMonthly: 'price_1Q5x7MHzMBDrutQnaF1WOHLm',
+    coachAnnual: 'price_1Q5x7uHzMBDrutQnCnc54UjO'
+  }
+};
+
 export const localenvironment = {
   production: false,
+  demo: false,
   //para apuntar a la api local
   apiUrl: `${APIURLLOCAL}${ApiEnvironments.LOCAL}`,
   prospectorApiUrl: 'http://localhost:8100/api/',
@@ -35,6 +56,7 @@ export const localenvironment = {
 
 export const prodenvironment = {
   production: true,
+  demo: false,
   apiUrl: `${APIURLPROD2}${ApiEnvironments.PRO}`,
   prospectorApiUrl: 'http://localhost:8001/api/',
   images: `${APIURLPROD2}${ImageEnvironments.PRO}/`,

@@ -6,6 +6,8 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { ClubPlanType } from 'src/app/core/models/subscription/club-subscription.model';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { environment } from 'src/environments/environment';
+import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
 
 /* =========================
    MODELOS
@@ -475,6 +477,7 @@ export class CuadroComponent implements OnInit, OnDestroy {
   }
 
   private isClubFreePlan(): boolean {
+    if (isDemoMode()) return false; // En demo todas las opciones disponibles
     if (this.profileId !== 1) return false;
     if (this.clubPlanType === 'gratuito') return true;
 

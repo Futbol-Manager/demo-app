@@ -3,6 +3,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Location } from '@angular/common';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { environment } from 'src/environments/environment';
+import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
+import { DemoDataService } from 'src/app/core/services/demo/demo-data.service';
 
 interface StaffUser {
   userId: number;
@@ -124,6 +126,11 @@ export class StaffClubComponent implements OnInit {
 
   loadStaff(): void {
     this.loading = true;
+    if (isDemoMode()) {
+      this.staffList = DemoDataService.getDemoStaffList();
+      this.loading = false;
+      return;
+    }
     const url = `${environment.apiUrl}club/staff/list/${this.clubId}`;
     this.http.get<any>(url, { headers: this.getHeaders() }).subscribe({
       next: (res) => {
@@ -195,6 +202,17 @@ export class StaffClubComponent implements OnInit {
       .map(([k]) => k);
 
     if (this.editingUser) {
+      if (isDemoMode()) {
+        // Actualizar permisos en memoria
+        const target = this.staffList.find(u => u.userId === this.editingUser!.userId);
+        if (target) {
+          target.permissions = [...perms];
+        }
+        this.saving = false;
+        this.successMsg = 'Permisos actualizados correctamente';
+        setTimeout(() => this.closeModal(), 800);
+        return;
+      }
       const url = `${environment.apiUrl}club/staff/permissions/${this.editingUser.userId}`;
       const body = { clubId: this.clubId, permissions: perms };
       this.http.put<any>(url, body, { headers: this.getHeaders() }).subscribe({
@@ -212,7 +230,6 @@ export class StaffClubComponent implements OnInit {
         this.errorMsg = 'El email y la contraseña son obligatorios';
         return;
       }
-      const url = `${environment.apiUrl}club/staff/create`;
       const body: StaffUser = {
         userId: 0,
         firstName: this.form.firstName ?? '',
@@ -223,6 +240,16 @@ export class StaffClubComponent implements OnInit {
         permissions: perms,
         enabled: true,
       };
+      if (isDemoMode()) {
+        const maxId = this.staffList.reduce((max, u) => Math.max(max, u.userId), 0);
+        body.userId = maxId + 1;
+        this.staffList = [...this.staffList, { ...body }];
+        this.saving = false;
+        this.successMsg = 'Usuario Staff creado correctamente (demo)';
+        setTimeout(() => this.closeModal(), 800);
+        return;
+      }
+      const url = `${environment.apiUrl}club/staff/create`;
       this.http.post<any>(url, body, { headers: this.getHeaders() }).subscribe({
         next: () => {
           this.saving = false;
@@ -251,6 +278,12 @@ export class StaffClubComponent implements OnInit {
     this.togglingConfirm = true;
     this.togglingId = this.userToToggle.userId;
     const newState = this.pendingEnableState;
+    if (isDemoMode()) {
+      this.userToToggle.enabled = newState;
+      this.togglingId = null;
+      this.closeToggleConfirm();
+      return;
+    }
     const url = `${environment.apiUrl}club/staff/toggle/${this.userToToggle.userId}?enable=${newState}`;
     this.http.patch<any>(url, null, { headers: this.getHeaders() }).subscribe({
       next: () => {
@@ -283,6 +316,13 @@ export class StaffClubComponent implements OnInit {
   confirmDelete(): void {
     if (!this.userToDelete) return;
     this.deleting = true;
+    if (isDemoMode()) {
+      this.staffList = this.staffList.filter(u => u.userId !== this.userToDelete!.userId);
+      this.deleting = false;
+      this.showDeleteConfirm = false;
+      this.userToDelete = null;
+      return;
+    }
     const url = `${environment.apiUrl}club/staff/${this.userToDelete.userId}`;
     this.http.delete<any>(url, { headers: this.getHeaders() }).subscribe({
       next: () => {

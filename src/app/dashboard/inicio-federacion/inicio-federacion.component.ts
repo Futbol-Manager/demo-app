@@ -10,6 +10,7 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { getSeasons, getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-inicio-federacion',
@@ -30,6 +31,10 @@ export class InicioFederacionComponent implements OnInit {
   busqueda: string = '';          // texto del input de búsqueda
   mailAdd = '';
   loading = true;
+
+  get imageBaseUrlUser(): string {
+    return environment.images + 'user/';
+  }
 
   constructor(
     private router: Router,

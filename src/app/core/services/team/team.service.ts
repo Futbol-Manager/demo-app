@@ -1,8 +1,10 @@
 // team.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { EMPTY, Observable, throwError } from 'rxjs';
+import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { DemoDataService } from '../demo/demo-data.service';
+import { isDemoMode } from '../demo/demo-mode';
 import { Response } from 'src/app/core/services/models/response.model';
 import { CancelSubscriptionRequest, HorarioTeam, SubscriptionRequest, Suscripcion, Team, TeamNew } from './team.model';
 import { CuotasClub, HistoryCuotasClub } from '../models/club.model';
@@ -74,28 +76,28 @@ export class TeamService {
     }
 
     getTeams(userId: string, temporada: string): Observable<Response> {
-        // Obtén el token almacenado en localStorage
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoTeamsResponseData()) as any);
+        }
         const token: string | null = localStorage.getItem('token');
 
-        // Verifica si el token está presente
         if (token) {
-            // Configura las cabeceras con el token para la solicitud HTTP
             const headers = new HttpHeaders({
                 'Authorization': `Bearer ${token}`
             });
 
-            // Construye la URL para la solicitud
             const url: string = environment.apiUrl + `team/teamlistbyuser/${userId}/${temporada}`;
 
-            // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });
         } else {
-            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY;
         }
     }
 
     getTeamById(teamId: string): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoTeamById(teamId)) as any);
+        }
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -118,6 +120,9 @@ export class TeamService {
     }
 
     getUserListByTeam(teamId: string): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoUserListByTeam()) as any);
+        }
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -141,6 +146,9 @@ export class TeamService {
 
     // Método para crear o actualizar un equipo
     createUpdateTeam(userId: number, team: TeamNew): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response(team) as any);
+        }
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
         // Verifica si el token está presente
@@ -166,6 +174,9 @@ export class TeamService {
      * Sube el logo del equipo. El backend debe exponer POST team/upload-logo/{teamId} con multipart/form-data (file).
      */
     uploadTeamLogo(teamId: number, file: File): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response({ logoUrl: 'demo-logo.png' }) as any);
+        }
         const token: string | null = localStorage.getItem('token');
         if (!token) return EMPTY;
         const formData = new FormData();
@@ -200,6 +211,9 @@ export class TeamService {
     }
 
     deleteLogicTeam(teamId: string): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response({ ok: true }) as any);
+        }
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -222,6 +236,9 @@ export class TeamService {
     }
 
     getTeamByPlayer(playerId: string, temporada: string): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoTeamByPlayer()) as Response);
+        }
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -244,10 +261,10 @@ export class TeamService {
     }
 
     getTeamByClub(userId: string, temporada: string): Observable<Response> {
-        // Obtén el token almacenado en localStorage
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoTeamByClubResponse()) as any);
+        }
         const token: string | null = localStorage.getItem('token');
-
-        // Verifica si el token está presente
         if (token) {
             // Configura las cabeceras con el token para la solicitud HTTP
             const headers = new HttpHeaders({
@@ -422,28 +439,25 @@ export class TeamService {
     }
 
     getTeamsByClubForCombo(clubId: number, temporada: string): Observable<Response> {
-        // Obtén el token almacenado en localStorage
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoTeamsByClubForCombo()) as any);
+        }
         const token: string | null = localStorage.getItem('token');
-
-        // Verifica si el token está presente
         if (token) {
-            // Configura las cabeceras con el token para la solicitud HTTP
             const headers = new HttpHeaders({
                 'Authorization': `Bearer ${token}`
             });
-
-            // Construye la URL para la solicitud
             const url: string = environment.apiUrl + `team/getteamsbyclubforcombo/${clubId}/${temporada}`;
-
-            // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });
         } else {
-            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY;
         }
     }
 
     getTeamsByClubForCombo2(clubId: number, temporada: string, userId: number): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoTeamsByClubForCombo()) as any);
+        }
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -466,10 +480,10 @@ export class TeamService {
     }
 
     movePlayer(playerId: number, teamIdOld: number, teamIdNew: number, cuotaTbm: number, addPlayerMoved: number): Observable<Response> {
-        // Obtén el token almacenado en localStorage
+        if (isDemoMode()) {
+            return of({ data: true, status: 200, error: null } as any);
+        }
         const token: string | null = localStorage.getItem('token');
-
-        // Verifica si el token está presente
         if (token) {
             // Configura las cabeceras con el token para la solicitud HTTP
             const headers = new HttpHeaders({
@@ -489,6 +503,9 @@ export class TeamService {
 
     // Método para crear o actualizar stripe como club
     createUpdateHorarioTeam(dto: HorarioTeam): Observable<any> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response(dto) as any);
+        }
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
         // Verifica si el token está presente
@@ -510,6 +527,9 @@ export class TeamService {
     }
 
     gethorariobyteam(teamId: number, clubId: number): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoHorariosByClub()) as any);
+        }
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -532,10 +552,10 @@ export class TeamService {
     }
 
     getHorariosTeamByClub(clubId: number): Observable<Response> {
-        // Obtén el token almacenado en localStorage
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoHorariosByClub()) as any);
+        }
         const token: string | null = localStorage.getItem('token');
-
-        // Verifica si el token está presente
         if (token) {
             // Configura las cabeceras con el token para la solicitud HTTP
             const headers = new HttpHeaders({
@@ -644,23 +664,18 @@ export class TeamService {
 
     // Método para obtener la suscripcionDTO de un playerID
     getSubscriptionByPlayerId(playerId: number, userId: number): Observable<any> {
-        // Obtén el token almacenado en localStorage
+        if (isDemoMode()) {
+            return of({ data: { suscripcionId: 1 }, status: 200 });
+        }
         const token: string | null = localStorage.getItem('token');
-        // Verifica si el token está presente
         if (token) {
-            // Configura las cabeceras con el token para la solicitud HTTP
             const headers = new HttpHeaders({
                 'Authorization': `Bearer ${token}`
             });
-
-            // Construye la URL para la solicitud
             const url: string = environment.apiUrl + `stripe/getsubscriptionbyplayerid/${playerId}/${userId}`;
-
-            // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });
         } else {
-            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY;
         }
     }
 
@@ -754,19 +769,17 @@ export class TeamService {
 
     // Método para obtener la suscripcionDTO de un playerID
     getEstadoSuscripcion(userId: number, profileId: number): Observable<any> {
-        // Obtén el token almacenado en localStorage
+        if (isDemoMode()) {
+            return of({ data: 999, status: 200 });
+        }
         const token: string | null = localStorage.getItem('token');
-        // Verifica si el token está presente
         if (token) {
-            // Configura las cabeceras con el token para la solicitud HTTP
             const headers = new HttpHeaders({
                 'Authorization': `Bearer ${token}`
             });
 
-            // Construye la URL para la solicitud
             const url: string = environment.apiUrl + `stripe/getestadosuscripcion/${userId}/${profileId}`;
 
-            // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
@@ -818,6 +831,9 @@ export class TeamService {
     }
 
     subscribeToPlan(body: any): Observable<any> {
+        if (isDemoMode()) {
+            return of({ data: { subscriptionId: 'sub_demo', clientSecret: null, confirmationMode: undefined }, status: 200 });
+        }
         const headers = this.authHeaders();
         if (!headers) return throwError(() => new Error('No auth token'));
         const url = `${this.base}stripe/subscriptions/subscribe`;
@@ -825,6 +841,9 @@ export class TeamService {
     }
 
     verifySubscription(body: VerifySubPayload): Observable<any> {
+        if (isDemoMode()) {
+            return of({ data: { verified: true }, status: 200 });
+        }
         const headers = this.authHeaders();
         if (!headers) return throwError(() => new Error('No auth token'));
         const url = `${this.base}stripe/subscriptions/verify`;
@@ -836,30 +855,45 @@ export class TeamService {
 
     // --- Setup Intent (saved cards) ---
     createSetupIntent(body: any): Observable<any> {
+        if (isDemoMode()) {
+            return of({ data: { clientSecret: 'seti_demo_secret', setupIntentId: 'seti_demo' } });
+        }
         const headers = this.authHeaders();
         if (!headers) return throwError(() => new Error('No auth token'));
         return this.http.post<any>(`${this.base}stripe/setup-intent/create`, body, { headers });
     }
 
     confirmSetupIntent(body: any): Observable<any> {
+        if (isDemoMode()) {
+            return of({ data: { status: 'succeeded', paymentMethodId: 'pm_demo' } });
+        }
         const headers = this.authHeaders();
         if (!headers) return throwError(() => new Error('No auth token'));
         return this.http.post<any>(`${this.base}stripe/setup-intent/confirm`, body, { headers });
     }
 
     getSavedCards(playerId: number, clubId: number): Observable<any> {
+        if (isDemoMode()) {
+            return of({ data: [] });
+        }
         const headers = this.authHeaders();
         if (!headers) return throwError(() => new Error('No auth token'));
         return this.http.get<any>(`${this.base}stripe/saved-cards/${playerId}/${clubId}`, { headers });
     }
 
     deleteSavedCard(savedCardId: number): Observable<any> {
+        if (isDemoMode()) {
+            return of({ data: true });
+        }
         const headers = this.authHeaders();
         if (!headers) return throwError(() => new Error('No auth token'));
         return this.http.delete<any>(`${this.base}stripe/saved-cards/${savedCardId}`, { headers });
     }
 
     chargeSavedCard(body: any): Observable<any> {
+        if (isDemoMode()) {
+            return of({ data: { paymentIntentId: 'pi_demo', status: 'succeeded' } });
+        }
         const headers = this.authHeaders();
         if (!headers) return throwError(() => new Error('No auth token'));
         return this.http.post<any>(`${this.base}stripe/charge-saved-card`, body, { headers });
@@ -885,6 +919,9 @@ export class TeamService {
     }
 
     getPlayerSubscriptions(playerId: number, clubId: number): Observable<any> {
+        if (isDemoMode()) {
+            return of({ data: [] });
+        }
         const headers = this.authHeaders();
         if (!headers) return throwError(() => new Error('No auth token'));
         return this.http.get<any>(`${this.base}stripe/subscriptions/player/${playerId}/${clubId}`, { headers });
@@ -912,6 +949,9 @@ export class TeamService {
     }
 
     desistirCuota(body: { pagoClubId: number; playerId: number; userId: number; clubId: number; temporada?: string; reason?: string }): Observable<any> {
+        if (isDemoMode()) {
+            return of({ data: { ok: true }, status: 200 });
+        }
         const headers = this.authHeaders();
         if (!headers) return throwError(() => new Error('No auth token'));
         return this.http.post<any>(`${this.base}stripe/cuotas/desistir`, body, { headers });
@@ -1036,6 +1076,9 @@ export class TeamService {
     }
 
     getFeeConfig(clubId?: number): Observable<any> {
+        if (isDemoMode()) {
+            return of({ data: { appPct: 0.015, stripePct: 0.015, fixedFeeCents: 25 } });
+        }
         const headers = this.authHeaders();
         if (!headers) return throwError(() => new Error('No auth token'));
         const params = clubId && clubId > 0 ? `?clubId=${clubId}` : '';

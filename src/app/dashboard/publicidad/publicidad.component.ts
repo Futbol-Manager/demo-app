@@ -14,6 +14,7 @@ import { TeamService } from 'src/app/core/services/team/team.service';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { environment } from 'src/environments/environment';
+import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
 declare var bootstrap: any;
 
 @Component({
@@ -30,7 +31,16 @@ export class PublicidadComponent implements OnInit, OnDestroy {
   usuarioActual!: User | null;
   profileId = 0;
   userId: any = 0;
-  imageBaseUrlPatro: string = environment.images + 'patrocinadores/';
+  get imageBaseUrlPatro(): string {
+    return isDemoMode() ? '/assets/images/patrocinadores/' : environment.images + 'patrocinadores/';
+  }
+
+  /** URL de la imagen del patrocinador; resuelve '../nombre.png' a /assets/images/nombre.png */
+  getSponsorImageSrc(p: { imagen?: string }): string {
+    if (!p?.imagen) return '';
+    if (p.imagen.startsWith('../')) return '/assets/images/' + p.imagen.slice(3);
+    return this.imageBaseUrlPatro + p.imagen;
+  }
 
   constructor(
     private loginService: LoginService,

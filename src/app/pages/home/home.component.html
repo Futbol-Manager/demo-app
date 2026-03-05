@@ -1,6 +1,22 @@
 <div class="background">
   <img [attr.alt]="'APP.ALT.BACKGROUND' | translate" class="video-background" src="assets/images/fondoLoginV1.png">
 
+  <!-- Asistente de tutorial: fijo en pantalla, arrastrable, fuera del contenedor (solo en login) -->
+  <div *ngIf="screen == 1" class="tutorial-assistant-fixed" [style.left.px]="assistantPosition.left" [style.top.px]="assistantPosition.top"
+    (mousedown)="onAssistantMouseDown($event)" (touchstart)="onAssistantTouchStart($event)" (click)="onAssistantClick()"
+    role="button" tabindex="0" (keydown.enter)="openLoginTutorial()" (keydown.space)="openLoginTutorial(); $event.preventDefault()"
+    title="Ver guía paso a paso (arrastra para mover)" [class.dragging]="isDragging">
+    <div class="tutorial-assistant-icon">
+      <i class="fas fa-route"></i>
+      <span class="tutorial-assistant-pulse"></span>
+    </div>
+    <div class="tutorial-assistant-text">
+      <span class="tutorial-assistant-label">Guía paso a paso</span>
+      <span class="tutorial-assistant-hint">Te señalo cada elemento</span>
+    </div>
+    <span class="tutorial-assistant-drag-hint" aria-hidden="true"><i class="fas fa-grip-vertical"></i></span>
+  </div>
+
   <!-- LOGIN -->
   <div *ngIf="screen == 1" class="container">
     <div class="row justify-content-center" style="padding-top: 2%;">
@@ -10,33 +26,9 @@
             <img [src]="loginLogoSrc" alt="Logo" class="logo-header" />
           </div>
 
-
           <div class="card-body textoCentrado">
             <app-login [returnUrl]="returnUrl"></app-login>
           </div>
-
-          <div class="card-footer textoCentrado" style="flex-direction: column; background: #002c40;">
-            <div class="row">
-              <div class="col-md-12 col-sm-12 textoCentrado">
-                <p>
-                  <a (click)="toRemember($event)" href="#" style="color: #1e8832">
-                    {{ 'AUTH.FORGOT_PASSWORD' | translate }}
-                  </a>
-                </p>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-12 col-sm-12 textoCentrado">
-                <p>
-                  {{ 'AUTH.NO_ACCOUNT' | translate }}
-                  <a (click)="toRegister($event)" href="#">
-                    {{ 'AUTH.REGISTER' | translate }}
-                  </a>
-                </p>
-              </div>
-            </div>
-          </div> <!-- /card-footer -->
         </div> <!-- /card -->
       </div>
     </div>

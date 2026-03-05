@@ -22,6 +22,7 @@ import { SugerenciaService } from 'src/app/core/services/sugerencia/sugerencia.s
 import { AiChatService } from 'src/app/core/services/ai-chat/ai-chat.service';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { environment } from 'src/environments/environment';
+import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
 import { Dropdown } from 'bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { Response } from 'src/app/core/services/models/response.model';
@@ -70,6 +71,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
   profileId = 0;
   idValidation = 1;
   imageBaseUrl: string = environment.images + 'user/';
+
+  /** URL del avatar para mostrar: en demo usa assets (demo-club-logo, demo-coach-avatar, demo-player-avatar). */
+  getDisplayAvatarUrl(): string {
+    if ((environment as { demo?: boolean }).demo) {
+      const name = this.imgUser || (this.profileId === 1 ? 'demo-club-logo.png' : this.profileId === 2 ? 'demo-coach-avatar.svg' : 'demo-player-avatar.svg');
+      return 'assets/images/user/' + name;
+    }
+    if (!this.imgUser) return '';
+    if (this.imgUser.startsWith('http') || this.imgUser.startsWith('/')) return this.imgUser;
+    return this.imageBaseUrl + this.imgUser;
+  }
 
   showModalIdioma = false;
   selectedLang: string = 'es';
@@ -123,6 +135,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   downloadModalPlatform: 'android' | 'ios' = 'android';
 
   linkCopied = false;
+
+  get isDemoMode(): boolean {
+    return !!isDemoMode();
+  }
 
   readonly playStoreUrl = 'https://play.google.com/store/apps/details?id=com.futbol.sphairatech&pcampaignid=web_share';
   readonly appStoreUrl = 'https://apps.apple.com/es/app/sphaira-tech/id6745791142';
@@ -429,12 +445,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
     return this.expandedNotificationId === id;
   }
 
-  openNotificationModal(notification: { correoRecibidoId: number; asunto: string; remitente: string; fechaCreate: string; leido: number; previewText: string }): void {
-    // Close Bootstrap dropdown
+  /** Cierra todos los dropdowns del header (perfil, ayuda, etc.) */
+  private cerrarDropdowns(): void {
     document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(el => {
       const dd = Dropdown.getInstance(el as HTMLElement);
       if (dd) dd.hide();
     });
+  }
+
+  openNotificationModal(notification: { correoRecibidoId: number; asunto: string; remitente: string; fechaCreate: string; leido: number; previewText: string }): void {
+    this.cerrarDropdowns();
 
     this.modalNotification = notification;
     this.showNotificationModal = true;
@@ -659,6 +679,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   abrirModalIdioma() {
     this.showModalIdioma = true;
+  }
+
+  /**
+   * Cambia el rol del usuario (Club, Entrenador, Jugador) y navega al inicio del dashboard.
+   */
+  cambiarRol(profileId: 1 | 2 | 3): void {
+    this.loginService.switchRole(profileId, true);
+    this.cerrarDropdowns();
   }
 
   cerrarModalIdioma() {

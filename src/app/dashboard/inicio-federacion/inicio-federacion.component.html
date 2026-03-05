@@ -96,7 +96,7 @@
                     <div class="row mb-2">
                         <div class="col">
                             <img *ngIf="club.pictureClub"
-                                src="https://appsphairatech.com/images/user/{{ club.pictureClub }}" alt="user-image"
+                                [src]="imageBaseUrlUser + club.pictureClub" alt="user-image"
                                 width="90" height="90" style="max-width: 100%;" />
                         </div>
                     </div>

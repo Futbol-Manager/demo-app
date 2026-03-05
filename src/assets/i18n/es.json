@@ -68,7 +68,7 @@
     "FEATURE_3": "Comparativas entre entrenadores"
   },
   "LOGIN": {
-    "EMAIL_PLACEHOLDER": "Correo electrónico",
+    "EMAIL_PLACEHOLDER": "Introduce tu email para acceder a la demo",
     "EMAIL_REQUIRED": "Correo electrónico requerido",
     "EMAIL_INVALID": "Ingresa un correo electrónico válido",
     "PASSWORD_PLACEHOLDER": "Contraseña",
@@ -180,6 +180,7 @@
     "SAVE": "Guardar",
     "SUBSCRIPTION": "Suscripción",
     "CLUB_SUBSCRIPTION": "Suscripción del Club",
+    "SUBSCRIBE_CTA": "Suscribirse a Sphaira",
     "LOGOUT": "Salir",
     "CREDITS": {
       "LABEL": "Créditos",

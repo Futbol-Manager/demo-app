@@ -3,12 +3,13 @@
 <div class="dashboard-layout">
 
   <main *ngIf="profileId === 1" class="dashboard-main">
+    <app-tutorial-trigger screenId="dashboard-inicio" label="Ver tutorial"></app-tutorial-trigger>
     <div class="container">
       <div class="row g-3">
 
         <!-- CUADRO DE MANDO -->
         <div class="col-6 col-md-4">
-          <div (click)="irAPantallaClub(3)" class="dashboard-card" role="button" tabindex="0">
+          <div (click)="irAPantallaClub(3)" class="dashboard-card" data-tutorial="inicio-cuadro" role="button" tabindex="0">
             <img src="assets/images/estadisticas2.jpg" alt="Cuadro de mando">
             <div class="overlay">
               <i class="bi bi-clipboard2-data"></i>
@@ -19,7 +20,7 @@
 
         <!-- EQUIPOS -->
         <div class="col-6 col-md-4">
-          <div (click)="irAPantallaClub(9)" class="dashboard-card" role="button" tabindex="0">
+          <div (click)="irAPantallaClub(9)" class="dashboard-card" data-tutorial="inicio-equipos" role="button" tabindex="0">
             <img src="assets/images/infoequipo.jpg" alt="Equipos">
             <div class="overlay">
               <i class="bi bi-people"></i>
@@ -30,7 +31,7 @@
 
         <!-- DOCUMENTOS -->
         <div class="col-6 col-md-4">
-          <div (click)="irAPantallaClub(6)" class="dashboard-card" role="button" tabindex="0">
+          <div (click)="irAPantallaClub(6)" class="dashboard-card" data-tutorial="inicio-documentos" role="button" tabindex="0">
             <img src="assets/images/documentacion.jpg" alt="Documentos">
             <div class="overlay">
               <i class="bi bi-file-earmark-pdf"></i>
@@ -41,7 +42,7 @@
 
         <!-- COUTA -->
         <div class="col-6 col-md-4">
-          <div (click)="irAPantallaClub(7)" class="dashboard-card" role="button" tabindex="0">
+          <div (click)="irAPantallaClub(7)" class="dashboard-card" data-tutorial="inicio-pagos" role="button" tabindex="0">
             <img src="assets/images/pagarcuota.jpg" alt="Cuotas">
             <div class="overlay">
               <i class="bi bi-bank2"></i>
@@ -60,8 +61,8 @@
         </div>
 
         <!-- ROPA -->
-        <div *ngIf="!clubLoading && clubOk" class="col-6 col-md-4">
-          <div (click)="irAPantallaClub(2)" class="dashboard-card" role="button" tabindex="0">
+        <div *ngIf="showPremiumCards" class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(2)" class="dashboard-card" data-tutorial="inicio-ropa" role="button" tabindex="0">
             <img src="assets/images/jugadores.jpg" alt="Ropa">
             <div class="overlay">
               <i class="bi bi-backpack3"></i>
@@ -71,8 +72,8 @@
         </div>
 
         <!-- PATROCINADORES -->
-        <div *ngIf="!clubLoading && clubOk" class="col-6 col-md-4">
-          <div (click)="irAPantallaClub(4)" class="dashboard-card" role="button" tabindex="0">
+        <div *ngIf="showPremiumCards" class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(4)" class="dashboard-card" data-tutorial="inicio-patrocinadores" role="button" tabindex="0">
             <img src="assets/images/patrocinadores.jpg" alt="Patrocinadores">
             <div class="overlay">
               <i class="bi bi-collection"></i>
@@ -82,8 +83,8 @@
         </div>
 
         <!-- 1. NOTIFICACIONES -->
-        <div *ngIf="!clubLoading && clubOk" class="col-6 col-md-4">
-          <div (click)="irAPantallaClub(8)" class="dashboard-card" role="button" tabindex="0">
+        <div *ngIf="showPremiumCards" class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(8)" class="dashboard-card" data-tutorial="inicio-notificaciones" role="button" tabindex="0">
             <img src="assets/images/notificaciones.jpg" alt="Notificaciones">
             <div class="overlay">
               <i class="bi bi-bell-fill"></i>
@@ -94,7 +95,7 @@
 
         <!-- 2. GESTIÓN DE STAFF -->
         <div class="col-6 col-md-4">
-          <div (click)="irAPantallaClub(16)" class="dashboard-card" role="button" tabindex="0">
+          <div (click)="irAPantallaClub(16)" class="dashboard-card" data-tutorial="inicio-staff" role="button" tabindex="0">
             <img src="assets/images/staff-club.jpg" alt="Gestión de Staff">
             <div class="overlay">
               <i class="bi bi-person-badge"></i>
@@ -104,8 +105,8 @@
         </div>
 
         <!-- 3. SCOUTING -->
-        <div *ngIf="!clubLoading && clubOk" class="col-6 col-md-4">
-          <div (click)="irAPantallaClub(12)" class="dashboard-card" role="button" tabindex="0">
+        <div *ngIf="showPremiumCards" class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(12)" class="dashboard-card" data-tutorial="inicio-scouting" role="button" tabindex="0">
             <img src="assets/images/scouting.jpg" alt="Scouting">
             <div class="overlay">
               <i class="bi bi-binoculars"></i>
@@ -115,8 +116,8 @@
         </div>
 
         <!-- 4. BIBLIOTECA DE VÍDEOS -->
-        <div *ngIf="!clubLoading && clubOk" class="col-6 col-md-4">
-          <div (click)="irAPantallaClub(13)" class="dashboard-card" role="button" tabindex="0">
+        <div *ngIf="showPremiumCards" class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(13)" class="dashboard-card" data-tutorial="inicio-biblioteca-videos" role="button" tabindex="0">
             <img src="assets/images/video-biblioteca.jpg" alt="Biblioteca de Vídeos">
             <div class="overlay">
               <i class="bi bi-play-btn-fill"></i>
@@ -127,7 +128,7 @@
 
         <!-- 5. ANÁLISIS DE VÍDEO -->
         <div class="col-6 col-md-4">
-          <div (click)="irAPantallaClub(14)" class="dashboard-card" role="button" tabindex="0">
+          <div (click)="irAPantallaClub(14)" class="dashboard-card" data-tutorial="inicio-video-analysis" role="button" tabindex="0">
             <img src="assets/images/video-analysis.jpg" alt="Análisis de vídeo">
             <div class="overlay">
               <i class="bi bi-camera-reels"></i>
@@ -138,7 +139,7 @@
 
         <!-- 6. ASISTENTE DE IA -->
         <div class="col-6 col-md-4">
-          <div (click)="irAPantallaClub(11)" class="dashboard-card ai-assistant-card" role="button" tabindex="0">
+          <div (click)="irAPantallaClub(11)" class="dashboard-card ai-assistant-card" data-tutorial="inicio-asistente-ia" role="button" tabindex="0">
             <img src="assets/images/asistente-ia.jpg" alt="Asistente de IA">
             <div class="overlay">
               <i class="bi bi-robot"></i>
@@ -200,7 +201,7 @@
             <!-- HEADER -->
             <div class="team-header">
               <div class="team-logo">
-                <img *ngIf="team.imgClub" [src]="'https://appsphairatech.com/images/user/' + team.imgClub" />
+                <img *ngIf="team.imgClub" [src]="imageBaseUrlUser + team.imgClub" [alt]="team.name" />
                 <span *ngIf="!team.imgClub" class="bi bi-people-fill"></span>
               </div>
 
@@ -294,8 +295,8 @@
             <div class="player-header">
 
               <div class="avatar-wrapper">
-                <img *ngIf="hijo.picturePlayer" src="https://appsphairatech.com/images/user/{{ hijo.picturePlayer }}"
-                  alt="player" />
+                <img *ngIf="hijo.picturePlayer" [src]="imageBaseUrlUser + hijo.picturePlayer"
+                  alt="{{ hijo.nombre }} {{ hijo.apellido }}" />
                 <i *ngIf="!hijo.picturePlayer" class="bi bi-person-fill avatar-placeholder"></i>
               </div>
 

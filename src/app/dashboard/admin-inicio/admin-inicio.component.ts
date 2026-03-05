@@ -10,6 +10,7 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { Location } from '@angular/common';
 import { getSeasons, getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-admin-inicio',
@@ -48,6 +49,10 @@ export class AdminInicioComponent implements OnInit {
   listHijos: any[] = [];
   listTeam: any[] = [];
   clubList: any[] = [];
+
+  get imageBaseUrlUser(): string {
+    return environment.images + 'user/';
+  }
 
   seasons = getSeasons();
   temporada = getCurrentSeasonString();

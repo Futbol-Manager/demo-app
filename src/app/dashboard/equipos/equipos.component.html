@@ -114,11 +114,17 @@
           <div class="tc-banner-overlay"></div>
           <div class="tc-shield-wrap">
             <div class="tc-shield">
-              <img *ngIf="pictureClub"
-                   [src]="'https://appsphairatech.com/images/user/' + pictureClub"
+              <!-- En demo: src estático (mismo patrón que header/sidebar) para que el asset cargue bien -->
+              <img *ngIf="isDemo"
+                   src="assets/images/user/demo-club-logo.png"
+                   alt="Escudo del club"
+                   class="tc-shield-img"
+                   (error)="$any($event.target).src='assets/images/user/demo-club-logo.svg'" />
+              <img *ngIf="!isDemo && (team.imgClub || pictureClub)"
+                   [src]="getShieldImageSrc(team)"
                    alt="Escudo del club"
                    class="tc-shield-img" />
-              <div *ngIf="!pictureClub" class="tc-shield-placeholder">
+              <div *ngIf="!team.imgClub && !pictureClub && !isDemo" class="tc-shield-placeholder">
                 <span class="tc-shield-letter">
                   {{ (team.category || team.levelLeague || 'E')[0] | uppercase }}
                 </span>

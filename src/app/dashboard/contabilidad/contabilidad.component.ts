@@ -13,6 +13,7 @@ import { ClubCuotas, HostoryPagosPlayer, PlayerCuotas, TotalesCuotas } from 'src
 import * as XLSX from "xlsx";
 import { TranslateService } from '@ngx-translate/core';
 import { getSeasons, getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-contabilidad',
@@ -47,6 +48,10 @@ export class ContabilidadComponent implements OnInit {
   userForm: FormGroup = this.fb.group({
     mail: ['', Validators.email],
   });
+
+  get imageBaseUrlUser(): string {
+    return environment.images + 'user/';
+  }
 
   showAlert: boolean = false;
   showAlertHistory: boolean = false;

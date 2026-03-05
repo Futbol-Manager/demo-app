@@ -1,5 +1,5 @@
 <div class="back-container">
-  <div class="btn-back-clean" href="javascript:void(0)" (click)="irAPantalla(0)">
+  <div class="btn-back-clean" href="javascript:void(0)" (click)="irAPantalla(0)" data-tutorial="cuadro-volver">
     <i class="bi bi-arrow-left"></i>
     <span>{{ 'COMMON.BACK' | translate }}</span>
   </div>
@@ -8,6 +8,7 @@
 <!-- CONTENEDOR PRINCIPAL -->
 <!-- ========================= -->
 <div class="container-fluid cuadro-dashboard">
+  <app-tutorial-trigger screenId="cuadro-de-mandos" label="Ver tutorial"></app-tutorial-trigger>
   <div class="row g-4">
 
     <!-- ========================= -->
@@ -18,7 +19,7 @@
       <div class="row g-3">
 
         <div class="col-6" (click)="irAPantalla(7)" *ngIf="hasPermission('DASHBOARD_PLAYERS')">
-          <div class="option-card">
+          <div class="option-card" data-tutorial="cuadro-jugadores">
             <i class="bi bi-person-badge"></i>
             <h6>{{ 'CUADROMANDO.OPTIONS.PLAYERS' | translate }}</h6>
             <small>{{ 'CUADROMANDO.OPTIONS.PLAYERS_DESC' | translate }}</small>
@@ -26,7 +27,7 @@
         </div>
 
         <div class="col-6" *ngIf="hasPermission('DASHBOARD_COACHES')">
-          <div class="option-card" (click)="irAPantalla(12)">
+          <div class="option-card" (click)="irAPantalla(12)" data-tutorial="cuadro-entrenadores">
             <i class="bi bi-person-raised-hand"></i>
             <h6>{{ 'CUADROMANDO.OPTIONS.COACH' | translate }}</h6>
             <small>{{ 'CUADROMANDO.OPTIONS.COACH_DESC' | translate }}</small>
@@ -34,7 +35,7 @@
         </div>
 
         <div class="col-6" (click)="irAPantalla(9)" *ngIf="hasPermission('DASHBOARD_STATS_PLR')">
-          <div class="option-card">
+          <div class="option-card" data-tutorial="cuadro-stats-jugadores">
             <i class="bi bi-clipboard-data"></i>
             <h6>{{ 'CUADROMANDO.OPTIONS.PLAYER' | translate }}</h6>
             <small>{{ 'CUADROMANDO.OPTIONS.PLAYER_DESC' | translate }}</small>
@@ -42,7 +43,7 @@
         </div>
 
         <div class="col-6" (click)="irAPantalla(8)" *ngIf="hasPermission('DASHBOARD_STATS_TEAM')">
-          <div class="option-card">
+          <div class="option-card" data-tutorial="cuadro-stats-equipos">
             <i class="bi bi-diagram-3"></i>
             <h6>{{ 'CUADROMANDO.OPTIONS.TEAMS' | translate }}</h6>
             <small>{{ 'CUADROMANDO.OPTIONS.TEAMS_DESC' | translate }}</small>
@@ -50,7 +51,7 @@
         </div>
 
         <div class="col-6">
-          <div class="option-card option-card-disabled">
+          <div class="option-card option-card-disabled" data-tutorial="cuadro-entrenamientos">
             <i class="bi bi-cone-striped"></i>
             <h6>{{ 'CUADROMANDO.OPTIONS.TRAINING' | translate }}</h6>
             <small>{{ 'CUADROMANDO.OPTIONS.TRAINING_DESC' | translate }}</small>
@@ -59,7 +60,7 @@
         </div>
 
         <div class="col-6" (click)="irAPantalla(10)" *ngIf="hasPermission('DASHBOARD_CALENDAR')">
-          <div class="option-card">
+          <div class="option-card" data-tutorial="cuadro-calendario">
             <i class="bi bi-calendar3"></i>
             <h6>{{ 'CUADROMANDO.OPTIONS.CALENDAR' | translate }}</h6>
             <small>{{ 'CUADROMANDO.OPTIONS.CALENDAR_DESC' | translate }}</small>
@@ -67,7 +68,7 @@
         </div>
 
         <div class="col-6" *ngIf="hasPermission('DASHBOARD_INJURIES')">
-          <div class="option-card option-card-disabled">
+          <div class="option-card option-card-disabled" data-tutorial="cuadro-lesiones">
             <i class="bi bi-heart-pulse"></i>
             <h6>{{ 'CUADROMANDO.OPTIONS.INJURIES' | translate }}</h6>
             <small>{{ 'CUADROMANDO.OPTIONS.INJURIES_DESC' | translate }}</small>
@@ -86,7 +87,7 @@
 
         <!-- RESULTADOS -->
         <div class="col-12 col-xl-6">
-          <div class="info-card h-100">
+          <div class="info-card h-100" data-tutorial="cuadro-resultados">
             <h5>{{ 'CUADROMANDO.RESULTS.TITLE' | translate }}</h5>
             <div
               *ngIf="showSubscriptionUpgradeCta()"
@@ -160,7 +161,7 @@
 
         <div class="col-12 col-xl-6">
 
-          <div class="info-card calendar-card">
+          <div class="info-card calendar-card" data-tutorial="cuadro-entrenamientos-hoy">
             <h5>{{ 'CUADROMANDO.TRAINING_TODAY.TITLE' | translate }}</h5>
 
             <ng-container *ngIf="loadingDashboard; else calendarContent">
@@ -199,7 +200,7 @@
             </ng-template>
 
           </div>
-          <div class="info-card next-matches-card">
+          <div class="info-card next-matches-card" data-tutorial="cuadro-proximos-partidos">
             <h5>{{ 'CUADROMANDO.NEXT_MATCHES.TITLE' | translate }}</h5>
             <div
               *ngIf="showSubscriptionUpgradeCta()"

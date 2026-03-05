@@ -6,9 +6,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './pages/login/login.component';
+import { DemoRoleSelectionComponent } from './pages/demo-role/demo-role.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RegisterComponent } from './pages/register/register.component';
+import { AuthPagesModule } from './pages/auth-pages.module';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { DashboardModule } from './dashboard/dashboard.module';
@@ -19,14 +20,13 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { ClubesListComponent } from './pages/register/clubes-list/clubes-list.component';
 import { ChangePasswordComponent } from './pages/change-password/change-password.component';
-import { ValidationUserComponent } from './pages/validation-user/validation-user.component';
 import { AsistenciaComponent } from './dashboard/asistencia/asistencia.component';
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { ParentChildrenComponent } from './pages/register/parent-children/parent-children.component';
 import { ConfirmationDialogComponent } from './shared/confirmation-dialog/confirmation-dialog.component';
+import { TutorialOverlayComponent } from './shared/tutorial-overlay/tutorial-overlay.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -37,14 +37,13 @@ export function HttpLoaderFactory(http: HttpClient) {
     AppComponent,
     HomeComponent,
     LoginComponent,
-    RegisterComponent,
+    DemoRoleSelectionComponent,
     ChangePasswordComponent,
-    ValidationUserComponent,
     ProfileComponent,
-    ClubesListComponent,
     AsistenciaComponent,
     ParentChildrenComponent,
     ConfirmationDialogComponent,
+    TutorialOverlayComponent,
   ],
   imports: [
     BrowserModule,
@@ -54,7 +53,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ReactiveFormsModule,
     HttpClientModule,
 
-    // 🌍 Traducciones
+    // 🌍 Traducciones (forRoot + import explícito para pipe en templates)
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -62,6 +61,8 @@ export function HttpLoaderFactory(http: HttpClient) {
         deps: [HttpClient]
       }
     }),
+    TranslateModule,
+    AuthPagesModule,
 
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-right',

@@ -17,8 +17,8 @@
     </div>
   </div>
 
-  <!-- Campo de contraseña -->
-  <div class="mb-3 password-wrapper">
+  <!-- Campo de contraseña (oculto en modo demo) -->
+  <div *ngIf="!isDemoMode" class="mb-3 password-wrapper">
     <div class="password-wrapper">
       <input [attr.placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate"
         [class.is-invalid]="passwordControl?.invalid && (passwordControl?.dirty || passwordControl?.touched || thisForm.submitted)"

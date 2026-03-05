@@ -21,7 +21,7 @@
                                         <span class="bi bi-person" style="font-size: 4rem;"></span>
                                     </ng-container>
                                     <ng-container *ngIf="player.picturePlayer">
-                                        <img src="https://appsphairatech.com/images/user/{{ player.picturePlayer }}"
+                                        <img [src]="imageBaseUrlUser + player.picturePlayer"
                                             alt="user-player" width="100" height="100" class="rounded-circle me-2">
                                     </ng-container>
                                     <h5 class="card-title">{{ player.nombre }} {{ player.apellido }}</h5>
@@ -70,7 +70,7 @@
                         <div class="form-group">
                             <ng-container *ngIf="player.picturePlayer">
                                 <div class="container">
-                                    <img src="https://appsphairatech.com/images/user/{{ player.picturePlayer }}"
+                                    <img [src]="imageBaseUrlUser + player.picturePlayer"
                                         alt="user-player" width="150" height="150" class="rounded-circle me-2">
                                 </div>
                             </ng-container>
@@ -468,7 +468,7 @@
                         </ng-container>
                         <ng-container *ngIf="selectedPlayer.picturePlayer">
                             <div class="container">
-                                <img src="https://appsphairatech.com/images/user/{{ selectedPlayer.picturePlayer }}"
+                                <img [src]="imageBaseUrlUser + selectedPlayer.picturePlayer"
                                     alt="user-player" width="150" height="150" class="rounded-circle me-2">
                             </div>
                         </ng-container>

@@ -1,3 +1,8 @@
+<!-- ══ MODO DEMO ══ -->
+<div class="demo-mode-banner" *ngIf="isDemoMode">
+  <span><i class="bi bi-eye me-1"></i> Modo demo — Datos de ejemplo.</span>
+</div>
+
 <!-- ══ TRIAL BANNER (coach standalone, trial activo) ══ -->
 <div class="coach-trial-banner" *ngIf="profileId === 2 && !coachBelongsToClub && coachTrialActive">
   <div class="trial-banner-inner">
@@ -31,6 +36,17 @@
 
       <!-- ================= BLOQUE DERECHO ================= -->
       <div class="col-auto d-flex align-items-center gap-2">
+
+        <!-- ===== CTA SUSCRIBIRSE A SPHAIRA (todos los roles: premium y dinámico) ===== -->
+        <a class="header-cta-subscribe" (click)="goSuscripcionClub()" role="button" tabindex="0"
+           (keydown.enter)="goSuscripcionClub()" (keydown.space)="goSuscripcionClub(); $event.preventDefault()"
+           [attr.aria-label]="'Suscribirse a Sphaira'">
+          <span class="header-cta-subscribe-glow"></span>
+          <span class="header-cta-subscribe-inner">
+            <i class="bi bi-rocket-takeoff-fill"></i>
+            <span class="header-cta-subscribe-text">{{ 'HEADER.SUBSCRIBE_CTA' | translate }}</span>
+          </span>
+        </a>
 
         <!-- ===== SUGERENCIAS BADGE (solo admin) ===== -->
         <div *ngIf="userId === 9" class="position-relative header-action-icon-container" style="cursor: pointer;" (click)="goToSugerencias()">
@@ -235,30 +251,23 @@
           </div>
         </div>
 
-        <!-- ===== THEME TOGGLE ===== -->
-        <button class="btn-theme-toggle"
-          [class.theme-toggling]="themeAnimating"
-          (click)="toggleTheme()"
-          [attr.aria-label]="(isDarkMode ? 'HEADER.LIGHT_MODE' : 'HEADER.DARK_MODE') | translate"
-          [title]="(isDarkMode ? 'HEADER.LIGHT_MODE' : 'HEADER.DARK_MODE') | translate">
-          <span class="theme-toggle-icon">
-            <i class="bi" [ngClass]="isDarkMode ? 'bi-sun-fill' : 'bi-moon-stars-fill'"></i>
-          </span>
-        </button>
+        <!-- ===== THEME TOGGLE (bloqueado: solo modo claro) ===== -->
+        <!-- El modo oscuro está deshabilitado; el botón no se muestra. -->
 
         <!-- ===== USUARIO / PERFIL ===== -->
         <div class="dropdown" style="cursor: pointer; text-align: center;">
           <a class="nav-link dropdown-toggle arrow-none nav-user px-2 user-container" data-bs-toggle="dropdown"
             role="button">
 
-            <!-- Avatar -->
+            <!-- Avatar (en demo muestra siempre avatar por rol: club/coach/player) -->
             <span class="account-user-avatar">
-              <ng-container *ngIf="imgUser; else noImg">
-                <img [src]="imageBaseUrl + imgUser" alt="user-image" class="rounded-circle" />
+              <ng-container *ngIf="imgUser || isDemoMode; else noImg">
+                <img [src]="getDisplayAvatarUrl()" alt="user-image" class="rounded-circle"
+                     (error)="$any($event.target).src='assets/images/no-image.png'" />
               </ng-container>
 
               <ng-template #noImg>
-                <img src="./../../../assets/images/no-image.png" class="rounded-circle" alt="No image" />
+                <img src="assets/images/no-image.png" class="rounded-circle" alt="No image" />
               </ng-template>
             </span>
 
@@ -295,6 +304,29 @@
               <span>{{ 'HEADER.CHANGE_LANG' | translate }}</span>
             </a>
 
+            <!-- Cambiar rol: Club, Entrenador, Jugador (en español, funcional) -->
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-header dropdown-header-role">
+              <span>Cambiar rol</span>
+            </div>
+            <a href="javascript:void(0);" class="dropdown-item" (click)="cambiarRol(1)">
+              <i class="bi bi-building"></i>
+              <span>Club</span>
+              <i *ngIf="profileId === 1" class="bi bi-check-lg ms-auto text-success"></i>
+            </a>
+            <a href="javascript:void(0);" class="dropdown-item" (click)="cambiarRol(2)">
+              <i class="bi bi-person-badge"></i>
+              <span>Entrenador</span>
+              <i *ngIf="profileId === 2 || profileId === 6 || profileId === 7" class="bi bi-check-lg ms-auto text-success"></i>
+            </a>
+            <a href="javascript:void(0);" class="dropdown-item" (click)="cambiarRol(3)">
+              <i class="bi bi-person-fill"></i>
+              <span>Jugador</span>
+              <i *ngIf="profileId === 3 || profileId === 5" class="bi bi-check-lg ms-auto text-success"></i>
+            </a>
+
+            <div class="dropdown-divider"></div>
+
             <!-- Suscripción Coach: solo perfil Entrenador (2) que NO pertenece a un club -->
             <a *ngIf="profileId === 2 && !coachBelongsToClub" href="javascript:void(0);" class="dropdown-item" (click)="goSuscripcion()">
               <i class="bi bi-credit-card-fill"></i>
@@ -324,8 +356,9 @@
       <button class="pm-close" (click)="cerrarModal()"><i class="bi bi-x-lg"></i></button>
       <div class="pm-hero-bg"></div>
       <div class="pm-avatar-wrap">
-        <img [src]="showPreview ? imagePreviewUrl : imgUser ? imageBaseUrl + imgUser : './../../../assets/images/no-image.png'"
-          class="pm-avatar" />
+        <img [src]="showPreview ? imagePreviewUrl : (getDisplayAvatarUrl() || 'assets/images/no-image.png')"
+          class="pm-avatar"
+          (error)="$any($event.target).src='assets/images/no-image.png'" />
         <label class="pm-avatar-edit" title="Cambiar foto">
           <i class="bi bi-camera-fill"></i>
           <input type="file" hidden (change)="onFileSelected($event)" />

@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { isDemoMode } from '../demo/demo-mode';
 
 @Injectable({ providedIn: 'root' })
 export class VideoStorageService {
@@ -16,6 +17,9 @@ export class VideoStorageService {
   }
 
   getPlan(clubId: number): Observable<any> {
+    if (isDemoMode()) {
+      return of({ data: { hasPlan: true, status: 'ACTIVE' }, status: 200 });
+    }
     return this.http.get<any>(`${this.baseUrl}/${clubId}/plan`, { headers: this.getHeaders() });
   }
 

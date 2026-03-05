@@ -5,6 +5,8 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { Location } from '@angular/common';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
+import { environment } from 'src/environments/environment';
+import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
 
 @Component({
   selector: 'app-documentos-jugador',
@@ -140,10 +142,13 @@ export class DocumentosJugadorComponent implements OnInit {
     if (file) {
       this.clubService.uploadDocPadres(file, dto).subscribe({
         next: (res) => {
-          this.loadDocuments();
+          if (isDemoMode() && this.docPadreTemp) {
+            this.docPadreTemp.subido = 1;
+          } else {
+            this.loadDocuments();
+          }
           alert('Documento subido correctamente');
           this.cerrarModalDocumento();
-          // refrescar lista si hace falta
         },
         error: (err) => {
           console.error(err);
@@ -190,9 +195,13 @@ export class DocumentosJugadorComponent implements OnInit {
 
       this.clubService.uploadDocPadresPersonalizado(dto).subscribe({
         next: () => {
+          if (isDemoMode() && this.docEditando) {
+            this.docEditando.subido = 1;
+          } else {
+            this.loadDocuments();
+          }
           alert('Formulario enviado correctamente');
           this.cerrarModalEditarPersonalizado();
-          this.loadDocuments();
         },
         error: (err) => {
           console.error(err);

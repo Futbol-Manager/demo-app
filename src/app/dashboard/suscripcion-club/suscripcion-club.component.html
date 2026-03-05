@@ -25,79 +25,36 @@
 </div>
 -->
 
-<!-- ═══════════ ACTIVE SUBSCRIPTION VIEW ═══════════ -->
-<div class="subscription-active" *ngIf="datosCargados && subscription as sub">
+<!-- ═══════════ ACTIVE SUBSCRIPTION VIEW (no se muestra si el plan activo es gratuito; se muestra la selección de planes) ═══════════ -->
+<div class="subscription-active" *ngIf="datosCargados && subscription && subscription.planType !== 'gratuito'">
   <div class="subscription-row-card">
     <div class="row-plan">
-      <div class="sub-plan-icon" [ngClass]="getPlanColorClass(sub.planType)">
-        <i class="bi" [ngClass]="getPlanIcon(sub.planType)"></i>
+      <div class="sub-plan-icon" [ngClass]="getPlanColorClass(subscription.planType)">
+        <i class="bi" [ngClass]="getPlanIcon(subscription.planType)"></i>
       </div>
       <div class="sub-details">
-        <h2>{{ 'CLUB_PLANS.PLAN_' + (sub.planType === 'familia' ? 'FAMILIA' : sub.planType === 'club' ? 'CLUB' : 'FREE') + '.NAME' | translate }}</h2>
-        <span class="status-badge" [ngClass]="getStatusBadgeClass(sub.status)">
-          {{ 'CLUB_PLANS.STATUS.' + (sub.status | uppercase) | translate }}
+        <h2>{{ 'CLUB_PLANS.PLAN_' + (subscription.planType === 'familia' ? 'FAMILIA' : subscription.planType === 'club' ? 'CLUB' : 'FREE') + '.NAME' | translate }}</h2>
+        <span class="status-badge" [ngClass]="getStatusBadgeClass(subscription.status)">
+          {{ 'CLUB_PLANS.STATUS.' + (subscription.status | uppercase) | translate }}
         </span>
       </div>
     </div>
 
-    <div class="row-item" *ngIf="sub.startDate">
+    <div class="row-item" *ngIf="subscription.startDate">
       <span class="meta-label">{{ 'CLUB_PLANS.ACTIVE_VIEW.START_DATE' | translate }}</span>
-      <span class="meta-value">{{ sub.startDate }}</span>
+      <span class="meta-value">{{ subscription.startDate }}</span>
     </div>
 
-    <div class="row-item" *ngIf="sub.period">
+    <div class="row-item" *ngIf="subscription.period">
       <span class="meta-label">{{ 'CLUB_PLANS.ACTIVE_VIEW.PERIOD' | translate }}</span>
-      <span class="meta-value">{{ 'CLUB_PLANS.PERIOD.' + (sub.period | uppercase) | translate }}</span>
+      <span class="meta-value">{{ 'CLUB_PLANS.PERIOD.' + (subscription.period | uppercase) | translate }}</span>
     </div>
 
-    <div class="row-item" *ngIf="sub.planType === 'club'">
+    <div class="row-item" *ngIf="subscription.planType === 'club'">
       <span class="meta-label">{{ 'CLUB_PLANS.ACTIVE_VIEW.PLAYER_COUNT' | translate }}</span>
-      <span class="meta-value">{{ sub.playerCount || 0 }}</span>
+      <span class="meta-value">{{ subscription.playerCount || 0 }}</span>
     </div>
 
-    <div class="row-item" *ngIf="sub.planType === 'gratuito'">
-      <span class="meta-label">{{ 'CLUB_PLANS.ACTIVE_VIEW.STRIPE_CONNECT' | translate }}</span>
-      <span class="stripe-state">
-        <i class="bi" [ngClass]="sub.stripeConnectStatus === 'active' ? 'bi-check-circle-fill text-success' : 'bi-exclamation-circle-fill text-warning'"></i>
-        {{ 'CLUB_PLANS.ACTIVE_VIEW.CONNECT_STATUS_' + (sub.stripeConnectStatus || 'not_started' | uppercase) | translate }}
-      </span>
-    </div>
-
-    <div class="row-item commission-item" *ngIf="sub.planType === 'gratuito' && sub.clubCommissionPercent !== undefined">
-      <span class="meta-label">{{ 'CLUB_PLANS.ACTIVE_VIEW.CLUB_COMMISSION' | translate }}</span>
-      <div class="commission-view" *ngIf="!editingClubCommission">
-        <span class="meta-value">{{ sub.clubCommissionPercent }}%</span>
-        <button class="btn btn-link commission-edit-btn" (click)="startEditClubCommission()" title="Editar comisión" aria-label="Editar comisión">
-          <i class="bi bi-pencil"></i>
-        </button>
-      </div>
-
-      <div class="commission-edit" *ngIf="editingClubCommission">
-        <input
-          type="number"
-          min="0"
-          max="30"
-          step="0.1"
-          [(ngModel)]="commissionDraft"
-          class="commission-input"
-          [disabled]="savingClubCommission"
-        />
-        <span class="meta-value">%</span>
-        <button class="btn btn-link commission-action save" (click)="saveClubCommission()" [disabled]="savingClubCommission" title="Guardar" aria-label="Guardar comisión">
-          <i class="bi" [ngClass]="savingClubCommission ? 'bi-arrow-repeat spin' : 'bi-check2'"></i>
-        </button>
-        <button class="btn btn-link commission-action cancel" (click)="cancelEditClubCommission()" [disabled]="savingClubCommission" title="Cancelar" aria-label="Cancelar edición">
-          <i class="bi bi-x-lg"></i>
-        </button>
-      </div>
-
-      <small class="commission-error" *ngIf="commissionEditError">{{ commissionEditError }}</small>
-    </div>
-
-    <button class="btn stripe-enter-btn" *ngIf="sub.planType === 'gratuito'" (click)="openStripe()">
-      <i class="bi bi-stripe"></i>
-      Entrar a Stripe
-    </button>
   </div>
 
   <div class="active-plan-info-card" *ngIf="activePlanInfo as planInfo">
@@ -115,8 +72,8 @@
   </div>
 </div>
 
-<!-- ═══════════ PLAN SELECTION ═══════════ -->
-<div class="plan-selection" *ngIf="datosCargados && !subscription">
+<!-- ═══════════ PLAN SELECTION (si no hay suscripción o el plan activo es gratuito: mostrar grid sin plan Gratuito) ═══════════ -->
+<div class="plan-selection" *ngIf="datosCargados && (!subscription || (subscription && subscription.planType === 'gratuito'))">
   <div class="plans-header">
     <h1>{{ 'CLUB_PLANS.SELECTION.TITLE' | translate }}</h1>
     <p>{{ 'CLUB_PLANS.SELECTION.SUBTITLE' | translate }}</p>

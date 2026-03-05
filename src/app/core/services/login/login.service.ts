@@ -11,6 +11,7 @@ import { LOCALSTORAGESTRINGS } from '../../models/master/localstorage.enum';
 import { LocalStorage } from 'src/app/core/utils/local-storage';
 import { Router } from '@angular/router';
 import { Response } from 'src/app/core/services/models/response.model';
+import { DemoService, DemoRole, DEMO_IDS } from '../demo/demo.service';
 
 
 
@@ -24,6 +25,7 @@ export class LoginService {
   constructor(
     private http: HttpClient,
     private router: Router,
+    private demoService: DemoService,
     //private localStorage: LocalStorage
   ) {
     // Restaurar el usuario desde localStorage al iniciar la app (recarga de página / recompilación)
@@ -63,6 +65,40 @@ export class LoginService {
     );
   }
 
+  /**
+   * Login de demo 100% en front: solo email, sin llamar al backend.
+   * Guarda usuario y token locales y redirige a selección de rol.
+   */
+  loginDemoLocal(email: string): void {
+    const trimmed = (email || '').trim();
+    if (!trimmed) return;
+    const plain = {
+      userId: 1,
+      mail: trimmed,
+      firstName: 'Usuario',
+      secondName: 'Demo',
+      idValidation: 2,
+      profileType: { profileId: 2, profileName: 'Entrenador' },
+      playerId: 0,
+      playerIds: [] as number[],
+      staffPermissions: [] as string[],
+      birthdate: null,
+      password: null,
+      profile: null,
+      pictureUser: 'demo-coach-avatar.svg',
+      idGenre: null,
+      dateCreate: null,
+      nameSon: null,
+      mobile: null,
+      parentesco: null,
+    };
+    const token = 'demo-token-' + Date.now();
+    localStorage.setItem('usuario', JSON.stringify(plain));
+    localStorage.setItem('token', token);
+    this['usuarioAutenticado'].next(new User(plain));
+    this.router.navigate(['/demo-role']);
+  }
+
   loginGloouds(token: string): Observable<LoginResponse> {
     const url: string = environment.apiUrl + `auth/login-gloouds/${token}`;
     return this.http.get<LoginResponse>(url).pipe(
@@ -93,8 +129,8 @@ export class LoginService {
     // Emitir null ANTES de limpiar storage para que los guards reaccionen inmediatamente
     this['usuarioAutenticado'].next(null);
 
-    // Invalidar el token en el servidor (fire-and-forget; no bloqueamos el logout local)
-    if (token) {
+    // En demo no se llama al backend
+    if (token && !this.demoService.isDemoMode()) {
       const url = environment.apiUrl + 'auth/logout';
       this.http.post(url, {}, {
         headers: { Authorization: `Bearer ${token}` }
@@ -103,6 +139,9 @@ export class LoginService {
 
     localStorage.removeItem('usuario');
     localStorage.removeItem('token');
+    if (this.demoService.isDemoMode()) {
+      this.demoService.clearDemoRole();
+    }
 
     const route = byInactivity ? ['/login'] : ['/home'];
     this.router.navigate(route, byInactivity ? { queryParams: { reason: 'inactivity' } } : {});
@@ -115,6 +154,94 @@ export class LoginService {
 
   get usuarioActual(): Observable<User | null> {
     return this.usuarioAutenticado.asObservable();
+  }
+
+  /**
+   * Cambia el rol (perfil) del usuario actual: Club (1), Entrenador (2) o Jugador (3).
+   * Actualiza el estado, persiste en localStorage y opcionalmente navega.
+   * Funciona en modo normal y en modo demo.
+   */
+  switchRole(profileId: 1 | 2 | 3, navigateToInicio = true): void {
+    const raw = localStorage.getItem('usuario');
+    if (!raw) return;
+    let plain: any;
+    try {
+      plain = JSON.parse(raw);
+    } catch {
+      return;
+    }
+    if (!plain || typeof plain !== 'object') return;
+
+    const profileNames: Record<number, string> = {
+      1: 'Club',
+      2: 'Entrenador',
+      3: 'Jugador',
+    };
+    const profileName = profileNames[profileId] || 'Club';
+    const updated = { ...plain, profileType: { profileId, profileName } };
+
+    localStorage.setItem('usuario', JSON.stringify(updated));
+    this['usuarioAutenticado'].next(new User(updated));
+
+    if (this.demoService.isDemoMode()) {
+      const role: DemoRole = profileId === 1 ? 'club' : profileId === 2 ? 'coach' : 'player';
+      this.demoService.setDemoRole(role);
+    }
+
+    if (navigateToInicio && this.router) {
+      const route = this.getDashboardRouteForRole(profileId, plain);
+      this.router.navigate(route);
+    }
+  }
+
+  /**
+   * Devuelve la ruta del dashboard correspondiente al rol.
+   * Club → inicio; Entrenador → menu-entrenador; Jugador → opcionesjugador.
+   */
+  private getDashboardRouteForRole(profileId: 1 | 2 | 3, userPlain: any): any[] {
+    if (profileId === 1) {
+      return ['/dashboard/inicio'];
+    }
+    const isDemo = this.demoService.isDemoMode();
+    const teamId = isDemo ? DEMO_IDS.teamId : parseInt(sessionStorage.getItem('it_lastTeamId') || sessionStorage.getItem('clubId') || '1', 10);
+    if (profileId === 2) {
+      return ['/dashboard/menu-entrenador', teamId, 0];
+    }
+    // profileId === 3 (Jugador)
+    const playerId = isDemo ? DEMO_IDS.playerId : (userPlain?.playerId || 1);
+    return ['/dashboard/opcionesjugador', teamId, playerId];
+  }
+
+  /**
+   * En modo demo: actualiza el usuario con el perfil del rol seleccionado,
+   * guarda en localStorage, emite y navega al dashboard correspondiente.
+   */
+  setDemoUserAndNavigate(role: DemoRole): void {
+    if (!this.demoService.isDemoMode()) return;
+    const raw = localStorage.getItem('usuario');
+    if (!raw) return;
+    let user: User;
+    try {
+      user = JSON.parse(raw);
+    } catch {
+      return;
+    }
+    const profileNames = { club: 'Club', coach: 'Entrenador', player: 'Jugador' };
+    const profileId = role === 'club' ? 1 : role === 'coach' ? 2 : 3;
+    const demoAvatars = { club: 'demo-club-logo.png', coach: 'demo-coach-avatar.svg', player: 'demo-player-avatar.svg' };
+    const updated = {
+      ...user,
+      profileType: {
+        profileId,
+        profileName: profileNames[role],
+      },
+      pictureUser: demoAvatars[role],
+    };
+    localStorage.setItem('usuario', JSON.stringify(updated));
+    this['usuarioAutenticado'].next(updated);
+    this.demoService.setDemoRole(role);
+    // Los 3 roles van a inicio; el contenido cambia según profileId (Club/Entrenador/Jugador).
+    this.router.navigate(['/dashboard/inicio']);
   }
     
   getlistallusers(): Observable<Response> {

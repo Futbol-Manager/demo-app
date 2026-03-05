@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { distinctUntilChanged, filter, take } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { forkJoin, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { LoginService } from 'src/app/core/services/login/login.service';
@@ -12,6 +13,9 @@ import { AiPageContextService } from 'src/app/core/services/ai-chat/ai-page-cont
 import { ClubSubscriptionService } from 'src/app/core/services/subscription/club-subscription.service';
 import { ClubPlanType } from 'src/app/core/models/subscription/club-subscription.model';
 import { getSeasons, getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { environment } from 'src/environments/environment';
+import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
+import { DEMO_IDS } from 'src/app/core/services/demo/demo.service';
 
 @Component({
   selector: 'app-inicio',
@@ -40,6 +44,16 @@ export class InicioComponent implements OnInit {
 
   get hasStaffDashboard(): boolean {
     return this.staffPermissions.some(p => p.startsWith('DASHBOARD_'));
+  }
+
+  /** En modo demo mostramos siempre las tarjetas de Ropa, Patrocinadores, Notificaciones, Scouting, etc. */
+  get showPremiumCards(): boolean {
+    return isDemoMode() === true || (!this.clubLoading && this.clubOk);
+  }
+
+  /** Base URL para imágenes de usuario/equipo (en demo apunta a assets/images/user/) */
+  get imageBaseUrlUser(): string {
+    return environment.images + 'user/';
   }
 
   navegarStaff(route: string, needsClubId = false): void {
@@ -77,6 +91,8 @@ export class InicioComponent implements OnInit {
   private readonly CLUB_ID_KEY = 'clubId';
   private readonly CLUB_PLAN_TYPE_KEY = 'clubPlanType';
 
+  private userSub: Subscription | null = null;
+
   constructor(
     private loginService: LoginService,
     private teamService: TeamService,
@@ -90,43 +106,93 @@ export class InicioComponent implements OnInit {
   // Ciclo de vida
   // =========================
   ngOnInit(): void {
-    this.yaRedirigido = false;               // reset del flag al re-entrar
-    this.cargarUsuario();
+    this.yaRedirigido = false;
     this.detectarPlataforma();
     this.inicializarDesdeCache();
     this.cargarTemporadaDesdeStorage();
-    this.inicializarUsuario();
-    // cargarListadoEquipos y cargarJugadores ya se invocan dentro de
-    // cargarUsuario / inicializarUsuario según el perfil → evitamos llamadas
-    // duplicadas que provocaban race-conditions para profileId >= 3.
+    this.setupUsuarioSubscription();
   }
+
+  ngOnDestroy(): void {
+    if (this.userSub) {
+      this.userSub.unsubscribe();
+      this.userSub = null;
+    }
+  }
+
+  /**
+   * Suscripción al usuario actual: reacciona a cambios de rol (Club/Entrenador/Jugador).
+   * Al cambiar el rol se limpia el estado y se recarga la vista correspondiente.
+   */
+  private setupUsuarioSubscription(): void {
+    if (this.userSub) {
+      this.userSub.unsubscribe();
+    }
+    this.userSub = this.loginService.usuarioActual.pipe(
+      filter((u): u is User => !!u),
+      distinctUntilChanged((a, b) =>
+        a.profileType?.profileId === b.profileType?.profileId && a.userId === b.userId
+      )
+    ).subscribe((user) => {
+      this.aplicarUsuarioYcargar(user);
+    });
+  }
+
+  /**
+   * Aplica el usuario actual al estado del componente y carga los datos del rol.
+   * Se llama en la suscripción inicial y cada vez que cambia el rol (p. ej. desde el header).
+   */
+  private aplicarUsuarioYcargar(user: User): void {
+    this.usuarioActual = user;
+    this.profileId = user.profileType?.profileId ?? 0;
+    this.userId = this.obtenerUserIdPorPerfil(user);
+    this.staffPermissions = user.staffPermissions ?? [];
+
+    if (user.userId === 9 && this.profileId !== 1 && this.profileId !== 2) {
+      this.profileId = 2;
+      this.userId = 9;
+    }
+
+    localStorage.setItem('userId', this.userId === 9 ? this.userId.toString() : '0');
+
+    // Limpiar datos del rol anterior para que no se muestre la vista previa
+    this.listHijos = [];
+    this.listTeam = [];
+    this.datosCargando = true;
+    this.yaRedirigido = false;
+
+    if (this.profileId === 1) {
+      this.clubId = Number(sessionStorage.getItem(this.CLUB_ID_KEY) || '0');
+      this.clubLoading = true;
+      if (this.clubId > 0) {
+        this.verificarSuscripcion();
+        this.cargarPlanSuscripcion();
+        this.cargarListadoEquipos();
+      } else {
+        this.cargarClubId();
+      }
+      return;
+    }
+
+    if (this.profileId === 2 || this.profileId === 6 || this.profileId === 7) {
+      this.cargarListadoEquipos();
+      return;
+    }
+
+    if (this.profileId > 2 && this.profileId < 6) {
+      this.cargarJugadores();
+      return;
+    }
+
+    this.datosCargando = false;
+  }
+
   private cargarTemporadaDesdeStorage(): void {
     const temporada = localStorage.getItem('temporada');
     if (temporada) {
       this.temporadaStoredValue = temporada;
       this.temporada = temporada;
     }
-  }
-  private inicializarUsuario(): void {
-    this.loginService.usuarioActual
-      .pipe(filter(Boolean), take(1))
-      .subscribe((user) => {
-        this.usuarioActual = user!;
-        this.profileId = user!.profileType.profileId;
-        this.userId = this.obtenerUserIdPorPerfil(user!);
-        this.staffPermissions = user!.staffPermissions ?? [];
-
-        // Override admin: si el profileId real no es club ni coach,
-        // forzar como coach para que vea el dashboard correctamente
-        if (user!.userId === 9 && this.profileId !== 1 && this.profileId !== 2) {
-          this.profileId = 2;
-          this.userId = 9;
-        }
-
-        localStorage.setItem('userId', this.userId == 9 ? this.userId.toString() : '0');
-
-        this.resolverCargaInicialPorPerfil();
-      });
   }
   private obtenerUserIdPorPerfil(user: any): number {
     if (user.profileType.profileId === 0) {
@@ -173,8 +239,11 @@ export class InicioComponent implements OnInit {
   // =========================
   irAPantallaClub(id: number): void {
     this.cargarClubId();
+    // En modo demo asegurar clubId para que la navegación no se bloquee
+    if (isDemoMode() && !this.clubId) {
+      this.clubId = DEMO_IDS.clubId;
+    }
     if (this.userId != 9) {
-      // ⛔ BLOQUEO ABSOLUTO
       if (!this.clubId) {
         console.warn('Intento de navegación sin clubId');
         return;
@@ -190,11 +259,10 @@ export class InicioComponent implements OnInit {
       }
     }
 
-    // Control de acceso para plan gratuito
-    if (this.profileId === 1 && this.clubPlanType === 'gratuito') {
+    // Control de acceso para plan gratuito (en modo demo no restringir: todas las opciones llevan a su componente real)
+    if (!isDemoMode() && this.profileId === 1 && this.clubPlanType === 'gratuito') {
       const allowedIds = [3, 6, 7, 9, 11]; // Cuadro mandos, Documentos, Pagos, Equipos, Asistente IA
       if (!allowedIds.includes(id)) {
-        console.log('[INICIO DEBUG] Access denied for plan gratuito, id:', id, '- redirecting to subscriptions');
         this.router.navigate(['/dashboard/suscripcion-club']);
         return;
       }
@@ -302,46 +370,6 @@ export class InicioComponent implements OnInit {
         this.aiPageContext.preloadForClub(this.clubId, this.userId);
       }
     }
-  }
-
-  // =========================
-  // Suscripción
-
-  // =========================
-  private cargarUsuario(): void {
-    //seteamos a 0 para reiniciar el valor    
-    localStorage.setItem('userId', '0');
-
-    this.loginService.usuarioActual
-      .pipe(filter(Boolean), take(1))
-      .subscribe((user) => {
-        this.usuarioActual = user!;
-        this.profileId = user!.profileType.profileId;
-        this.userId = user!.userId;
-
-        // Override admin: si el profileId real no es club ni coach,
-        // forzar como coach para que vea el dashboard correctamente
-        if (this.userId === 9 && this.profileId !== 1 && this.profileId !== 2) {
-          this.profileId = 2;
-        }
-
-        // Club (profileId=1): necesita clubId y suscripción
-        if (this.profileId === 1) {
-          if (this.clubId > 0) {
-            this.verificarSuscripcion();
-            this.cargarPlanSuscripcion();
-          } else {
-            this.cargarClubId();
-          }
-          this.cargarListadoEquipos();
-        }
-        // Coach, Fisioterapeuta, Nutricionista: cargar equipos directamente
-        if (this.profileId === 2 || this.profileId === 6 || this.profileId === 7) {
-          this.cargarListadoEquipos();
-        }
-        // Para jugador (profileId 3-5) ya se dispara cargarHijos() + cargarJugadores()
-        // desde inicializarUsuario → resolverCargaInicialPorPerfil, no duplicamos aquí.
-      });
   }
 
   // =========================

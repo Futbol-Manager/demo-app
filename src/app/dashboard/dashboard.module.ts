@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { MarkdownAiPipe } from './pipes/markdown.pipe';
 import { CommonModule } from '@angular/common';
+import { SharedModule } from '../shared/shared.module';
 import { DashboardComponent } from './dashboard.component';
 import { HeaderComponent } from './header/header.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
@@ -355,6 +356,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     TranslateModule,
     DragDropModule,
     MatDialogModule,
+    SharedModule,
   ]
 })
 export class DashboardModule { }

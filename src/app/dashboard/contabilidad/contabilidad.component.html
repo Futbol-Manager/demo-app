@@ -159,7 +159,7 @@
                             <td>{{ player.nombre }}</td>
                             <td>
                                 <div *ngIf="player.picturePlayer">
-                                    <img src="https://appsphairatech.com/images/user/{{ player.picturePlayer }}"
+                                    <img [src]="imageBaseUrlUser + player.picturePlayer"
                                         alt="user-player" width="50" height="50" class="rounded-circle me-2">
                                 </div>
                                 <div *ngIf="!player.picturePlayer">

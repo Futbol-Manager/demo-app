@@ -17,12 +17,12 @@
 <section class="sponsor-hero" *ngIf="listPatrocinadores.length">
   <div class="carousel-track">
     <ng-container *ngFor="let s of listPatrocinadores">
-      <img *ngIf="s.imagen && s.oculto === 1" [src]="imageBaseUrl + s.imagen" (click)="mostrarId(s)" class="hero-logo">
+      <img *ngIf="s.imagen && s.oculto === 1" [src]="getSponsorImageSrc(s)" [alt]="'Logo ' + (s.nombre || 'patrocinador')" (click)="mostrarId(s)" class="hero-logo" loading="lazy">
     </ng-container>
 
     <!-- Duplicado para scroll infinito -->
     <ng-container *ngFor="let s of listPatrocinadores">
-      <img *ngIf="s.imagen && s.oculto === 1" [src]="imageBaseUrl + s.imagen" (click)="mostrarId(s)" class="hero-logo">
+      <img *ngIf="s.imagen && s.oculto === 1" [src]="getSponsorImageSrc(s)" [alt]="'Logo ' + (s.nombre || 'patrocinador')" (click)="mostrarId(s)" class="hero-logo" loading="lazy">
     </ng-container>
   </div>
 </section>
@@ -65,7 +65,7 @@
         <!-- LOGO -->
         <div class="card-logo">
           <img [src]="patro.imagen
-              ? imageBaseUrl + patro.imagen
+              ? getSponsorImageSrc(patro)
               : 'https://appsphairatech.com/images/task-board/blank.png'"
               [alt]="patro.nombre">
         </div>
@@ -279,7 +279,7 @@
               <!-- Imagen guardada -->
               <ng-template #imagenGuardada>
                 <ng-container *ngIf="patrocinadorUpdate.imagen; else placeholder">
-                  <img [src]="imageBaseUrl + patrocinadorUpdate.imagen" alt="Imagen del patrocinador"
+                  <img [src]="getSponsorImageSrc(patrocinadorUpdate)" alt="Imagen del patrocinador"
                     class="sponsor-image mb-3">
                 </ng-container>
               </ng-template>
@@ -394,7 +394,7 @@
     <!-- HERO -->
     <div class="view-sponsor-hero">
       <ng-container *ngIf="patrocinadorUpdate.imagen; else noSponsorImg">
-        <img [src]="imageBaseUrl + patrocinadorUpdate.imagen"
+        <img [src]="getSponsorImageSrc(patrocinadorUpdate)"
           alt="Logo de {{ patrocinadorUpdate.nombre }}" class="view-sponsor-logo" />
       </ng-container>
       <ng-template #noSponsorImg>

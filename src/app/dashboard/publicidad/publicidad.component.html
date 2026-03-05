@@ -6,9 +6,9 @@
         <ng-container *ngFor="let patrocinador of listPatrocinadores">
           <img
             *ngIf="patrocinador.imagen && patrocinador.oculto === 1"
-            [src]="imageBaseUrlPatro + patrocinador.imagen"
+            [src]="getSponsorImageSrc(patrocinador)"
             class="patrocinador-img"
-            alt="Patrocinador"
+            [alt]="'Logo ' + (patrocinador.nombre || 'Patrocinador')"
             title="Haz clic para ver patrocinador"
             (click)="mostrarId(patrocinador)"
           />
@@ -19,9 +19,9 @@
         <ng-container *ngFor="let patrocinador of listPatrocinadores">
           <img
             *ngIf="patrocinador.imagen && patrocinador.oculto === 1"
-            [src]="imageBaseUrlPatro + patrocinador.imagen"
+            [src]="getSponsorImageSrc(patrocinador)"
             class="patrocinador-img"
-            alt="Patrocinador"
+            [alt]="'Logo ' + (patrocinador.nombre || 'Patrocinador')"
             title="Haz clic para ver patrocinador"
             (click)="mostrarId(patrocinador)"
           />
@@ -44,7 +44,7 @@
     <!-- HERO -->
     <div class="vs-hero">
       <ng-container *ngIf="patrocinadorUpdate.imagen; else noImg">
-        <img [src]="imageBaseUrlPatro + patrocinadorUpdate.imagen"
+        <img [src]="getSponsorImageSrc(patrocinadorUpdate)"
           alt="Logo de {{ patrocinadorUpdate.nombre }}" class="vs-logo" />
       </ng-container>
       <ng-template #noImg>

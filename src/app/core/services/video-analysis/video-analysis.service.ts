@@ -1,7 +1,9 @@
-﻿import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { DemoDataService } from '../demo/demo-data.service';
+import { isDemoMode } from '../demo/demo-mode';
 
 @Injectable({ providedIn: 'root' })
 export class VideoAnalysisService {
@@ -30,6 +32,9 @@ export class VideoAnalysisService {
   listProjects(clubId: number, filters?: {
     teamId?: number; matchId?: number; trainingId?: number; status?: string;
   }): Observable<any> {
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoVideoProjects(), status: 200 });
+    }
     let url = `${this.baseUrl}/club/${clubId}/projects`;
     const params: string[] = [];
     if (filters?.teamId) params.push(`teamId=${filters.teamId}`);
@@ -59,6 +64,9 @@ export class VideoAnalysisService {
   // ── Templates ──
 
   listTemplates(clubId?: number): Observable<any> {
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoVideoTemplates(), status: 200 });
+    }
     let url = `${this.baseUrl}/templates`;
     if (clubId) url += `?clubId=${clubId}`;
     return this.http.get<any>(url, { headers: this.getHeaders() });

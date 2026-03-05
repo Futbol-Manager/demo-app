@@ -7,7 +7,9 @@ import { forkJoin } from 'rxjs';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { environment } from 'src/environments/environment';
+import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
 import { VideoStorageService } from 'src/app/core/services/video-storage/video-storage.service';
+import { DemoDataService } from 'src/app/core/services/demo/demo-data.service';
 
 @Component({
   selector: 'app-scouting-club',
@@ -237,6 +239,15 @@ export class ScoutingClubComponent implements OnInit {
   /** Carga config y watchlist en paralelo para abrir más rápido */
   private loadConfigAndWatchlist(): void {
     this.watchlistLoading = true;
+    if (isDemoMode()) {
+      this.config = DemoDataService.getDemoScoutingConfig();
+      this.pipelineEnabled = this.config?.pipelineEnabled === 1;
+      this.reportsEnabled = this.config?.reportsEnabled === 1;
+      this.compareEnabled = this.config?.compareEnabled === 1;
+      this.watchlist = DemoDataService.getDemoScoutingWatchlist();
+      this.watchlistLoading = false;
+      return;
+    }
     const config$ = this.http.get<any>(`${this.apiBase}/${this.clubId}/config`, { headers: this.headers });
     const watchlist$ = this.http.get<any>(`${this.apiBase}/${this.clubId}/watchlist`, { headers: this.headers });
     forkJoin({ config: config$, watchlist: watchlist$ }).subscribe({
@@ -271,6 +282,13 @@ export class ScoutingClubComponent implements OnInit {
   }
 
   saveConfig(): void {
+    if (isDemoMode()) {
+      this.showConfigModal = false;
+      if (this.activeTab === 'pipeline' && !this.pipelineEnabled) {
+        this.activeTab = 'watchlist';
+      }
+      return;
+    }
     const body = {
       clubId: this.clubId,
       pipelineEnabled: this.pipelineEnabled ? 1 : 0,
@@ -400,6 +418,11 @@ export class ScoutingClubComponent implements OnInit {
 
   // ═══════ WATCHLIST ═══════
   loadWatchlist(): void {
+    if (isDemoMode()) {
+      this.watchlist = DemoDataService.getDemoScoutingWatchlist();
+      this.watchlistLoading = false;
+      return;
+    }
     this.watchlistLoading = true;
     this.http.get<any>(`${this.apiBase}/${this.clubId}/watchlist`, { headers: this.headers })
       .subscribe({
@@ -428,6 +451,14 @@ export class ScoutingClubComponent implements OnInit {
 
   removeFromWatchlist(id: number): void {
     if (!confirm('¿Eliminar este jugador de tu lista?')) return;
+    if (isDemoMode()) {
+      this.watchlist = this.watchlist.filter((i: any) => i?.watchlist?.id !== id);
+      if (this.detailData?.watchlist?.id === id) {
+        this.showDetailModal = false;
+        this.detailData = null;
+      }
+      return;
+    }
     this.http.delete<any>(`${this.apiBase}/${this.clubId}/watchlist/${id}`, { headers: this.headers })
       .subscribe({
         next: () => this.loadWatchlist(),
@@ -437,6 +468,24 @@ export class ScoutingClubComponent implements OnInit {
 
   addExternalPlayer(): void {
     if (!this.extName) return;
+    if (isDemoMode()) {
+      const newId = Math.max(0, ...this.watchlist.map((i: any) => i?.watchlist?.id || 0)) + 1;
+      this.watchlist = [...this.watchlist, {
+        watchlist: {
+          id: newId,
+          status: 'IDENTIFIED',
+          externalPlayerName: this.extName,
+          externalPlayerPosition: this.extPosition || '',
+          externalPlayerTeam: this.extTeam || '',
+          externalPlayerAge: this.extAge ?? null,
+        },
+        scoutingProfile: null,
+        evaluations: [],
+      }];
+      this.showAddExternal = false;
+      this.extName = ''; this.extPosition = ''; this.extTeam = ''; this.extAge = null; this.extNotes = '';
+      return;
+    }
     const body: any = {
       clubId: this.clubId,
       addedBy: this.userId,
@@ -472,6 +521,13 @@ export class ScoutingClubComponent implements OnInit {
     this.showEditDataPanel  = false;
     this.editDataError      = '';
     this.editDataSuccess    = false;
+    if (isDemoMode()) {
+      const item = this.watchlist.find((i: any) => i?.watchlist?.id === watchlistId);
+      this.detailData = item || null;
+      this.detailLoading = false;
+      this.videosLoading = false;
+      return;
+    }
     this.http.get<any>(`${this.apiBase}/${this.clubId}/watchlist/${watchlistId}/detail`, { headers: this.headers })
       .subscribe({
         next: res => {
@@ -1005,6 +1061,11 @@ export class ScoutingClubComponent implements OnInit {
 
   // ═══════ PIPELINE ═══════
   loadPipeline(): void {
+    if (isDemoMode()) {
+      this.pipelineData = DemoDataService.getDemoScoutingPipeline();
+      this.pipelineLoading = false;
+      return;
+    }
     this.pipelineLoading = true;
     this.http.get<any>(`${this.apiBase}/${this.clubId}/pipeline`, { headers: this.headers })
       .subscribe({
@@ -1056,6 +1117,11 @@ export class ScoutingClubComponent implements OnInit {
   }
 
   private moveInPipelineQuiet(watchlistId: number, toStage: string): void {
+    if (isDemoMode()) {
+      const item = this.watchlist.find((i: any) => i?.watchlist?.id === watchlistId);
+      if (item?.watchlist) item.watchlist.status = toStage;
+      return;
+    }
     const body = { watchlistId, clubId: this.clubId, stage: toStage, movedBy: this.userId };
     this.http.post<any>(`${this.apiBase}/${this.clubId}/pipeline`, body, { headers: this.headers })
       .subscribe({ next: () => {}, error: () => {} });

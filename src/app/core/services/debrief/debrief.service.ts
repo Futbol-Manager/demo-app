@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { DemoDataService } from '../demo/demo-data.service';
+import { isDemoMode } from '../demo/demo-mode';
 import {
   DebriefTraining,
   DebriefMatch,
@@ -274,6 +276,9 @@ export class DebriefService {
   // ═══════════════════════════════════════
 
   getHistory(teamId: number): Observable<DebriefHistoryItem[]> {
+    if (isDemoMode()) {
+      return of(DemoDataService.getDemoDebriefHistory() as DebriefHistoryItem[]);
+    }
     return this.http.get<any>(this.baseUrl + `history/${teamId}`).pipe(
       map(res => {
         if (!res?.data) return [];

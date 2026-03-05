@@ -21,6 +21,8 @@ import {
   getSuggestedStatus,
   migrateStatus
 } from './injury.model';
+import { DemoDataService } from '../demo/demo-data.service';
+import { isDemoMode } from '../demo/demo-mode';
 
 @Injectable({
   providedIn: 'root'
@@ -41,6 +43,11 @@ export class InjuryService {
   // ═══════════════════════════════════════════════════════════════
 
   getInjuriesByPlayer(playerId: number, playerName: string = ''): Observable<Injury[]> {
+    if (isDemoMode()) {
+      const raw = DemoDataService.getDemoInjuriesByClub();
+      const forPlayer = Array.isArray(raw) ? raw.filter((i: any) => i.playerId === playerId) : [];
+      return of(forPlayer.map((i: any) => this.mapToInjury(i)));
+    }
     return this.http.get<any>(this.baseUrl + `player/${playerId}`).pipe(
       map(response => {
         const injuries = response?.data || [];
@@ -51,6 +58,10 @@ export class InjuryService {
   }
 
   getInjuriesByTeam(teamId: number): Observable<Injury[]> {
+    if (isDemoMode()) {
+      const raw = DemoDataService.getDemoInjuriesByClub();
+      return of(Array.isArray(raw) ? raw.map((i: any) => this.mapToInjury(i)) : []);
+    }
     return this.http.get<any>(this.baseUrl + `team/${teamId}`).pipe(
       map(response => {
         const injuries = response?.data || [];
@@ -61,6 +72,10 @@ export class InjuryService {
   }
 
   getInjuriesByClub(clubId: number): Observable<Injury[]> {
+    if (isDemoMode()) {
+      const raw = DemoDataService.getDemoInjuriesByClub();
+      return of(Array.isArray(raw) ? raw.map((i: any) => this.mapToInjury(i)) : []);
+    }
     return this.http.get<any>(this.baseUrl + `club/${clubId}`).pipe(
       map(response => {
         const injuries = response?.data || [];

@@ -240,7 +240,7 @@
                 <td class="avatar-cell">
                   <img *ngIf="player.picturePlayer" loading="lazy"
                        class="avatar-fill"
-                       [src]="'https://appsphairatech.com/images/user/' + player.picturePlayer">
+                       [src]="imageBaseUrlUser + player.picturePlayer">
                   <div *ngIf="!player.picturePlayer" class="avatar-placeholder">
                     <span>{{ (player.nombre || '?')[0] }}{{ (player.apellido || '')[0] }}</span>
                   </div>
@@ -466,7 +466,7 @@
                   <td class="avatar-cell">
                     <img *ngIf="player.picturePlayer" loading="lazy"
                          class="avatar-fill"
-                         [src]="'https://appsphairatech.com/images/user/' + player.picturePlayer">
+                         [src]="imageBaseUrlUser + player.picturePlayer">
                     <div *ngIf="!player.picturePlayer" class="avatar-placeholder">
                       <span>{{ (player.nombre || '?')[0] }}{{ (player.apellido || '')[0] }}</span>
                     </div>
@@ -1542,7 +1542,7 @@
         <div class="hpm-header-player">
           <div class="hpm-avatar" *ngIf="playerHistorial">
             <img *ngIf="playerHistorial.picturePlayer" loading="lazy"
-                 [src]="'https://appsphairatech.com/images/user/' + playerHistorial.picturePlayer" alt="Avatar">
+                 [src]="imageBaseUrlUser + playerHistorial.picturePlayer" alt="Avatar">
             <span *ngIf="!playerHistorial.picturePlayer" class="hpm-avatar-initials">
               {{ (playerHistorial.nombre || '?')[0] }}{{ (playerHistorial.apellido || '')[0] }}
             </span>
@@ -1724,7 +1724,7 @@
         <div class="pca-header-player">
           <div class="pca-avatar" *ngIf="playerModal">
             <img *ngIf="playerModal.picturePlayer" loading="lazy"
-                 [src]="'https://appsphairatech.com/images/user/' + playerModal.picturePlayer"
+                 [src]="imageBaseUrlUser + playerModal.picturePlayer"
                  alt="Avatar">
             <span *ngIf="!playerModal.picturePlayer" class="pca-avatar-initials">
               {{ (playerModal.nombre || '?')[0] }}{{ (playerModal.apellido || '')[0] }}
@@ -1955,7 +1955,7 @@
         <div class="pcm-header-player">
           <div class="pcm-avatar" *ngIf="playerEdit">
             <img *ngIf="playerEdit.picturePlayer" loading="lazy"
-                 [src]="'https://appsphairatech.com/images/user/' + playerEdit.picturePlayer" alt="Avatar">
+                 [src]="imageBaseUrlUser + playerEdit.picturePlayer" alt="Avatar">
             <span *ngIf="!playerEdit.picturePlayer" class="pcm-avatar-initials">
               {{ (playerEdit.nombre || '?')[0] }}{{ (playerEdit.apellido || '')[0] }}
             </span>

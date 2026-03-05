@@ -289,7 +289,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   /** Número de camiseta para mostrar en la tarjeta (soporta numero, number, numeroCamiseta y valor 0) */
   getNumeroCamiseta(player: any): string {
     if (!player) return '-';
-    const raw = player.numero ?? player.number ?? player.numeroCamiseta;
+    const raw = player.numero ?? player.number ?? player.numeroCamiseta ?? player.dorsal;
     if (raw === null || raw === undefined) return '-';
     const s = String(raw).trim();
     return s === '' ? '-' : s;
@@ -877,7 +877,14 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.getInfoAsistencia(player.playerId);
     this.getDatosPlayer(player.playerId);
     this.selectedPlayer = player;
-    this.edadSeleccionada = this.fechaEnEspañol(this.selectedPlayer.fechaDeNacimiento) + ' (' + this.calcularEdad(player.fechaDeNacimiento) + ')';
+    const fechaNac = this.selectedPlayer?.fechaDeNacimiento ?? player?.fechaDeNacimiento;
+    if (fechaNac && String(fechaNac).trim()) {
+      const edad = this.calcularEdad(fechaNac);
+      const fechaStr = this.fechaEnEspañol(fechaNac);
+      this.edadSeleccionada = Number.isFinite(edad) && fechaStr ? `${fechaStr} (${edad} años)` : '—';
+    } else {
+      this.edadSeleccionada = '—';
+    }
     this.mostrarEdad = true;
     const pid = this.profileId ?? this.usuarioActual?.profileType?.profileId ?? 0;
     this.infoModalActiveTab = pid === 6 ? 'lesiones' : (pid === 7 ? 'deportiva' : 'personal');
@@ -1068,10 +1075,14 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   // Método para calcular la edad del jugador a partir de su fecha de nacimiento
-  calcularEdad(fechaNacimientoString: string): number {
-    // Convertimos la cadena de fecha de nacimiento a un objeto Date
+  calcularEdad(fechaNacimientoString: string | null | undefined): number {
+    if (!fechaNacimientoString || typeof fechaNacimientoString !== 'string' || !fechaNacimientoString.trim()) {
+      return NaN;
+    }
     const fechaNacimiento = new Date(fechaNacimientoString);
-
+    if (Number.isNaN(fechaNacimiento.getTime())) {
+      return NaN;
+    }
     const hoy = new Date();
     const cumpleanos = new Date(fechaNacimiento);
     let edad = hoy.getFullYear() - cumpleanos.getFullYear();
@@ -1084,16 +1095,28 @@ export class PlayerComponent implements OnInit, OnDestroy {
     return edad;
   }
 
-  fechaEnEspañol(fecha: string): string {
-    const partes = fecha.split('-');
-    const fechaObj = new Date(parseInt(partes[0]), parseInt(partes[1]) - 1, parseInt(partes[2]));
-
-    const dia = fechaObj.getDate();
-    const mes = fechaObj.getMonth() + 1;
-    const año = fechaObj.getFullYear();
-
-    const diaStr = dia < 10 ? '0' + dia : dia.toString();
-    const mesStr = mes < 10 ? '0' + mes : mes.toString();
+  fechaEnEspañol(fecha: string | null | undefined): string {
+    if (!fecha || typeof fecha !== 'string' || !fecha.trim()) {
+      return '';
+    }
+    const partes = fecha.trim().split('-');
+    if (partes.length < 3) {
+      return '';
+    }
+    const año = parseInt(partes[0], 10);
+    const mes = parseInt(partes[1], 10) - 1;
+    const dia = parseInt(partes[2], 10);
+    if (Number.isNaN(año) || Number.isNaN(mes) || Number.isNaN(dia)) {
+      return '';
+    }
+    const fechaObj = new Date(año, mes, dia);
+    if (Number.isNaN(fechaObj.getTime())) {
+      return '';
+    }
+    const d = fechaObj.getDate();
+    const m = fechaObj.getMonth() + 1;
+    const diaStr = d < 10 ? '0' + d : d.toString();
+    const mesStr = m < 10 ? '0' + m : m.toString();
 
     return `${diaStr}/${mesStr}/${año}`;
   }

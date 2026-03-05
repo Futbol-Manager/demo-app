@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" width="120" height="140">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e8832;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#2a9e42;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#156b28;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="ballGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e8e8e8;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <!-- Escudo -->
+  <path d="M60 8 L108 28 L108 72 Q108 112 60 132 Q12 112 12 72 L12 28 Z" fill="url(#shieldGrad)" stroke="#0d5c1f" stroke-width="2" filter="url(#shadow)"/>
+  <!-- Franja central blanca -->
+  <path d="M60 18 L100 34 L100 68 Q100 102 60 122 Q20 102 20 68 L20 34 Z" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+  <!-- Balon estilizado -->
+  <g transform="translate(60,70) scale(0.9)">
+    <circle cx="0" cy="0" r="22" fill="url(#ballGrad)" stroke="#c0c0c0" stroke-width="1"/>
+    <path d="M0 -22 A22 22 0 0 1 19 -11 L11 -6 A12 12 0 0 0 6 -11 Z" fill="none" stroke="#2d2d2d" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M0 -22 A22 22 0 0 0 -19 -11 L-11 -6 A12 12 0 0 1 -6 -11 Z" fill="none" stroke="#2d2d2d" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M19 -11 L11 -6 A12 12 0 0 1 11 6 L19 11 A22 22 0 0 0 0 22" fill="none" stroke="#2d2d2d" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M-19 -11 L-11 -6 A12 12 0 0 0 -11 6 L-19 11 A22 22 0 0 1 0 22" fill="none" stroke="#2d2d2d" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M0 22 A22 22 0 0 1 -19 11 L-11 6 A12 12 0 0 1 11 6 L19 11 A22 22 0 0 0 0 22" fill="none" stroke="#2d2d2d" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <!-- Iniciales S T -->
+  <text x="60" y="52" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="20" fill="white">ST</text>
+</svg>

@@ -4,6 +4,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError, of, EMPTY } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
+import { DemoDataService } from '../demo/demo-data.service';
+import { isDemoMode } from '../demo/demo-mode';
 import { NotificatePlayerUI, PagocuotasPlayerResponse, Player, ScoutingPlayer } from './player.model';
 import { PlayerPostPartido } from '../models/match.model';
 import { HttpEvent, HttpEventType } from '@angular/common/http';
@@ -17,6 +19,12 @@ export class PlayerService {
     constructor(private http: HttpClient) { }
 
     getPlayers(teamId: string): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response({
+                players: DemoDataService.getDemoPlayersByTeamForCoach(teamId),
+                clubId: 9001
+            }) as Response);
+        }
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -39,6 +47,10 @@ export class PlayerService {
     }
 
     getListPlayersEstadisticsByTeam(teamId: number, tipoPartido: string): Observable<Response> {
+        if (isDemoMode()) {
+            const data = DemoDataService.getDemoListPlayersStadistics();
+            return of(DemoDataService.response(data) as Response);
+        }
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -61,6 +73,9 @@ export class PlayerService {
     }
 
     getDatosPlayer(teamId: number, playerId: number): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoDatosPlayer()) as Response);
+        }
         const token: string | null = localStorage.getItem('token');
         if (token) {
             const headers = new HttpHeaders({
@@ -74,6 +89,9 @@ export class PlayerService {
     }
 
     getPagocuotasPlayer(teamId: number, playerId: number): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoHistoryCuotasPlayer(teamId, playerId)) as Response);
+        }
         const token: string | null = localStorage.getItem('token');
         if (token) {
             const headers = new HttpHeaders({
@@ -173,6 +191,9 @@ export class PlayerService {
     }
 
     getListPostPartidoByTeam(teamId: number, tipoPartido: string): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoListPostPartidoByTeam(teamId, tipoPartido)) as Response);
+        }
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -195,6 +216,9 @@ export class PlayerService {
     }
 
     getListPlayersByTeamForGalery(teamId: number): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoPostPartidosForGalery()) as Response);
+        }
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -217,6 +241,9 @@ export class PlayerService {
     }
 
     getListProximosPartidos(teamId: number): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoProximosPartidos()) as Response);
+        }
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -239,6 +266,9 @@ export class PlayerService {
     }
 
     getDeleteGaleriaPartidos(galeriaPartidoId: number): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response([]) as Response);
+        }
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -283,6 +313,9 @@ export class PlayerService {
     }
 
     uploadImgGaleria(file: File, postpartidoId: number, teamId: number, playerId: number): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response({ galeriaPartidoId: 999, tipo: 0, url: 'demo-upload.jpg' }) as Response);
+        }
         // Verifica si el archivo está presente
         if (file) {
             // Obtén el token almacenado en localStorage
@@ -314,6 +347,9 @@ export class PlayerService {
     }
 
     getListGaleriaPartidos(postpartidoId: number): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoGaleriaPartidos(postpartidoId)) as Response);
+        }
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -441,6 +477,10 @@ export class PlayerService {
     }
 
     getscoutingplayerbyplayerid(playerId: number, userId: number): Observable<Response> {
+        if (isDemoMode()) {
+            const data = DemoDataService.getDemoScoutingPlayer(playerId);
+            return of(DemoDataService.response(data) as Response);
+        }
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
         // Verifica si el token está presente
@@ -462,6 +502,9 @@ export class PlayerService {
     }
 
     createUpdateScoutingPlayer(scoutingPlayer: ScoutingPlayer): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response({ ...scoutingPlayer, scoutingPlayerId: 1 }) as Response);
+        }
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
         // Verifica si el token está presente
@@ -483,6 +526,9 @@ export class PlayerService {
     }
 
     setPublicoPrivadoScoutingPlayerByPlayerId(playerId: number, value: number, userId: number): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response({ ok: true }) as Response);
+        }
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
         // Verifica si el token está presente

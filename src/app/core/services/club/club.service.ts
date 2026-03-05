@@ -9,6 +9,8 @@ import { EMPTY, forkJoin, Observable, of, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
+import { DemoDataService } from '../demo/demo-data.service';
+import { isDemoMode } from '../demo/demo-mode';
 import {
   ClubCuotas,
   HostoryPagosPlayer,
@@ -93,23 +95,18 @@ export class ClubService {
   }
 
   getClubByUserId(userId: number): Observable<Response> {
-    // Obtén el token almacenado en localStorage
+    if (isDemoMode()) {
+      return of({ data: 9001, status: 200, error: null } as any);
+    }
     const token: string | null = localStorage.getItem('token');
-    // Verifica si el token está presente
     if (token) {
-      // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
         Authorization: `Bearer ${token}`,
       });
-
-      // Construye la URL para la solicitud
       const url: string = environment.apiUrl + `club/getclubbyuserid/${userId}`;
-
-      // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
     } else {
-      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY;
     }
   }
 
@@ -145,6 +142,9 @@ export class ClubService {
     clubId: string,
     temporada: string
   ): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoRopaJugadoresByClub()) as Response);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
@@ -170,6 +170,9 @@ export class ClubService {
 
   // Método para crear o actualizar un equipo
   updateRopaJugadorByPk(ropaJugador: RopaJugador): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ data: true }) as Response);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -191,6 +194,9 @@ export class ClubService {
   }
 
   getRopaClub(clubId: string, temp: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoRopaClub()) as Response);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
@@ -215,6 +221,9 @@ export class ClubService {
 
   // Método para crear o actualizar un equipo
   updateRopaClub(ropaClub: RopaClub): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ data: true }) as Response);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -236,6 +245,9 @@ export class ClubService {
   }
 
   getUserRopaPrefs(userId: number, clubId: number, temporada: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ columnPrefs: '{}', labelPrefs: '{}' }) as Response);
+    }
     return this.http.get<Response>(
       environment.apiUrl + `club/getuserropaprefs/${userId}/${clubId}/${temporada}`,
       { headers: this.getAuthHeaders() }
@@ -243,6 +255,9 @@ export class ClubService {
   }
 
   saveUserRopaPrefs(dto: { userId: number; clubId: number; temporada: string; columnPrefs: string; labelPrefs: string }): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ data: true }) as Response);
+    }
     return this.http.post<Response>(
       environment.apiUrl + 'club/saveuserropaprefs',
       dto,
@@ -494,7 +509,9 @@ export class ClubService {
     clubId: number,
     temporada: string
   ): Observable<Response> {
-    // Obtén el token almacenado en localStorage
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoListJugadoresByClub(), status: 200, error: null } as any);
+    }
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
@@ -520,6 +537,9 @@ export class ClubService {
     clubId: number,
     temporada: string
   ): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoListEntrenadoresByClub(), status: 200, error: null } as any);
+    }
     const token: string | null = localStorage.getItem('token');
     if (token) {
       const headers = new HttpHeaders({
@@ -535,46 +555,36 @@ export class ClubService {
   }
 
   getListPlayersOfClubByStadistics(clubId: number): Observable<Response> {
-    // Obtén el token almacenado en localStorage
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoListPlayersStadistics(), status: 200, error: null } as any);
+    }
     const token: string | null = localStorage.getItem('token');
-    // Verifica si el token está presente
     if (token) {
-      // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
         Authorization: `Bearer ${token}`,
       });
-
-      // Construye la URL para la solicitud
       const url: string =
         environment.apiUrl + `club/getlistplayersofclubbystadistics/${clubId}`;
-
-      // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
     } else {
-      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY;
     }
   }
 
   getListTeamsOfClubByStadistics(clubId: number): Observable<Response> {
-    // Obtén el token almacenado en localStorage
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoListTeamsStadistics(), status: 200, error: null } as any);
+    }
     const token: string | null = localStorage.getItem('token');
-    // Verifica si el token está presente
     if (token) {
-      // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
         Authorization: `Bearer ${token}`,
       });
-
-      // Construye la URL para la solicitud
       const url: string =
         environment.apiUrl + `club/getlistteamsofclubbystadistics/${clubId}`;
-
-      // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
     } else {
-      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY;
     }
   }
 
@@ -777,6 +787,9 @@ export class ClubService {
   }
 
   getListPatrocinadoresByClub(clubId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoPatrocinadores()) as Response);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -800,6 +813,10 @@ export class ClubService {
 
   // Método para crear o actualizar un equipo
   createUpdatePatrocinador(patrocinador: Patrocinador): Observable<Response> {
+    if (isDemoMode()) {
+      const created = { ...patrocinador, patrocinadorId: patrocinador.patrocinadorId || 99 };
+      return of(DemoDataService.response(created) as Response);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -821,6 +838,9 @@ export class ClubService {
   }
 
   deletePatrocinadorById(patrocinadorId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ data: true }) as Response);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -846,6 +866,9 @@ export class ClubService {
     patrocinadorId: number,
     value: number
   ): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ data: true }) as Response);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -872,6 +895,9 @@ export class ClubService {
     userId: number,
     profileId: number
   ): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoPatrocinadores()) as Response);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -897,6 +923,9 @@ export class ClubService {
   //************** PARA LOS CORREOS *********************/
 
   getListCorreos(userId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoCorreos()) as Response);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -920,6 +949,9 @@ export class ClubService {
 
   /** Lista de correos/notificaciones por club (cuando el usuario entra como club). */
   getListCorreosByClub(clubId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoCorreos()) as Response);
+    }
     const token: string | null = localStorage.getItem('token');
     if (token) {
       const headers = new HttpHeaders({
@@ -934,6 +966,9 @@ export class ClubService {
 
   // Método para crear o actualizar un equipo
   createCorreo(correoEnviado: CorreoEnviado): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ ...correoEnviado, correoEnviadoId: 99 }) as Response);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -955,6 +990,9 @@ export class ClubService {
   }
 
   getCorreosProgramados(userId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoCorreosProgramados()) as Response);
+    }
     const token: string | null = localStorage.getItem('token');
     if (token) {
       const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
@@ -973,6 +1011,9 @@ export class ClubService {
   }
 
   updateCorreoProgramado(correoEnviadoId: number, dto: any): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ data: true }) as Response);
+    }
     const token: string | null = localStorage.getItem('token');
     if (token) {
       const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
@@ -982,6 +1023,9 @@ export class ClubService {
   }
 
   cancelCorreoProgramado(correoEnviadoId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ data: true }) as Response);
+    }
     const token: string | null = localStorage.getItem('token');
     if (token) {
       const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
@@ -991,6 +1035,9 @@ export class ClubService {
   }
 
   openCorreoRecibido(correoRecibidoId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ data: true }) as Response);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -1027,6 +1074,9 @@ export class ClubService {
   }
 
   deleteCorreo(id: number, option: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ data: 1 }) as Response);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -1050,29 +1100,27 @@ export class ClubService {
 
   // Método para obtener la suscripcionDTO de un playerID
   getEntrenandoAhora(clubId: number, temporada: string): Observable<any> {
-    // Obtén el token almacenado en localStorage
+    if (isDemoMode()) {
+      const data = DemoDataService.getDemoCuadroMandos();
+      return of({ data, status: 200 });
+    }
     const token: string | null = localStorage.getItem('token');
-    // Verifica si el token está presente
     if (token) {
-      // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
         Authorization: `Bearer ${token}`,
       });
-
-      // Construye la URL para la solicitud
       const url: string =
         environment.apiUrl + `club/getentrenandoahora/${clubId}/${temporada}`;
-
-      // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
     } else {
-      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY;
     }
   }
 
   getCuotasClub(clubId: number, temporada: string): Observable<Response> {
-    // Obtén el token almacenado en localStorage
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoCuotasClub(), status: 200, error: null } as any);
+    }
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
@@ -1094,7 +1142,9 @@ export class ClubService {
   }
 
   getPuntuacion(clubId: number): Observable<Response> {
-    // Obtén el token almacenado en localStorage
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoPuntuacion(), status: 200, error: null } as any);
+    }
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
@@ -1115,7 +1165,9 @@ export class ClubService {
   }
 
   getEntrenamientosCreados(clubId: number): Observable<Response> {
-    // Obtén el token almacenado en localStorage
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoEntrenamientosCreados(), status: 200, error: null } as any);
+    }
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
@@ -1161,9 +1213,10 @@ export class ClubService {
   /**************************DOCUMENTOS************************** */
 
   getlistDocumentosByClub(clubId: number): Observable<Response> {
-    // Obtén el token almacenado en localStorage
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoDocumentosByClub(), status: 200, error: null } as any);
+    }
     const token: string | null = localStorage.getItem('token');
-    // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
@@ -1329,9 +1382,10 @@ export class ClubService {
     teamId: number,
     playerId: number
   ): Observable<Response> {
-    // Obtén el token almacenado en localStorage
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoDocumentosPlayer(), status: 200, error: null } as any);
+    }
     const token: string | null = localStorage.getItem('token');
-    // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
@@ -1352,6 +1406,9 @@ export class ClubService {
   }
 
   updateDocumentoDescargado(dto: any): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ ok: true }) as Response);
+    }
     const token = localStorage.getItem('token');
     if (!token) return EMPTY;
 
@@ -1365,6 +1422,9 @@ export class ClubService {
   }
 
   uploadDocPadres(file: File, dto: any): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ ok: true }) as Response);
+    }
     const token = localStorage.getItem('token');
     if (!token) return EMPTY;
 
@@ -1384,6 +1444,9 @@ export class ClubService {
   }
 
   uploadDocPadresPersonalizado(dto: any): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ ok: true }) as Response);
+    }
     const token = localStorage.getItem('token');
     if (!token) return EMPTY;
 
@@ -1424,6 +1487,13 @@ export class ClubService {
   }
 
   getListCategorias(): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response([
+        { categoryTypeId: 1, categoryName: 'Senior', year: 2024 },
+        { categoryTypeId: 2, categoryName: 'Juvenil', year: 2024 },
+        { categoryTypeId: 3, categoryName: 'Cadete', year: 2024 },
+      ]) as Response);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -1445,6 +1515,9 @@ export class ClubService {
   }
 
   updateCreateCategoryType(dto: any): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(dto) as Response);
+    }
     const token = localStorage.getItem('token');
     if (token) {
       const headers = new HttpHeaders({
@@ -1517,25 +1590,19 @@ export class ClubService {
   }
 
   getListPagosClub(clubId: number, temporada: string): Observable<Response> {
-    // Obtén el token almacenado en localStorage
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoListPagosClub(), status: 200, error: null } as any);
+    }
     const token: string | null = localStorage.getItem('token');
-
-    // Verifica si el token está presente
     if (token) {
-      // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
         Authorization: `Bearer ${token}`,
       });
-
-      // Construye la URL para la solicitud
       const url: string =
         environment.apiUrl + `club/getlistpagosclub/${clubId}/${temporada}`;
-
-      // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
     } else {
-      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY;
     }
   }
 
@@ -1545,6 +1612,9 @@ export class ClubService {
     teamId: number,
     playerId: number
   ): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoListPagosClubForStripe(), status: 200, error: null } as any);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
@@ -1573,26 +1643,20 @@ export class ClubService {
     temporada: string,
     playerId: number
   ): Observable<Response> {
-    // Obtén el token almacenado en localStorage
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoListPagosClubForPlayer(clubId, temporada, playerId), status: 200, error: null } as any);
+    }
     const token: string | null = localStorage.getItem('token');
-
-    // Verifica si el token está presente
     if (token) {
-      // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
         Authorization: `Bearer ${token}`,
       });
-
-      // Construye la URL para la solicitud
       const url: string =
         environment.apiUrl +
         `club/getlistpagosclubforplayer/${clubId}/${temporada}/${playerId}`;
-
-      // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
     } else {
-      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY;
     }
   }
 
@@ -1615,10 +1679,10 @@ export class ClubService {
     clubId: number,
     temporada: string
   ): Observable<Response> {
-    // Obtén el token almacenado en localStorage
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoListPlayersPagosClub(), status: 200, error: null } as any);
+    }
     const token: string | null = localStorage.getItem('token');
-
-    // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
@@ -1753,17 +1817,14 @@ export class ClubService {
     temporada: string,
     playerId: number
   ): Observable<Response> {
-    // Obtén el token almacenado en localStorage
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoListHistoryPagosByPlayer(clubId, temporada, playerId), status: 200, error: null } as any);
+    }
     const token: string | null = localStorage.getItem('token');
-
-    // Verifica si el token está presente
     if (token) {
-      // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
         Authorization: `Bearer ${token}`,
       });
-
-      // Construye la URL para la solicitud
       const url: string =
         environment.apiUrl +
         `club/getlishistorypagosbyplayer/${clubId}/${temporada}/${playerId}`;
@@ -1889,10 +1950,10 @@ export class ClubService {
   }
 
   getListHistoriPagos(clubId: number, temporada: string): Observable<Response> {
-    // Obtén el token almacenado en localStorage
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoHistorialPagos(), status: 200, error: null } as any);
+    }
     const token: string | null = localStorage.getItem('token');
-
-    // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
@@ -2199,6 +2260,9 @@ export class ClubService {
   }
 
   getTodo(teamId: number, codJornada: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoClasificacionTodo(codJornada)) as Response);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -2232,6 +2296,9 @@ export class ClubService {
   }
 
   saveTeamUrl(teamId: number, url: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ ok: true }) as Response);
+    }
     const token: string | null = localStorage.getItem('token');
     if (token) {
       const headers = new HttpHeaders({
@@ -2246,6 +2313,9 @@ export class ClubService {
   }
 
   refreshClasificacion(teamId: number, codJornada: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoClasificacionTodo(codJornada)) as Response);
+    }
     const token: string | null = localStorage.getItem('token');
     if (token) {
       const headers = new HttpHeaders({
@@ -2268,6 +2338,9 @@ export class ClubService {
   }
 
   getPerfilEntrenador(userId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoEntrenadorPerfil()) as Response);
+    }
     return this.http.get<Response>(
       environment.apiUrl + 'entrenador/perfil/' + userId,
       { headers: this.getAuthHeaders() }
@@ -2275,6 +2348,9 @@ export class ClubService {
   }
 
   getClubForEntrenador(userId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(9001) as Response);
+    }
     return this.http.get<Response>(
       environment.apiUrl + 'entrenador/club/' + userId,
       { headers: this.getAuthHeaders() }
@@ -2282,6 +2358,9 @@ export class ClubService {
   }
 
   getAllClubsForEntrenador(userId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoClubsForEntrenador()) as Response);
+    }
     return this.http.get<Response>(
       environment.apiUrl + 'entrenador/clubs/' + userId,
       { headers: this.getAuthHeaders() }
@@ -2303,6 +2382,9 @@ export class ClubService {
   }
 
   createUpdatePerfilEntrenador(dto: any): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ ...dto, entrenadorPerfilId: 1 }) as Response);
+    }
     const formData = new FormData();
     formData.append(
       'dto',
@@ -2316,6 +2398,9 @@ export class ClubService {
   }
 
   uploadDocPerfilEntrenador(file: File, userId: number, tipo: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ ok: true }) as Response);
+    }
     const formData = new FormData();
     formData.append('files', file, file.name);
     return this.http.post<Response>(
@@ -2326,6 +2411,9 @@ export class ClubService {
   }
 
   deleteDocPerfilEntrenador(userId: number, tipo: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ ok: true }) as Response);
+    }
     return this.http.delete<Response>(
       environment.apiUrl + 'entrenador/perfil/delete-doc/' + userId + '/' + tipo,
       { headers: this.getAuthHeaders() }
@@ -2333,6 +2421,9 @@ export class ClubService {
   }
 
   getPerfilesEntrenadoresByClub(clubId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoPerfilesEntrenadores(), status: 200, error: null } as any);
+    }
     return this.http.get<Response>(
       environment.apiUrl + 'entrenador/perfiles-by-club/' + clubId,
       { headers: this.getAuthHeaders() }
@@ -2342,6 +2433,9 @@ export class ClubService {
   /**************************DOCUMENTOS ENTRENADOR************************** */
 
   getListDocumentosEntrenador(clubId: number, userId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoDocumentosEntrenador()) as Response);
+    }
     return this.http.get<Response>(
       environment.apiUrl + 'entrenador/documentos/' + clubId + '/' + userId,
       { headers: this.getAuthHeaders() }
@@ -2349,6 +2443,9 @@ export class ClubService {
   }
 
   getlistDocumentosEntrenadoresByClub(clubId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoDocumentosEntrenadoresByClub(), status: 200, error: null } as any);
+    }
     return this.http.get<Response>(
       environment.apiUrl + 'entrenador/documentos-club/' + clubId,
       { headers: this.getAuthHeaders() }
@@ -2398,6 +2495,9 @@ export class ClubService {
   }
 
   updateDocumentoEntrenadorDescargado(dto: any): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ ok: true }) as Response);
+    }
     const formData = new FormData();
     formData.append(
       'dto',
@@ -2420,6 +2520,9 @@ export class ClubService {
   }
 
   getFormCamposByClub(clubId: number, contexto: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: [], status: 200, error: null } as any);
+    }
     return this.http.get<Response>(
       environment.apiUrl + 'formulario/campos/club/' + clubId + '/' + contexto,
       { headers: this.getAuthHeaders() }
@@ -2449,6 +2552,9 @@ export class ClubService {
   }
 
   getFormRespuestasByProfile(clubId: number, userId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: [], status: 200, error: null } as any);
+    }
     return this.http.get<Response>(
       environment.apiUrl + 'formulario/respuestas/perfil/' + clubId + '/' + userId,
       { headers: this.getAuthHeaders() }
@@ -2456,6 +2562,9 @@ export class ClubService {
   }
 
   getFormRespuestasByPlayerProfile(clubId: number, playerId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: [], status: 200, error: null } as any);
+    }
     return this.http.get<Response>(
       environment.apiUrl + 'formulario/respuestas/perfil-jugador/' + clubId + '/' + playerId,
       { headers: this.getAuthHeaders() }
@@ -2495,6 +2604,9 @@ export class ClubService {
   }
 
   getCalendarioTeamOrder(userId: number, clubId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoCalendarioTeamOrder(), status: 200, error: null } as any);
+    }
     return this.http.get<Response>(
       environment.apiUrl + 'club/calendario-team-order/' + userId + '/' + clubId,
       { headers: this.getAuthHeaders() }
@@ -2502,6 +2614,9 @@ export class ClubService {
   }
 
   saveCalendarioTeamOrder(userId: number, clubId: number, teamIdsOrder: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: null, status: 200, error: null } as any);
+    }
     return this.http.post<Response>(
       environment.apiUrl + 'club/calendario-team-order/' + userId + '/' + clubId,
       teamIdsOrder,
@@ -2570,6 +2685,9 @@ export class ClubService {
   }
 
   searchClubMembers(clubId: number, q: string, temporada: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response([]) as Response);
+    }
     return this.http.get<Response>(
       environment.apiUrl + `club/search-members/${clubId}?q=${encodeURIComponent(q)}&temporada=${temporada}`,
       { headers: this.getAuthHeaders() }

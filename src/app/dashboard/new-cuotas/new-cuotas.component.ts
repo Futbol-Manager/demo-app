@@ -13,6 +13,7 @@ import { PlayerInfoDialogComponent, PlayerInfoDialogData } from '../player-info-
 import { combineLatest, forkJoin, of } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-new-cuotas',
@@ -74,6 +75,12 @@ export class NewCuotasComponent implements OnInit {
   onConfirmCancel(): void {
     this.closeModal('confirm', () => { this.confirmDialog.show = false; });
   }
+
+  /** Base URL para avatares de jugadores (en demo: assets/images/user/) */
+  get imageBaseUrlUser(): string {
+    return environment.images + 'user/';
+  }
+
   datosCargados = true;
   temporadaStoredValue = getCurrentSeasonString();
   clubId = 0;

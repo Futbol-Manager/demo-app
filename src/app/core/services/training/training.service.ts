@@ -3,6 +3,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
+import { DemoDataService } from '../demo/demo-data.service';
+import { isDemoMode } from '../demo/demo-mode';
 import { Training, Task, AsistenciaTraining } from '../models/training.models';
 import { MatchPreparation, PlayerPostPartido, PostPartido } from '../models/match.model';
 import { RespPostEntreno, RespPostPartido, RespPreEntreno, RespPrePartido } from '../player/respuestas.model';
@@ -17,10 +19,10 @@ export class TrainingService {
   constructor(private http: HttpClient) { }
 
   getTrainingSessions(teamId: string): Observable<Response> {
-    // Obtén el token almacenado en localStorage
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoTrainingSessions(teamId), status: 200, error: null } as any);
+    }
     const token: string | null = localStorage.getItem('token');
-
-    // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
@@ -105,6 +107,9 @@ export class TrainingService {
   }
 
   getTasksByTraining(trainingId: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoTasksByTraining(trainingId), status: 200, error: null } as any);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
@@ -242,24 +247,18 @@ export class TrainingService {
   }
 
   getListPrePartidoByTeam(teamId: string): Observable<Response> {
-    // Obtén el token almacenado en localStorage
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoMatchPreparations(teamId), status: 200, error: null } as any);
+    }
     const token: string | null = localStorage.getItem('token');
-
-    // Verifica si el token está presente
     if (token) {
-      // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
         'Authorization': `Bearer ${token}`
       });
-
-      // Construye la URL para la solicitud
       const url: string = environment.apiUrl + `match/listmatchpreparationsbyteam/${teamId}`;
-
-      // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
     } else {
-      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY;
     }
   }
 
@@ -329,6 +328,9 @@ export class TrainingService {
   }
 
   deleteTask(taskId: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: true, status: 200, error: null } as any);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
@@ -417,6 +419,9 @@ export class TrainingService {
   }
 
   filterTaskShopByOptions(filterTaskShop: any): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoTaskShopCatalog(), status: 200, error: null } as any);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -481,6 +486,9 @@ export class TrainingService {
   }
 
   getPostPartidoByPostPartido(postPartidoId: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoPostPartidoDetail(postPartidoId), status: 200, error: null } as any);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
@@ -995,6 +1003,9 @@ export class TrainingService {
   }
 
   getListsAsistenciaByTeamYPlayer(teamId: number, playerId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoListAsistenciaByPlayer()) as Response);
+    }
     const token: string | null = localStorage.getItem('token');
     if (token) {
       const headers = new HttpHeaders({
@@ -1028,6 +1039,9 @@ export class TrainingService {
   }
 
   getCoachTaskHistory(userId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoCoachTaskHistory(), status: 200, error: null } as any);
+    }
     return this.http.get<Response>(
       environment.apiUrl + `training/coach-task-history/${userId}`,
       { headers: this.authHeaders() }
@@ -1035,6 +1049,9 @@ export class TrainingService {
   }
 
   getCoachTaskFavorites(userId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoCoachTaskFavorites(), status: 200, error: null } as any);
+    }
     return this.http.get<Response>(
       environment.apiUrl + `training/coach-task-favorites/${userId}`,
       { headers: this.authHeaders() }
@@ -1042,6 +1059,9 @@ export class TrainingService {
   }
 
   addFavoriteTask(userId: number, taskId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: true, status: 200, error: null } as any);
+    }
     return this.http.post<Response>(
       environment.apiUrl + `training/coach-task-favorite/${userId}/${taskId}`,
       {},
@@ -1050,6 +1070,9 @@ export class TrainingService {
   }
 
   removeFavoriteTask(userId: number, taskId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: true, status: 200, error: null } as any);
+    }
     return this.http.delete<Response>(
       environment.apiUrl + `training/coach-task-favorite/${userId}/${taskId}`,
       { headers: this.authHeaders() }
@@ -1057,6 +1080,9 @@ export class TrainingService {
   }
 
   getCoachOwnTasks(userId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: DemoDataService.getDemoCoachOwnTasks(), status: 200, error: null } as any);
+    }
     return this.http.get<Response>(
       environment.apiUrl + `training/coach-tasks/${userId}`,
       { headers: this.authHeaders() }
@@ -1064,6 +1090,9 @@ export class TrainingService {
   }
 
   createCoachTask(task: any): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: { coachTaskId: 99, ...task }, status: 200, error: null } as any);
+    }
     return this.http.post<Response>(
       environment.apiUrl + 'training/coach-task',
       task,
@@ -1072,6 +1101,9 @@ export class TrainingService {
   }
 
   updateCoachTask(task: any): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: task, status: 200, error: null } as any);
+    }
     return this.http.put<Response>(
       environment.apiUrl + 'training/coach-task',
       task,
@@ -1080,6 +1112,9 @@ export class TrainingService {
   }
 
   deleteCoachTask(coachTaskId: number, userId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: true, status: 200, error: null } as any);
+    }
     return this.http.delete<Response>(
       environment.apiUrl + `training/coach-task/${coachTaskId}/${userId}`,
       { headers: this.authHeaders() }
