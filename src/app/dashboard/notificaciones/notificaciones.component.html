@@ -3,7 +3,7 @@
 <!-- ================= PAGE HEADER ================= -->
 <div class="page-header">
   <div class="back-container">
-    <button type="button" class="btn-back-clean" (click)="goBack()">
+    <button type="button" class="btn-back-clean" (click)="goBack()" data-tutorial="notif-volver">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
     </button>
@@ -21,8 +21,8 @@
   <div class="gmail-layout" [class.reading]="selectCorreo">
 
     <!-- Sidebar -->
-    <aside class="sidebar-gmail">
-      <button type="button" class="compose-gmail" (click)="newCorreo()">
+    <aside class="sidebar-gmail" data-tutorial="notif-sidebar">
+      <button type="button" class="compose-gmail" (click)="newCorreo()" data-tutorial="notif-redactar">
         <i class="bi bi-pencil-square"></i>
         <span class="compose-label">{{ 'NOTIFICATIONS.COMPOSE' | translate }}</span>
       </button>
@@ -47,7 +47,7 @@
     <!-- Lista -->
     <section class="mail-list">
       <!-- Barra búsqueda y acciones -->
-      <div class="mail-list-toolbar">
+      <div class="mail-list-toolbar" data-tutorial="notif-toolbar">
         <div class="search-wrap">
           <i class="bi bi-search"></i>
           <input type="text" class="search-input" [placeholder]="'NOTIFICATIONS.SEARCH_PLACEHOLDER' | translate"
@@ -112,7 +112,8 @@
       </ng-container>
 
       <ng-template #correoList>
-        <div class="filters" *ngIf="currentFolder === 'inbox'">
+        <div class="mail-list-content" data-tutorial="notif-lista">
+        <div class="filters" *ngIf="currentFolder === 'inbox'" data-tutorial="notif-filtros">
           <button type="button" class="filter-btn" [class.active]="currentFilter === 'all'" (click)="mostrarTodos()">
             {{ 'NOTIFICATIONS.ALL' | translate }}
           </button>
@@ -201,6 +202,7 @@
             </button>
           </div>
         </div>
+        </div>
       </ng-template>
       </ng-container>
     </section>
@@ -215,7 +217,7 @@
       </div>
     </section>
 
-    <section class="mail-reader mail-reader--with-message" *ngIf="!loadingCorreos && selectCorreo">
+    <section class="mail-reader mail-reader--with-message" *ngIf="!loadingCorreos && selectCorreo" data-tutorial="notif-lector">
       <button type="button" class="btn-back-clean mobile-back" (click)="cerrarLectura()">
         <i class="bi bi-arrow-left"></i>
         <span>{{ 'NOTIFICATIONS.MESSAGES' | translate }}</span>

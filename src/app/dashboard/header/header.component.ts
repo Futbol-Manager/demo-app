@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, Renderer2,
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBarConfig } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { BehaviorSubject, Subject, fromEvent } from 'rxjs';
 import { interval } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
@@ -28,6 +28,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Response } from 'src/app/core/services/models/response.model';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 import { InactivityService } from 'src/app/core/services/inactivity/inactivity.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 /** Intervalo en ms para refrescar listado y contador de notificaciones */
 const NOTIFICATIONS_POLL_INTERVAL_MS = 45_000;
@@ -113,10 +114,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   // Coach trial banner
   coachTrialActive = false;
 
-  // AI Credits
-  creditsAvailable = 0;
-  creditsLoaded = false;
-  showCreditsModal = false;
+  /** Tutorial: screenId según la ruta actual (dashboard-inicio | cuadro-de-mandos) */
+  currentTutorialScreenId: string = 'dashboard-inicio';
 
   // Theme animation
   themeAnimating = false;
@@ -160,6 +159,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private clubService: ClubService,
     private cdr: ChangeDetectorRef,
     public inactivityService: InactivityService,
+    private tutorialService: TutorialService,
   ) {
     const lang = localStorage.getItem('lang');
     if (lang) {
@@ -174,6 +174,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.inactivityService.start();
     this.detectDevice();
+    this.updateTutorialScreenIdFromRoute(this.router.url);
+    this.router.events.pipe(takeUntil(this.destroy$)).subscribe(e => {
+      if (e instanceof NavigationEnd) this.updateTutorialScreenIdFromRoute(e.urlAfterRedirects || e.url);
+    });
     this.loginService.usuarioActual.subscribe((user: User | null) => {
       this.usuarioActual = user;
       this.profileId = this.usuarioActual!.profileType.profileId;
@@ -206,11 +210,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.loadHeaderNotifications();
       }
 
-      // Cargar créditos IA
-      if (this.userId > 0 && !this.creditsLoaded) {
-        this.creditsLoaded = true;
-        this.loadAiCredits();
-      }
     });
 
     // Actualizar listado y contador de notificaciones cada cierto tiempo
@@ -241,20 +240,67 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  loadAiCredits(): void {
-    this.aiChatService.getCredits(this.userId).subscribe({
-      next: info => { this.creditsAvailable = info.creditsAvailable; },
-      error: () => { this.creditsAvailable = 0; }
-    });
+  /** Actualiza el screenId del tutorial según la URL (para mostrar el tutorial de la pantalla actual). */
+  private updateTutorialScreenIdFromRoute(url: string): void {
+    if (url.includes('info-jugadores')) {
+      this.currentTutorialScreenId = 'info-jugadores';
+    } else if (url.includes('info-entrenadores')) {
+      this.currentTutorialScreenId = 'info-entrenadores';
+    } else if (url.includes('estadisticas-jugadores-club')) {
+      this.currentTutorialScreenId = 'estadisticas-jugadores-club';
+    } else if (url.includes('estadisticas-equipos-club')) {
+      this.currentTutorialScreenId = 'estadisticas-equipos-club';
+    } else if (url.includes('calendario-club')) {
+      this.currentTutorialScreenId = 'calendario-club';
+    } else if (url.includes('menu-club')) {
+      this.currentTutorialScreenId = 'menu-club';
+    } else if (url.includes('menu-entrenador')) {
+      this.currentTutorialScreenId = 'menu-entrenador';
+    } else if (url.includes('opcionesjugador')) {
+      this.currentTutorialScreenId = 'opcionesjugador';
+    } else if (url.includes('cuadro-de-mandos')) {
+      this.currentTutorialScreenId = 'cuadro-de-mandos';
+    } else if (url.includes('equipos')) {
+      this.currentTutorialScreenId = 'equipos';
+    } else if (url.includes('documentos-club')) {
+      this.currentTutorialScreenId = 'documentos-club';
+    } else if (url.includes('new-cuotas')) {
+      this.currentTutorialScreenId = 'new-cuotas';
+    } else if (url.includes('ropa')) {
+      this.currentTutorialScreenId = 'ropa';
+    } else if (url.includes('patrocinadores')) {
+      this.currentTutorialScreenId = 'patrocinadores';
+    } else if (url.includes('notificaciones-federacion')) {
+      this.currentTutorialScreenId = 'dashboard-inicio';
+    } else if (url.includes('notificaciones')) {
+      this.currentTutorialScreenId = 'notificaciones';
+    } else if (url.includes('staff-club')) {
+      this.currentTutorialScreenId = 'staff-club';
+    } else if (url.includes('scouting-club')) {
+      this.currentTutorialScreenId = 'scouting-club';
+    } else if (url.includes('club-videos')) {
+      this.currentTutorialScreenId = 'club-videos';
+    } else if (url.includes('video-analysis')) {
+      this.currentTutorialScreenId = 'video-analysis';
+    } else if (url.includes('asistente-ia')) {
+      this.currentTutorialScreenId = 'asistente-ia';
+    } else {
+      // Dashboard inicio: tutorial según tipo de usuario (club / coach / player)
+      const pid = this.profileId;
+      if (pid === 2 || pid === 6 || pid === 7) {
+        this.currentTutorialScreenId = 'dashboard-inicio-coach';
+      } else if (pid === 3) {
+        this.currentTutorialScreenId = 'dashboard-inicio-player';
+      } else {
+        this.currentTutorialScreenId = 'dashboard-inicio';
+      }
+    }
+    this.cdr.markForCheck();
   }
 
-  openCreditsModal(): void {
-    this.showCreditsModal = true;
-  }
-
-  closeCreditsModal(): void {
-    this.showCreditsModal = false;
-    this.loadAiCredits();
+  /** Abre el tutorial de la pantalla actual. */
+  openTutorial(): void {
+    this.tutorialService.start(this.currentTutorialScreenId, true);
   }
 
   /**

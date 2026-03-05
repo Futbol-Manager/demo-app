@@ -33,28 +33,6 @@
         <span>Consentimiento de uso de IA <strong>firmado</strong>. Se pueden generar informes deportivos con IA para este jugador.</span>
       </div>
     </div>
-    <div class="ia-consent-banner ia-consent-banner--warn" *ngIf="!selectedPlayer?.consentimientoIA">
-      <div class="ia-consent-banner__content">
-        <i class="bi bi-shield-exclamation"></i>
-        <span>El tutor/a de este jugador <strong>no ha firmado</strong> el consentimiento de uso de IA. No es posible generar informes deportivos ni económicos con IA.</span>
-      </div>
-      <button
-        type="button"
-        class="ia-consent-banner__request-btn"
-        [disabled]="consentRequestLoading || consentRequestSent"
-        (click)="solicitarConsentimientoIA()">
-        <span *ngIf="!consentRequestLoading && !consentRequestSent">
-          <i class="bi bi-bell"></i> Solicitar firma
-        </span>
-        <span *ngIf="consentRequestLoading">
-          <i class="bi bi-hourglass-split"></i> Enviando…
-        </span>
-        <span *ngIf="consentRequestSent">
-          <i class="bi bi-check-circle-fill"></i> Notificación enviada
-        </span>
-      </button>
-    </div>
-
     <ul class="nav nav-tabs player-info-tabs" role="tablist">
       <li class="nav-item" role="presentation" *ngIf="(usuarioActual?.profileType?.profileId ?? 0) !== 6 && (usuarioActual?.profileType?.profileId ?? 0) !== 7">
         <button type="button" class="nav-link" [class.active]="infoModalActiveTab === 'personal'" (click)="setInfoModalTab('personal')">

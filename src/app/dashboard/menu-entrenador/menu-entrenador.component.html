@@ -1,14 +1,14 @@
-<app-publicidad></app-publicidad>
+
 <!-- BOTÓN VOLVER -->
 <div class="back-container">
-  <button class="btn-back-clean" (click)="goBack()">
+  <button class="btn-back-clean" (click)="goBack()" data-tutorial="me-volver">
     <i class="bi bi-arrow-left"></i>
     <span>{{ 'COMMON.BACK' | translate }}</span>
   </button>
 </div>
 <div class="container dashboard-container">
   <div class="row g-3">
-    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(5)">
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(5)" data-tutorial="me-calendar">
       <div class="dashboard-card bg-calendar">
         <div class="card-overlay">
           <i class="bi bi-calendar-event card-action-icon"></i>
@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(3)">
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(3)" data-tutorial="me-tasks">
       <div class="dashboard-card bg-tasks">
         <div class="card-overlay">
           <i class="bi bi-list-task card-action-icon"></i>
@@ -26,7 +26,7 @@
       </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(7)">
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(7)" data-tutorial="me-players">
       <div class="dashboard-card bg-players">
         <div class="card-overlay">
           <i class="bi bi-people card-action-icon"></i>
@@ -35,7 +35,7 @@
       </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(8)">
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(8)" data-tutorial="me-team-info">
       <div class="dashboard-card bg-team-info">
         <div class="card-overlay">
           <i class="bi bi-info-circle card-action-icon"></i>
@@ -48,7 +48,7 @@
 
   <!-- ROW 2 -->
   <div class="row g-3 mt-3">
-    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(6)">
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(6)" data-tutorial="me-team-stats">
       <div class="dashboard-card bg-team-stats">
         <div class="card-overlay">
           <i class="bi bi-bar-chart-line card-action-icon"></i>
@@ -57,7 +57,7 @@
       </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(11)">
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(11)" data-tutorial="me-player-stats">
       <div class="dashboard-card bg-player-stats">
         <div class="card-overlay">
           <i class="bi bi-graph-up card-action-icon"></i>
@@ -66,7 +66,7 @@
       </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(13)">
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(13)" data-tutorial="me-rankings">
       <div class="dashboard-card bg-ranking">
         <div class="card-overlay">
           <i class="bi bi-trophy card-action-icon"></i>
@@ -76,7 +76,7 @@
     </div>
 
     <!-- NOTIFICACIONES -->
-    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(9)">
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(9)" data-tutorial="me-notifications">
       <div class="dashboard-card bg-notifications">
         <div class="card-overlay">
           <i class="bi bi-bell card-action-icon"></i>
@@ -88,7 +88,7 @@
 
   <!-- ROW 3 -->
   <div class="row g-3 mt-3">
-      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(12)">
+      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(12)" data-tutorial="me-gallery">
         <div class="dashboard-card bg-gallery">
           <div class="card-overlay">
             <i class="bi bi-images card-action-icon"></i>
@@ -97,7 +97,7 @@
         </div>
       </div>
 
-      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(14)">
+      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(14)" data-tutorial="me-injuries">
         <div class="dashboard-card bg-injuries">
           <div class="card-overlay">
             <i class="bi bi-heart-pulse card-action-icon"></i>
@@ -106,7 +106,7 @@
         </div>
       </div>
 
-      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(15)">
+      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(15)" data-tutorial="me-ai-assistant">
         <div class="dashboard-card bg-ai-assistant">
           <div class="card-overlay">
             <i class="bi bi-robot card-action-icon"></i>
@@ -115,7 +115,7 @@
         </div>
       </div>
 
-      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(17)">
+      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(17)" data-tutorial="me-debrief">
         <div class="dashboard-card bg-debrief">
           <div class="card-overlay">
             <i class="bi bi-clipboard-pulse card-action-icon"></i>
@@ -124,7 +124,7 @@
         </div>
       </div>
 
-      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(16)">
+      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(16)" data-tutorial="me-coach-profile">
         <div class="dashboard-card bg-coach-profile">
           <div class="card-overlay">
             <i class="bi bi-person-badge card-action-icon"></i>
@@ -133,7 +133,7 @@
         </div>
       </div>
 
-      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(18)">
+      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(18)" data-tutorial="me-coach-documents">
         <div class="dashboard-card bg-coach-documents">
           <div class="card-overlay">
             <i class="bi bi-folder2-open card-action-icon"></i>
@@ -142,7 +142,7 @@
         </div>
       </div>
 
-      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(19)">
+      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(19)" data-tutorial="me-video-analysis">
         <div class="dashboard-card bg-video-analysis">
           <div class="card-overlay">
             <i class="bi bi-camera-reels card-action-icon"></i>

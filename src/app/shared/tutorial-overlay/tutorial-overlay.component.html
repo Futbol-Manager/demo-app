@@ -8,7 +8,7 @@
     aria-hidden="true">
   </div>
 
-  <div class="tutorial-card" (click)="$event.stopPropagation()" role="dialog" aria-labelledby="tutorial-title" aria-describedby="tutorial-desc">
+  <div class="tutorial-card" [ngStyle]="cardStyle" (click)="$event.stopPropagation()" role="dialog" aria-labelledby="tutorial-title" aria-describedby="tutorial-desc">
 
     <!-- Cabecera: progreso + controles de audio + cerrar -->
     <div class="tutorial-card-header">

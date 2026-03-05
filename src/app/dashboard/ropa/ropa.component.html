@@ -1,7 +1,7 @@
 <!-- ================= PAGE HEADER ================= -->
 <div class="page-header">
   <div class="back-container">
-    <button class="btn-back-clean" (click)="goBack()">
+    <button class="btn-back-clean" (click)="goBack()" data-tutorial="ropa-volver">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
     </button>
@@ -16,7 +16,7 @@
 </div>
 
 <!-- Selector de temporada (como en Equipos) -->
-<div class="ropa-season-bar">
+<div class="ropa-season-bar" data-tutorial="ropa-temporada">
   <label class="ropa-season-label">
     <i class="bi bi-calendar-event"></i>
     <span>{{ 'TITLES.SEASON' | translate }}</span>
@@ -27,11 +27,11 @@
 </div>
 
 <!-- ═══════════════════ PESTAÑAS ═══════════════════ -->
-<div class="ropa-tabs">
+<div class="ropa-tabs" data-tutorial="ropa-tabs">
   <button class="ropa-tab" [class.active]="activeRopaTab === 'tablaTallas'" (click)="activeRopaTab = 'tablaTallas'">
     <i class="fas fa-table"></i> Tallas catálogo
   </button>
-  <button class="ropa-tab" [class.active]="activeRopaTab === 'catalogo'" (click)="activeRopaTab = 'catalogo'">
+  <button class="ropa-tab" [class.active]="activeRopaTab === 'catalogo'" (click)="activeRopaTab = 'catalogo'" data-tutorial="ropa-tab-catalogo">
     <i class="fas fa-tshirt"></i> Catálogo de prendas
   </button>
   <button class="ropa-tab ropa-tab-legacy" [class.active]="activeRopaTab === 'tallas'" (click)="activeRopaTab = 'tallas'">
@@ -41,17 +41,17 @@
 </div>
 
 <!-- ═══════════════════ CONTENIDO PESTAÑA: TABLA TALLAS CATÁLOGO ══════ -->
-<div *ngIf="activeRopaTab === 'tablaTallas'" class="catalogo-tab-content">
+<div *ngIf="activeRopaTab === 'tablaTallas'" class="catalogo-tab-content" data-tutorial="ropa-contenido">
   <app-ropa-tabla-catalogo [clubId]="clubId" [temporada]="temporadaStoredValue"></app-ropa-tabla-catalogo>
 </div>
 
 <!-- ═══════════════════ CONTENIDO PESTAÑA: CATÁLOGO ═══════════════════ -->
-<div *ngIf="activeRopaTab === 'catalogo'" class="catalogo-tab-content">
+<div *ngIf="activeRopaTab === 'catalogo'" class="catalogo-tab-content" data-tutorial="ropa-contenido">
   <app-ropa-catalogo [clubId]="clubId" [temporada]="temporadaStoredValue"></app-ropa-catalogo>
 </div>
 
 <!-- ═══════════════════ CONTENIDO PESTAÑA: TALLAS ═══════════════════ -->
-<div *ngIf="activeRopaTab === 'tallas'">
+<div *ngIf="activeRopaTab === 'tallas'" data-tutorial="ropa-contenido">
 
 <div class="legacy-warning-banner">
   <i class="fas fa-exclamation-triangle"></i>

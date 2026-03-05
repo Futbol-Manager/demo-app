@@ -11,7 +11,7 @@ import { LOCALSTORAGESTRINGS } from '../../models/master/localstorage.enum';
 import { LocalStorage } from 'src/app/core/utils/local-storage';
 import { Router } from '@angular/router';
 import { Response } from 'src/app/core/services/models/response.model';
-import { DemoService, DemoRole, DEMO_IDS } from '../demo/demo.service';
+import { DemoService, DemoRole } from '../demo/demo.service';
 
 
 
@@ -178,7 +178,18 @@ export class LoginService {
       3: 'Jugador',
     };
     const profileName = profileNames[profileId] || 'Club';
-    const updated = { ...plain, profileType: { profileId, profileName } };
+    const demoAvatars: Record<number, string> = {
+      1: 'demo-club-logo.png',
+      2: 'demo-coach-avatar.svg',
+      3: 'demo-player-avatar.svg',
+    };
+    const updated: any = {
+      ...plain,
+      profileType: { profileId, profileName },
+    };
+    if (this.demoService.isDemoMode()) {
+      updated.pictureUser = demoAvatars[profileId];
+    }
 
     localStorage.setItem('usuario', JSON.stringify(updated));
     this['usuarioAutenticado'].next(new User(updated));
@@ -195,21 +206,11 @@ export class LoginService {
   }
 
   /**
-   * Devuelve la ruta del dashboard correspondiente al rol.
-   * Club → inicio; Entrenador → menu-entrenador; Jugador → opcionesjugador.
+   * Devuelve la ruta del dashboard. Siempre /dashboard/inicio para que la misma
+   * pantalla muestre la información según el rol seleccionado (Club, Entrenador, Jugador).
    */
-  private getDashboardRouteForRole(profileId: 1 | 2 | 3, userPlain: any): any[] {
-    if (profileId === 1) {
-      return ['/dashboard/inicio'];
-    }
-    const isDemo = this.demoService.isDemoMode();
-    const teamId = isDemo ? DEMO_IDS.teamId : parseInt(sessionStorage.getItem('it_lastTeamId') || sessionStorage.getItem('clubId') || '1', 10);
-    if (profileId === 2) {
-      return ['/dashboard/menu-entrenador', teamId, 0];
-    }
-    // profileId === 3 (Jugador)
-    const playerId = isDemo ? DEMO_IDS.playerId : (userPlain?.playerId || 1);
-    return ['/dashboard/opcionesjugador', teamId, playerId];
+  private getDashboardRouteForRole(profileId: 1 | 2 | 3, _userPlain?: any): any[] {
+    return ['/dashboard/inicio'];
   }
 
   /**

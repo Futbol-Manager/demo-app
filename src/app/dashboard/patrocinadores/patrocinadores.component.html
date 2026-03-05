@@ -1,7 +1,7 @@
 <!-- ===== PAGE HEADER — Club: arriba del carrusel ===== -->
 <div class="page-header" *ngIf="profileId < 3">
   <div class="back-container">
-    <button class="btn-back-clean" (click)="goBack()">
+    <button class="btn-back-clean" (click)="goBack()" data-tutorial="patro-volver">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
     </button>
@@ -14,7 +14,7 @@
 </div>
 
 <!-- HERO CARRUSEL -->
-<section class="sponsor-hero" *ngIf="listPatrocinadores.length">
+<section class="sponsor-hero" *ngIf="listPatrocinadores.length" data-tutorial="patro-carrusel">
   <div class="carousel-track">
     <ng-container *ngFor="let s of listPatrocinadores">
       <img *ngIf="s.imagen && s.oculto === 1" [src]="getSponsorImageSrc(s)" [alt]="'Logo ' + (s.nombre || 'patrocinador')" (click)="mostrarId(s)" class="hero-logo" loading="lazy">
@@ -30,7 +30,7 @@
 <!-- ===== PAGE HEADER — Jugador/Entrenador: debajo del carrusel ===== -->
 <div class="page-header page-header--below" *ngIf="profileId >= 3">
   <div class="back-container">
-    <button class="btn-back-clean" (click)="goBack()">
+    <button class="btn-back-clean" (click)="goBack()" data-tutorial="patro-volver">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
     </button>
@@ -43,12 +43,12 @@
 </div>
 
 <!-- GRID -->
-<section class="container sponsor-grid" *ngIf="datosCargados">
+<section class="container sponsor-grid" *ngIf="datosCargados" data-tutorial="patro-grid">
 
   <!-- HEADER DE LA GRID -->
   <div class="row mb-3">
     <div class="col-12 d-flex justify-content-end">
-      <button *ngIf="profileId < 3" class="btn-create-sponsor" (click)="abrirModalPatrocinador()">
+      <button *ngIf="profileId < 3" class="btn-create-sponsor" (click)="abrirModalPatrocinador()" data-tutorial="patro-nuevo">
         <i class="bi bi-plus-lg"></i>
         {{ 'SPONSOR.NEW' | translate }}
       </button>

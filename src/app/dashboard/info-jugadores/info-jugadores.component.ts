@@ -21,13 +21,15 @@ import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 import { NotificationService } from 'src/app/core/services/notification/notification.service';
 import { ConfirmationService } from 'src/app/core/services/confirmation/confirmation.service';
 import { ToastrService } from 'ngx-toastr';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-info-jugadores',
   templateUrl: './info-jugadores.component.html',
   styleUrls: ['./info-jugadores.component.scss']
 })
-export class InfoJugadoresComponent implements OnInit {
+export class InfoJugadoresComponent implements OnInit, OnDestroy {
   @ViewChild('dataTable', { static: false })
   table!: ElementRef;
 
@@ -134,7 +136,10 @@ export class InfoJugadoresComponent implements OnInit {
     private confirmation: ConfirmationService,
     private toastr: ToastrService,
     private aiChatService: AiChatService,
-    private aiPageContext: AiPageContextService) { }
+    private aiPageContext: AiPageContextService,
+    private tutorialService: TutorialService) { }
+
+  private tutorialStepSub?: Subscription;
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(user => {
@@ -155,6 +160,17 @@ export class InfoJugadoresComponent implements OnInit {
     }
 
     this.cargarListadoJugadores();
+
+    // Al llegar al paso "Información del jugador" del tutorial, abrir el modal automáticamente
+    this.tutorialStepSub = this.tutorialService.currentStep$.subscribe(payload => {
+      if (payload?.step?.id === 'ij-modal-jugador' && this.filteredPlayers.length > 0) {
+        setTimeout(() => this.abrirModalInfoJugador(this.filteredPlayers[0]), 400);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.tutorialStepSub?.unsubscribe();
   }
 
   // Método para redirigir a la pantalla de jugadores con el teamId
@@ -197,6 +213,10 @@ export class InfoJugadoresComponent implements OnInit {
             }
           }
           this.loadPlayersOfTeam();
+          const state = this.tutorialService.getState();
+          if (state?.screenId === 'info-jugadores' && state.steps[state.currentIndex]?.id === 'ij-modal-jugador' && this.filteredPlayers.length > 0) {
+            setTimeout(() => this.abrirModalInfoJugador(this.filteredPlayers[0]), 500);
+          }
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }

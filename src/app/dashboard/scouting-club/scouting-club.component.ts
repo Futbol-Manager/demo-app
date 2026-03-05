@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -10,13 +10,15 @@ import { environment } from 'src/environments/environment';
 import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
 import { VideoStorageService } from 'src/app/core/services/video-storage/video-storage.service';
 import { DemoDataService } from 'src/app/core/services/demo/demo-data.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-scouting-club',
   templateUrl: './scouting-club.component.html',
   styleUrls: ['./scouting-club.component.scss']
 })
-export class ScoutingClubComponent implements OnInit {
+export class ScoutingClubComponent implements OnInit, OnDestroy {
 
   clubId = 0;
   userId = 0;
@@ -144,6 +146,7 @@ export class ScoutingClubComponent implements OnInit {
   playingVideoTitle    = '';
 
   private playerApiBase = environment.apiUrl + 'scouting/player';
+  private tutorialSub?: Subscription;
 
   constructor(
     private loginService: LoginService,
@@ -152,7 +155,8 @@ export class ScoutingClubComponent implements OnInit {
     private http: HttpClient,
     private videoService: VideoStorageService,
     private sanitizer: DomSanitizer,
-    private location: Location
+    private location: Location,
+    private tutorialService: TutorialService
   ) {}
 
   goBack(): void { this.location.back(); }
@@ -234,6 +238,19 @@ export class ScoutingClubComponent implements OnInit {
         this.userId = user.userId ?? 0;
       }
     });
+
+    this.tutorialSub = this.tutorialService.currentStep$.subscribe(payload => {
+      const stepId = payload?.step?.id;
+      if (stepId === 'scout-pipeline') {
+        this.activeTab = 'pipeline';
+      } else if (stepId === 'scout-tabla' || stepId === 'scout-watchlist-header' || stepId === 'scout-tabs') {
+        this.activeTab = 'watchlist';
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.tutorialSub?.unsubscribe();
   }
 
   /** Carga config y watchlist en paralelo para abrir más rápido */

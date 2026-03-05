@@ -18,6 +18,7 @@ import { Location } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { PlayerInfoDialogComponent, PlayerInfoDialogData } from '../player-info-dialog/player-info-dialog.component';
 import { getCurrentSeasonString, getSeasons } from 'src/app/core/utils/season.utils';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 @Component({
   selector: 'app-ropa',
@@ -28,6 +29,7 @@ export class RopaComponent implements OnInit, AfterViewChecked, OnDestroy {
   private needsFocusLabel = false;
   private savePrefs$ = new Subject<void>();
   private prefsSub!: Subscription;
+  private tutorialSub?: Subscription;
   usuarioActual!: User | null;
   clubId!: number; // Ajusta el valor según el clubId del equipo actual
   userId!: number;
@@ -199,6 +201,7 @@ export class RopaComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.tutorialSub?.unsubscribe();
     if (this.prefsSub) {
       this.prefsSub.unsubscribe();
     }
@@ -299,6 +302,7 @@ export class RopaComponent implements OnInit, AfterViewChecked, OnDestroy {
     private http: HttpClient,
     private location: Location,
     private dialog: MatDialog,
+    private tutorialService: TutorialService,
   ) {
     this.abrigoSubject
       .pipe(
@@ -320,6 +324,16 @@ export class RopaComponent implements OnInit, AfterViewChecked, OnDestroy {
     ) {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
     }
+
+    // Sincronizar pestaña con el paso del tutorial: tabla primero, luego catálogo
+    this.tutorialSub = this.tutorialService.currentStep$.subscribe((payload) => {
+      const stepId = payload?.step?.id;
+      if (stepId === 'ropa-tabla-tallas' || stepId === 'ropa-tabs') {
+        this.activeRopaTab = 'tablaTallas';
+      } else if (stepId === 'ropa-catalogo-tab' || stepId === 'ropa-contenido') {
+        this.activeRopaTab = 'catalogo';
+      }
+    });
 
     combineLatest([
       this.route.params.pipe(take(1)),

@@ -1,14 +1,14 @@
 <!-- ===== PAGE HEADER ===== -->
 <div class="page-header">
   <div class="back-container">
-    <button class="btn-back-clean" (click)="goBack()">
+    <button class="btn-back-clean" (click)="goBack()" data-tutorial="scout-volver">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
     </button>
   </div>
   <h2 class="table-title">{{ 'SCOUTING_CLUB.TITLE' | translate }}</h2>
   <div class="header-actions-right">
-    <button class="btn-config-header" (click)="showConfigModal = true" title="{{ 'SCOUTING_CLUB.CONFIG.TITLE' | translate }}">
+    <button class="btn-config-header" (click)="showConfigModal = true" title="{{ 'SCOUTING_CLUB.CONFIG.TITLE' | translate }}" data-tutorial="scout-config">
       <i class="bi bi-gear"></i>
     </button>
   </div>
@@ -17,7 +17,7 @@
 <div class="scouting-container">
 
   <!-- TAB NAV: Mis Scoutings, Pipeline (sin Buscar Jugadores) -->
-  <div class="scouting-tabs">
+  <div class="scouting-tabs" data-tutorial="scout-tabs">
     <button class="tab-btn" [class.active]="activeTab === 'watchlist'" (click)="onTabChange('watchlist')">
       <i class="bi bi-bookmark-star"></i>
       <span>{{ 'SCOUTING_CLUB.TABS.WATCHLIST' | translate }}</span>
@@ -32,7 +32,7 @@
   <!-- ═══════ WATCHLIST TAB (por defecto) ═══════ -->
   <div *ngIf="activeTab === 'watchlist'" class="tab-content">
 
-    <div class="watchlist-header">
+    <div class="watchlist-header" data-tutorial="scout-watchlist-header">
       <div class="watchlist-search-wrap">
         <i class="bi bi-search"></i>
         <input type="text" [(ngModel)]="watchlistSearch"
@@ -92,7 +92,7 @@
       </button>
     </div>
 
-    <div *ngIf="!watchlistLoading && filteredWatchlist.length > 0" class="watchlist-table-wrap">
+    <div *ngIf="!watchlistLoading && filteredWatchlist.length > 0" class="watchlist-table-wrap" data-tutorial="scout-tabla">
       <table class="watchlist-table">
         <thead>
           <tr>
@@ -168,7 +168,7 @@
   </div>
 
   <!-- ═══════ PIPELINE TAB ═══════ -->
-  <div *ngIf="activeTab === 'pipeline'" class="tab-content">
+  <div *ngIf="activeTab === 'pipeline'" class="tab-content" data-tutorial="scout-pipeline">
     <div *ngIf="pipelineLoading" class="loading-state">
       <div class="spinner"></div>
     </div>

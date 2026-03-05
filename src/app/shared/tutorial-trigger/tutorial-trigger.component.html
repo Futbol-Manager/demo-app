@@ -1,41 +1,46 @@
 <div *ngIf="visible"
-     class="tutorial-trigger-wrap"
+     class="tutorial-trigger"
      [style.left.px]="position.left"
      [style.top.px]="position.top"
-     [class.dragging]="isDragging"
+     [class.tutorial-trigger--dragging]="isDragging"
      (mousedown)="onWrapMouseDown($event)"
      (touchstart)="onWrapTouchStart($event)"
      role="group"
      [attr.aria-label]="'Botón Ver tutorial. Arrastra para mover.'">
-  <span class="tutorial-trigger-drag" aria-hidden="true" title="Arrastra para mover">
-    <i class="bi bi-grip-vertical"></i>
+  <span class="tutorial-trigger__drag" aria-hidden="true" title="Arrastra para mover">
+    <i class="bi bi-grip-vertical" aria-hidden="true"></i>
   </span>
-  <button type="button"
-          class="tutorial-trigger-btn"
-          (click)="onMainButtonClick()"
-          [attr.aria-label]="label">
-    <i class="bi bi-play-circle-fill"></i>
-    <span class="tutorial-trigger-label">{{ label }}</span>
+  <button
+    type="button"
+    class="tutorial-trigger__cta"
+    (click)="onMainButtonClick()"
+    [attr.aria-label]="label"
+  >
+    <i class="bi bi-play-fill" aria-hidden="true"></i>
+    <span class="tutorial-trigger__label sr-only">{{ label }}</span>
   </button>
-  <div class="tutorial-trigger-dropdown-wrap">
+  <div class="tutorial-trigger__chip">
+    <span class="tutorial-trigger__chip-text">{{ label }}</span>
+  </div>
+  <div class="tutorial-trigger__dropdown">
     <button type="button"
-            class="tutorial-trigger-dropdown-toggle"
+            class="tutorial-trigger__dropdown-btn"
             (click)="onDropdownToggle($event)"
             aria-haspopup="true"
             [attr.aria-expanded]="dropdownOpen"
             aria-label="Opciones del tutorial">
-      <i class="bi bi-chevron-down"></i>
+      <i class="bi bi-chevron-down" aria-hidden="true"></i>
     </button>
-    <div *ngIf="dropdownOpen" class="tutorial-trigger-dropdown-menu" (click)="$event.stopPropagation()">
-      <button type="button" class="tutorial-trigger-dropdown-item" (click)="openTutorial()">
-        <i class="bi bi-play-circle"></i>
+    <div *ngIf="dropdownOpen" class="tutorial-trigger__menu" (click)="$event.stopPropagation()" role="menu">
+      <button type="button" class="tutorial-trigger__menu-item" (click)="openTutorial()" role="menuitem">
+        <i class="bi bi-play-circle" aria-hidden="true"></i>
         <span>Ver tutorial</span>
       </button>
-      <button type="button" class="tutorial-trigger-dropdown-item tutorial-trigger-dropdown-item-muted" (click)="dontShowAgain()">
-        <i class="bi bi-eye-slash"></i>
+      <button type="button" class="tutorial-trigger__menu-item tutorial-trigger__menu-item--muted" (click)="dontShowAgain()" role="menuitem">
+        <i class="bi bi-eye-slash" aria-hidden="true"></i>
         <span>No mostrar de nuevo aquí</span>
       </button>
     </div>
   </div>
-  <div *ngIf="dropdownOpen" class="tutorial-trigger-backdrop" (click)="closeDropdown()" role="presentation"></div>
+  <div *ngIf="dropdownOpen" class="tutorial-trigger__backdrop" (click)="closeDropdown()" role="presentation"></div>
 </div>

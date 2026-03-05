@@ -3,7 +3,7 @@
 <!-- ===== PAGE HEADER ===== -->
 <div class="page-header">
   <div class="back-container">
-    <button class="btn-back-clean" (click)="goBack()">
+    <button class="btn-back-clean" (click)="goBack()" data-tutorial="ee-volver">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
     </button>
@@ -14,7 +14,7 @@
     <p class="header-subtitle">Métricas y análisis de rendimiento de todos los equipos del club</p>
   </div>
 
-  <button class="btn-ai-consult" (click)="toggleAiPanel()">
+  <button class="btn-ai-consult" (click)="toggleAiPanel()" data-tutorial="ee-consultar-ia">
     <i class="bi bi-robot"></i>
     <span>{{ 'AI_PANEL.CONSULT_BUTTON' | translate }}</span>
   </button>
@@ -34,7 +34,7 @@
     <div class="table-section">
 
       <!-- CABECERA FIFA -->
-      <div class="fifa-table-header">
+      <div class="fifa-table-header" data-tutorial="ee-cabecera">
         <div class="fifa-header-left">
           <div class="fifa-league-icon">
             <i class="bi bi-trophy-fill"></i>
@@ -51,7 +51,7 @@
         </div>
       </div>
 
-    <div class="table-scroll-wrap">
+    <div class="table-scroll-wrap" data-tutorial="ee-tabla">
 
       <table class="table modern-table">
         <thead>
@@ -246,7 +246,7 @@
 
 <!-- PANEL LATERAL DE IA -->
 <div class="ai-sidebar-overlay" [class.active]="aiPanelOpen" (click)="toggleAiPanel()"></div>
-<div class="ai-sidebar" [class.active]="aiPanelOpen">
+<div class="ai-sidebar" [class.active]="aiPanelOpen" data-tutorial="ee-panel-ia">
   <div class="ai-sidebar-header">
     <h3>
       <i class="bi bi-robot"></i>

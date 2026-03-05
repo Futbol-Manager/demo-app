@@ -1,7 +1,7 @@
 <!-- ===== PAGE HEADER ===== -->
 <div class="page-header">
   <div class="back-container">
-    <button class="btn-back-clean" (click)="goBack()">
+    <button class="btn-back-clean" (click)="goBack()" data-tutorial="equipos-volver">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
     </button>
@@ -69,21 +69,21 @@
     <!-- ACTION CARDS -->
     <div class="actions-row" *ngIf="profileId === 1 || profileId === 2">
 
-      <div class="action-card" *ngIf="profileId === 1" (click)="openModalSubirJugadores()">
+      <div class="action-card" *ngIf="profileId === 1" (click)="openModalSubirJugadores()" data-tutorial="equipos-excel">
         <div class="action-icon-wrap green">
           <i class="bi bi-file-earmark-spreadsheet-fill"></i>
         </div>
         <span class="action-label">{{ 'TITLES.EXCELLOAD' | translate }}</span>
       </div>
 
-      <div class="action-card" *ngIf="profileId === 1" (click)="copyLink()">
+      <div class="action-card" *ngIf="profileId === 1" (click)="copyLink()" data-tutorial="equipos-invitar">
         <div class="action-icon-wrap blue">
           <i class="bi bi-link-45deg"></i>
         </div>
         <span class="action-label">{{ 'TITLES.INVITED' | translate }}</span>
       </div>
 
-      <div class="action-card" *ngIf="profileId === 1 || (profileId === 2 && !clubOk)" (click)="abrirModalCrearEquipo()">
+      <div class="action-card" *ngIf="profileId === 1 || (profileId === 2 && !clubOk)" (click)="abrirModalCrearEquipo()" data-tutorial="equipos-crear">
         <div class="action-icon-wrap gold">
           <i class="bi bi-plus-circle-fill"></i>
         </div>
@@ -93,7 +93,7 @@
     </div>
 
     <!-- SEASON SELECTOR -->
-    <div class="season-bar">
+    <div class="season-bar" data-tutorial="equipos-temporada">
       <label class="season-label">
         <i class="bi bi-calendar-event"></i>
         {{ 'TITLES.SEASON' | translate }}
@@ -105,7 +105,7 @@
     </div>
 
     <!-- TEAMS GRID -->
-    <div *ngIf="profileId < 3" class="teams-grid" cdkDropList (cdkDropListDropped)="dropTeam($event)">
+    <div *ngIf="profileId < 3" class="teams-grid" cdkDropList (cdkDropListDropped)="dropTeam($event)" data-tutorial="equipos-listado">
 
       <div *ngFor="let team of listTeam" class="team-card" cdkDrag (click)="navegarACalendario(team.teamId, 0)">
 

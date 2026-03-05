@@ -1,7 +1,7 @@
 <!-- ===== PAGE HEADER (solo volver + título) ===== -->
 <div class="page-header">
   <div class="back-container">
-    <button class="btn-back-clean" (click)="goBack()">
+    <button class="btn-back-clean" (click)="goBack()" data-tutorial="cuotas-volver">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
     </button>
@@ -15,7 +15,7 @@
 </div>
 
 <!-- ===== OPCIONES DE ACCIÓN (debajo del encabezado) ===== -->
-<div class="header-actions-bar">
+<div class="header-actions-bar" data-tutorial="cuotas-acciones">
   <div class="header-actions-inner">
     <button class="header-action-btn" (click)="openModalCuotas()" title="Configurar pagos">
       <i class="bi bi-currency-exchange"></i>
@@ -48,7 +48,7 @@
 <div class="container mt-3">
 
   <!-- ═══════════ SUMMARY CARDS ═══════════ -->
-  <div class="summary-cards mb-3" *ngIf="!isLoading">
+  <div class="summary-cards mb-3" *ngIf="!isLoading" data-tutorial="cuotas-resumen">
     <!-- Jugadores -->
     <div class="sc-card sc-card--players">
       <div class="sc-icon-wrap">
@@ -99,7 +99,7 @@
   </div>
 
   <!-- ═══════════ BARRA UNIFICADA DE FILTROS ═══════════ -->
-  <div class="uf-bar mb-2">
+  <div class="uf-bar mb-2" data-tutorial="cuotas-filtros">
 
     <!-- BUSCADOR -->
     <div class="uf-search">
@@ -351,7 +351,7 @@
   </div>
 
   <!-- Tabla GENERAL (solo visible cuando NO hay filtro por pagos) -->
-  <div class="row mb-3" *ngIf="!vistaFiltroPago">
+  <div class="row mb-3" *ngIf="!vistaFiltroPago" data-tutorial="cuotas-listado">
     <div class="col-12">
       <div class="table-wrapper">
         <div class="table-scroll" [class.no-scroll]="isLoading">

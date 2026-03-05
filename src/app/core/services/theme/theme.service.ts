@@ -46,13 +46,10 @@ export class ThemeService {
     }
   }
 
-  /** Read stored preference, defaulting to light */
+  /** Read stored preference; default is always light (ignores system prefers-color-scheme) */
   private getStoredTheme(): ThemeMode {
     const stored = localStorage.getItem(this.STORAGE_KEY);
     if (stored === 'dark' || stored === 'light') return stored;
-    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
-    }
     return 'light';
   }
 }

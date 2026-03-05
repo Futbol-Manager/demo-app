@@ -1,7 +1,7 @@
 <!-- ================= PAGE HEADER ================= -->
 <div class="page-header">
   <div class="back-container">
-    <button class="btn-back-clean" (click)="goBack()">
+    <button class="btn-back-clean" (click)="goBack()" data-tutorial="docs-volver">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
     </button>
@@ -17,7 +17,7 @@
 
 <!-- ================= PESTAÑAS ================= -->
 <div class="container mt-4">
-  <div class="doc-tabs-bar">
+  <div class="doc-tabs-bar" data-tutorial="docs-tabs">
     <button class="doc-tab-btn" [class.active]="activeDocTab === 'jugadores'" (click)="setDocTab('jugadores')">
       <i class="bi bi-people-fill"></i> {{ 'DOCUMENTS_CLUB.TAB_PLAYERS' | translate }}
     </button>
@@ -26,7 +26,7 @@
     </button>
   </div>
 
-  <div class="row g-4 mb-4 action-cards">
+  <div class="row g-4 mb-4 action-cards" data-tutorial="docs-acciones">
 
     <div class="col-12 col-md-4" *ngFor="let action of [
     { title: 'UPLOAD_NEW', button: 'UPLOAD_DOC', icon: 'bi-upload', click: 'upload', variant: 'green' },
@@ -61,7 +61,7 @@
 
 
   <!-- ================= BARRA BÚSQUEDA + FILTRO (premium) ================= -->
-  <div class="docs-toolbar-premium">
+  <div class="docs-toolbar-premium" data-tutorial="docs-busqueda">
     <div class="docs-toolbar-inner">
       <div class="docs-toolbar-search-wrap">
         <span class="docs-toolbar-search-icon"><i class="bi bi-search"></i></span>
@@ -87,7 +87,7 @@
   </div>
 
   <!-- ================= TABLA DOCUMENTOS ================= -->
-  <div class="table-responsive table-container">
+  <div class="table-responsive table-container" data-tutorial="docs-tabla">
 
     <!-- ===== SKELETON ===== -->
     <table *ngIf="loadingData" class="table modern-table">

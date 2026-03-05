@@ -4,13 +4,13 @@
   <div class="page-header-wrapper">
   <div class="library-header">
     <div class="header-left">
-      <button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i></button>
+      <button class="btn-back" (click)="goBack()" data-tutorial="videos-volver"><i class="bi bi-arrow-left"></i></button>
     </div>
     <div class="header-center">
       <h2><i class="bi bi-collection-play-fill"></i> Biblioteca de Vídeos</h2>
       <p class="header-sub">Gestiona los vídeos de scouting de tu club</p>
     </div>
-    <div class="header-actions">
+    <div class="header-actions" data-tutorial="videos-header-acciones">
       <button class="btn-manage-plan" (click)="showPlansModal = true">
         <i class="bi bi-hdd-network"></i>
         {{ hasPlan ? 'Gestionar plan' : 'Contratar almacenamiento' }}
@@ -29,7 +29,7 @@
   </div>
 
   <!-- PLAN BAR -->
-  <div class="plan-bar" *ngIf="!planLoading && hasPlan && plan">
+  <div class="plan-bar" *ngIf="!planLoading && hasPlan && plan" data-tutorial="videos-plan-bar">
     <div class="plan-bar-info">
       <span class="plan-badge">{{ planLabel() }}</span>
       <span class="storage-text">
@@ -46,7 +46,7 @@
   </div>
 
   <!-- Sin plan -->
-  <div *ngIf="!planLoading && !hasPlan" class="no-plan-banner">
+  <div *ngIf="!planLoading && !hasPlan" class="no-plan-banner" data-tutorial="videos-plan-bar">
     <i class="bi bi-camera-video-off"></i>
     <div>
       <strong>Sin almacenamiento de vídeo</strong>
@@ -75,7 +75,7 @@
   <div class="library-body">
 
     <!-- SIDEBAR CARPETAS -->
-    <div class="folders-sidebar">
+    <div class="folders-sidebar" data-tutorial="videos-sidebar">
       <div class="folders-header">
         <span class="folders-title"><i class="bi bi-folder2"></i> Carpetas</span>
         <div class="folders-header-actions">
@@ -170,7 +170,7 @@
     <div class="videos-main">
 
       <!-- Búsqueda -->
-      <div class="search-bar">
+      <div class="search-bar" data-tutorial="videos-busqueda">
         <i class="bi bi-search"></i>
         <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="applyFilter()"
           placeholder="Buscar por título, jugador o etiqueta…" class="search-input">
@@ -198,7 +198,7 @@
       </div>
 
       <!-- GRID DE VÍDEOS -->
-      <div class="video-grid" *ngIf="!loading && filteredVideos.length > 0">
+      <div class="video-grid" *ngIf="!loading && filteredVideos.length > 0" data-tutorial="videos-grid">
         <div class="video-card" *ngFor="let video of filteredVideos">
           <div class="video-thumb" [class.external-thumb]="isExternal(video)" (click)="playVideo(video)">
             <i class="bi play-icon" [ngClass]="sourceIcon(video)"></i>

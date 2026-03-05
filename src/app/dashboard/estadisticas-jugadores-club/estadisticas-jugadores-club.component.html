@@ -1,7 +1,7 @@
 <!-- ===== PAGE HEADER ===== -->
 <div class="page-header">
   <div class="back-container">
-    <button class="btn-back-clean" (click)="irAPantalla(0)">
+    <button class="btn-back-clean" (click)="irAPantalla(0)" data-tutorial="ej-volver">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
     </button>
@@ -12,7 +12,7 @@
     <p class="header-subtitle">Métricas y análisis de rendimiento de los jugadores del club</p>
   </div>
 
-  <button class="btn-ai-consult" (click)="toggleAiPanel()">
+  <button class="btn-ai-consult" (click)="toggleAiPanel()" data-tutorial="ej-consultar-ia">
     <i class="bi bi-robot"></i>
     <span>{{ 'AI_PANEL.CONSULT_BUTTON' | translate }}</span>
   </button>
@@ -28,7 +28,7 @@
 
 <!-- ===== TABLE SECTION ===== -->
 <section class="main-section" *ngIf="datosCargados">
-  <div class="table-card">
+  <div class="table-card" data-tutorial="ej-tabla">
 
     <div class="table-scroll">
       <table class="stats-table">
@@ -228,7 +228,7 @@
     </div>
 
     <!-- ===== PAGINATION ===== -->
-    <div class="pagination-bar">
+    <div class="pagination-bar" data-tutorial="ej-paginacion">
       <span class="pagination-info">{{ paginationInfo }}</span>
 
       <select class="page-size-select" [(ngModel)]="pageSize" (change)="onPageSizeChange()">
@@ -253,7 +253,7 @@
 <div class="ai-overlay" [class.active]="aiPanelOpen" (click)="toggleAiPanel()"></div>
 
 <!-- ===== AI SIDEBAR ===== -->
-<aside class="ai-sidebar" [class.active]="aiPanelOpen">
+<aside class="ai-sidebar" [class.active]="aiPanelOpen" data-tutorial="ej-panel-ia">
 
   <div class="ai-sidebar-header">
     <div class="ai-sidebar-title">

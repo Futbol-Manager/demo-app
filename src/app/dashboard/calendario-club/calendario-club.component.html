@@ -2,7 +2,7 @@
      CABECERA HERO — SphairaTech Premium
 ═══════════════════════════════════════════════ -->
 <div class="page-header">
-  <button class="btn-back-clean" (click)="goBack()">
+  <button class="btn-back-clean" (click)="goBack()" data-tutorial="cal-volver">
     <i class="bi bi-arrow-left"></i>
     <span>{{ 'COMMON.BACK' | translate }}</span>
   </button>
@@ -23,7 +23,7 @@
   <!-- ═══════════════════════════════════════════════
        FILTRO DE EQUIPOS — CHIPS
   ═══════════════════════════════════════════════ -->
-  <div class="team-filter-section">
+  <div class="team-filter-section" data-tutorial="cal-filtro">
     <div class="team-filter-header">
       <span class="team-filter-label">
         <i class="bi bi-funnel me-1"></i>
@@ -79,10 +79,10 @@
   <!-- ═══════════════════════════════════════════════
        CALENDARIO MENSUAL
   ═══════════════════════════════════════════════ -->
-  <div class="calendar-container" *ngIf="!isLoading && !errorMsg">
+  <div class="calendar-container" *ngIf="!isLoading && !errorMsg" data-tutorial="cal-grid">
 
     <!-- NAVEGACIÓN MES -->
-    <div class="month-nav">
+    <div class="month-nav" data-tutorial="cal-nav">
       <button class="month-btn" (click)="prevMonth()">
         <i class="bi bi-chevron-left"></i>
       </button>
@@ -160,7 +160,7 @@
   <!-- Fondo visual clicable para cerrar -->
   <div class="day-panel-overlay" *ngIf="showDayPanel" (click)="closeDayPanel()" appModalBackdrop></div>
 
-  <div class="day-panel" [class.day-panel-open]="showDayPanel">
+  <div class="day-panel" [class.day-panel-open]="showDayPanel" data-tutorial="cal-panel-dia">
     <div class="day-panel-header" *ngIf="selectedDay">
       <div>
         <h5>

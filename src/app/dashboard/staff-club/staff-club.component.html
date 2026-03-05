@@ -1,7 +1,7 @@
 <!-- ===== HEADER PREMIUM ===== -->
 <header class="staff-page-header">
   <div class="staff-header-back">
-    <button type="button" class="staff-btn-back" (click)="goBack()">
+    <button type="button" class="staff-btn-back" (click)="goBack()" data-tutorial="staff-volver">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
     </button>
@@ -15,7 +15,7 @@
 
 <div class="staff-page-content">
   <!-- Toolbar -->
-  <div class="staff-toolbar">
+  <div class="staff-toolbar" data-tutorial="staff-toolbar">
     <p class="staff-toolbar-count" *ngIf="!loading && staffList.length > 0">
       <i class="bi bi-people-fill"></i>
       <span>{{ staffList.length }} usuario{{ staffList.length !== 1 ? 's' : '' }}</span>
@@ -46,8 +46,8 @@
   </div>
 
   <!-- Grid de tarjetas -->
-  <div class="staff-grid" *ngIf="!loading && staffList.length > 0">
-    <article class="staff-card" [class.staff-card--disabled]="!user.enabled" *ngFor="let user of staffList">
+  <div class="staff-grid" *ngIf="!loading && staffList.length > 0" data-tutorial="staff-grid">
+    <article class="staff-card" [class.staff-card--disabled]="!user.enabled" *ngFor="let user of staffList" data-tutorial="staff-tarjeta">
       <div class="staff-card-inner">
         <!-- Identidad + acciones en una fila clara -->
         <div class="staff-card-head">
