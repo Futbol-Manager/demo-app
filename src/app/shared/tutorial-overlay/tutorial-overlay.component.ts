@@ -4,8 +4,10 @@ import { TutorialService } from '../../core/services/tutorial/tutorial.service';
 
 const HIGHLIGHT_CLASS = 'sphaira-tutorial-highlight';
 const SPOTLIGHT_PADDING = 10;
-/** Duración en ms de cada paso en la reproducción automática */
+/** Duración en ms de cada paso en la reproducción automática (se usa solo si no hay audio) */
 const AUTO_ADVANCE_MS = 5000;
+/** Ruta base de los audios del tutorial */
+const AUDIO_BASE = 'assets/audio/tutorial/';
 
 export interface SpotlightRect {
   left: number;
@@ -28,11 +30,17 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
   isFirst = true;
   isLast = false;
   dontShowAgain = false;
+
+  /** Estado del audio */
+  audioPlaying = false;
+  audioEnabled = true;
+
   /** Rectángulo del "hueco" para efecto spotlight (resto de pantalla oscuro) */
   spotlightRect: SpotlightRect | null = null;
   private currentTarget: Element | null = null;
   private sub = new Subscription();
   private autoAdvanceTimer: ReturnType<typeof setTimeout> | null = null;
+  private currentAudio: HTMLAudioElement | null = null;
 
   constructor(public tutorial: TutorialService) {}
 
@@ -40,13 +48,17 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
     this.sub.add(
       this.tutorial.isOpen$.subscribe(open => {
         this.isOpen = open;
-        if (!open) this.clearHighlight();
+        if (!open) {
+          this.clearHighlight();
+          this.stopAudio();
+        }
       })
     );
     this.sub.add(
       this.tutorial.currentStep$.subscribe(payload => {
         this.clearAutoAdvance();
         this.clearHighlight();
+        this.stopAudio();
         if (!payload) {
           this.title = '';
           this.text = '';
@@ -64,8 +76,9 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
         this.isFirst = payload.index === 1;
         this.isLast = payload.index === payload.total;
         setTimeout(() => this.applyHighlight(payload.step.targetSelector), 150);
-        // Reproducción automática: avanzar al siguiente paso en ~10 s si no es el último
-        if (!this.isLast) {
+        if (this.audioEnabled && payload.step.audioFile) {
+          this.playAudio(payload.step.audioFile);
+        } else if (!this.isLast) {
           this.autoAdvanceTimer = setTimeout(() => this.tutorial.next(), AUTO_ADVANCE_MS);
         }
       })
@@ -80,15 +93,67 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.clearAutoAdvance();
     this.clearHighlight();
+    this.stopAudio();
     this.sub.unsubscribe();
   }
 
-  private clearAutoAdvance(): void {
-    if (this.autoAdvanceTimer != null) {
-      clearTimeout(this.autoAdvanceTimer);
-      this.autoAdvanceTimer = null;
+  // ── Audio ──────────────────────────────────────────────────────────────────
+
+  private playAudio(filename: string): void {
+    this.stopAudio();
+    const audio = new Audio(AUDIO_BASE + filename);
+    this.currentAudio = audio;
+    this.audioPlaying = true;
+    audio.play().catch(() => {
+      // El navegador bloqueó el autoplay: fallback a avance automático
+      this.audioPlaying = false;
+      if (!this.isLast) {
+        this.autoAdvanceTimer = setTimeout(() => this.tutorial.next(), AUTO_ADVANCE_MS);
+      }
+    });
+    audio.onended = () => {
+      this.audioPlaying = false;
+      if (!this.isLast) {
+        this.autoAdvanceTimer = setTimeout(() => this.tutorial.next(), 800);
+      }
+    };
+    audio.onerror = () => {
+      this.audioPlaying = false;
+      if (!this.isLast) {
+        this.autoAdvanceTimer = setTimeout(() => this.tutorial.next(), AUTO_ADVANCE_MS);
+      }
+    };
+  }
+
+  private stopAudio(): void {
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio.onended = null;
+      this.currentAudio.onerror = null;
+      this.currentAudio = null;
+    }
+    this.audioPlaying = false;
+  }
+
+  toggleAudio(): void {
+    this.audioEnabled = !this.audioEnabled;
+    if (!this.audioEnabled) {
+      this.stopAudio();
     }
   }
+
+  togglePlayPause(): void {
+    if (!this.currentAudio) return;
+    if (this.audioPlaying) {
+      this.currentAudio.pause();
+      this.audioPlaying = false;
+    } else {
+      this.currentAudio.play().catch(() => {});
+      this.audioPlaying = true;
+    }
+  }
+
+  // ── Spotlight ──────────────────────────────────────────────────────────────
 
   @HostListener('window:resize')
   @HostListener('window:scroll')
@@ -134,22 +199,34 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
     document.querySelectorAll('.' + HIGHLIGHT_CLASS).forEach(e => e.classList.remove(HIGHLIGHT_CLASS));
   }
 
+  private clearAutoAdvance(): void {
+    if (this.autoAdvanceTimer != null) {
+      clearTimeout(this.autoAdvanceTimer);
+      this.autoAdvanceTimer = null;
+    }
+  }
+
+  // ── Acciones del usuario ───────────────────────────────────────────────────
+
   onBackdropClick(): void {
     this.tutorial.close();
   }
 
   onNext(): void {
     this.clearAutoAdvance();
+    this.stopAudio();
     this.tutorial.next();
   }
 
   onPrevious(): void {
     this.clearAutoAdvance();
+    this.stopAudio();
     this.tutorial.previous();
   }
 
   onClose(): void {
     this.clearAutoAdvance();
+    this.stopAudio();
     this.tutorial.close();
   }
 

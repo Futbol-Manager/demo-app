@@ -1,7 +1,16 @@
 <div *ngIf="isOpen" class="tutorial-overlay" [class.tutorial-overlay-spotlight]="spotlightRect" (click)="onBackdropClick()" role="presentation">
-  <!-- Efecto spotlight: resto de pantalla oscuro/desenfocado, solo el elemento objetivo queda enfocado -->
-  <div *ngIf="spotlightRect" class="tutorial-spotlight" [style.left.px]="spotlightRect.left" [style.top.px]="spotlightRect.top" [style.width.px]="spotlightRect.width" [style.height.px]="spotlightRect.height" aria-hidden="true"></div>
+  <!-- Efecto spotlight -->
+  <div *ngIf="spotlightRect" class="tutorial-spotlight"
+    [style.left.px]="spotlightRect.left"
+    [style.top.px]="spotlightRect.top"
+    [style.width.px]="spotlightRect.width"
+    [style.height.px]="spotlightRect.height"
+    aria-hidden="true">
+  </div>
+
   <div class="tutorial-card" (click)="$event.stopPropagation()" role="dialog" aria-labelledby="tutorial-title" aria-describedby="tutorial-desc">
+
+    <!-- Cabecera: progreso + controles de audio + cerrar -->
     <div class="tutorial-card-header">
       <div class="tutorial-progress" aria-hidden="true">
         <span class="tutorial-progress-text">{{ stepIndex }} / {{ stepTotal }}</span>
@@ -9,16 +18,36 @@
           <div class="tutorial-progress-fill" [style.width.%]="stepTotal ? (stepIndex / stepTotal) * 100 : 0"></div>
         </div>
       </div>
+
+      <div class="tutorial-audio-controls">
+        <!-- Play / Pause del paso actual -->
+        <button type="button" class="tutorial-audio-btn"
+          (click)="togglePlayPause()"
+          [title]="audioPlaying ? 'Pausar audio' : 'Reproducir audio'"
+          [class.is-playing]="audioPlaying"
+          [disabled]="!audioEnabled">
+          <i class="fas" [class.fa-pause]="audioPlaying" [class.fa-play]="!audioPlaying"></i>
+        </button>
+        <!-- Activar / silenciar audio para todo el tutorial -->
+        <button type="button" class="tutorial-audio-btn tutorial-audio-mute"
+          (click)="toggleAudio()"
+          [title]="audioEnabled ? 'Silenciar tutorial' : 'Activar audio del tutorial'">
+          <i class="fas" [class.fa-volume-up]="audioEnabled" [class.fa-volume-mute]="!audioEnabled"></i>
+        </button>
+      </div>
+
       <button type="button" class="tutorial-close" (click)="onClose()" aria-label="Cerrar tutorial">
         <i class="fas fa-times"></i>
       </button>
     </div>
 
+    <!-- Cuerpo -->
     <div class="tutorial-card-body">
       <h2 id="tutorial-title" class="tutorial-title">{{ title }}</h2>
       <p id="tutorial-desc" class="tutorial-text">{{ text }}</p>
     </div>
 
+    <!-- Pie: no volver a mostrar + navegación -->
     <div class="tutorial-card-footer">
       <label class="tutorial-dont-show">
         <input type="checkbox" [checked]="dontShowAgain" (change)="onDontShowAgainChange($any($event.target).checked)">
@@ -33,5 +62,6 @@
         </button>
       </div>
     </div>
+
   </div>
 </div>
