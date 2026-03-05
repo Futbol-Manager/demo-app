@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { TutorialService } from '../../core/services/tutorial/tutorial.service';
 
@@ -45,6 +45,12 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
   spotlightRect: SpotlightRect | null = null;
   /** Posición dinámica de la tarjeta para no superponer el elemento destacado */
   cardStyle: { left?: string; top?: string; right?: string; transform?: string } = this.getDefaultCardStyle();
+
+  /** Drag de la tarjeta */
+  isDragging = false;
+  private draggedThisStep = false;
+  private dragStart = { x: 0, y: 0, cardLeft: 0, cardTop: 0 };
+
   private currentTarget: Element | null = null;
   private sub = new Subscription();
   private autoAdvanceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -87,6 +93,8 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
         this.stepTotal = payload.total;
         this.isFirst = payload.index === 1;
         this.isLast = payload.index === payload.total;
+        // Al cambiar de paso, reseteamos la posición manual del drag
+        this.draggedThisStep = false;
         setTimeout(() => this.applyHighlight(payload.step.targetSelector), 150);
         if (this.audioEnabled && payload.step.audioFile) {
           this.playAudio(payload.step.audioFile);
@@ -170,6 +178,7 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
   @HostListener('window:resize')
   @HostListener('window:scroll')
   onViewportChange(): void {
+    if (this.isDragging) return;
     if (this.currentTarget && this.spotlightRect) {
       this.updateSpotlightRect();
     }
@@ -264,6 +273,78 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
       clearTimeout(this.autoAdvanceTimer);
       this.autoAdvanceTimer = null;
     }
+  }
+
+  // ── Drag de la tarjeta ────────────────────────────────────────────────────
+
+  onCardMouseDown(evt: MouseEvent): void {
+    const target = evt.target as HTMLElement;
+    if (target.closest('button') || target.closest('input') || target.closest('label')) return;
+    evt.preventDefault();
+    this.startDrag(evt.clientX, evt.clientY);
+  }
+
+  onCardTouchStart(evt: TouchEvent): void {
+    const target = evt.target as HTMLElement;
+    if (target.closest('button') || target.closest('input') || target.closest('label')) return;
+    const t = evt.touches[0];
+    this.startDrag(t.clientX, t.clientY);
+  }
+
+  private startDrag(clientX: number, clientY: number): void {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    // Convertir la posición actual (puede tener right/transform) a left/top absolutas
+    const cardEl = document.querySelector('.tutorial-card') as HTMLElement | null;
+    let cardLeft = cardEl ? cardEl.getBoundingClientRect().left : vw - CARD_WIDTH - VIEWPORT_PADDING;
+    let cardTop  = cardEl ? cardEl.getBoundingClientRect().top  : vh / 2 - CARD_HEIGHT_EST / 2;
+    this.isDragging = true;
+    this.dragStart = { x: clientX, y: clientY, cardLeft, cardTop };
+    this.cdr.markForCheck();
+  }
+
+  @HostListener('document:mousemove', ['$event'])
+  onDocumentMouseMove(evt: MouseEvent): void {
+    if (this.currentTarget && this.spotlightRect && !this.isDragging) {
+      this.updateSpotlightRect();
+    }
+    if (!this.isDragging) return;
+    this.applyDragMove(evt.clientX, evt.clientY);
+  }
+
+  @HostListener('document:mouseup')
+  onDocumentMouseUp(): void {
+    if (this.isDragging) {
+      this.isDragging = false;
+      this.cdr.markForCheck();
+    }
+  }
+
+  @HostListener('document:touchmove', ['$event'])
+  onDocumentTouchMove(evt: TouchEvent): void {
+    if (!this.isDragging || !evt.touches.length) return;
+    const t = evt.touches[0];
+    this.applyDragMove(t.clientX, t.clientY);
+  }
+
+  @HostListener('document:touchend')
+  onDocumentTouchEnd(): void {
+    if (this.isDragging) {
+      this.isDragging = false;
+      this.cdr.markForCheck();
+    }
+  }
+
+  private applyDragMove(clientX: number, clientY: number): void {
+    const dx = clientX - this.dragStart.x;
+    const dy = clientY - this.dragStart.y;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) this.draggedThisStep = true;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const left = Math.max(VIEWPORT_PADDING, Math.min(this.dragStart.cardLeft + dx, vw - CARD_WIDTH - VIEWPORT_PADDING));
+    const top  = Math.max(VIEWPORT_PADDING, Math.min(this.dragStart.cardTop  + dy, vh - CARD_HEIGHT_EST - VIEWPORT_PADDING));
+    this.cardStyle = { left: left + 'px', top: top + 'px' };
+    this.cdr.markForCheck();
   }
 
   // ── Acciones del usuario ───────────────────────────────────────────────────

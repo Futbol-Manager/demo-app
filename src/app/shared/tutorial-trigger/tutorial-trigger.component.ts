@@ -41,6 +41,9 @@ export class TutorialTriggerComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadPosition();
     this.checkHidden();
+    // Auto-arrancar el tutorial la primera vez que el usuario entra en esta pantalla.
+    // Si ya marcó "No volver a mostrar", start() lo ignora automáticamente.
+    setTimeout(() => this.tutorial.start(this.screenId), 300);
   }
 
   ngOnDestroy(): void {

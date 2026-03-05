@@ -164,21 +164,12 @@ const STEPS = [
   },
   {
     file: 'login_02.mp3',
-    text: 'Escribe aquí el correo electrónico con el que te diste de alta en Sphaira. Si estás explorando en modo demo, este campo es todo lo que necesitas para entrar.'
-  },
-  {
-    file: 'login_03.mp3',
-    text: 'Introduce tu contraseña para acceder a tu cuenta. Puedes usar el icono del ojo para mostrarla y comprobar que está escrita correctamente antes de continuar.'
+    text: 'Introduce aquí tu correo electrónico para acceder a Sphaira. Asegúrate de que es un correo válido y al que tienes acceso.'
   },
   {
     file: 'login_04.mp3',
-    text: 'Cuando hayas introducido tus datos, pulsa aquí para entrar. Si es tu primera vez, asegúrate de que el correo y la contraseña coinciden con los que usaste al registrarte.'
+    text: 'Cuando hayas introducido tu correo, pulsa aquí para entrar.'
   },
-  {
-    file: 'login_05.mp3',
-    text: 'Ya tienes todo listo. Pulsa Iniciar sesión para acceder a tu panel de gestión y empezar a explorar Sphaira. Si tienes algún problema, el equipo de soporte está disponible en el menú de ayuda.'
-  },
-
   // ── Dashboard inicio — Entrenador (coach) ─────────────────────────────────
   { file: 'coach_01.mp3', text: 'Esta es tu pantalla principal como entrenador. Aquí ves todos los equipos que tienes asignados en la temporada seleccionada. Pulsa en una tarjeta para entrar al menú de ese equipo.' },
   { file: 'coach_02.mp3', text: 'Fíjate en el selector de temporada. Cámbialo para ver los equipos asignados en otro curso; el listado se actualiza al instante.' },

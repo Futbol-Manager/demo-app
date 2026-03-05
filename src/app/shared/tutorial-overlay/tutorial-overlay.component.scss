@@ -33,6 +33,17 @@
 .tutorial-card {
   position: absolute;
   z-index: 1000;
+  cursor: grab;
+  user-select: none;
+
+  &.is-dragging {
+    cursor: grabbing;
+    transition: none !important;
+  }
+
+  button, input, label, a {
+    cursor: pointer;
+  }
   filter: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
