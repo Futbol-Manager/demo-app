@@ -1,4 +1,4 @@
-<div class="back-container">
+<div class="back-container" data-tutorial="lc-volver">
   <div class="btn-back-clean" href="javascript:void(0)" (click)="goBack()">
     <i class="bi bi-arrow-left"></i>
     <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -13,7 +13,7 @@
 <div *ngIf="!isLoading">
     <div class="container mt-3">
         <!-- Filtro -->
-        <div class="row mb-3 align-items-center">
+        <div class="row mb-3 align-items-center" data-tutorial="lc-filtro">
             <!-- Input filtro -->
             <div class="col-md-4 col-sm-12 mb-2 mb-md-0">
                 <input type="text" class="form-control" placeholder="Filtrar por nombre del club" [(ngModel)]="filtro"
@@ -22,7 +22,7 @@
         </div>
 
         <!-- Tabla -->
-        <div class="row mb-3 align-items-center">
+        <div class="row mb-3 align-items-center" data-tutorial="lc-tabla">
             <div style="overflow-x: auto;">
                 <table id="dataTable" class="table table-bordered table-striped text-center">
                     <thead class="table-custom">

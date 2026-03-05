@@ -1,7 +1,7 @@
 <div class="ftm-page">
 
   <!-- Back -->
-  <div class="back-container">
+  <div class="back-container" data-tutorial="dbtpl-volver">
     <button class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>Volver</span>
@@ -15,7 +15,7 @@
   </div>
 
   <!-- Tabs -->
-  <div class="ftm-tabs">
+  <div class="ftm-tabs" data-tutorial="dbtpl-tabs">
     <button *ngFor="let tab of tabs"
       class="ftm-tab"
       [class.ftm-tab--active]="activeTab === tab"
@@ -46,13 +46,13 @@
   <ng-container *ngIf="!loading && !showBuilder">
 
     <!-- Empty state -->
-    <div *ngIf="activeTemplates.length === 0" class="ftm-empty">
+    <div *ngIf="activeTemplates.length === 0" class="ftm-empty" data-tutorial="dbtpl-list">
       <i class="bi bi-inbox"></i>
       <p>Aún no hay formularios para <strong>{{ tipoLabels[activeTab] }}</strong>.</p>
     </div>
 
     <!-- Cards -->
-    <div class="ftm-cards">
+    <div class="ftm-cards" data-tutorial="dbtpl-list">
       <div *ngFor="let t of activeTemplates" class="ftm-card">
         <div class="ftm-card__info">
           <span class="ftm-card__name">{{ t.nombre }}</span>

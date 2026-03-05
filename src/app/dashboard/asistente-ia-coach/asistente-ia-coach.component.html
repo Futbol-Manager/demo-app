@@ -1,7 +1,7 @@
 <!-- ═══════════════════════════════════════════════
      BOTÓN VOLVER
 ═══════════════════════════════════════════════ -->
-<div class="back-container">
+<div class="back-container" data-tutorial="aic-volver">
   <button class="btn-back-clean" (click)="goBack()">
     <i class="bi bi-arrow-left"></i>
     <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -14,7 +14,7 @@
 <div class="chat-container" [class.sidebar-open]="showHistory">
 
   <!-- SIDEBAR LATERAL DE HISTORIAL -->
-  <aside class="history-sidebar" *ngIf="showHistory">
+  <aside class="history-sidebar" *ngIf="showHistory" data-tutorial="aic-sidebar">
     <div class="sidebar-header">
       <h6><i class="bi bi-clock-history me-2"></i>{{ 'AI_COACH.HISTORY_TITLE' | translate }}</h6>
       <button class="btn-new-chat" (click)="startNewConversation()" title="Nueva conversación">
@@ -49,12 +49,12 @@
   <div class="chat-page">
 
     <!-- BOTÓN TOGGLE SIDEBAR -->
-    <button class="sidebar-toggle-btn" (click)="toggleHistory()" [title]="showHistory ? 'Ocultar historial' : 'Mostrar historial'">
+    <button class="sidebar-toggle-btn" (click)="toggleHistory()" [title]="showHistory ? 'Ocultar historial' : 'Mostrar historial'" data-tutorial="aic-toggle">
       <i class="bi" [class.bi-chevron-left]="showHistory" [class.bi-chevron-right]="!showHistory"></i>
     </button>
 
     <!-- CABECERA -->
-    <div class="chat-header">
+    <div class="chat-header" data-tutorial="aic-header">
       <div class="chat-header-icon">
         <i class="bi bi-robot"></i>
       </div>
@@ -76,7 +76,7 @@
     </div>
 
     <!-- CUERPO DEL CHAT (MENSAJES) -->
-  <div class="chat-body" #chatBody>
+  <div class="chat-body" #chatBody data-tutorial="aic-body">
 
     <div *ngFor="let msg of messages; trackBy: trackByMsgId"
          class="chat-message"
@@ -126,7 +126,7 @@
   </div>
 
   <!-- SUGERENCIAS -->
-  <div class="chat-suggestions" *ngIf="showSuggestions">
+  <div class="chat-suggestions" *ngIf="showSuggestions" data-tutorial="aic-suggestions">
     <p class="suggestions-label">
       <i class="bi bi-lightbulb me-1"></i>
       {{ 'AI_COACH.SUGGESTIONS_LABEL' | translate }}
@@ -142,7 +142,7 @@
   </div>
 
   <!-- BARRA DE ENTRADA -->
-  <div class="chat-input-bar">
+  <div class="chat-input-bar" data-tutorial="aic-input">
     <div class="chat-input-wrapper">
       <textarea
         #inputField

@@ -1,6 +1,6 @@
 <!-- Back button -->
 <div class="action-bar">
-  <button class="btn-back-clean" (click)="goBack()" [attr.aria-label]="'COMMON.BACK' | translate">
+  <button class="btn-back-clean" (click)="goBack()" [attr.aria-label]="'COMMON.BACK' | translate" data-tutorial="scw-volver">
     <i class="bi bi-arrow-left"></i>
     <span>{{ 'COMMON.BACK' | translate }}</span>
   </button>
@@ -16,7 +16,7 @@
 </div>
 
 <!-- ═══════════ Stepper ═══════════ -->
-<div class="stepper">
+<div class="stepper" data-tutorial="scw-stepper">
   <div class="stepper-track">
     <div class="stepper-item" *ngFor="let step of steps; let i = index"
          [ngClass]="{'active': currentStep === step, 'completed': isStepCompleted(step)}"
@@ -32,7 +32,7 @@
 </div>
 
 <!-- ═══════════ STEP 1: Entity Registration ═══════════ -->
-<div class="wizard-step" *ngIf="currentStep === 'entity'">
+<div class="wizard-step" *ngIf="currentStep === 'entity'" data-tutorial="scw-content">
   <div class="step-card">
     <div class="step-card-header">
       <i class="bi bi-building"></i>
@@ -125,7 +125,7 @@
 </div>
 
 <!-- ═══════════ STEP 2: Player Count & Calculation ═══════════ -->
-<div class="wizard-step" *ngIf="currentStep === 'players'">
+<div class="wizard-step" *ngIf="currentStep === 'players'" data-tutorial="scw-content">
   <div class="step-card">
     <div class="step-card-header">
       <i class="bi bi-people-fill"></i>
@@ -226,7 +226,7 @@
 </div>
 
 <!-- ═══════════ STEP 3: Digital Contract ═══════════ -->
-<div class="wizard-step" *ngIf="currentStep === 'contract'">
+<div class="wizard-step" *ngIf="currentStep === 'contract'" data-tutorial="scw-content">
   <div class="step-card">
     <div class="step-card-header">
       <i class="bi bi-file-earmark-text-fill"></i>
@@ -309,7 +309,7 @@
 </div>
 
 <!-- ═══════════ STEP 4: Payment ═══════════ -->
-<div class="wizard-step" *ngIf="currentStep === 'payment'">
+<div class="wizard-step" *ngIf="currentStep === 'payment'" data-tutorial="scw-content">
   <div class="step-card">
     <div class="step-card-header">
       <i class="bi bi-credit-card-fill"></i>

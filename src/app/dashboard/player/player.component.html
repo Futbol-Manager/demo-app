@@ -1,10 +1,12 @@
 <app-publicidad></app-publicidad>
 
 <div *ngIf="datosCargados" class="page-header">
+    <div data-tutorial="jug-volver">
     <button class="btn-back-clean" (click)="goBack()">
         <i class="bi bi-arrow-left"></i>
         <span>Volver</span>
     </button>
+    </div>
 
     <div class="page-header-title">
         <h2 *ngIf="(usuarioActual?.profileType?.profileId ?? 0) < 3">
@@ -16,7 +18,7 @@
         <p class="header-subtitle">Consulta el listado y perfiles detallados de los jugadores</p>
     </div>
 
-    <div *ngIf="(usuarioActual?.profileType?.profileId ?? 0) < 3" class="players-header-actions">
+    <div *ngIf="(usuarioActual?.profileType?.profileId ?? 0) < 3" class="players-header-actions" data-tutorial="jug-crear">
         <button type="button" class="btn-crear-jugador" (click)="abrirModalCrearJugador()">
             <i class="bi bi-plus-lg"></i>
             <span>Crear jugador</span>
@@ -27,7 +29,7 @@
 
 <div *ngIf="datosCargados" class="container players-fifa-page">
     <div class="players-fifa-content">
-        <ul class="nav nav-tabs players-tabs" id="myTab" role="tablist">
+        <ul class="nav nav-tabs players-tabs" id="myTab" role="tablist" data-tutorial="jug-tabs">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="card-tab" data-bs-toggle="tab" data-bs-target="#card-content"
                     type="button" role="tab" aria-controls="card-content" aria-selected="true">Vista de
@@ -42,7 +44,7 @@
         <div class="tab-content players-tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="card-content" role="tabpanel" aria-labelledby="card-tab">
                 <!-- Contenido para la pestaña de tarjetas -->
-                <div class="row cards-pane-wrapper">
+                <div class="row cards-pane-wrapper" data-tutorial="jug-cards">
                     <app-empty-state *ngIf="players.length === 0"
                       icon="bi-people"
                       [title]="'EMPTY_STATES.PLAYERS.TITLE' | translate"
@@ -151,7 +153,7 @@
             <div class="tab-pane fade" id="table-content" role="tabpanel" aria-labelledby="table-tab">
                 <div class="row table-pane-wrapper">
                     <!-- Barra de controles (búsqueda + Export Excel) -->
-                    <div class="players-table-toolbar">
+                    <div class="players-table-toolbar" data-tutorial="jug-toolbar">
                         <div class="filter-group search-group">
                             <label for="playerSearchTable" class="filter-label">Buscar</label>
                             <div class="search-input">
@@ -168,7 +170,7 @@
                             </button>
                         </div>
                     </div>
-                    <div class="players-table-scroll">
+                    <div class="players-table-scroll" data-tutorial="jug-tabla">
                         <table id="playersDataTable" class="modern-table players-modern-table players-table-fifa text-center">
                             <thead>
                                 <tr>

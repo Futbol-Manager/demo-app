@@ -2,7 +2,7 @@
 
 <!-- ===== PAGE HEADER ===== -->
 <div class="page-header">
-  <div class="back-container">
+  <div class="back-container" data-tutorial="ee-volver">
     <button class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -20,7 +20,7 @@
 <ng-container *ngIf="datosCargados || graficasEquipo">
   <div class="stats-page report-container">
     <header class="stats-header report-header">
-      <div class="stats-filters card-pro report-filters">
+      <div class="stats-filters card-pro report-filters" data-tutorial="ee-filtros">
         <div class="stats-filters-row">
           <div class="filter-group">
             <label for="tipoPartidoSelected" class="filter-label">{{ 'ESTADIS_EQUIPO.TIPO_PARTIDO' | translate }}</label>
@@ -48,7 +48,7 @@
     <!-- Vista Tabla: dos columnas en desktop -->
     <section *ngIf="datosCargados" class="stats-section report-section table-section">
       <div class="report-grid report-grid--tables">
-        <div class="card-pro table-card report-card">
+        <div class="card-pro table-card report-card" data-tutorial="ee-tabla-resumen">
           <div class="card-pro-header report-card-header">
             <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.TITLE' | translate }}</h2>
           </div>
@@ -88,7 +88,7 @@
           </div>
         </div>
 
-        <div class="card-pro table-card report-card report-card--partidos">
+        <div class="card-pro table-card report-card report-card--partidos" data-tutorial="ee-tabla-partidos">
           <div class="card-pro-header report-card-header">
             <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.PARTIDOS' | translate }}</h2>
             <div class="datatable-controls">
@@ -156,7 +156,7 @@
     </section>
 
     <!-- Vista Gráficas: dos gráficas por fila (dos columnas) -->
-    <section *ngIf="graficasEquipo" class="stats-section report-section report-charts">
+    <section *ngIf="graficasEquipo" class="stats-section report-section report-charts" data-tutorial="ee-graficas">
       <div class="report-grid report-grid--two-cols">
         <!-- Col 1: Resultados (pie) -->
         <div class="card-pro chart-card report-card report-card--half">

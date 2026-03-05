@@ -2,7 +2,7 @@
 
 <!-- Encabezado premium (mismo estilo y altura que info-jugadores) -->
 <header class="page-header">
-  <div class="back-container">
+  <div class="back-container" data-tutorial="th-volver">
     <button type="button" class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -27,7 +27,7 @@
   </div>
 
   <!-- GRID DE TARJETAS -->
-  <div class="task-grid" *ngIf="historial.length > 0">
+  <div class="task-grid" *ngIf="historial.length > 0" data-tutorial="th-grid">
     <div
       class="task-card"
       *ngFor="let tarea of pagedHistorial"
@@ -72,7 +72,7 @@
   </div>
 
   <!-- PAGINACIÓN -->
-  <div class="pagination-bar" *ngIf="totalPages > 1">
+  <div class="pagination-bar" *ngIf="totalPages > 1" data-tutorial="th-paginacion">
     <button class="btn-page" [disabled]="currentPage === 0" (click)="prevPage()">
       <i class="bi bi-chevron-left"></i>
     </button>

@@ -1,9 +1,11 @@
 <app-publicidad></app-publicidad>
 <div class="page-header">
+  <div data-tutorial="ie-volver">
   <button type="button" class="btn-back-clean" (click)="goBack()">
     <i class="bi bi-arrow-left"></i>
     <span>{{ 'COMMON.BACK' | translate }}</span>
   </button>
+  </div>
 
   <div class="page-header-title">
     <h2>
@@ -25,7 +27,7 @@
         <!-- ═══════════════════════════════════════
              SIDEBAR — Logo del equipo
         ═══════════════════════════════════════ -->
-        <aside class="card-sidebar">
+        <aside class="card-sidebar" data-tutorial="ie-logo">
         <div class="sidebar-inner">
 
           <p class="sidebar-label">{{ 'INFO_EQUIPO.LOGO' | translate }}</p>
@@ -46,7 +48,7 @@
             </div>
           </div>
 
-          <div class="logo-actions" *ngIf="usuarioActual?.profileType?.profileId == 1">
+          <div class="logo-actions" *ngIf="usuarioActual?.profileType?.profileId == 1" data-tutorial="ie-logo-upload">
             <input type="file" id="teamLogoInput" accept="image/*"
                    class="d-none" (change)="onLogoSelected($event)" #logoInput />
             <button type="button" class="btn-logo" (click)="logoInput.click()">
@@ -55,7 +57,7 @@
             </button>
           </div>
 
-          <div class="sidebar-info-pills">
+          <div class="sidebar-info-pills" data-tutorial="ie-pills">
             <div class="sidebar-pill" *ngIf="editarEquipoForm.get('categoriaNombre')?.value">
               <i class="bi bi-tag-fill"></i>
               <span>{{ editarEquipoForm.get('categoriaNombre')?.value }}</span>
@@ -85,6 +87,7 @@
             <span class="form-section-label">Datos del equipo</span>
           </div>
 
+          <div data-tutorial="ie-form-datos">
           <div class="form-row">
             <div class="form-group half">
               <label for="categoriaInput" class="form-label">{{ 'INFO_EQUIPO.CATEGORIA' | translate }}</label>
@@ -143,8 +146,9 @@
               </button>
             </div>
           </div>
+          </div>
 
-          <div class="form-section-header mt-form">
+          <div class="form-section-header mt-form" data-tutorial="ie-form-objetivos">
             <span class="form-section-icon"><i class="bi bi-chat-left-text"></i></span>
             <span class="form-section-label">Objetivos y opiniones</span>
           </div>
@@ -166,7 +170,7 @@
             </div>
           </div>
 
-          <div class="form-actions">
+          <div class="form-actions" data-tutorial="ie-form-actions">
             <button type="submit" class="btn-save-pro">
               <i class="bi bi-check-lg"></i>
               {{ 'INFO_EQUIPO.GUARDAR' | translate }}
@@ -185,7 +189,7 @@
     <!-- ═══════════════════════════════════════
          COLUMNA LATERAL — Staff del equipo
     ═══════════════════════════════════════ -->
-    <aside class="info-equipo-staff">
+    <aside class="info-equipo-staff" data-tutorial="ie-staff">
       <div class="staff-card">
         <div class="staff-header">
           <i class="bi bi-people-fill staff-icon"></i>

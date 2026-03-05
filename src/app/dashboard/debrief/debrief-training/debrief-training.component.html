@@ -1,7 +1,7 @@
 <app-publicidad></app-publicidad>
 
 <!-- BOTÓN VOLVER -->
-<div class="back-container">
+<div class="back-container" data-tutorial="dbt-volver">
   <button class="btn-back-clean" (click)="goBack()">
     <i class="bi bi-arrow-left"></i>
     <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -29,7 +29,7 @@
   </div>
 
   <!-- ═══ BARRA DE PROGRESO ═══ -->
-  <div class="progress-section">
+  <div class="progress-section" data-tutorial="dbt-progress">
     <div class="progress-bar-wrapper">
       <div class="progress-fill" [style.width.%]="progress"></div>
     </div>
@@ -37,7 +37,7 @@
   </div>
 
   <!-- ═══ STEP INDICATORS ═══ -->
-  <div class="step-indicators">
+  <div class="step-indicators" data-tutorial="dbt-progress">
     <button
       *ngFor="let q of questions; let i = index"
       class="step-dot"
@@ -81,7 +81,7 @@
   </div>
 
   <!-- ═══ PREGUNTA ACTUAL ═══ -->
-  <div class="question-card" *ngIf="currentQuestion">
+  <div class="question-card" *ngIf="currentQuestion" data-tutorial="dbt-questions">
 
     <!-- Categoría -->
     <div class="question-category">

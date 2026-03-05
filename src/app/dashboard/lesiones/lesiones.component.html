@@ -3,7 +3,7 @@
   <div class="page-header">
 
     <!-- IZQUIERDA: VOLVER -->
-    <div class="back-container">
+    <div class="back-container" data-tutorial="les-volver">
       <button class="btn-back-clean" type="button" (click)="goBack()">
         <i class="bi bi-arrow-left"></i>
         <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -20,7 +20,7 @@
 
     <!-- DERECHA: ACCIONES -->
     <div class="page-header-actions">
-      <div class="mode-toggle-wrap">
+      <div class="mode-toggle-wrap" data-tutorial="les-mode">
         <span class="mode-label" [class.active]="!isPro">Base</span>
         <label class="mode-toggle">
           <input type="checkbox" [checked]="isPro" (change)="toggleMode()">
@@ -30,7 +30,7 @@
           <i class="bi bi-stars me-1"></i>Pro
         </span>
       </div>
-      <div class="header-action-btns">
+      <div class="header-action-btns" data-tutorial="les-actions">
         <button class="btn-header-action btn-export-pdf" title="Descargar informe PDF" (click)="exportInjuryReport()" [disabled]="isExporting">
           <span *ngIf="!isExporting"><i class="bi bi-file-earmark-pdf-fill"></i></span>
           <span *ngIf="isExporting" class="spinner-border spinner-border-sm"></span>
@@ -81,7 +81,7 @@
 </ng-container>
 
 <!-- ═══════ VIEW SWITCHER TABS ═══════ -->
-<div class="lesiones-view-tabs">
+<div class="lesiones-view-tabs" data-tutorial="les-tabs">
   <button class="view-tab" [class.active]="activeView === 'bodymap'" (click)="switchView('bodymap')">
     <i class="bi bi-person-standing me-1"></i>Mapa Corporal
   </button>
@@ -94,7 +94,7 @@
 </div>
 
 <!-- ═══════ STATS CARDS ═══════ -->
-<div class="lesiones-stats-row">
+<div class="lesiones-stats-row" data-tutorial="les-stats-cards">
   <div class="lesion-stat-card stat-total">
     <i class="bi bi-clipboard2-pulse"></i>
     <div class="stat-info">
@@ -130,7 +130,7 @@
 <div class="lesiones-main-layout" *ngIf="activeView === 'bodymap'">
 
   <!-- ─── LEFT: DUAL SVG BODY MAP ──── -->
-  <div class="bodymap-container" [class.bodymap-embedded]="embedded">
+  <div class="bodymap-container" [class.bodymap-embedded]="embedded" data-tutorial="les-bodymap">
 
     <!-- Dual view: Front + Back simultaneously -->
     <div class="bodymap-dual-wrap">
@@ -261,7 +261,7 @@
   </div>
 
   <!-- ─── RIGHT: PANEL ──── -->
-  <div class="lesiones-panel">
+  <div class="lesiones-panel" data-tutorial="les-panel">
 
     <!-- ════ NEW / EDIT FORM ════ -->
     <div class="lesiones-form-card" *ngIf="showForm">

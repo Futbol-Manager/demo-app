@@ -2,7 +2,7 @@
 
 <!-- ===== PAGE HEADER ===== -->
 <div class="page-header">
-  <div class="back-container">
+  <div class="back-container" data-tutorial="cr-volver">
     <button class="btn-back-clean" type="button" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -140,7 +140,7 @@
 
     <!-- Toolbar: tabs + jornada + refresh -->
     <div class="sph-toolbar">
-      <div class="sph-tab-btns">
+      <div class="sph-tab-btns" data-tutorial="cr-toolbar">
         <button class="btn-sph-tab" [class.active]="!contenidoActivo" (click)="mostrarContenido(false)">
           <i class="bi bi-list-ol me-1"></i>{{ 'TITLES.STANDINGS' | translate }}
         </button>
@@ -149,7 +149,7 @@
         </button>
       </div>
 
-      <div class="sph-controls">
+      <div class="sph-controls" data-tutorial="cr-jornada">
         <ng-container *ngIf="jornadaNavegable; else jornadaFija">
           <select class="sph-select" [(ngModel)]="jornadaSeleccionada" (change)="cambiarJornada()">
             <option *ngFor="let j of jornadas" [value]="j">{{ 'TITLES.ROUND' | translate }} {{ j }}</option>
@@ -175,7 +175,7 @@
     </div>
 
     <!-- TABLA CLASIFICACIÓN -->
-    <div *ngIf="!contenidoActivo" class="sph-table-wrapper">
+    <div *ngIf="!contenidoActivo" class="sph-table-wrapper" data-tutorial="cr-tabla">
       <div class="table-responsive">
         <table class="sph-table">
           <thead>
@@ -217,7 +217,7 @@
     </div>
 
     <!-- RESULTADOS -->
-    <div *ngIf="contenidoActivo" class="resultados-grid">
+    <div *ngIf="contenidoActivo" class="resultados-grid" data-tutorial="cr-resultados">
       <div class="resultado-card" *ngFor="let resultado of resultados">
         <div class="resultado-equipos">
           <div class="equipo-nombre text-end">{{ resultado.nombreEquipoLocal }}</div>
@@ -239,7 +239,7 @@
     </div>
 
     <!-- Cambiar URL -->
-    <div class="url-reconfig-section mt-0">
+    <div class="url-reconfig-section mt-0" data-tutorial="cr-reconfig">
       <span class="url-reconfig-label"><i class="bi bi-link-45deg me-1"></i>¿Cambiar fuente?</span>
       <input
         type="url"

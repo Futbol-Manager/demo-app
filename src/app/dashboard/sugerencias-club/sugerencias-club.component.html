@@ -1,5 +1,5 @@
 <!-- ================= BOTÓN VOLVER ================= -->
-<div class="back-container">
+<div class="back-container" data-tutorial="sug-volver">
   <button class="btn-back-clean" (click)="goBack()">
     <i class="bi bi-arrow-left"></i>
     <span>Volver</span>
@@ -7,7 +7,7 @@
 </div>
 
 <!-- ================= HERO BANNER ================= -->
-<div class="hero-banner">
+<div class="hero-banner" data-tutorial="sug-hero">
   <div class="hero-particles">
     <span class="particle p1"></span>
     <span class="particle p2"></span>
@@ -45,7 +45,7 @@
   </div>
 
   <!-- ================= FORMULARIO NUEVA SUGERENCIA ================= -->
-  <div class="form-card" *ngIf="showForm">
+  <div class="form-card" *ngIf="showForm" data-tutorial="sug-form">
     <div class="form-card-header">
       <div class="form-card-icon"><i class="bi bi-pencil-square"></i></div>
       <div>
@@ -123,7 +123,7 @@
   </div>
 
   <!-- ================= ESTADO VACÍO ================= -->
-  <div *ngIf="!loading && sugerencias.length === 0 && !showForm && !justSubmitted" class="empty-state">
+  <div *ngIf="!loading && sugerencias.length === 0 && !showForm && !justSubmitted" class="empty-state" data-tutorial="sug-list">
     <div class="empty-icon"><i class="bi bi-lightbulb"></i></div>
     <h5>Todavía no has enviado ninguna sugerencia</h5>
     <p>¡Sé el primero! Tu idea puede convertirse en la próxima gran funcionalidad de Sphaira.</p>
@@ -133,7 +133,7 @@
   </div>
 
   <!-- ================= LISTA DE SUGERENCIAS ================= -->
-  <div class="sugerencias-section" *ngIf="!loading && sugerencias.length > 0">
+  <div class="sugerencias-section" *ngIf="!loading && sugerencias.length > 0" data-tutorial="sug-list">
     <div class="section-header">
       <h4 class="section-title">Mis sugerencias</h4>
       <span class="section-count">{{ sugerencias.length }} {{ sugerencias.length === 1 ? 'propuesta' : 'propuestas' }}</span>

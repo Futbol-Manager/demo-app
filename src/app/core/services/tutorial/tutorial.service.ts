@@ -66,6 +66,51 @@ export class TutorialService {
     this.screens.set('menu-club', this.getMenuClubSteps());
     this.screens.set('menu-entrenador', this.getMenuEntrenadorSteps());
     this.screens.set('opcionesjugador', this.getOpcionesjugadorSteps());
+    this.screens.set('calendario', this.getCalendarioSteps());
+    this.screens.set('tareas', this.getTareasSteps());
+    this.screens.set('tactical-board', this.getTacticalBoardSteps());
+    this.screens.set('tareas-catalog', this.getTareasCatalogSteps());
+    this.screens.set('tareas-historial', this.getTareasHistorialSteps());
+    this.screens.set('tareas-favoritas', this.getTareasFavoritasSteps());
+    this.screens.set('tareas-mis', this.getTareasMisSteps());
+    this.screens.set('jugadores', this.getJugadoresSteps());
+    this.screens.set('informacion-equipo', this.getInformacionEquipoSteps());
+    this.screens.set('estadisticas-equipo', this.getEstadisticasEquipoSteps());
+    this.screens.set('estadisticas-jugadores', this.getEstadisticasJugadoresSteps());
+    this.screens.set('clasificacion-resultados', this.getClasificacionResultadosSteps());
+    this.screens.set('partidos-entrevistas', this.getPartidosEntrevistasSteps());
+    this.screens.set('lesiones', this.getLesionesSteps());
+    this.screens.set('asistente-ia-coach', this.getAsistenteIaCoachSteps());
+    this.screens.set('debrief-history', this.getDebriefHistorySteps());
+    this.screens.set('perfil-entrenador', this.getPerfilEntrenadorSteps());
+    this.screens.set('documentos-entrenador', this.getDocumentosEntrenadorSteps());
+    this.screens.set('cuotas', this.getCuotasSteps());
+    this.screens.set('documentos-jugador', this.getDocumentosJugadorSteps());
+    this.screens.set('scouting-player', this.getScoutingPlayerSteps());
+    this.screens.set('patrocinadores-usuario', this.getPatrocinadoresUsuarioSteps());
+    this.screens.set('lesiones-jugador', this.getLesionesSteps());
+    this.screens.set('ropa-jugador', this.getRopaJugadorSteps());
+    this.screens.set('scouting-player-profile', this.getScoutingPlayerProfileSteps());
+    this.screens.set('erp', this.getErpSteps());
+    this.screens.set('menu-fisio', this.getMenuFisioSteps());
+    this.screens.set('entrenadores', this.getEntrenadoresSteps());
+    this.screens.set('asistencia', this.getAsistenciaSteps());
+    this.screens.set('debrief-templates', this.getDebriefTemplatesSteps());
+    this.screens.set('debrief-training', this.getDebriefTrainingSteps());
+    this.screens.set('debrief-match', this.getDebriefMatchSteps());
+    this.screens.set('contabilidad', this.getContabilidadSteps());
+    this.screens.set('historial-pagos-club', this.getHistorialPagosClubSteps());
+    this.screens.set('abonados', this.getAbonadosSteps());
+    this.screens.set('suscripcion-club', this.getSuscripcionClubSteps());
+    this.screens.set('suscripcion-club-wizard', this.getSuscripcionClubWizardSteps());
+    this.screens.set('sugerencias-club', this.getSugerenciasClubSteps());
+    this.screens.set('listado-clubes', this.getListadoClubesSteps());
+    this.screens.set('suscripcion-coach', this.getSuscripcionCoachSteps());
+    this.screens.set('coach-suscripcion-success', this.getCoachSuscripcionSuccessSteps());
+    this.screens.set('individual-training', this.getIndividualTrainingSteps());
+    this.screens.set('debrief-report', this.getDebriefReportSteps());
+    this.screens.set('suscripcion', this.getSuscripcionSteps());
+    this.screens.set('inicio-deportes', this.getInicioDeportesSteps());
   }
 
   // ── Dashboard inicio (14 pasos) ────────────────────────────────────────────
@@ -1121,6 +1166,548 @@ export class TutorialService {
       { id: 'oj-lesiones', title: 'Lesiones', text: 'Registro de lesiones del jugador.', targetSelector: '[data-tutorial="oj-lesiones"]', position: 'bottom' },
       { id: 'oj-ropa', title: 'Ropa', text: 'Catálogo de ropa y equipación del club.', targetSelector: '[data-tutorial="oj-ropa"]', position: 'bottom' },
       { id: 'oj-fin', title: 'Listo', text: 'Ya conoces todas las opciones disponibles para el jugador.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Calendario del equipo (entrenador/jugador). */
+  private getCalendarioSteps(): TutorialStep[] {
+    return [
+      { id: 'cal-bienvenida', title: 'Calendario del equipo', text: 'Aquí ves el calendario de entrenamientos y partidos del equipo. Puedes cambiar entre vista año, mes y semana, y usar el planificador con IA para organizar la semana.', position: 'bottom' },
+      { id: 'cal-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="cal-volver"]', position: 'bottom' },
+      { id: 'cal-vistas', title: 'Vistas', text: 'Cambia entre vista por año (grid de meses), por mes (tabla) o por semana (7 días). Cada vista muestra entrenamientos y partidos.', targetSelector: '[data-tutorial="cal-vistas"]', position: 'bottom' },
+      { id: 'cal-planner-ia', title: 'Planificador IA', text: 'Abre el planificador semanal con IA para generar o ajustar la planificación de la semana.', targetSelector: '[data-tutorial="cal-planner-ia"]', position: 'bottom' },
+      { id: 'cal-nav', title: 'Navegación', text: 'Avanza o retrocede en el tiempo (año, mes o semana según la vista activa).', targetSelector: '[data-tutorial="cal-nav"]', position: 'bottom' },
+      { id: 'cal-contenido', title: 'Calendario', text: 'Celdas con entrenamientos (dumbbell) y partidos (local/visitante). Pulsa en un día para ver o editar eventos. Puedes arrastrar eventos entre días en vista semana.', targetSelector: '[data-tutorial="cal-contenido"]', position: 'left' },
+      { id: 'cal-fin', title: 'Listo', text: 'Ya conoces el calendario del equipo. Usa la vista que prefieras y el planificador IA para organizar la temporada.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Tareas (hub del entrenador). */
+  private getTareasSteps(): TutorialStep[] {
+    return [
+      { id: 'tareas-bienvenida', title: 'Tareas', text: 'Centro de tareas del equipo: pizarra táctica, catálogo en la nube, historial, favoritas y mis tareas propias. Elige una opción para continuar.', position: 'bottom' },
+      { id: 'tareas-volver', title: 'Volver', text: 'Regresa al menú del entrenador.', targetSelector: '[data-tutorial="tareas-volver"]', position: 'bottom' },
+      { id: 'tareas-pizarra', title: 'Dibujar / Pizarra táctica', text: 'Abre la pizarra táctica para dibujar jugadas, tácticas y animaciones. Puedes guardar imágenes o GIF en una tarea.', targetSelector: '[data-tutorial="tareas-pizarra"]', position: 'left' },
+      { id: 'tareas-nube', title: 'Nube', text: 'Catálogo de tareas en la nube: busca por estrategia e intención y añade tareas a tus entrenamientos.', targetSelector: '[data-tutorial="tareas-nube"]', position: 'left' },
+      { id: 'tareas-historial', title: 'Historial', text: 'Tareas que ya has usado en entrenamientos. Consulta y vuelve a añadirlas o marcarlas como favoritas.', targetSelector: '[data-tutorial="tareas-historial"]', position: 'left' },
+      { id: 'tareas-favoritas', title: 'Favoritas', text: 'Tus tareas marcadas como favoritas para acceso rápido.', targetSelector: '[data-tutorial="tareas-favoritas"]', position: 'left' },
+      { id: 'tareas-mis', title: 'Mis tareas', text: 'Tareas creadas por ti (desde la pizarra o manualmente). Crea, edita y elimina tus propias tareas.', targetSelector: '[data-tutorial="tareas-mis"]', position: 'left' },
+      { id: 'tareas-fin', title: 'Listo', text: 'Ya conoces el hub de tareas. Entra en la opción que necesites para preparar tus sesiones.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Pizarra táctica (tactical-board). */
+  private getTacticalBoardSteps(): TutorialStep[] {
+    return [
+      { id: 'tboard-bienvenida', title: 'Pizarra táctica', text: 'Dibuja jugadas, tácticas y animaciones sobre el campo. Añade jugadores, usa herramientas de dibujo, captura keyframes para GIF y exporta PNG o GIF.', position: 'bottom' },
+      { id: 'tboard-volver', title: 'Volver / Cerrar', text: 'Regresa atrás o cierra la pizarra. Si hay cambios sin guardar, se te preguntará qué hacer.', targetSelector: '[data-tutorial="tboard-volver"]', position: 'bottom' },
+      { id: 'tboard-guardar-tarea', title: 'Guardar en tarea', text: 'En modo tarea, guarda la imagen o el GIF actual en la tarea que estás editando.', targetSelector: '[data-tutorial="tboard-guardar-tarea"]', position: 'bottom' },
+      { id: 'tboard-jugadores', title: 'Jugadores y balón', text: 'Añade conos/jugadores con color y el balón. Elige un color en el desplegable y haz clic en el campo para colocar.', targetSelector: '[data-tutorial="tboard-jugadores"]', position: 'bottom' },
+      { id: 'tboard-herramientas', title: 'Herramientas de dibujo', text: 'Selección, lápiz, línea, flecha, rectángulo, elipse, texto y goma. Activa una herramienta y dibuja sobre el campo.', targetSelector: '[data-tutorial="tboard-herramientas"]', position: 'bottom' },
+      { id: 'tboard-color', title: 'Color y grosor', text: 'Cambia el color y el grosor del trazo para las herramientas de dibujo.', targetSelector: '[data-tutorial="tboard-color"]', position: 'bottom' },
+      { id: 'tboard-campo', title: 'Vista del campo', text: 'Cambia entre campo completo o medio campo.', targetSelector: '[data-tutorial="tboard-campo"]', position: 'bottom' },
+      { id: 'tboard-deshacer', title: 'Deshacer y rehacer', text: 'Deshace o rehace los últimos cambios.', targetSelector: '[data-tutorial="tboard-deshacer"]', position: 'bottom' },
+      { id: 'tboard-borrar', title: 'Eliminar y limpiar', text: 'Elimina el elemento seleccionado o limpia todo el dibujo.', targetSelector: '[data-tutorial="tboard-borrar"]', position: 'bottom' },
+      { id: 'tboard-timeline', title: 'Timeline y keyframes', text: 'Añade keyframes para crear una animación. Reproduce, ajusta velocidad y exporta en GIF.', targetSelector: '[data-tutorial="tboard-timeline"]', position: 'top' },
+      { id: 'tboard-exportar', title: 'Guardar y exportar', text: 'Guarda el dibujo para retomarlo después, o exporta como PNG o GIF (si hay al menos 2 keyframes).', targetSelector: '[data-tutorial="tboard-exportar"]', position: 'top' },
+      { id: 'tboard-fin', title: 'Listo', text: 'Ya conoces la pizarra táctica. Dibuja, anima y guarda o exporta según necesites.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Catálogo de tareas (nube). */
+  private getTareasCatalogSteps(): TutorialStep[] {
+    return [
+      { id: 'tc-bienvenida', title: 'Catálogo de tareas', text: 'Busca y filtra tareas de la nube por texto, estrategia e intención. Añade tareas a favoritas o a un entrenamiento concreto.', position: 'bottom' },
+      { id: 'tc-volver', title: 'Volver', text: 'Regresa a la pantalla de tareas.', targetSelector: '[data-tutorial="tc-volver"]', position: 'bottom' },
+      { id: 'tc-busqueda', title: 'Búsqueda', text: 'Escribe para filtrar tareas por título o descripción.', targetSelector: '[data-tutorial="tc-busqueda"]', position: 'bottom' },
+      { id: 'tc-filtros', title: 'Filtros avanzados', text: 'Filtra por estrategia e intención. Muestra u oculta el panel de filtros avanzados.', targetSelector: '[data-tutorial="tc-filtros"]', position: 'bottom' },
+      { id: 'tc-grid', title: 'Grid de tareas', text: 'Tarjetas de tareas con imagen, etiquetas y botón "Añadir a entrenamiento". Pulsa en una tarjeta para ver el detalle; desde el detalle puedes añadir a favoritas o a un entrenamiento.', targetSelector: '[data-tutorial="tc-grid"]', position: 'left' },
+      { id: 'tc-paginacion', title: 'Paginación', text: 'Navega entre páginas de resultados si hay muchas tareas.', targetSelector: '[data-tutorial="tc-paginacion"]', position: 'top' },
+      { id: 'tc-fin', title: 'Listo', text: 'Ya conoces el catálogo. Busca, filtra y añade tareas a tus entrenamientos o favoritas.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Historial de tareas. */
+  private getTareasHistorialSteps(): TutorialStep[] {
+    return [
+      { id: 'th-bienvenida', title: 'Historial de tareas', text: 'Tareas que ya has usado en entrenamientos. Consulta cuándo y cuántas veces las usaste, abre el detalle y añádelas a favoritas o vuelve a usarlas.', position: 'bottom' },
+      { id: 'th-volver', title: 'Volver', text: 'Regresa a la pantalla de tareas.', targetSelector: '[data-tutorial="th-volver"]', position: 'bottom' },
+      { id: 'th-grid', title: 'Listado', text: 'Tarjetas con imagen, origen, título, etiquetas y fecha de último uso. Pulsa en una tarjeta para ver el detalle y marcar como favorita.', targetSelector: '[data-tutorial="th-grid"]', position: 'left' },
+      { id: 'th-paginacion', title: 'Paginación', text: 'Cambia de página si hay muchas tareas en el historial.', targetSelector: '[data-tutorial="th-paginacion"]', position: 'top' },
+      { id: 'th-fin', title: 'Listo', text: 'Ya conoces el historial. Reutiliza tareas y mantén tus favoritas al día.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Tareas favoritas. */
+  private getTareasFavoritasSteps(): TutorialStep[] {
+    return [
+      { id: 'tf-bienvenida', title: 'Tareas favoritas', text: 'Tus tareas marcadas como favoritas. Ábrelas para ver el detalle completo y quitar de favoritas si lo deseas.', position: 'bottom' },
+      { id: 'tf-volver', title: 'Volver', text: 'Regresa a la pantalla de tareas.', targetSelector: '[data-tutorial="tf-volver"]', position: 'bottom' },
+      { id: 'tf-grid', title: 'Listado', text: 'Tarjetas de tus tareas favoritas. Pulsa en una para ver descripción, reglas, variantes y enlace a vídeo. Desde el detalle puedes quitar de favoritas.', targetSelector: '[data-tutorial="tf-grid"]', position: 'left' },
+      { id: 'tf-paginacion', title: 'Paginación', text: 'Navega entre páginas si tienes muchas favoritas.', targetSelector: '[data-tutorial="tf-paginacion"]', position: 'top' },
+      { id: 'tf-fin', title: 'Listo', text: 'Ya conoces las tareas favoritas. Añade más desde el catálogo o el historial.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Mis tareas. */
+  private getTareasMisSteps(): TutorialStep[] {
+    return [
+      { id: 'tm-bienvenida', title: 'Mis tareas', text: 'Tareas creadas por ti: desde la pizarra táctica o con el formulario. Crea, edita y elimina; puedes marcarlas como favoritas.', position: 'bottom' },
+      { id: 'tm-volver', title: 'Volver', text: 'Regresa a la pantalla de tareas.', targetSelector: '[data-tutorial="tm-volver"]', position: 'bottom' },
+      { id: 'tm-crear', title: 'Crear tarea', text: 'Abre el formulario para crear una nueva tarea. Puedes usar una imagen desde la pizarra táctica o rellenar título, estrategia, descripción, reglas, variantes, tiempo, espacio, material y vídeo.', targetSelector: '[data-tutorial="tm-crear"]', position: 'bottom' },
+      { id: 'tm-grid', title: 'Listado', text: 'Tus tareas con imagen, título, etiquetas. En cada tarjeta: favorita, editar y eliminar. Pulsa en la tarjeta para ver el detalle completo.', targetSelector: '[data-tutorial="tm-grid"]', position: 'left' },
+      { id: 'tm-paginacion', title: 'Paginación', text: 'Cambia de página si tienes muchas tareas propias.', targetSelector: '[data-tutorial="tm-paginacion"]', position: 'top' },
+      { id: 'tm-fin', title: 'Listo', text: 'Ya conoces Mis tareas. Crea y edita tus propias tareas para usarlas en tus entrenamientos.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Jugadores (listado del equipo). */
+  private getJugadoresSteps(): TutorialStep[] {
+    return [
+      { id: 'jug-bienvenida', title: 'Listado de jugadores', text: 'Consulta todos los jugadores del equipo. Puedes ver tarjetas o tabla, crear jugadores, invitar, ver información, editar, mover entre equipos o eliminar según tu rol.', position: 'bottom' },
+      { id: 'jug-volver', title: 'Volver', text: 'Regresa al menú anterior (menú del equipo o menú entrenador).', targetSelector: '[data-tutorial="jug-volver"]', position: 'bottom' },
+      { id: 'jug-crear', title: 'Crear jugador', text: 'Abre el modal para dar de alta un nuevo jugador en el equipo. Solo visible para club y entrenador.', targetSelector: '[data-tutorial="jug-crear"]', position: 'bottom' },
+      { id: 'jug-tabs', title: 'Vista de tarjetas y tabla', text: 'Cambia entre vista de tarjetas (fichas con foto, estadísticas y acciones) y vista de tabla (listado con búsqueda y exportar Excel). La pestaña tabla solo se muestra para club y entrenador.', targetSelector: '[data-tutorial="jug-tabs"]', position: 'bottom' },
+      { id: 'jug-cards', title: 'Vista de tarjetas', text: 'Cada tarjeta muestra foto, número, posición, valoración, nombre, fecha de nacimiento y estadísticas (habilidad, pase, tiro, defensa, físico, mentalidad). Acciones: invitar, ver info, editar, mover (club), eliminar.', targetSelector: '[data-tutorial="jug-cards"]', position: 'left' },
+      { id: 'jug-toolbar', title: 'Barra de la tabla', text: 'Busca jugadores por nombre y exporta el listado a Excel. Solo visible en la pestaña "Vista de tabla".', targetSelector: '[data-tutorial="jug-toolbar"]', position: 'bottom' },
+      { id: 'jug-tabla', title: 'Tabla de jugadores', text: 'Listado en tabla con imagen, nombre, fecha, pie, posición y todas las estadísticas (habilidad, pase, tiro, defensa, físico, mentalidad, portero). En cada fila: ver info, editar, mover, eliminar.', targetSelector: '[data-tutorial="jug-tabla"]', position: 'left' },
+      { id: 'jug-fin', title: 'Listo', text: 'Ya conoces el listado de jugadores. Usa las tarjetas o la tabla según prefieras y las acciones disponibles según tu permiso.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Información del equipo. */
+  private getInformacionEquipoSteps(): TutorialStep[] {
+    return [
+      { id: 'ie-bienvenida', title: 'Información del equipo', text: 'Configura los datos y la información general del equipo: logo, categoría, nivel de liga, nombre, horario de entrenamiento, objetivos, opiniones y staff (entrenadores, fisio, nutricionista).', position: 'bottom' },
+      { id: 'ie-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="ie-volver"]', position: 'bottom' },
+      { id: 'ie-logo', title: 'Logo del equipo', text: 'Vista previa del logo. Si eres club, puedes subir o cambiar el logo desde el botón debajo.', targetSelector: '[data-tutorial="ie-logo"]', position: 'right' },
+      { id: 'ie-logo-upload', title: 'Subir o cambiar logo', text: 'Pulsa para seleccionar una imagen y actualizar el logo del equipo. Solo visible para perfil club.', targetSelector: '[data-tutorial="ie-logo-upload"]', position: 'top' },
+      { id: 'ie-pills', title: 'Datos resumidos', text: 'Píldoras con categoría, nivel de liga y nombre del equipo (se actualizan al guardar el formulario).', targetSelector: '[data-tutorial="ie-pills"]', position: 'bottom' },
+      { id: 'ie-form-datos', title: 'Datos del equipo', text: 'Categoría (con búsqueda y opción crear), nivel de liga (con búsqueda y crear), letra/nombre del equipo y botón de horario para configurar días y franjas de entrenamiento.', targetSelector: '[data-tutorial="ie-form-datos"]', position: 'left' },
+      { id: 'ie-form-objetivos', title: 'Objetivos y opiniones', text: 'Área de texto para el objetivo del equipo esta temporada y la opinión general sobre el equipo.', targetSelector: '[data-tutorial="ie-form-objetivos"]', position: 'left' },
+      { id: 'ie-form-actions', title: 'Guardar y eliminar', text: 'Guarda los cambios del formulario o elimina el equipo (con confirmación).', targetSelector: '[data-tutorial="ie-form-actions"]', position: 'top' },
+      { id: 'ie-staff', title: 'Staff del equipo', text: 'Listado de entrenadores, fisioterapeutas y nutricionistas asignados. Botón "Invitar" para añadir por email. Desde cada tarjeta puedes eliminar si tienes permiso.', targetSelector: '[data-tutorial="ie-staff"]', position: 'left' },
+      { id: 'ie-fin', title: 'Listo', text: 'Ya conoces la pantalla de información del equipo. Actualiza datos, horario y staff cuando lo necesites.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Estadísticas del equipo. */
+  private getEstadisticasEquipoSteps(): TutorialStep[] {
+    return [
+      { id: 'ee-bienvenida', title: 'Estadísticas del equipo', text: 'Análisis estadístico del rendimiento del equipo: resumen (PJ, PTS, V, E, D, GF, GC, DG, últimos resultados), detalle de partidos y gráficas (resultados, puntos por partido, estadísticas por partido, goles por categoría y subcategoría).', position: 'bottom' },
+      { id: 'ee-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="ee-volver"]', position: 'bottom' },
+      { id: 'ee-filtros', title: 'Filtros y vistas', text: 'Tipo de partido: Liga, Amistoso o Torneo. Alterna entre "Ver tabla" (resumen + partidos) y "Ver gráficas" (todas las gráficas de análisis).', targetSelector: '[data-tutorial="ee-filtros"]', position: 'bottom' },
+      { id: 'ee-tabla-resumen', title: 'Tabla resumen', text: 'Card con el resumen del equipo: partidos jugados, puntos, victorias, empates, derrotas, goles a favor, en contra, diferencia y últimos resultados (iconos V/E/D).', targetSelector: '[data-tutorial="ee-tabla-resumen"]', position: 'left' },
+      { id: 'ee-tabla-partidos', title: 'Tabla de partidos', text: 'Listado de partidos con fecha, rival, resultado, GF, GC y estadísticas detalladas (disparos, faltas, corners, recuperaciones, pérdidas, tarjetas, llegadas, penaltis). Pulsa en un rival para abrir el detalle del post partido.', targetSelector: '[data-tutorial="ee-tabla-partidos"]', position: 'left' },
+      { id: 'ee-graficas', title: 'Vista gráficas', text: 'Gráfica de resultados (pie), puntos por partido (línea), estadísticas por partido (selector de tipo de estadística), goles por categoría (dos barras) y goles por subcategoría (selector de categoría y barras).', targetSelector: '[data-tutorial="ee-graficas"]', position: 'left' },
+      { id: 'ee-fin', title: 'Listo', text: 'Ya conoces las estadísticas del equipo. Cambia entre tabla y gráficas y filtra por tipo de partido.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Estadísticas de jugadores. */
+  private getEstadisticasJugadoresSteps(): TutorialStep[] {
+    return [
+      { id: 'ej-bienvenida', title: 'Estadísticas de jugadores', text: 'Análisis estadístico del rendimiento individual: vista tabla (todos los jugadores con PJ, minutos, goles, asistencias, tarjetas, etc.) o vista gráficas (gráficas comparativas y tabla de goles por jugador).', position: 'bottom' },
+      { id: 'ej-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="ej-volver"]', position: 'bottom' },
+      { id: 'ej-view-toggle', title: 'Tabla o gráficas', text: 'Alterna entre "Ver tabla" (tabla de jugadores con búsqueda y paginación) y "Ver gráficas" (gráficas y tabla de goles).', targetSelector: '[data-tutorial="ej-view-toggle"]', position: 'bottom' },
+      { id: 'ej-filtros', title: 'Tipo de partido', text: 'Filtra por Liga, Amistoso o Torneo. Los datos mostrados se actualizan según la pestaña activa.', targetSelector: '[data-tutorial="ej-filtros"]', position: 'bottom' },
+      { id: 'ej-tabla', title: 'Tabla de jugadores', text: 'Card con búsqueda por nombre o posición, tabla con ID, nombre, posición, fecha nac., PJ, minutos totales, media minutos, goles, asistencias, G+A, tarjetas, etc. Paginación debajo.', targetSelector: '[data-tutorial="ej-tabla"]', position: 'left' },
+      { id: 'ej-grafica-jugadores', title: 'Gráfica de jugadores', text: 'Selector de tipo de gráfica (minutos totales, goles, asistencias, partidos jugados, goles penalti, penaltis fallados, tarjetas) y gráfica de barras comparativa.', targetSelector: '[data-tutorial="ej-grafica-jugadores"]', position: 'left' },
+      { id: 'ej-goles', title: 'Tabla de goles', text: 'Selector de jugador (o "Ver todos"), búsqueda por goleador/rival/categoría y tabla con gol de, asistencia de, rival, minuto, fecha, categoría, subcategoría y opción. Paginación debajo.', targetSelector: '[data-tutorial="ej-goles"]', position: 'left' },
+      { id: 'ej-fin', title: 'Listo', text: 'Ya conoces las estadísticas de jugadores. Usa la tabla o las gráficas y filtra por tipo de partido.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Clasificación y resultados. */
+  private getClasificacionResultadosSteps(): TutorialStep[] {
+    return [
+      { id: 'cr-bienvenida', title: 'Clasificación y resultados', text: 'Seguimiento de la liga y resultados del equipo. Si no hay URL configurada, el asistente te guía para introducir la URL de tu federación. Una vez cargados los datos verás la clasificación y los resultados por jornada.', position: 'bottom' },
+      { id: 'cr-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="cr-volver"]', position: 'bottom' },
+      { id: 'cr-toolbar', title: 'Clasificación y resultados', text: 'Alterna entre la pestaña "Clasificación" (tabla de equipos con posición, puntos, J, G, E, P, GF-GC, forma) y "Resultados" (tarjetas de partidos con marcador, fecha y botón Ver acta).', targetSelector: '[data-tutorial="cr-toolbar"]', position: 'bottom' },
+      { id: 'cr-jornada', title: 'Jornada y actualizar', text: 'Selector de jornada (si la fuente lo permite) y botón para actualizar los datos desde la federación.', targetSelector: '[data-tutorial="cr-jornada"]', position: 'bottom' },
+      { id: 'cr-tabla', title: 'Tabla de clasificación', text: 'Tabla con posición, equipo, puntos, partidos jugados, ganados, empatados, perdidos, goles y forma (últimos resultados).', targetSelector: '[data-tutorial="cr-tabla"]', position: 'left' },
+      { id: 'cr-resultados', title: 'Resultados', text: 'Grid de partidos con equipos, marcador, fecha, campo y botón "Ver acta" para abrir el acta en una pestaña nueva.', targetSelector: '[data-tutorial="cr-resultados"]', position: 'left' },
+      { id: 'cr-reconfig', title: 'Cambiar fuente', text: 'Campo para introducir una nueva URL de clasificación y botón "Actualizar URL" si quieres cambiar la fuente de datos.', targetSelector: '[data-tutorial="cr-reconfig"]', position: 'top' },
+      { id: 'cr-fin', title: 'Listo', text: 'Ya conoces clasificación y resultados. Actualiza cuando necesites y consulta las actas desde cada partido.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Galería de partidos (partidos-entrevistas). */
+  private getPartidosEntrevistasSteps(): TutorialStep[] {
+    return [
+      { id: 'pe-bienvenida', title: 'Galería de partidos', text: 'Galería de fotos y vídeos de los partidos del equipo. Selecciona un partido en el carrusel y explora fotos y vídeos del encuentro. Puedes subir nuevas imágenes o añadir por URL.', position: 'bottom' },
+      { id: 'pe-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="pe-volver"]', position: 'bottom' },
+      { id: 'pe-stats', title: 'Resumen', text: 'Píldoras con total de fotos, vídeos y partidos disponibles.', targetSelector: '[data-tutorial="pe-stats"]', position: 'bottom' },
+      { id: 'pe-carousel', title: 'Selección de partido', text: 'Carrusel de partidos con letra (V/E/D), nombre del rival, resultado y número de fotos/vídeos. Selecciona uno para ver su galería.', targetSelector: '[data-tutorial="pe-carousel"]', position: 'left' },
+      { id: 'pe-tabs', title: 'Fotos y vídeos', text: 'Pestañas para ver las fotos o los vídeos del partido seleccionado.', targetSelector: '[data-tutorial="pe-tabs"]', position: 'bottom' },
+      { id: 'pe-upload', title: 'Nueva imagen / Añadir por URL', text: 'En Fotos: "Nueva imagen" para subir o arrastrar archivos, o "Añadir por URL". En Vídeos: "Añadir por URL" o "Subir desde dispositivo" (si el club tiene suscripción de vídeos).', targetSelector: '[data-tutorial="pe-upload"]', position: 'bottom' },
+      { id: 'pe-grid', title: 'Galería', text: 'Grid de fotos o vídeos. Pulsa en una foto para ampliarla en lightbox. En cada elemento puedes eliminar si es tuyo.', targetSelector: '[data-tutorial="pe-grid"]', position: 'left' },
+      { id: 'pe-fin', title: 'Listo', text: 'Ya conoces la galería de partidos. Elige partido, sube contenido y consulta fotos y vídeos.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Lesiones (equipo). */
+  private getLesionesSteps(): TutorialStep[] {
+    return [
+      { id: 'les-bienvenida', title: 'Gestión de lesiones', text: 'Registro y seguimiento de lesiones del equipo: mapa corporal, línea temporal y estadísticas (Pro). Exporta informes PDF, imprime y configura notificaciones.', position: 'bottom' },
+      { id: 'les-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="les-volver"]', position: 'bottom' },
+      { id: 'les-mode', title: 'Modo Base / Pro', text: 'Alterna entre modo Base y Pro. En Pro se desbloquean estadísticas, notas médicas, fase RTP y gestión de Return to Play.', targetSelector: '[data-tutorial="les-mode"]', position: 'bottom' },
+      { id: 'les-actions', title: 'Acciones del encabezado', text: 'Descargar informe PDF, imprimir/exportar y configurar notificaciones (cuándo enviar avisos al crear, cambiar estado o avanzar RTP).', targetSelector: '[data-tutorial="les-actions"]', position: 'bottom' },
+      { id: 'les-tabs', title: 'Vistas', text: 'Mapa corporal (frontal y posterior con zonas clicables), Línea temporal (cronología de lesiones) y Estadísticas (Pro: KPIs, tendencia, gravedad, zonas, tipos).', targetSelector: '[data-tutorial="les-tabs"]', position: 'bottom' },
+      { id: 'les-stats-cards', title: 'Tarjetas de resumen', text: 'Total de lesiones, de baja, readaptando y con alta médica.', targetSelector: '[data-tutorial="les-stats-cards"]', position: 'bottom' },
+      { id: 'les-bodymap', title: 'Mapa corporal', text: 'Vista frontal y posterior. Clic en una zona para registrar una lesión o ver el detalle. Leyenda de gravedad y estado. Desde el panel derecho: formulario nueva/editar, detalle (documentos, notas de evolución, RTP), historial con filtros por estado.', targetSelector: '[data-tutorial="les-bodymap"]', position: 'left' },
+      { id: 'les-panel', title: 'Panel lateral', text: 'Formulario de nueva/editar lesión (zona, tipo, gravedad, fechas, mecanismo, descripción, tratamiento, estado, RTP). Detalle con documentos médicos y notas de evolución. Lista de historial con filtros y botón Nueva.', targetSelector: '[data-tutorial="les-panel"]', position: 'left' },
+      { id: 'les-fin', title: 'Listo', text: 'Ya conoces la gestión de lesiones. Registra lesiones en el mapa, consulta el historial y exporta informes cuando lo necesites.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Asistente IA Coach. */
+  private getAsistenteIaCoachSteps(): TutorialStep[] {
+    return [
+      { id: 'aic-bienvenida', title: 'Asistente IA Coach', text: 'Chat con el asistente de inteligencia artificial para entrenadores. Haz preguntas, pide planes de entrenamiento o que ejecute acciones. Usa créditos por cada uso; el historial de conversaciones se guarda en el panel lateral.', position: 'bottom' },
+      { id: 'aic-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="aic-volver"]', position: 'bottom' },
+      { id: 'aic-sidebar', title: 'Historial de conversaciones', text: 'Panel lateral con lista de conversaciones anteriores. Botón "+" para nueva conversación. Pulsa en una para cargarla; desde cada una puedes eliminarla.', targetSelector: '[data-tutorial="aic-sidebar"]', position: 'right' },
+      { id: 'aic-toggle', title: 'Mostrar u ocultar historial', text: 'Abre o cierra el panel del historial de conversaciones.', targetSelector: '[data-tutorial="aic-toggle"]', position: 'bottom' },
+      { id: 'aic-header', title: 'Cabecera del chat', text: 'Título del asistente, estado en línea, créditos disponibles (pulsable para ver modal de créditos) y botón nueva conversación.', targetSelector: '[data-tutorial="aic-header"]', position: 'bottom' },
+      { id: 'aic-body', title: 'Mensajes', text: 'Área donde se muestran los mensajes del usuario y del asistente. El asistente puede mostrar vistas previas de acciones para confirmar o cancelar.', targetSelector: '[data-tutorial="aic-body"]', position: 'left' },
+      { id: 'aic-suggestions', title: 'Sugerencias', text: 'Chips de sugerencias para enviar preguntas rápidas al asistente.', targetSelector: '[data-tutorial="aic-suggestions"]', position: 'top' },
+      { id: 'aic-input', title: 'Escribir y enviar', text: 'Área de texto para escribir tu mensaje. Botón de micrófono (reconocimiento de voz si está disponible), cancelar (si hay petición en curso) y enviar.', targetSelector: '[data-tutorial="aic-input"]', position: 'top' },
+      { id: 'aic-fin', title: 'Listo', text: 'Ya conoces el asistente IA Coach. Escribe o usa la voz, revisa el historial y gestiona tus créditos.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Historial de debrief. */
+  private getDebriefHistorySteps(): TutorialStep[] {
+    return [
+      { id: 'dh-bienvenida', title: 'Historial de debrief', text: 'Listado de sesiones de debrief (entrenamientos y partidos). Filtra por tipo y abre cualquier elemento completado para ver el informe.', position: 'bottom' },
+      { id: 'dh-volver', title: 'Volver', text: 'Regresa al menú del entrenador.', targetSelector: '[data-tutorial="dh-volver"]', position: 'bottom' },
+      { id: 'dh-filters', title: 'Filtros', text: 'Todos, Entrenamientos o Partidos. Cada botón muestra el total de elementos y filtra la lista.', targetSelector: '[data-tutorial="dh-filters"]', position: 'bottom' },
+      { id: 'dh-list', title: 'Lista de debriefs', text: 'Tarjetas con fecha, tipo (entrenamiento o vs rival), equipo, resumen y estado. Pulsa en un elemento completado para abrir el informe.', targetSelector: '[data-tutorial="dh-list"]', position: 'left' },
+      { id: 'dh-fin', title: 'Listo', text: 'Ya conoces el historial de debrief. Filtra y abre los informes que necesites.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Perfil entrenador. */
+  private getPerfilEntrenadorSteps(): TutorialStep[] {
+    return [
+      { id: 'pe-bienvenida', title: 'Perfil del entrenador', text: 'Consulta y edita tus datos personales, documento de identidad, certificados (delitos sexuales, antecedentes penales, seguro, primeros auxilios) y documentos que requiera cada club. Si eres entrenador independiente verás también la tarjeta de suscripción.', position: 'bottom' },
+      { id: 'pe-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="pe-volver"]', position: 'bottom' },
+      { id: 'pe-suscripcion', title: 'Mi suscripción', text: 'Tarjeta con estado de la suscripción (Activa, Prueba, Vencida, Sin suscripción), fecha de vencimiento y botón Ver planes o Gestionar. Solo visible para entrenador independiente (sin club).', targetSelector: '[data-tutorial="pe-suscripcion"]', position: 'bottom' },
+      { id: 'pe-datos', title: 'Datos personales', text: 'Foto de perfil (clic para cambiar), nombre, botones Editar y Subir documento de identidad. Grid con email, teléfono, fecha nacimiento, documento de identidad, dirección, nacionalidad, licencia federativa, titulación deportiva y contacto de emergencia.', targetSelector: '[data-tutorial="pe-datos"]', position: 'left' },
+      { id: 'pe-edicion', title: 'Editar perfil', text: 'En modo edición puedes cambiar nombre, apellidos, email, teléfono, fecha nacimiento, tipo y número de documento, dirección, nacionalidad, licencia, titulación y contacto de emergencia. Guardar o Cancelar.', targetSelector: '[data-tutorial="pe-edicion"]', position: 'left' },
+      { id: 'pe-campos-club', title: 'Campos personalizados por club', text: 'Secciones por club con formularios dinámicos que cada club define para sus entrenadores.', targetSelector: '[data-tutorial="pe-campos-club"]', position: 'left' },
+      { id: 'pe-doc-identidad', title: 'Documento de identidad', text: 'Imágenes del anverso y reverso del DNI o documento. Subir, cambiar o eliminar desde el botón o desde cada imagen.', targetSelector: '[data-tutorial="pe-doc-identidad"]', position: 'left' },
+      { id: 'pe-certificados', title: 'Certificados', text: 'Certificado de delitos sexuales, antecedentes penales, seguro de responsabilidad civil y formación en primeros auxilios. En cada uno: subir o cambiar, ver archivo y eliminar.', targetSelector: '[data-tutorial="pe-certificados"]', position: 'left' },
+      { id: 'pe-docs-club', title: 'Documentos requeridos por el club', text: 'Por cada club, lista de documentos: los que sube el club (descargar) o los que debes subir tú (subir/cambiar) o formularios personalizados (rellenar).', targetSelector: '[data-tutorial="pe-docs-club"]', position: 'left' },
+      { id: 'pe-fin', title: 'Listo', text: 'Ya conoces tu perfil de entrenador. Mantén tus datos y certificados al día para cada club.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Documentos entrenador. */
+  private getDocumentosEntrenadorSteps(): TutorialStep[] {
+    return [
+      { id: 'de-bienvenida', title: 'Documentos del entrenador', text: 'Listado de documentos que el club pone a tu disposición o que debes subir/rellenar. Cada tarjeta indica el tipo (descargar, subir o formulario) y el estado (pendiente o completado).', position: 'bottom' },
+      { id: 'de-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="de-volver"]', position: 'bottom' },
+      { id: 'de-grid', title: 'Lista de documentos', text: 'Tarjetas con nombre del documento, descripción, estado (Pendiente/Completado) y acción: Descargar (documentos del club), Subir (documentos que debes entregar) o Rellenar (formularios personalizados).', targetSelector: '[data-tutorial="de-grid"]', position: 'left' },
+      { id: 'de-fin', title: 'Listo', text: 'Ya conoces la pantalla de documentos. Descarga lo que el club comparte y sube o rellena lo que te pidan.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Cuotas (jugador/padre). */
+  private getCuotasSteps(): TutorialStep[] {
+    return [
+      { id: 'cq-bienvenida', title: 'Pagar cuotas', text: 'Consulta y paga las cuotas del club: estado pagado/pendiente, Sphaira Pay para vincular tarjeta y cobros automáticos, lista obligatoria y opcional, filtros y pago por transferencia.', position: 'bottom' },
+      { id: 'cq-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="cq-volver"]', position: 'bottom' },
+      { id: 'cq-estado', title: 'Estado y Sphaira Pay', text: 'Tarjetas de total pagado y pendiente. Acceso rápido a Sphaira Pay: vincular tarjeta, ver la asociada o gestionar cobros automáticos.', targetSelector: '[data-tutorial="cq-estado"]', position: 'bottom' },
+      { id: 'cq-selection-bar', title: 'Barra de selección', text: 'Al marcar cuotas puntuales aparece la barra con total y botones Limpiar y Pagar para abrir el modal de pago.', targetSelector: '[data-tutorial="cq-selection-bar"]', position: 'top' },
+      { id: 'cq-obligatorias', title: 'Cuotas obligatorias', text: 'Panel con filtros (concepto, tipo de pago, estado, vencimiento, fecha pago) y lista: concepto, tipo (Puntual/Sphaira Pay/Manual), importe, pagado, vencimiento, fecha pago y acciones (vincular tarjeta, cancelar).', targetSelector: '[data-tutorial="cq-obligatorias"]', position: 'left' },
+      { id: 'cq-opcionales', title: 'Cuotas opcionales', text: 'Misma estructura: filtros y lista de cuotas opcionales con selección y pago múltiple si está disponible.', targetSelector: '[data-tutorial="cq-opcionales"]', position: 'left' },
+      { id: 'cq-transfer', title: 'Pago por transferencia', text: 'Datos bancarios del club (IBAN, concepto, contacto, Bizum) para pagar por transferencia. Notifica al club cuando hayas realizado el pago.', targetSelector: '[data-tutorial="cq-transfer"]', position: 'left' },
+      { id: 'cq-fin', title: 'Listo', text: 'Ya conoces la pantalla de cuotas. Vincula tarjeta si usas Sphaira Pay, selecciona y paga o usa transferencia según indique el club.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Documentos jugador. */
+  private getDocumentosJugadorSteps(): TutorialStep[] {
+    return [
+      { id: 'dj-bienvenida', title: 'Documentación', text: 'Documentos que tu club te solicita: descargar los que comparte el club, subir los que te piden o rellenar formularios personalizados. Cada tarjeta muestra el estado (pendiente/completado).', position: 'bottom' },
+      { id: 'dj-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="dj-volver"]', position: 'bottom' },
+      { id: 'dj-busqueda', title: 'Buscar documento', text: 'Campo de búsqueda para filtrar la lista por nombre.', targetSelector: '[data-tutorial="dj-busqueda"]', position: 'bottom' },
+      { id: 'dj-grid', title: 'Lista de documentos', text: 'Tarjetas con nombre, descripción, estado (Pendiente descargar/Descargado, Pendiente subir/Subido, Pendiente rellenar/Completado) y botón Descargar, Subir documento o Rellenar según el tipo.', targetSelector: '[data-tutorial="dj-grid"]', position: 'left' },
+      { id: 'dj-fin', title: 'Listo', text: 'Ya conoces la documentación. Descarga, sube o rellena según lo que pida el club.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Perfil de jugador (scouting-player). */
+  private getScoutingPlayerSteps(): TutorialStep[] {
+    return [
+      { id: 'sp-bienvenida', title: 'Perfil de jugador', text: 'Vista del perfil deportivo: foto, datos, radar de habilidades, estadísticas de partidos, gráficas y asistencia a entrenamientos.', position: 'bottom' },
+      { id: 'sp-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="sp-volver"]', position: 'bottom' },
+      { id: 'sp-hero', title: 'Perfil y habilidades', text: 'Avatar, nombre, píldoras (posición, pierna, altura). Panel de perfil de habilidades con radar si hay datos.', targetSelector: '[data-tutorial="sp-hero"]', position: 'left' },
+      { id: 'sp-datos', title: 'Datos deportivos', text: 'Posición, posición 2, pierna natural, altura y peso.', targetSelector: '[data-tutorial="sp-datos"]', position: 'left' },
+      { id: 'sp-stats', title: 'Estadísticas de partidos', text: 'Partidos jugados, titularidades, minutos, goles, tarjetas amarillas y rojas.', targetSelector: '[data-tutorial="sp-stats"]', position: 'left' },
+      { id: 'sp-graficas', title: 'Gráficas', text: 'Pestañas Partidos y Asistencia para ver gráficas de estadísticas o de asistencia por mes.', targetSelector: '[data-tutorial="sp-graficas"]', position: 'left' },
+      { id: 'sp-asistencia', title: 'Asistencia a entrenamientos', text: 'Tabla con fecha, asistencia y retraso de cada sesión.', targetSelector: '[data-tutorial="sp-asistencia"]', position: 'left' },
+      { id: 'sp-fin', title: 'Listo', text: 'Ya conoces el perfil de jugador. Revisa datos, estadísticas y asistencia.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Patrocinadores (vista usuario/jugador). */
+  private getPatrocinadoresUsuarioSteps(): TutorialStep[] {
+    return [
+      { id: 'patrou-bienvenida', title: 'Patrocinadores', text: 'Patrocinadores del club: carrusel de logos y tarjetas con información, enlaces y beneficios. Vista de consulta para jugadores y familias.', position: 'bottom' },
+      { id: 'patrou-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="patro-volver"]', position: 'bottom' },
+      { id: 'patrou-carrusel', title: 'Carrusel de logos', text: 'Carrusel con los logos de los patrocinadores. Pulsa en uno para ver su detalle.', targetSelector: '[data-tutorial="patro-carrusel"]', position: 'bottom' },
+      { id: 'patrou-grid', title: 'Tarjetas de patrocinadores', text: 'Cada tarjeta muestra logo, nombre, descripción, enlaces (web, email, teléfono), beneficios y botón Ver para abrir el detalle.', targetSelector: '[data-tutorial="patro-grid"]', position: 'left' },
+      { id: 'patrou-fin', title: 'Listo', text: 'Ya conoces los patrocinadores del club. Consulta sus datos y beneficios cuando lo necesites.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Ropa jugador (mis tallas). */
+  private getRopaJugadorSteps(): TutorialStep[] {
+    return [
+      { id: 'rj-bienvenida', title: 'Mis tallas de ropa', text: 'Catálogo de prendas del equipo. Selecciona tu talla para cada prenda; se guarda automáticamente. El club usa estas preferencias para pedidos.', position: 'bottom' },
+      { id: 'rj-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="rj-volver"]', position: 'bottom' },
+      { id: 'rj-grid', title: 'Catálogo de prendas', text: 'Cada tarjeta muestra la imagen, nombre, descripción, selector de talla (— Sin seleccionar — o tallas disponibles) y estado (guardando/completado). Elige la talla y se guarda al instante.', targetSelector: '[data-tutorial="rj-grid"]', position: 'left' },
+      { id: 'rj-fin', title: 'Listo', text: 'Ya conoces mis tallas de ropa. Mantén tus preferencias actualizadas para cada prenda del equipo.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Perfil de jugador para scouting (edición). */
+  private getScoutingPlayerProfileSteps(): TutorialStep[] {
+    return [
+      { id: 'spp-bienvenida', title: 'Mi perfil para clubes', text: 'Completa y edita tu perfil para que los clubes puedan encontrarte: foto, visibilidad pública, identidad, posición, situación actual, carrera deportiva, CV, sobre mí y vídeos.', position: 'bottom' },
+      { id: 'spp-hero', title: 'Foto y visibilidad', text: 'Avatar (clic para cambiar foto), nombre completo y toggle para hacer tu perfil visible o privado. Si está visible, los clubes pueden ver tu perfil en Sphaira.', targetSelector: '[data-tutorial="spp-hero"]', position: 'left' },
+      { id: 'spp-identidad', title: 'Identidad', text: 'Fecha de nacimiento, nacionalidad, residencia, altura, peso, pierna natural, email y teléfono de contacto.', targetSelector: '[data-tutorial="spp-identidad"]', position: 'left' },
+      { id: 'spp-posiciones', title: 'En el campo', text: 'Selecciona una o varias posiciones. Los clubes filtrarán por posición.', targetSelector: '[data-tutorial="spp-posiciones"]', position: 'left' },
+      { id: 'spp-situacion', title: 'Situación actual', text: 'Equipo actual, liga/competición y disponibilidad (libre, con equipo, etc.).', targetSelector: '[data-tutorial="spp-situacion"]', position: 'left' },
+      { id: 'spp-carrera', title: 'Carrera deportiva', text: 'Goles, asistencias, clubes anteriores, torneos, premios y convocatorias a selecciones.', targetSelector: '[data-tutorial="spp-carrera"]', position: 'left' },
+      { id: 'spp-cv', title: 'CV futbolístico', text: 'Sube tu CV en PDF o Word. Los clubes podrán descargarlo desde tu perfil.', targetSelector: '[data-tutorial="spp-cv"]', position: 'left' },
+      { id: 'spp-sobremi', title: 'Sobre mí', text: 'Fortalezas, áreas de mejora y descripción libre para que los clubes te conozcan.', targetSelector: '[data-tutorial="spp-sobremi"]', position: 'left' },
+      { id: 'spp-videos', title: 'Vídeos y redes', text: 'Añade enlaces a vídeos (YouTube, etc.) o sube vídeos si tienes plan. Los clubes los verán en tu perfil.', targetSelector: '[data-tutorial="spp-videos"]', position: 'left' },
+      { id: 'spp-guardar', title: 'Guardar', text: 'Pulsa Guardar perfil para aplicar todos los cambios.', targetSelector: '[data-tutorial="spp-guardar"]', position: 'top' },
+      { id: 'spp-fin', title: 'Listo', text: 'Ya conoces tu perfil para clubes. Mantén tus datos al día para aumentar tus opciones.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial ERP (dashboard financiero club). */
+  private getErpSteps(): TutorialStep[] {
+    return [
+      { id: 'erp-bienvenida', title: 'ERP - Dashboard financiero', text: 'Módulo de gestión financiera del club: ingresos, gastos, resultado, facturas, plan contable, cobros y pagos, informes y configuración. Si el ERP no está inicializado, usa el botón para configurarlo.', position: 'bottom' },
+      { id: 'erp-init', title: 'Inicialización', text: 'Si el módulo no está configurado, aquí puedes inicializarlo. Se creará el plan contable, centros de coste y el ejercicio fiscal.', targetSelector: '[data-tutorial="erp-init"]', position: 'bottom' },
+      { id: 'erp-daterange', title: 'Rango de fechas', text: 'Selector desde/hasta para filtrar los datos. El botón de engranaje lleva a la configuración de ejercicios fiscales.', targetSelector: '[data-tutorial="erp-daterange"]', position: 'bottom' },
+      { id: 'erp-kpis', title: 'Indicadores', text: 'Tarjetas de ingresos, gastos, resultado neto, facturas pendientes y facturas vencidas.', targetSelector: '[data-tutorial="erp-kpis"]', position: 'left' },
+      { id: 'erp-income', title: 'Ingresos por centro de coste', text: 'Gráfica de barras y detalle por centro de coste. Puedes expandir para ver la tabla.', targetSelector: '[data-tutorial="erp-income"]', position: 'left' },
+      { id: 'erp-quicklinks', title: 'Accesos rápidos', text: 'Enlaces a facturas emitidas, facturas recibidas, cobros y pagos, plan contable, informes, presupuestos, clientes, proveedores y configuración.', targetSelector: '[data-tutorial="erp-quicklinks"]', position: 'left' },
+      { id: 'erp-fin', title: 'Listo', text: 'Ya conoces el dashboard ERP. Usa los accesos rápidos para gestionar la contabilidad del club.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Menú fisio. */
+  private getMenuFisioSteps(): TutorialStep[] {
+    return [
+      { id: 'mf-bienvenida', title: 'Menú del fisio', text: 'Acceso rápido a Lesiones, Jugadores, Calendario, Estadísticas jugadores y equipo, Clasificación, Documentos, Notificaciones, Mi perfil y Asistente de IA.', position: 'bottom' },
+      { id: 'mf-volver', title: 'Volver', text: 'Regresa al listado de equipos.', targetSelector: '[data-tutorial="mf-volver"]', position: 'bottom' },
+      { id: 'mf-grid', title: 'Opciones', text: 'Tarjetas para Lesiones, Jugadores, Calendario, Estadísticas jugadores, Estadísticas equipo, Clasificación y resultado, Documentos, Notificaciones, Mi perfil y Asistente de IA. Pulsa en una para entrar.', targetSelector: '[data-tutorial="mf-grid"]', position: 'left' },
+      { id: 'mf-fin', title: 'Listo', text: 'Ya conoces el menú del fisio. Elige la opción que necesites.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Listado de entrenadores. */
+  private getEntrenadoresSteps(): TutorialStep[] {
+    return [
+      { id: 'ent-bienvenida', title: 'Listado de entrenadores', text: 'Lista de entrenadores del equipo. Desde aquí puedes ver la información de cada uno y editar sus datos.', position: 'bottom' },
+      { id: 'ent-volver', title: 'Volver', text: 'Regresa a la pantalla anterior.', targetSelector: '[data-tutorial="ent-volver"]', position: 'bottom' },
+      { id: 'ent-list', title: 'Tarjetas de entrenadores', text: 'Cada tarjeta muestra foto, nombre, posición, fecha de nacimiento y botones Ver info y Editar.', targetSelector: '[data-tutorial="ent-list"]', position: 'left' },
+      { id: 'ent-fin', title: 'Listo', text: 'Ya conoces el listado de entrenadores. Gestiona la información del cuerpo técnico desde aquí.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Asistencia (equipo). */
+  private getAsistenciaSteps(): TutorialStep[] {
+    return [
+      { id: 'asis-bienvenida', title: 'Asistencia y multas', text: 'Consulta la asistencia de los jugadores por fecha y las multas asociadas. Pestañas Asistencia y Multas.', position: 'bottom' },
+      { id: 'asis-volver', title: 'Volver', text: 'Regresa a la información del equipo.', targetSelector: '[data-tutorial="asis-volver"]', position: 'bottom' },
+      { id: 'asis-tabs', title: 'Pestañas', text: 'Asistencia: tabla con fechas y asistencia por jugador. Multas: importes y estado de pago por fecha y jugador.', targetSelector: '[data-tutorial="asis-tabs"]', position: 'bottom' },
+      { id: 'asis-content', title: 'Tabla', text: 'En Asistencia verás el total por jugador y el detalle por fecha. En Multas podrás marcar como pagada o no.', targetSelector: '[data-tutorial="asis-content"]', position: 'left' },
+      { id: 'asis-fin', title: 'Listo', text: 'Ya conoces la pantalla de asistencia y multas.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Plantillas de formularios debrief. */
+  private getDebriefTemplatesSteps(): TutorialStep[] {
+    return [
+      { id: 'dbtpl-bienvenida', title: 'Formularios personalizados debrief', text: 'Crea y gestiona plantillas de formularios para los análisis pre y post de partidos y entrenamientos.', position: 'bottom' },
+      { id: 'dbtpl-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="dbtpl-volver"]', position: 'bottom' },
+      { id: 'dbtpl-tabs', title: 'Tipo de formulario', text: 'Pestañas para elegir el tipo: entrenamiento o partido. Cada tipo tiene sus propias plantillas.', targetSelector: '[data-tutorial="dbtpl-tabs"]', position: 'bottom' },
+      { id: 'dbtpl-list', title: 'Plantillas', text: 'Lista de formularios creados. En cada uno: Editar y Eliminar. Botón para crear nuevo formulario.', targetSelector: '[data-tutorial="dbtpl-list"]', position: 'left' },
+      { id: 'dbtpl-fin', title: 'Listo', text: 'Ya conoces la gestión de plantillas. Crea formularios a medida para tus debriefs.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Debrief entrenamiento (sesión). */
+  private getDebriefTrainingSteps(): TutorialStep[] {
+    return [
+      { id: 'dbt-bienvenida', title: 'Debrief de entrenamiento', text: 'Completa el análisis post-entrenamiento respondiendo a las preguntas. La barra de progreso y los indicadores muestran tu avance.', position: 'bottom' },
+      { id: 'dbt-volver', title: 'Volver', text: 'Regresa sin guardar o después de completar.', targetSelector: '[data-tutorial="dbt-volver"]', position: 'bottom' },
+      { id: 'dbt-progress', title: 'Progreso', text: 'Barra y puntos por pregunta. Pulsa en un punto para ir a esa pregunta. Las respondidas se marcan.', targetSelector: '[data-tutorial="dbt-progress"]', position: 'bottom' },
+      { id: 'dbt-questions', title: 'Preguntas', text: 'Responde cada pregunta o omítela. El botón de engranaje permite personalizar las preguntas del formulario.', targetSelector: '[data-tutorial="dbt-questions"]', position: 'left' },
+      { id: 'dbt-fin', title: 'Listo', text: 'Completa todas las preguntas y guarda para generar el informe de debrief.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Debrief partido (sesión). */
+  private getDebriefMatchSteps(): TutorialStep[] {
+    return [
+      { id: 'dbm-bienvenida', title: 'Debrief de partido', text: 'Completa el análisis post-partido respondiendo a las preguntas. Similar al debrief de entrenamiento, adaptado al partido.', position: 'bottom' },
+      { id: 'dbm-volver', title: 'Volver', text: 'Regresa sin guardar o después de completar.', targetSelector: '[data-tutorial="dbm-volver"]', position: 'bottom' },
+      { id: 'dbm-progress', title: 'Progreso', text: 'Barra y puntos por pregunta. Navega entre preguntas y completa el formulario.', targetSelector: '[data-tutorial="dbm-progress"]', position: 'bottom' },
+      { id: 'dbm-questions', title: 'Preguntas', text: 'Responde cada pregunta del análisis del partido. Puedes personalizar las preguntas desde el engranaje.', targetSelector: '[data-tutorial="dbm-questions"]', position: 'left' },
+      { id: 'dbm-fin', title: 'Listo', text: 'Completa el debrief y guarda para generar el informe.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Contabilidad (club). */
+  private getContabilidadSteps(): TutorialStep[] {
+    return [
+      { id: 'cont-bienvenida', title: 'Contabilidad', text: 'Resumen de cuotas del club: total cuota, cuota ropa, pagado y pendiente. Pestañas: Inicio, Abonados, Stripe y Configuración. Tabla con búsqueda, paginación y exportar a Excel.', position: 'bottom' },
+      { id: 'cont-tabs', title: 'Pestañas', text: 'Inicio (resumen y tabla), Abonados, Stripe (pasarela de pago) y Configuración.', targetSelector: '[data-tutorial="cont-tabs"]', position: 'bottom' },
+      { id: 'cont-totales', title: 'Totales', text: 'Cuota total del club, cuota ropa (si aplica), total pagado y restante pendiente.', targetSelector: '[data-tutorial="cont-totales"]', position: 'bottom' },
+      { id: 'cont-toolbar', title: 'Exportar y controles', text: 'Botón Descargar Excel. Selector de registros por página y búsqueda para filtrar la tabla.', targetSelector: '[data-tutorial="cont-toolbar"]', position: 'bottom' },
+      { id: 'cont-tabla', title: 'Tabla', text: 'Listado de abonados/jugadores con nombre, cuota, pagado, estado, etc. Ordenable por columnas.', targetSelector: '[data-tutorial="cont-tabla"]', position: 'left' },
+      { id: 'cont-fin', title: 'Listo', text: 'Ya conoces la contabilidad del club. Exporta y filtra cuando lo necesites.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Historial de pagos club. */
+  private getHistorialPagosClubSteps(): TutorialStep[] {
+    return [
+      { id: 'hpc-bienvenida', title: 'Historial de pagos', text: 'Listado de cobros y pagos del club. Filtra por nombre y exporta a Excel.', position: 'bottom' },
+      { id: 'hpc-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="hpc-volver"]', position: 'bottom' },
+      { id: 'hpc-toolbar', title: 'Buscar y exportar', text: 'Campo de búsqueda para filtrar y botón Exportar a Excel.', targetSelector: '[data-tutorial="hpc-toolbar"]', position: 'bottom' },
+      { id: 'hpc-tabla', title: 'Tabla de pagos', text: 'Columnas: nombre, descripción, título, importe, método, tipo y fecha. Clic en cabecera para ordenar.', targetSelector: '[data-tutorial="hpc-tabla"]', position: 'left' },
+      { id: 'hpc-fin', title: 'Listo', text: 'Ya conoces el historial de pagos. Filtra y exporta cuando lo necesites.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Abonados (club). */
+  private getAbonadosSteps(): TutorialStep[] {
+    return [
+      { id: 'abo-bienvenida', title: 'Abonados', text: 'Gestión de abonados del club: crear, listado con búsqueda y paginación, exportar a Excel.', position: 'bottom' },
+      { id: 'abo-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="abo-volver"]', position: 'bottom' },
+      { id: 'abo-actions', title: 'Crear y exportar', text: 'Botón Crear abonado y Descargar Excel.', targetSelector: '[data-tutorial="abo-actions"]', position: 'bottom' },
+      { id: 'abo-controls', title: 'Controles de tabla', text: 'Registros por página y búsqueda para filtrar.', targetSelector: '[data-tutorial="abo-controls"]', position: 'bottom' },
+      { id: 'abo-tabla', title: 'Tabla de abonados', text: 'Imagen, nombre, apellidos, email, teléfono, estado, cuota, pagado, etc. Ordenable por columnas.', targetSelector: '[data-tutorial="abo-tabla"]', position: 'left' },
+      { id: 'abo-fin', title: 'Listo', text: 'Ya conoces la gestión de abonados.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Suscripción club (planes y estado). */
+  private getSuscripcionClubSteps(): TutorialStep[] {
+    return [
+      { id: 'suc-bienvenida', title: 'Suscripción del club', text: 'Consulta tu plan activo o elige un plan (Familia, Club, Gratuito). Los wizards te guían para contratar o activar el plan gratuito.', position: 'bottom' },
+      { id: 'suc-volver', title: 'Volver', text: 'Regresa al dashboard.', targetSelector: '[data-tutorial="suc-volver"]', position: 'bottom' },
+      { id: 'suc-activa', title: 'Plan activo', text: 'Si tienes plan de pago: tipo de plan, estado, fecha inicio, período, jugadores (plan club). Qué incluye tu plan.', targetSelector: '[data-tutorial="suc-activa"]', position: 'left' },
+      { id: 'suc-planes', title: 'Selección de planes', text: 'Tarjetas de planes Familia, Club y Gratuito con precio y botón para contratar o activar.', targetSelector: '[data-tutorial="suc-planes"]', position: 'left' },
+      { id: 'suc-fin', title: 'Listo', text: 'Ya conoces la suscripción del club. Elige o cambia de plan cuando lo necesites.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Wizard suscripción club (familia/club/gratuito). */
+  private getSuscripcionClubWizardSteps(): TutorialStep[] {
+    return [
+      { id: 'scw-bienvenida', title: 'Asistente de suscripción', text: 'El asistente te guía paso a paso para configurar el plan elegido. Completa cada paso y avanza hasta finalizar.', position: 'bottom' },
+      { id: 'scw-volver', title: 'Volver', text: 'Regresa sin completar el asistente.', targetSelector: '[data-tutorial="scw-volver"]', position: 'bottom' },
+      { id: 'scw-stepper', title: 'Pasos', text: 'Indicador de pasos del asistente. Pulsa en un paso completado para volver a él.', targetSelector: '[data-tutorial="scw-stepper"]', position: 'bottom' },
+      { id: 'scw-content', title: 'Contenido del paso', text: 'Formulario o opciones del paso actual. Rellena y pulsa Siguiente o Finalizar.', targetSelector: '[data-tutorial="scw-content"]', position: 'left' },
+      { id: 'scw-fin', title: 'Listo', text: 'Completa todos los pasos para activar tu plan.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Sugerencias club. */
+  private getSugerenciasClubSteps(): TutorialStep[] {
+    return [
+      { id: 'sug-bienvenida', title: 'Sugerencias', text: 'Envía ideas al equipo de Sphaira y sigue el estado de tus sugerencias. Las mejores se convierten en funcionalidades.', position: 'bottom' },
+      { id: 'sug-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="sug-volver"]', position: 'bottom' },
+      { id: 'sug-hero', title: 'Nueva sugerencia', text: 'Banner con descripción y botón Nueva sugerencia para abrir el formulario.', targetSelector: '[data-tutorial="sug-hero"]', position: 'bottom' },
+      { id: 'sug-form', title: 'Formulario', text: 'Categoría, título y descripción. Envía cuando esté completo.', targetSelector: '[data-tutorial="sug-form"]', position: 'left' },
+      { id: 'sug-list', title: 'Mis sugerencias', text: 'Listado de sugerencias enviadas con estado (pendiente, en revisión, etc.).', targetSelector: '[data-tutorial="sug-list"]', position: 'left' },
+      { id: 'sug-fin', title: 'Listo', text: 'Ya conoces las sugerencias. ¡Tu opinión construye Sphaira!', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Listado de clubes. */
+  private getListadoClubesSteps(): TutorialStep[] {
+    return [
+      { id: 'lc-bienvenida', title: 'Listado de clubes', text: 'Vista de clubes (federación/asociación): filtro por nombre, tabla con equipos, entrenadores, jugadores, padres y acción Ver equipos.', position: 'bottom' },
+      { id: 'lc-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="lc-volver"]', position: 'bottom' },
+      { id: 'lc-filtro', title: 'Filtrar', text: 'Campo para filtrar por nombre del club.', targetSelector: '[data-tutorial="lc-filtro"]', position: 'bottom' },
+      { id: 'lc-tabla', title: 'Tabla', text: 'Columnas: nº, nombre, equipos, entrenadores, jugadores, padres, acciones (Ver equipos). Clic en cabecera para ordenar.', targetSelector: '[data-tutorial="lc-tabla"]', position: 'left' },
+      { id: 'lc-fin', title: 'Listo', text: 'Ya conoces el listado de clubes.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Suscripción coach. */
+  private getSuscripcionCoachSteps(): TutorialStep[] {
+    return [
+      { id: 'sco-bienvenida', title: 'Suscripción Sphaira Coach', text: 'Elige el plan que se adapta a ti: gestión de equipo, asistente IA, estadísticas, lesiones, calendario e informes PDF.', position: 'bottom' },
+      { id: 'sco-hero', title: 'Planes y características', text: 'Resumen de lo que incluye Sphaira Coach y tarjetas de planes con precio y botón Empezar.', targetSelector: '[data-tutorial="sco-hero"]', position: 'left' },
+      { id: 'sco-planes', title: 'Seleccionar plan', text: 'Cada tarjeta muestra el plan, precio y botón para contratar. El más popular está destacado.', targetSelector: '[data-tutorial="sco-planes"]', position: 'left' },
+      { id: 'sco-fin', title: 'Listo', text: 'Elige tu plan y serás redirigido al pago.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Coach suscripción success. */
+  private getCoachSuscripcionSuccessSteps(): TutorialStep[] {
+    return [
+      { id: 'css-bienvenida', title: 'Resultado del pago', text: 'Pantalla de verificación y resultado: verificando, éxito (bienvenida y acceso) o error (reintentar o ir al panel).', position: 'bottom' },
+      { id: 'css-success', title: 'Éxito', text: 'Si el pago fue correcto: plan activo, beneficios y botón Ir al panel principal.', targetSelector: '[data-tutorial="css-success"]', position: 'left' },
+      { id: 'css-actions', title: 'Acciones', text: 'Ir al panel principal o, en caso de error, Intentar de nuevo e Ir al panel.', targetSelector: '[data-tutorial="css-actions"]', position: 'bottom' },
+      { id: 'css-fin', title: 'Listo', text: 'Ya conoces esta pantalla. Usa Ir al panel para continuar.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Entrenamiento individual. */
+  private getIndividualTrainingSteps(): TutorialStep[] {
+    return [
+      { id: 'it-bienvenida', title: 'Entrenamiento individual', text: 'Vista jugador: planes asignados por el entrenador, progreso, pestañas Hoy, Planificación e Historial. Vista entrenador: crear y gestionar planes.', position: 'bottom' },
+      { id: 'it-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="it-volver"]', position: 'bottom' },
+      { id: 'it-hero', title: 'Resumen', text: 'Título y descripción según el modo (jugador o entrenador).', targetSelector: '[data-tutorial="it-hero"]', position: 'bottom' },
+      { id: 'it-planes', title: 'Planes', text: 'Lista de planes (jugador: selecciona uno; entrenador: crear y gestionar).', targetSelector: '[data-tutorial="it-planes"]', position: 'left' },
+      { id: 'it-tabs', title: 'Hoy / Planificación / Historial', text: 'Pestañas para ver la sesión de hoy, la planificación semanal o el historial de sesiones.', targetSelector: '[data-tutorial="it-tabs"]', position: 'bottom' },
+      { id: 'it-content', title: 'Contenido', text: 'Sesión de hoy, calendario de la semana o listado de sesiones realizadas según la pestaña.', targetSelector: '[data-tutorial="it-content"]', position: 'left' },
+      { id: 'it-fin', title: 'Listo', text: 'Ya conoces el entrenamiento individual.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Informe debrief (vista completada). */
+  private getDebriefReportSteps(): TutorialStep[] {
+    return [
+      { id: 'dbr-bienvenida', title: 'Informe de debrief', text: 'Informe generado del análisis de entrenamiento o partido. Resumen, secciones y acciones: regenerar, descargar PDF y compartir.', position: 'bottom' },
+      { id: 'dbr-volver', title: 'Volver', text: 'Regresa al historial o al menú.', targetSelector: '[data-tutorial="dbr-volver"]', position: 'bottom' },
+      { id: 'dbr-actions', title: 'Acciones', text: 'Regenerar informe, Descargar PDF y Compartir.', targetSelector: '[data-tutorial="dbr-actions"]', position: 'bottom' },
+      { id: 'dbr-content', title: 'Contenido del informe', text: 'Resumen y secciones con el análisis. Se usa para generar el PDF.', targetSelector: '[data-tutorial="dbr-content"]', position: 'left' },
+      { id: 'dbr-fin', title: 'Listo', text: 'Ya conoces la vista del informe. Descarga o comparte cuando lo necesites.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Suscripción (jugador/familia). */
+  private getSuscripcionSteps(): TutorialStep[] {
+    return [
+      { id: 'sus-bienvenida', title: 'Mi suscripción', text: 'Elige el perfil del jugador (si hay varios) y consulta el estado de la suscripción: activa/inactiva, tipo, fechas y opciones de renovación o contratación.', position: 'bottom' },
+      { id: 'sus-perfiles', title: 'Perfiles', text: 'Tarjetas de jugadores asociados. Pulsa en uno para ver su suscripción.', targetSelector: '[data-tutorial="sus-perfiles"]', position: 'left' },
+      { id: 'sus-estado', title: 'Estado', text: 'Tarjeta con plan activo o inactivo, tipo (mensual, trimestral, anual), fecha inicio y renovación o fin.', targetSelector: '[data-tutorial="sus-estado"]', position: 'left' },
+      { id: 'sus-opciones', title: 'Opciones', text: 'Contratar, renovar o gestionar según el estado. Enlaces a planes si aplica.', targetSelector: '[data-tutorial="sus-opciones"]', position: 'left' },
+      { id: 'sus-fin', title: 'Listo', text: 'Ya conoces tu suscripción.', position: 'bottom' }
+    ];
+  }
+
+  /** Pasos del tutorial Inicio deportes. */
+  private getInicioDeportesSteps(): TutorialStep[] {
+    return [
+      { id: 'id-bienvenida', title: 'Deportes de Sphaira', text: 'Selecciona el deporte con el que quieres trabajar. Fútbol está disponible; otros deportes pueden estar en desarrollo.', position: 'bottom' },
+      { id: 'id-grid', title: 'Deportes', text: 'Tarjetas de deportes (Fútbol, Baloncesto, Balonmano, Voleibol, etc.). Pulsa en uno para acceder.', targetSelector: '[data-tutorial="id-grid"]', position: 'left' },
+      { id: 'id-fin', title: 'Listo', text: 'Elige tu deporte para continuar.', position: 'bottom' }
     ];
   }
 

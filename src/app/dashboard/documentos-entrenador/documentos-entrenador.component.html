@@ -1,7 +1,7 @@
 <app-publicidad></app-publicidad>
 
 <header class="page-header">
-  <div class="back-container">
+  <div class="back-container" data-tutorial="de-volver">
     <button type="button" class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -24,7 +24,7 @@
   </div>
 
   <!-- Empty state -->
-  <div class="docs-empty" *ngIf="!loading && listaDocumentos.length === 0">
+  <div class="docs-empty" *ngIf="!loading && listaDocumentos.length === 0" data-tutorial="de-grid">
     <div class="docs-empty-illustration">
       <i class="bi bi-folder2-open"></i>
     </div>
@@ -33,7 +33,7 @@
   </div>
 
   <!-- Lista de documentos -->
-  <div class="docs-grid" *ngIf="!loading && listaDocumentos.length > 0">
+  <div class="docs-grid" *ngIf="!loading && listaDocumentos.length > 0" data-tutorial="de-grid">
     <article class="doc-card" *ngFor="let doc of listaDocumentos">
       <div class="doc-card-header">
         <span class="doc-icon">

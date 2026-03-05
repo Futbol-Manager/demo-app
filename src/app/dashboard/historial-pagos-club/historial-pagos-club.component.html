@@ -1,6 +1,6 @@
 <!-- ================= HEADER PREMIUM ================= -->
 <div class="page-header">
-  <div class="back-container">
+  <div class="back-container" data-tutorial="hpc-volver">
     <button class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -14,7 +14,7 @@
 </div>
 
 <!-- ================= TOOLBAR PREMIUM ================= -->
-<div class="hp-toolbar">
+<div class="hp-toolbar" data-tutorial="hpc-toolbar">
   <div class="hp-toolbar-search">
     <i class="bi bi-search"></i>
     <input type="text" class="hp-search-input" [placeholder]="'PAYMENTS.FILTER_CLUB' | translate"
@@ -28,7 +28,7 @@
 
 <!-- ================= CONTENIDO ================= -->
 <div class="hp-content">
-  <div class="table-scroll" [class.no-scroll]="isLoading">
+  <div class="table-scroll" [class.no-scroll]="isLoading" data-tutorial="hpc-tabla">
 
     <table class="modern-table" id="dataTable">
 

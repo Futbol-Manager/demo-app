@@ -2,7 +2,7 @@
 
 <!-- ===== PAGE HEADER PREMIUM ===== -->
 <div class="page-header">
-  <div class="back-container">
+  <div class="back-container" data-tutorial="ej-volver">
     <button type="button" class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -33,7 +33,7 @@
     </div>
   </div>
 
-  <div class="view-toggle-header">
+  <div class="view-toggle-header" data-tutorial="ej-view-toggle">
     <button type="button" class="toggle-btn-header" [class.active]="!graficasPlayers" (click)="verTablaPlayers()">
       <i class="bi bi-table"></i>
       <span>{{ 'ESTADIS_JUGADORES.VER_TABLA' | translate }}</span>
@@ -46,7 +46,7 @@
 </div>
 
 <!-- ===== FILTER TOOLBAR ===== -->
-<div class="filter-toolbar">
+<div class="filter-toolbar" data-tutorial="ej-filtros">
   <div class="match-type-tabs">
     <button type="button" class="match-tab"
             [class.active]="tipoPartidoSelected === 'Liga'"
@@ -74,7 +74,7 @@
 
     <!-- Vista Tabla: se muestra cuando hay datos cargados y no estamos en gráficas -->
     <section *ngIf="datosCargados && !graficasPlayers" class="stats-section">
-      <div class="card-sphaira table-card">
+      <div class="card-sphaira table-card" data-tutorial="ej-tabla">
         <div class="card-sphaira-header card-sphaira-header--flex">
           <h2 class="card-sphaira-title">{{ 'ESTADIS_JUGADORES.TABLA_JUGADORES' | translate }}</h2>
           <div class="filtros-sphaira filtros-sphaira--inline">
@@ -169,7 +169,7 @@
 
     <!-- Vista Gráficas -->
     <section *ngIf="graficasPlayers" class="stats-section">
-      <div class="card-sphaira chart-card">
+      <div class="card-sphaira chart-card" data-tutorial="ej-grafica-jugadores">
         <div class="card-sphaira-header">
           <h2 class="card-sphaira-title">{{ 'ESTADIS_JUGADORES.GRAFICA_JUGADORES' | translate }}</h2>
           <div class="filter-group chart-type-select">
@@ -191,7 +191,7 @@
         </div>
       </div>
 
-      <div class="card-sphaira goals-card">
+      <div class="card-sphaira goals-card" data-tutorial="ej-goles">
         <div class="card-sphaira-header card-sphaira-header--flex">
           <h2 class="card-sphaira-title">{{ 'ESTADIS_JUGADORES.GOLES_JUGADORES' | translate }}</h2>
           <div class="filtros-sphaira filtros-sphaira--inline">

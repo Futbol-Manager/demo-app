@@ -3,7 +3,7 @@
 <div class="container">
   <h3 *ngIf="this.usuarioActual!.profileType.profileId < 5 && this.usuarioActual!.profileType.profileId > 5">Perfiles
   </h3>
-  <div class="row p-3">
+  <div class="row p-3" data-tutorial="sus-perfiles">
     <!-- Tarjeta de jugador -->
     <div class="col-12 col-md-6 mb-3" *ngFor="let hijo of listHijos; let i = index" style="cursor: pointer;"
       (click)="selectedHijo(hijo.playerId)">
@@ -44,7 +44,7 @@
     ================================ -->
       <div class="col-12 col-md-6">
 
-        <div class="subscription-card status-card" *ngIf="yesSus">
+        <div class="subscription-card status-card" *ngIf="yesSus" data-tutorial="sus-estado">
 
           <div class="subscription-status" [ngClass]="susInfo.renueva === 1 ? 'active' : 'inactive'">
             {{ susInfo.renueva === 1
@@ -110,7 +110,7 @@
     ================================ -->
       <div class="col-12 col-md-6">
 
-        <div class="subscription-card change-card">
+        <div class="subscription-card change-card" data-tutorial="sus-opciones">
 
           <h4 class="change-title">
             {{ 'SUBSCRIPTION.CHANGE_TITLE' | translate }}

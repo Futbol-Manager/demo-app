@@ -4,7 +4,7 @@
   </div>
 
   <!-- Not initialized -->
-  <div *ngIf="!loading && !erpInitialized" class="erp-init-card">
+  <div *ngIf="!loading && !erpInitialized" class="erp-init-card" data-tutorial="erp-init">
     <i class="bi bi-building-gear erp-init-icon"></i>
     <h3>Módulo ERP no configurado</h3>
     <p>Inicializa el módulo ERP para tu club. Se creará automáticamente un plan contable adaptado al fútbol, centros de coste por departamento y el ejercicio fiscal actual.</p>
@@ -25,7 +25,7 @@
 
   <!-- Dashboard KPIs -->
   <div *ngIf="!loading && erpInitialized && kpis" class="erp-dash-content">
-    <div class="erp-date-range">
+    <div class="erp-date-range" data-tutorial="erp-daterange">
       <div class="fiscal-year-label" *ngIf="activeFiscalYear">
         <i class="bi bi-calendar-check"></i>
         <span>{{ activeFiscalYear.name }}</span>
@@ -42,7 +42,7 @@
       </a>
     </div>
 
-    <div class="kpi-grid">
+    <div class="kpi-grid" data-tutorial="erp-kpis">
       <div class="kpi-card kpi-income">
         <div class="kpi-icon"><i class="bi bi-arrow-down-circle"></i></div>
         <div class="kpi-body">
@@ -81,7 +81,7 @@
     </div>
 
     <!-- Ingresos por centro de coste -->
-    <div class="erp-section-card" *ngIf="incomeByCc || loadingIncomeByCc">
+    <div class="erp-section-card" *ngIf="incomeByCc || loadingIncomeByCc" data-tutorial="erp-income">
       <div class="section-header">
         <div class="section-title">
           <i class="bi bi-bar-chart-steps"></i>
@@ -147,7 +147,7 @@
       </div>
     </div>
 
-    <div class="erp-quick-links">
+    <div class="erp-quick-links" data-tutorial="erp-quicklinks">
       <h4>Accesos rápidos</h4>
       <div class="quick-grid">
         <a routerLink="/dashboard/erp/sales-invoices" class="quick-link">

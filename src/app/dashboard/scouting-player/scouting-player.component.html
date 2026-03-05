@@ -2,7 +2,7 @@
 
 <!-- ===== PAGE HEADER ===== -->
 <div class="page-header">
-  <div class="back-container">
+  <div class="back-container" data-tutorial="sp-volver">
     <button type="button" class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -31,7 +31,7 @@
 <div class="mis-estadisticas-page">
   <div class="mis-estadisticas-wrap" *ngIf="datosCargados">
     <!-- Hero: foto + nombre + radar -->
-    <section class="premium-hero">
+    <section class="premium-hero" data-tutorial="sp-hero">
       <div class="premium-hero-inner">
 
         <!-- Perfil del jugador -->
@@ -83,7 +83,7 @@
 
     <!-- Fila 1: Datos deportivos | Estadísticas de partidos -->
     <div class="premium-row">
-      <section class="premium-section premium-col">
+      <section class="premium-section premium-col" data-tutorial="sp-datos">
         <h2 class="premium-section-title">
           <i class="bi bi-graph-up-arrow me-2"></i>Datos deportivos
         </h2>
@@ -110,7 +110,7 @@
           </div>
         </div>
       </section>
-      <section class="premium-section premium-col">
+      <section class="premium-section premium-col" data-tutorial="sp-stats">
         <h2 class="premium-section-title">
           <i class="bi bi-trophy me-2"></i>Estadísticas de partidos
         </h2>
@@ -145,7 +145,7 @@
 
     <!-- Fila 2: Gráficas | Asistencia a entrenamientos -->
     <div class="premium-row">
-      <section class="premium-section premium-section-graficas premium-col">
+      <section class="premium-section premium-section-graficas premium-col" data-tutorial="sp-graficas">
         <h2 class="premium-section-title">
           <i class="bi bi-bar-chart-line me-2"></i>Gráficas
         </h2>
@@ -167,7 +167,7 @@
           </p>
         </div>
       </section>
-      <section class="premium-section premium-section-last premium-col">
+      <section class="premium-section premium-section-last premium-col" data-tutorial="sp-asistencia">
         <h2 class="premium-section-title">
           <i class="bi bi-calendar-check me-2"></i>Asistencia a entrenamientos
         </h2>

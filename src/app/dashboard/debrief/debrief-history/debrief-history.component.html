@@ -3,7 +3,7 @@
 <div class="history-page">
   <!-- Encabezado premium a ancho completo -->
   <header class="page-header">
-    <div class="back-container">
+    <div class="back-container" data-tutorial="dh-volver">
       <button type="button" class="btn-back-clean" (click)="goBack()">
         <i class="bi bi-arrow-left"></i>
         <span>{{ 'DEBRIEF.BACK' | translate }}</span>
@@ -21,7 +21,7 @@
 
   <main class="history-main">
     <!-- Filters -->
-    <div class="filter-bar">
+    <div class="filter-bar" data-tutorial="dh-filters">
       <button class="filter-btn" [ngClass]="{ 'active': activeFilter === 'all' }" (click)="setFilter('all')">
         {{ 'DEBRIEF.HISTORY.ALL' | translate }} ({{ historyItems.length }})
       </button>
@@ -50,7 +50,7 @@
   </div>
 
   <!-- History List -->
-  <div class="history-list" *ngIf="!isLoading && filteredItems.length > 0">
+  <div class="history-list" *ngIf="!isLoading && filteredItems.length > 0" data-tutorial="dh-list">
     <div class="history-item" *ngFor="let item of filteredItems" (click)="openReport(item)">
       <div class="item-type-icon" [ngClass]="item.type">
         <i class="bi" [ngClass]="getTypeIcon(item.type)"></i>

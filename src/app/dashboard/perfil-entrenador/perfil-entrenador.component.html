@@ -2,7 +2,7 @@
 
 <!-- Encabezado premium (mismo estilo y altura que info-jugadores) -->
 <header class="page-header page-header--premium">
-  <div class="back-container">
+  <div class="back-container" data-tutorial="pe-volver">
     <button type="button" class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -22,7 +22,7 @@
 <div class="perfil-entrenador-page">
 
   <!-- ========== TARJETA DE SUSCRIPCIÓN (solo coach independiente) ========== -->
-  <div class="subscription-card" *ngIf="profileId === 2 && !coachBelongsToClub && subscriptionStatus !== null">
+  <div class="subscription-card" *ngIf="profileId === 2 && !coachBelongsToClub && subscriptionStatus !== null" data-tutorial="pe-suscripcion">
     <div class="sub-left">
       <i class="bi bi-credit-card-2-front sub-icon"></i>
       <div class="sub-info">
@@ -77,7 +77,7 @@
     </div>
 
     <!-- ========== DATOS PERSONALES (lectura) ========== -->
-    <div *ngIf="!loading && !editMode" class="section-card">
+    <div *ngIf="!loading && !editMode" class="section-card" data-tutorial="pe-datos">
       <div class="section-header green">
         <i class="bi bi-person-circle"></i>
         <span>{{ profileTitle || ('COACH_PROFILE.TITLE' | translate) }}</span>
@@ -153,7 +153,7 @@
     </div>
 
     <!-- ========== DATOS PERSONALES (edición) ========== -->
-    <div *ngIf="!loading && editMode" class="section-card">
+    <div *ngIf="!loading && editMode" class="section-card" data-tutorial="pe-edicion">
       <div class="section-header navy">
         <i class="bi bi-pencil-square"></i>
         <span>{{ 'COACH_PROFILE.EDITING' | translate }}</span>
@@ -233,7 +233,7 @@
 
     <!-- ========== CAMPOS PERSONALIZADOS POR CLUB ========== -->
     <ng-container *ngFor="let club of coachClubs">
-      <div class="section-card club-fields-card" [hidden]="clubFieldCounts[club.clubId] === 0">
+      <div class="section-card club-fields-card" [hidden]="clubFieldCounts[club.clubId] === 0" data-tutorial="pe-campos-club">
         <div class="section-header navy">
           <i class="bi bi-sliders"></i>
           <span>{{ 'COACH_PROFILE.CUSTOM_FIELDS_TITLE' | translate }} — {{ club.clubName }}</span>
@@ -253,7 +253,7 @@
     </ng-container>
 
     <!-- Documento de identidad Preview -->
-    <div *ngIf="!loading" class="section-card">
+    <div *ngIf="!loading" class="section-card" data-tutorial="pe-doc-identidad">
       <div class="section-header navy">
         <i class="bi bi-card-image"></i>
         <span>{{ 'COACH_PROFILE.ID_DOC_IMAGES' | translate }}</span>
@@ -296,7 +296,7 @@
     </div>
 
     <!-- ========== CERTIFICADOS ========== -->
-    <div *ngIf="!loading" class="section-card">
+    <div *ngIf="!loading" class="section-card" data-tutorial="pe-certificados">
       <div class="section-header green">
         <i class="bi bi-file-earmark-check"></i>
         <span>{{ 'COACH_PROFILE.CERTIFICATES_TITLE' | translate }}</span>
@@ -398,7 +398,7 @@
 
     <!-- ========== DOCUMENTOS REQUERIDOS POR EL CLUB ========== -->
     <ng-container *ngFor="let clubDoc of clubDocuments">
-      <div class="section-card" *ngIf="clubDoc.docs.length > 0">
+      <div class="section-card" *ngIf="clubDoc.docs.length > 0" data-tutorial="pe-docs-club">
         <div class="section-header navy">
           <i class="bi bi-building"></i>
           <span>{{ 'COACH_PROFILE.CLUB_DOCS_TITLE' | translate }} — {{ clubDoc.clubName }}</span>

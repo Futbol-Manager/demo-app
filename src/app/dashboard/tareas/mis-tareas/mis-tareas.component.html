@@ -2,7 +2,7 @@
 
 <!-- Encabezado premium (mismo estilo y altura que info-jugadores) -->
 <header class="page-header">
-  <div class="back-container">
+  <div class="back-container" data-tutorial="tm-volver">
     <button type="button" class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -17,7 +17,7 @@
     <p class="header-subtitle">{{ 'TAREAS_MIS.SUBTITLE' | translate }}</p>
   </div>
 
-  <button type="button" class="btn-header-cta" (click)="openCreate()">
+  <button type="button" class="btn-header-cta" (click)="openCreate()" data-tutorial="tm-crear">
     <i class="bi bi-plus-lg"></i>
     <span>{{ 'TAREAS_MIS.CREATE' | translate }}</span>
   </button>
@@ -158,7 +158,7 @@
   <!-- ════════════════════════════════════════════
        GRID DE TARJETAS
   ════════════════════════════════════════════ -->
-  <div class="task-grid" *ngIf="misTareas.length > 0 && !showForm">
+  <div class="task-grid" *ngIf="misTareas.length > 0 && !showForm" data-tutorial="tm-grid">
     <div
       class="task-card"
       *ngFor="let tarea of pagedMisTareas"
@@ -201,7 +201,7 @@
   </div>
 
   <!-- PAGINACIÓN -->
-  <div class="pagination-bar" *ngIf="totalPages > 1 && !showForm">
+  <div class="pagination-bar" *ngIf="totalPages > 1 && !showForm" data-tutorial="tm-paginacion">
     <button class="btn-page" [disabled]="currentPage === 0" (click)="prevPage()">
       <i class="bi bi-chevron-left"></i>
     </button>

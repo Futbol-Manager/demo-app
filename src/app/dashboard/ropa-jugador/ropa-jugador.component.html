@@ -1,6 +1,6 @@
 <!-- HEADER -->
 <div class="page-header">
-  <div class="back-container">
+  <div class="back-container" data-tutorial="rj-volver">
     <button class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>Volver</span>
@@ -29,13 +29,13 @@
   </div>
 
   <!-- SIN PRENDAS -->
-  <div *ngIf="!cargando && !error && prendas.length === 0" class="empty-state">
+  <div *ngIf="!cargando && !error && prendas.length === 0" class="empty-state" data-tutorial="rj-grid">
     <i class="bi bi-bag-x"></i>
     <p>El club aún no ha configurado el catálogo de ropa para este equipo.</p>
   </div>
 
   <!-- GRID DE PRENDAS -->
-  <div *ngIf="!cargando && !error && prendas.length > 0" class="prendas-grid">
+  <div *ngIf="!cargando && !error && prendas.length > 0" class="prendas-grid" data-tutorial="rj-grid">
     <div class="prenda-card" *ngFor="let prenda of prendas">
 
       <!-- Imagen -->

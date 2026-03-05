@@ -2,7 +2,7 @@
 
 <!-- ===== PAGE HEADER ===== -->
 <div class="page-header">
-  <div class="back-container">
+  <div class="back-container" data-tutorial="dj-volver">
     <button class="btn-back-clean" type="button" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -17,7 +17,7 @@
   </div>
 
   <div class="page-header-right">
-    <div class="header-search-box">
+    <div class="header-search-box" data-tutorial="dj-busqueda">
       <i class="bi bi-search"></i>
       <input type="text" placeholder="Buscar documento..." [(ngModel)]="searchDoc" />
     </div>
@@ -28,7 +28,7 @@
   <div class="docs-container">
 
     <!-- LISTA DE DOCUMENTOS (grid para ocupar más espacio) -->
-    <section class="docs-list">
+    <section class="docs-list" data-tutorial="dj-grid">
       <div *ngFor="let doc of documentosFiltrados" class="doc-card">
         <div class="doc-card-icon" [ngClass]="{
           'doc-card-icon--download': doc.requiere === 0 || doc.fileClub,
@@ -85,7 +85,7 @@
       </div>
 
       <!-- Empty state -->
-      <div class="docs-empty" *ngIf="listaDocumentos.length === 0">
+      <div class="docs-empty" *ngIf="listaDocumentos.length === 0" data-tutorial="dj-grid">
         <div class="docs-empty-icon">
           <i class="bi bi-folder2-open"></i>
         </div>

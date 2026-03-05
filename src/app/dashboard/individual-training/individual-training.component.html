@@ -3,7 +3,7 @@
   <!-- ═══════════ VISTA JUGADOR ═══════════ -->
   <ng-container *ngIf="isPlayerView">
 
-    <div class="it-hero">
+    <div class="it-hero" data-tutorial="it-hero">
       <div class="it-hero__info">
         <div class="it-hero__icon"><i class="bi bi-person-walking"></i></div>
         <div>
@@ -28,7 +28,7 @@
       </div>
 
       <!-- Lista de planes (si hay varios y no hay ninguno seleccionado) -->
-      <div *ngIf="playerPlans.length && !selectedPlayerPlan" class="it-plans-grid">
+      <div *ngIf="playerPlans.length && !selectedPlayerPlan" class="it-plans-grid" data-tutorial="it-planes">
         <div *ngFor="let plan of playerPlans" class="it-plan-card" (click)="selectPlayerPlan(plan)">
           <div class="it-plan-card__top">
             <span class="it-status-badge" [ngClass]="statusBadgeClass(plan.status)">{{ statusLabel(plan.status) }}</span>
@@ -48,7 +48,7 @@
 
         <!-- Encabezado -->
         <div class="it-plan-header">
-          <button class="it-back-btn" (click)="clearPlayerPlan()"><i class="bi bi-arrow-left"></i></button>
+          <button class="it-back-btn" (click)="clearPlayerPlan()" data-tutorial="it-volver"><i class="bi bi-arrow-left"></i></button>
           <div class="it-plan-header__title">
             <h2>{{ selectedPlayerPlan.name }}</h2>
             <span class="it-status-badge" [ngClass]="statusBadgeClass(selectedPlayerPlan.status)">{{ statusLabel(selectedPlayerPlan.status) }}</span>
@@ -79,7 +79,7 @@
         </div>
 
         <!-- Tabs -->
-        <div class="it-tabs">
+        <div class="it-tabs" data-tutorial="it-tabs">
           <button class="it-tab" [class.it-tab--active]="playerActiveTab === 'today'" (click)="playerActiveTab = 'today'">
             <i class="bi bi-sun"></i> Hoy
           </button>
@@ -93,7 +93,7 @@
         </div>
 
         <!-- ─── TAB HOY ─── -->
-        <div *ngIf="playerActiveTab === 'today'" class="it-tab-content">
+        <div *ngIf="playerActiveTab === 'today'" class="it-tab-content" data-tutorial="it-content">
           <ng-container *ngIf="getTodayActivity() as todayDay; else noActivityToday">
 
             <!-- Sesión planificada para hoy -->
@@ -354,7 +354,7 @@
         </div>
 
         <!-- ─── TAB PLANIFICACIÓN ─── -->
-        <div *ngIf="playerActiveTab === 'schedule'" class="it-tab-content">
+        <div *ngIf="playerActiveTab === 'schedule'" class="it-tab-content" data-tutorial="it-content">
           <div *ngIf="!playerPlanDays.length" class="it-empty">
             <i class="bi bi-calendar-week"></i>
             <p>El plan no tiene días configurados todavía.</p>
@@ -390,7 +390,7 @@
         </div>
 
         <!-- ─── TAB HISTORIAL ─── -->
-        <div *ngIf="playerActiveTab === 'history'" class="it-tab-content">
+        <div *ngIf="playerActiveTab === 'history'" class="it-tab-content" data-tutorial="it-content">
           <div *ngIf="!playerLogs.length" class="it-empty">
             <i class="bi bi-list-check"></i>
             <p>Aún no has registrado ninguna sesión.</p>
@@ -438,7 +438,7 @@
   <!-- ═══════════ FIN VISTA JUGADOR ═══════════ -->
 
   <!-- ═══════════════════ HEADER ═══════════════════ -->
-  <div class="it-hero" *ngIf="!isPlayerView">
+  <div class="it-hero" *ngIf="!isPlayerView" data-tutorial="it-hero">
     <div class="it-hero__info">
       <div class="it-hero__icon"><i class="bi bi-person-walking"></i></div>
       <div>
@@ -766,7 +766,7 @@
 
       <!-- Breadcrumb / title -->
       <div class="it-plan-header">
-        <button class="it-back-btn" (click)="clearSelection()">
+        <button class="it-back-btn" (click)="clearSelection()" data-tutorial="it-volver">
           <i class="bi bi-arrow-left"></i>
         </button>
         <div class="it-plan-header__title">
@@ -787,7 +787,7 @@
       </div>
 
       <!-- Tabs -->
-      <div class="it-tabs">
+      <div class="it-tabs" data-tutorial="it-tabs">
         <button class="it-tab" [class.it-tab--active]="activeTab === 'compliance'" (click)="activeTab = 'compliance'">
           <i class="bi bi-bar-chart-line"></i> Cumplimiento
         </button>
@@ -804,7 +804,7 @@
       </div>
 
       <!-- ─── COMPLIANCE TAB ─── -->
-      <div *ngIf="activeTab === 'compliance'" class="it-tab-content">
+      <div *ngIf="activeTab === 'compliance'" class="it-tab-content" data-tutorial="it-content">
         <div *ngIf="!compliance.length && !assignedPlayerIds.size" class="it-empty">
           <i class="bi bi-bar-chart-line"></i>
           <p>Sin jugadores asignados. Ve a la pestaña <strong>Jugadores</strong> para añadir.</p>
@@ -845,7 +845,7 @@
       </div>
 
       <!-- ─── PLAYERS TAB ─── -->
-      <div *ngIf="activeTab === 'players'" class="it-tab-content">
+      <div *ngIf="activeTab === 'players'" class="it-tab-content" data-tutorial="it-content">
         <div class="it-players-header">
           <div>
             <h5 class="mb-0">Jugadores del equipo</h5>
@@ -901,7 +901,7 @@
       </div>
 
       <!-- ─── LOGS TAB ─── -->
-      <div *ngIf="activeTab === 'logs'" class="it-tab-content">
+      <div *ngIf="activeTab === 'logs'" class="it-tab-content" data-tutorial="it-content">
         <div *ngIf="!logs.length" class="it-empty">
           <i class="bi bi-list-check"></i>
           <p>Aún no hay sesiones registradas por los jugadores.</p>
@@ -941,7 +941,7 @@
       </div>
 
       <!-- ─── PLAN DAYS TAB ─── -->
-      <div *ngIf="activeTab === 'plans'" class="it-tab-content">
+      <div *ngIf="activeTab === 'plans'" class="it-tab-content" data-tutorial="it-content">
         <div *ngIf="!planDays.length" class="it-empty">
           <i class="bi bi-calendar-week"></i>
           <p>El plan no tiene días configurados.</p>
@@ -1012,7 +1012,7 @@
         </div>
       </div>
 
-      <div class="it-plans-grid" *ngIf="plans.length">
+      <div class="it-plans-grid" *ngIf="plans.length" data-tutorial="it-planes">
         <div *ngFor="let plan of plans" class="it-plan-card" (click)="selectPlan(plan)">
           <div class="it-plan-card__top">
             <span class="it-status-badge" [ngClass]="statusBadgeClass(plan.status)">

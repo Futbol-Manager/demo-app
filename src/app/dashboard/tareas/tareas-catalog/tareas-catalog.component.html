@@ -2,7 +2,7 @@
 
 <!-- Encabezado premium (mismo estilo y altura que info-jugadores) -->
 <header class="page-header">
-  <div class="back-container">
+  <div class="back-container" data-tutorial="tc-volver">
     <button type="button" class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -22,7 +22,7 @@
 
   <!-- FILTROS -->
   <div class="filter-bar">
-    <div class="filter-search">
+    <div class="filter-search" data-tutorial="tc-busqueda">
       <i class="bi bi-search filter-search-icon"></i>
       <input
         type="text"
@@ -35,7 +35,7 @@
       </button>
     </div>
 
-    <button class="btn-toggle-filters" (click)="showAdvancedFilters = !showAdvancedFilters">
+    <button class="btn-toggle-filters" (click)="showAdvancedFilters = !showAdvancedFilters" data-tutorial="tc-filtros">
       <i class="bi" [ngClass]="showAdvancedFilters ? 'bi-funnel-fill' : 'bi-funnel'"></i>
       <span>{{ 'TAREAS_CATALOG.ADVANCED_FILTERS' | translate }}</span>
       <span class="filter-dot" *ngIf="selectedEstrategia || selectedIntencion"></span>
@@ -74,7 +74,7 @@
   </div>
 
   <!-- GRID DE TARJETAS -->
-  <div class="task-grid" *ngIf="!isLoading && filteredTasks.length > 0">
+  <div class="task-grid" *ngIf="!isLoading && filteredTasks.length > 0" data-tutorial="tc-grid">
     <div
       class="task-card"
       *ngFor="let task of pagedTasks"
@@ -111,7 +111,7 @@
   </div>
 
   <!-- PAGINACIÓN -->
-  <div class="pagination-bar" *ngIf="totalPages > 1">
+  <div class="pagination-bar" *ngIf="totalPages > 1" data-tutorial="tc-paginacion">
     <button class="btn-page" [disabled]="currentPage === 0" (click)="prevPage()">
       <i class="bi bi-chevron-left"></i>
     </button>

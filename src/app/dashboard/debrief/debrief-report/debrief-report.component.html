@@ -2,7 +2,7 @@
 
 <!-- ===== PAGE HEADER (mismo que resto del dashboard) ===== -->
 <div class="page-header">
-  <div class="back-container">
+  <div class="back-container" data-tutorial="dbr-volver">
     <button class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -62,7 +62,7 @@
           <span>{{ report.generatedAt | date:'dd MMM yyyy, HH:mm' }}</span>
         </div>
       </div>
-      <div class="report-actions">
+      <div class="report-actions" data-tutorial="dbr-actions">
         <!-- Regenerate -->
         <button class="btn-action" (click)="regenerateReport()" [disabled]="isGenerating"
           title="{{ 'DEBRIEF.REPORT.REGENERATE' | translate }}">
@@ -83,7 +83,7 @@
     </div>
 
     <!-- ══ PDF CONTENT — element captured by html2canvas ══ -->
-    <div #reportContent class="pdf-content">
+    <div #reportContent class="pdf-content" data-tutorial="dbr-content">
 
       <!-- Summary -->
       <div class="summary-card" *ngIf="report.summary">

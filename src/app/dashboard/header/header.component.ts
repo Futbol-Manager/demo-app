@@ -250,24 +250,70 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.currentTutorialScreenId = 'estadisticas-jugadores-club';
     } else if (url.includes('estadisticas-equipos-club')) {
       this.currentTutorialScreenId = 'estadisticas-equipos-club';
+    } else if (url.includes('informacion_equipo') && url.includes('asistencia')) {
+      this.currentTutorialScreenId = 'asistencia';
+    } else if (url.includes('informacion_equipo')) {
+      this.currentTutorialScreenId = 'informacion-equipo';
+    } else if (url.includes('estadisticas_equipo')) {
+      this.currentTutorialScreenId = 'estadisticas-equipo';
+    } else if (url.includes('estadisticas_jugadores')) {
+      this.currentTutorialScreenId = 'estadisticas-jugadores';
+    } else if (url.includes('/jugadores/') || (url.includes('jugadores') && !url.includes('estadisticas_jugadores') && !url.includes('info-jugadores'))) {
+      this.currentTutorialScreenId = 'jugadores';
     } else if (url.includes('calendario-club')) {
       this.currentTutorialScreenId = 'calendario-club';
+    } else if (url.includes('calendario')) {
+      this.currentTutorialScreenId = 'calendario';
+    } else if (url.includes('tactical-board')) {
+      this.currentTutorialScreenId = 'tactical-board';
+    } else if (url.includes('tareas-catalog')) {
+      this.currentTutorialScreenId = 'tareas-catalog';
+    } else if (url.includes('tareas-historial')) {
+      this.currentTutorialScreenId = 'tareas-historial';
+    } else if (url.includes('tareas-favoritas')) {
+      this.currentTutorialScreenId = 'tareas-favoritas';
+    } else if (url.includes('tareas-mis')) {
+      this.currentTutorialScreenId = 'tareas-mis';
+    } else if (url.includes('tareas')) {
+      this.currentTutorialScreenId = 'tareas';
     } else if (url.includes('menu-club')) {
       this.currentTutorialScreenId = 'menu-club';
+    } else if (url.includes('menu-fisio')) {
+      this.currentTutorialScreenId = 'menu-fisio';
     } else if (url.includes('menu-entrenador')) {
       this.currentTutorialScreenId = 'menu-entrenador';
+    } else if (url.includes('perfil-entrenador')) {
+      this.currentTutorialScreenId = 'perfil-entrenador';
+    } else if (url.includes('documentos-entrenador')) {
+      this.currentTutorialScreenId = 'documentos-entrenador';
+    } else if (url.includes('documentos-jugador')) {
+      this.currentTutorialScreenId = 'documentos-jugador';
+    } else if (url.includes('scouting-player-profile')) {
+      this.currentTutorialScreenId = 'scouting-player-profile';
+    } else if (url.includes('scouting-player')) {
+      this.currentTutorialScreenId = 'scouting-player';
     } else if (url.includes('opcionesjugador')) {
       this.currentTutorialScreenId = 'opcionesjugador';
     } else if (url.includes('cuadro-de-mandos')) {
       this.currentTutorialScreenId = 'cuadro-de-mandos';
+    } else if (url.includes('erp')) {
+      this.currentTutorialScreenId = 'erp';
+    } else if (url.includes('entrenadores') && !url.includes('info-entrenadores')) {
+      this.currentTutorialScreenId = 'entrenadores';
     } else if (url.includes('equipos')) {
       this.currentTutorialScreenId = 'equipos';
     } else if (url.includes('documentos-club')) {
       this.currentTutorialScreenId = 'documentos-club';
     } else if (url.includes('new-cuotas')) {
       this.currentTutorialScreenId = 'new-cuotas';
+    } else if (url.includes('cuotas')) {
+      this.currentTutorialScreenId = 'cuotas';
+    } else if (url.includes('ropa-jugador')) {
+      this.currentTutorialScreenId = 'ropa-jugador';
     } else if (url.includes('ropa')) {
       this.currentTutorialScreenId = 'ropa';
+    } else if (url.includes('patrocinadores-usuario')) {
+      this.currentTutorialScreenId = 'patrocinadores-usuario';
     } else if (url.includes('patrocinadores')) {
       this.currentTutorialScreenId = 'patrocinadores';
     } else if (url.includes('notificaciones-federacion')) {
@@ -282,6 +328,52 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.currentTutorialScreenId = 'club-videos';
     } else if (url.includes('video-analysis')) {
       this.currentTutorialScreenId = 'video-analysis';
+    } else if (url.includes('clasificacion-resultados')) {
+      this.currentTutorialScreenId = 'clasificacion-resultados';
+    } else if (url.includes('partidos-entrevistas')) {
+      this.currentTutorialScreenId = 'partidos-entrevistas';
+    } else if (url.includes('lesiones-club')) {
+      this.currentTutorialScreenId = 'dashboard-inicio';
+    } else if (url.includes('lesiones') && url.includes('playerId=')) {
+      this.currentTutorialScreenId = 'lesiones-jugador';
+    } else if (url.includes('lesiones')) {
+      this.currentTutorialScreenId = 'lesiones';
+    } else if (url.includes('asistente-ia-coach')) {
+      this.currentTutorialScreenId = 'asistente-ia-coach';
+    } else if (url.includes('debrief/templates')) {
+      this.currentTutorialScreenId = 'debrief-templates';
+    } else if (url.includes('debrief/training')) {
+      this.currentTutorialScreenId = 'debrief-training';
+    } else if (url.includes('debrief/match')) {
+      this.currentTutorialScreenId = 'debrief-match';
+    } else if (url.includes('debrief/history') || url.includes('debrief/history/')) {
+      this.currentTutorialScreenId = 'debrief-history';
+    } else if (url.includes('debrief/report')) {
+      this.currentTutorialScreenId = 'debrief-report';
+    } else if (url.includes('contabilidad')) {
+      this.currentTutorialScreenId = 'contabilidad';
+    } else if (url.includes('historial-pagos-club')) {
+      this.currentTutorialScreenId = 'historial-pagos-club';
+    } else if (url.includes('abonados')) {
+      this.currentTutorialScreenId = 'abonados';
+    } else if (url.includes('listado-clubes')) {
+      this.currentTutorialScreenId = 'listado-clubes';
+    } else if (url.includes('sugerencias-club')) {
+      this.currentTutorialScreenId = 'sugerencias-club';
+    } else if (url.includes('coach-suscripcion-success')) {
+      this.currentTutorialScreenId = 'coach-suscripcion-success';
+    } else if (url.includes('suscripcion-coach')) {
+      this.currentTutorialScreenId = 'suscripcion-coach';
+    } else if (url.includes('suscripcion-club/wizard')) {
+      this.currentTutorialScreenId = 'suscripcion-club-wizard';
+    } else if (url.includes('suscripcion-club')) {
+      this.currentTutorialScreenId = 'suscripcion-club';
+    } else if (url.includes('individual-training')) {
+      this.currentTutorialScreenId = 'individual-training';
+    } else if (url.includes('inicio-deportes')) {
+      this.currentTutorialScreenId = 'inicio-deportes';
+    } else if (url.includes('suscripcion/') && !url.includes('suscripcion-club')) {
+      this.currentTutorialScreenId = 'suscripcion';
     } else if (url.includes('asistente-ia')) {
       this.currentTutorialScreenId = 'asistente-ia';
     } else {

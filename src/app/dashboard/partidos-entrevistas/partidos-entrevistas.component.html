@@ -2,7 +2,7 @@
 
 <!-- ===== PAGE HEADER ===== -->
 <div class="page-header">
-  <div class="back-container">
+  <div class="back-container" data-tutorial="pe-volver">
     <button class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -14,7 +14,7 @@
     <p class="header-subtitle">Galería de fotos y vídeos de los partidos del equipo</p>
   </div>
 
-  <div class="page-header-stats">
+  <div class="page-header-stats" data-tutorial="pe-stats">
     <div class="stat-pill">
       <i class="bi bi-image"></i> {{ totalFotosGlobal }} fotos
     </div>
@@ -29,7 +29,7 @@
 
 <div class="gallery-page">
   <!-- ════════ MATCH SELECTOR ════════ -->
-  <section class="match-selector">
+  <section class="match-selector" data-tutorial="pe-carousel">
     <div class="section-label">
       <i class="bi bi-calendar-event"></i>
       <span>Selecciona un partido</span>
@@ -92,7 +92,7 @@
   <section class="gallery-content" *ngIf="showGalery">
 
     <!-- Premium Tabs -->
-    <div class="gallery-tabs-wrapper">
+    <div class="gallery-tabs-wrapper" data-tutorial="pe-tabs">
       <div class="gallery-tabs">
         <button class="gallery-tab" [class.gallery-tab--active]="activeTab === 'fotos'" (click)="setTab('fotos')">
           <div class="tab-icon-wrap"><i class="bi bi-image-fill"></i></div>
@@ -117,7 +117,7 @@
     <div class="tab-panel" *ngIf="activeTab === 'fotos'">
 
       <!-- Action bar con botón para nueva imagen -->
-      <div class="content-action-bar">
+      <div class="content-action-bar" data-tutorial="pe-upload">
         <button class="btn-new-content" (click)="showUploadPanel = !showUploadPanel">
           <i class="bi" [ngClass]="showUploadPanel ? 'bi-x-lg' : 'bi-plus-lg'"></i>
           {{ showUploadPanel ? 'Cerrar' : 'Nueva imagen' }}
@@ -174,7 +174,7 @@
       </div>
 
       <!-- Photo Grid -->
-      <div class="photo-grid" *ngIf="fotos.length > 0">
+      <div class="photo-grid" *ngIf="fotos.length > 0" data-tutorial="pe-grid">
         <div *ngFor="let foto of fotos; let i = index" class="photo-card"
              (click)="abrirModal(getImageUrl(foto))">
           <img [src]="getImageUrl(foto)" alt="Foto galería" class="photo-card-img" loading="lazy">
@@ -201,7 +201,7 @@
     <div class="tab-panel" *ngIf="activeTab === 'videos'">
 
       <!-- Action bar con opciones de vídeo -->
-      <div class="content-action-bar">
+      <div class="content-action-bar" data-tutorial="pe-upload">
         <button class="btn-new-content btn-new-content--video"
                 (click)="hasVideoSubscription ? openUrlModal('video') : openVideoPlansModal()">
           <i class="bi bi-link-45deg"></i> Añadir por URL
@@ -264,7 +264,7 @@
       </div>
 
       <!-- Video Grid -->
-      <div class="video-grid" *ngIf="videos.length > 0">
+      <div class="video-grid" *ngIf="videos.length > 0" data-tutorial="pe-grid">
         <div *ngFor="let video of videos; let a = index" class="video-card">
           <div class="video-card-frame">
             <iframe *ngIf="video.link" [src]="getEmbedUrl(video)" frameborder="0" allowfullscreen

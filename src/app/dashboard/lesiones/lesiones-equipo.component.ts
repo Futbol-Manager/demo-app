@@ -17,7 +17,7 @@ import { User } from 'src/app/core/models/users/user.model';
 
       <!-- ===== PAGE HEADER unificado ===== -->
       <div class="page-header">
-        <div class="back-container">
+        <div class="back-container" data-tutorial="les-volver">
           <button class="btn-back-clean" (click)="goBack()">
             <i class="bi bi-arrow-left"></i>
             <span>Volver</span>

@@ -12,7 +12,7 @@
       <!-- ══════════════════════════════════
            HERO — foto + nombre + visibilidad
            ══════════════════════════════════ -->
-      <div class="sp-hero">
+      <div class="sp-hero" data-tutorial="spp-hero">
         <div class="sp-hero-bg"></div>
         <div class="sp-hero-content">
 
@@ -81,7 +81,7 @@
       <div class="sp-sections">
 
         <!-- ══ 1. IDENTIDAD ══ -->
-        <div class="sp-card">
+        <div class="sp-card" data-tutorial="spp-identidad">
           <div class="sp-card-header">
             <div class="sp-card-header-icon"><i class="bi bi-person-vcard-fill"></i></div>
             <h3>Identidad</h3>
@@ -134,7 +134,7 @@
         </div>
 
         <!-- ══ 2. EN EL CAMPO ══ -->
-        <div class="sp-card">
+        <div class="sp-card" data-tutorial="spp-posiciones">
           <div class="sp-card-header">
             <div class="sp-card-header-icon"><i class="bi bi-person-fill-gear"></i></div>
             <h3>En el campo</h3>
@@ -153,7 +153,7 @@
         </div>
 
         <!-- ══ 3. SITUACIÓN ACTUAL ══ -->
-        <div class="sp-card">
+        <div class="sp-card" data-tutorial="spp-situacion">
           <div class="sp-card-header">
             <div class="sp-card-header-icon"><i class="bi bi-briefcase-fill"></i></div>
             <h3>Situación actual</h3>
@@ -185,7 +185,7 @@
         </div>
 
         <!-- ══ 4. CARRERA DEPORTIVA ══ -->
-        <div class="sp-card">
+        <div class="sp-card" data-tutorial="spp-carrera">
           <div class="sp-card-header">
             <div class="sp-card-header-icon"><i class="bi bi-trophy-fill"></i></div>
             <h3>Carrera deportiva</h3>
@@ -224,7 +224,7 @@
         </div>
 
         <!-- ══ 5. CV FUTBOLÍSTICO ══ -->
-        <div class="sp-card">
+        <div class="sp-card" data-tutorial="spp-cv">
           <div class="sp-card-header">
             <div class="sp-card-header-icon"><i class="bi bi-file-earmark-person-fill"></i></div>
             <h3>CV Futbolístico</h3>
@@ -270,7 +270,7 @@
         </div>
 
         <!-- ══ 6. SOBRE MÍ ══ -->
-        <div class="sp-card">
+        <div class="sp-card" data-tutorial="spp-sobremi">
           <div class="sp-card-header">
             <div class="sp-card-header-icon"><i class="bi bi-chat-quote-fill"></i></div>
             <h3>Sobre mí</h3>
@@ -297,7 +297,7 @@
         </div>
 
         <!-- ══ 7. VÍDEOS Y REDES ══ -->
-        <div class="sp-card">
+        <div class="sp-card" data-tutorial="spp-videos">
           <div class="sp-card-header">
             <div class="sp-card-header-icon"><i class="bi bi-play-btn-fill"></i></div>
             <h3>Vídeos y redes</h3>
@@ -399,7 +399,7 @@
       </div><!-- /sp-sections -->
 
       <!-- ══ BOTÓN GUARDAR ══ -->
-      <div class="sp-save-bar">
+      <div class="sp-save-bar" data-tutorial="spp-guardar">
         <button type="submit" class="sp-btn sp-btn--save" [disabled]="saving">
           <span *ngIf="!saving"><i class="bi bi-cloud-check-fill"></i> Guardar perfil</span>
           <span *ngIf="saving"><i class="bi bi-arrow-repeat sp-spin"></i> Guardando...</span>

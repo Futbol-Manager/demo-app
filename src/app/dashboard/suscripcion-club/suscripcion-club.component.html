@@ -1,6 +1,6 @@
 <!-- Back button -->
 <div class="action-bar">
-  <button class="btn-back-clean" (click)="goBack()" [attr.aria-label]="'COMMON.BACK' | translate">
+  <button class="btn-back-clean" (click)="goBack()" [attr.aria-label]="'COMMON.BACK' | translate" data-tutorial="suc-volver">
     <i class="bi bi-arrow-left"></i>
     <span>{{ 'COMMON.BACK' | translate }}</span>
   </button>
@@ -26,7 +26,7 @@
 -->
 
 <!-- ═══════════ ACTIVE SUBSCRIPTION VIEW (no se muestra si el plan activo es gratuito; se muestra la selección de planes) ═══════════ -->
-<div class="subscription-active" *ngIf="datosCargados && subscription && subscription.planType !== 'gratuito'">
+<div class="subscription-active" *ngIf="datosCargados && subscription && subscription.planType !== 'gratuito'" data-tutorial="suc-activa">
   <div class="subscription-row-card">
     <div class="row-plan">
       <div class="sub-plan-icon" [ngClass]="getPlanColorClass(subscription.planType)">
@@ -73,7 +73,7 @@
 </div>
 
 <!-- ═══════════ PLAN SELECTION (si no hay suscripción o el plan activo es gratuito: mostrar grid sin plan Gratuito) ═══════════ -->
-<div class="plan-selection" *ngIf="datosCargados && (!subscription || (subscription && subscription.planType === 'gratuito'))">
+<div class="plan-selection" *ngIf="datosCargados && (!subscription || (subscription && subscription.planType === 'gratuito'))" data-tutorial="suc-planes">
   <div class="plans-header">
     <h1>{{ 'CLUB_PLANS.SELECTION.TITLE' | translate }}</h1>
     <p>{{ 'CLUB_PLANS.SELECTION.SUBTITLE' | translate }}</p>

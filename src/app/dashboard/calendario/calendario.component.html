@@ -2,7 +2,7 @@
 
 <!-- PAGE HEADER — Card premium (referencia: info-jugadores) -->
 <div class="page-header">
-  <div class="back-container">
+  <div class="back-container" data-tutorial="cal-volver">
     <button class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -11,7 +11,7 @@
 
   <h2 class="table-title" *ngIf="datosCargados && categoryTeam != 27">{{ nombreEquipo }}</h2>
 
-  <div class="calendar-view-switcher" *ngIf="datosCargados && categoryTeam != 27">
+  <div class="calendar-view-switcher" *ngIf="datosCargados && categoryTeam != 27" data-tutorial="cal-vistas">
     <button type="button" class="view-btn" [class.active]="vistaCalendario === 'year'" (click)="irAVistaAnio()">
       {{ 'CAL.TEXT_371' | translate }}
     </button>
@@ -38,7 +38,7 @@
     <div class="calendar-inner">
 
       <!-- BOTÓN PLANIFICADOR SEMANAL IA (visible en vista mes y semana) -->
-      <div class="planner-ia-bar" *ngIf="vistaCalendario === 'week' || vistaCalendario === 'month'">
+      <div class="planner-ia-bar" *ngIf="vistaCalendario === 'week' || vistaCalendario === 'month'" data-tutorial="cal-planner-ia">
         <button type="button" class="btn-planner-ia" (click)="abrirPlanificadorIA()">
           <i class="bi bi-stars"></i>
           <span>{{ 'PLANNER.BTN_OPEN' | translate }}</span>
@@ -46,7 +46,7 @@
       </div>
 
       <!-- NAVEGACIÓN (prev/next + título del periodo) -->
-      <div class="calendar-header-nav calendar-header-nav-responsive">
+      <div class="calendar-header-nav calendar-header-nav-responsive" data-tutorial="cal-nav">
         <button class="nav-btn" (click)="vistaCalendario === 'year' ? anioAnterior() : mesAnterior()">
           <i class="bi bi-chevron-left"></i>
           <span class="nav-btn-text nav-month-long" *ngIf="vistaCalendario === 'year'">{{ 'CAL.TEXT_376' | translate }}</span>
@@ -71,7 +71,7 @@
       </div>
 
       <!-- ========== VISTA AÑO: grid 12 meses ========== -->
-      <div class="calendar-view-year" *ngIf="vistaCalendario === 'year'">
+      <div class="calendar-view-year" *ngIf="vistaCalendario === 'year'" data-tutorial="cal-contenido">
         <div class="year-grid">
           <button type="button" class="year-month-card" *ngFor="let m of [0,1,2,3,4,5,6,7,8,9,10,11]; trackBy: trackByIndex" (click)="seleccionarMesEnVistaAnio(m)">
             {{ getNombreMes(m) }}
@@ -80,7 +80,7 @@
       </div>
 
       <!-- ========== VISTA SEMANA: 7 días ========== -->
-      <div class="calendar-view-week" *ngIf="vistaCalendario === 'week'">
+      <div class="calendar-view-week" *ngIf="vistaCalendario === 'week'" data-tutorial="cal-contenido">
         <div class="week-grid">
           <div class="week-day-header" *ngFor="let d of [0,1,2,3,4,5,6]; trackBy: trackByIndex">
             {{ d === 0 ? ('CAL.TEXT_054' | translate) : d === 1 ? ('CAL.TEXT_055' | translate) : d === 2 ? ('CAL.TEXT_056' | translate) : d === 3 ? ('CAL.TEXT_057' | translate) : d === 4 ? ('CAL.TEXT_058' | translate) : d === 5 ? ('CAL.TEXT_059' | translate) : ('CAL.TEXT_060' | translate) }}
@@ -126,7 +126,7 @@
       </div>
 
       <!-- ========== VISTA MES: tabla ========== -->
-      <div class="table-responsive calendar-wrapper calendar-wrapper-responsive" *ngIf="vistaCalendario === 'month'">
+      <div class="table-responsive calendar-wrapper calendar-wrapper-responsive" *ngIf="vistaCalendario === 'month'" data-tutorial="cal-contenido">
         <table id="tableCalendar" class="calendar-saas calendar-saas-responsive">
           <thead>
             <tr>

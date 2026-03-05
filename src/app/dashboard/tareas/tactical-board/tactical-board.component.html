@@ -1,6 +1,6 @@
 <!-- Encabezado premium (estilo info-jugadores, menos alto) -->
 <header class="page-header page-header--compact">
-  <div class="back-container">
+  <div class="back-container" data-tutorial="tboard-volver">
     <button type="button" class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>{{ taskMode ? 'Cerrar' : ('COMMON.BACK' | translate) }}</span>
@@ -16,7 +16,7 @@
   </div>
 
   <!-- Botón guardar en tarea (solo en modo tarea) -->
-  <div class="task-save-area" *ngIf="taskMode">
+  <div class="task-save-area" *ngIf="taskMode" data-tutorial="tboard-guardar-tarea">
     <span class="task-save-success" *ngIf="saveTaskSuccess">
       <i class="bi bi-check-circle-fill me-1"></i>Imagen guardada en la tarea
     </span>
@@ -34,7 +34,7 @@
   <!-- ═══════════ TOOLBAR ÚNICO (jugadores + herramientas en una línea premium) ═══════════ -->
   <div class="toolbar toolbar-premium">
     <!-- Jugadores: botón despliega colores; al elegir color se inserta el jugador -->
-    <div class="tool-group tool-group--players">
+    <div class="tool-group tool-group--players" data-tutorial="tboard-jugadores">
       <button type="button" class="shortcut-btn shortcut-btn--player" #addPlayerBtn
               (click)="togglePlayerColorPicker()"
               [class.expanded]="showPlayerColorPicker" [title]="'TBOARD.ADD_PLAYER' | translate">
@@ -52,7 +52,7 @@
     <div class="tool-separator"></div>
 
     <!-- Drawing tools -->
-    <div class="tool-group">
+    <div class="tool-group" data-tutorial="tboard-herramientas">
       <button class="tool-btn" [class.active]="activeTool === 'select'"
               (click)="setTool('select')" [title]="'TBOARD.TOOL_SELECT' | translate">
         <i class="bi bi-cursor"></i>
@@ -90,7 +90,7 @@
     <div class="tool-separator"></div>
 
     <!-- Colour picker -->
-    <div class="tool-group color-group">
+    <div class="tool-group color-group" data-tutorial="tboard-color">
       <button class="tool-btn color-swatch" (click)="showColorPicker = !showColorPicker; showPlayerPanel = false"
               [title]="'TBOARD.COLOR' | translate">
         <span class="swatch-circle" [style.background]="strokeColor"></span>
@@ -158,7 +158,7 @@
     <div class="tool-separator"></div>
 
     <!-- Pitch style -->
-    <div class="tool-group">
+    <div class="tool-group" data-tutorial="tboard-campo">
       <button class="tool-btn" [class.active]="pitchStyle === 'full'"
               (click)="setPitchStyle('full')" [title]="'TBOARD.PITCH_FULL' | translate">
         <i class="bi bi-layout-split"></i>
@@ -172,7 +172,7 @@
     <div class="tool-separator"></div>
 
     <!-- Undo / Redo -->
-    <div class="tool-group">
+    <div class="tool-group" data-tutorial="tboard-deshacer">
       <button class="tool-btn action-btn" (click)="undo()" [disabled]="!canUndo"
               [title]="'TBOARD.UNDO' | translate">
         <i class="bi bi-arrow-counterclockwise"></i>
@@ -186,7 +186,7 @@
     <div class="tool-separator"></div>
 
     <!-- Delete & Clear -->
-    <div class="tool-group">
+    <div class="tool-group" data-tutorial="tboard-borrar">
       <button class="tool-btn action-btn danger" (click)="deleteSelected()"
               [title]="'TBOARD.DELETE' | translate">
         <i class="bi bi-trash3"></i>
@@ -212,7 +212,7 @@
   <div class="board-canvas" #boardContainer></div>
 
   <!-- ═══════════ TIMELINE BAR ═══════════ -->
-  <div class="timeline-bar">
+  <div class="timeline-bar" data-tutorial="tboard-timeline">
     <div class="timeline-controls">
       <button class="tl-btn play-btn" (click)="isPlaying ? stopAnimation() : playAnimation()"
               [disabled]="keyframes.length < 2"
@@ -245,7 +245,7 @@
       </button>
     </div>
 
-    <div class="timeline-export">
+    <div class="timeline-export" data-tutorial="tboard-exportar">
       <button class="export-btn save-btn"
               (click)="saveBoard()"
               [class.saved]="!hasUnsavedChanges"

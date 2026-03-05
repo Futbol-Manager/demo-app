@@ -1,4 +1,4 @@
-<div class="back-container">
+<div class="back-container" data-tutorial="asis-volver">
   <div class="btn-back-clean" href="javascript:void(0)" (click)="goBack()">
     <i class="bi bi-arrow-left"></i>
     <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -11,7 +11,7 @@
 
 
 <div class="container" style="margin-top: 3em;" *ngIf="!loading">
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-tabs" data-tutorial="asis-tabs">
         <li class="nav-item">
             <a class="nav-link active" data-bs-toggle="tab" href="#asistencia">{{ 'TITLES.ASSISTANCE' | translate }}</a>
         </li>
@@ -20,7 +20,7 @@
         </li>
     </ul>
 
-    <div class="tab-content mt-3">
+    <div class="tab-content mt-3" data-tutorial="asis-content">
         <!-- Tab de Asistencia -->
         <div class="tab-pane fade show active" id="asistencia">
             <div class="table-responsive" style="max-height: 30em; overflow-y: auto;">

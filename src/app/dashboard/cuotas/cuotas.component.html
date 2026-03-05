@@ -2,7 +2,7 @@
 
 <!-- ===== PAGE HEADER ===== -->
 <div class="page-header">
-  <div class="back-container">
+  <div class="back-container" data-tutorial="cq-volver">
     <button class="btn-back-clean" type="button" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -31,7 +31,7 @@
   <div class="cuotas-container">
 
     <!-- ESTADO FINANCIERO + ACCESO RÁPIDO -->
-    <section class="cuotas-section cuotas-top-grid">
+    <section class="cuotas-section cuotas-top-grid" data-tutorial="cq-estado">
       <div class="estado-card estado-card--pagado">
         <div class="estado-card-icon">
           <i class="bi bi-check-circle-fill"></i>
@@ -131,7 +131,7 @@
     </div>
 
     <!-- BARRA DE SELECCIÓN (aparece al seleccionar cuotas) -->
-    <div class="cq-selection-bar" *ngIf="stripeBtoShow && selectedCuotas.length > 0">
+    <div class="cq-selection-bar" *ngIf="stripeBtoShow && selectedCuotas.length > 0" data-tutorial="cq-selection-bar">
       <div class="cq-selection-info">
         <i class="bi bi-check2-square"></i>
         <span class="cq-selection-count">
@@ -152,7 +152,7 @@
     </div>
 
     <!-- CUOTAS OBLIGATORIAS -->
-    <section class="cuotas-section">
+    <section class="cuotas-section" data-tutorial="cq-obligatorias">
       <div class="cq-panel">
         <div class="cq-panel-header cq-panel-header--obligatorias">
           <div class="cq-panel-title">
@@ -338,7 +338,7 @@
     </section>
 
     <!-- CUOTAS NO OBLIGATORIAS -->
-    <section class="cuotas-section">
+    <section class="cuotas-section" data-tutorial="cq-opcionales">
       <div class="cq-panel">
         <div class="cq-panel-header cq-panel-header--opcionales">
           <div class="cq-panel-title">
@@ -519,7 +519,7 @@
     </section>
 
     <!-- INFORMACIÓN DE PAGO POR TRANSFERENCIA — solo si el club tiene datos bancarios -->
-    <section class="cuotas-section cuotas-transfer" *ngIf="banco || asunto || contacto || bizum">
+    <section class="cuotas-section cuotas-transfer" *ngIf="banco || asunto || contacto || bizum" data-tutorial="cq-transfer">
       <h2 class="section-title">
         <i class="bi bi-bank2"></i>
         Pago por transferencia
