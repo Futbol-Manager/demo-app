@@ -35,7 +35,7 @@
       (click)="openDetail(tarea)">
 
       <div class="task-image">
-        <img [src]="getImage(tarea)" alt="">
+        <img [src]="getImage(tarea)" alt="" (error)="onTaskImageError($event, tarea)" />
       </div>
 
       <div class="task-body">
@@ -83,7 +83,7 @@
       </div>
 
       <div class="detail-body">
-        <img class="detail-img" [src]="getImage(selectedTask)" alt="">
+        <img class="detail-img" [src]="getImage(selectedTask)" alt="" (error)="onTaskImageError($event, selectedTask)" />
 
         <div class="detail-section" *ngIf="selectedTask.estrategia || selectedTask.intencion">
           <div class="task-tags">

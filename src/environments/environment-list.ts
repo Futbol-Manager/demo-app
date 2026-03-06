@@ -5,6 +5,8 @@ export const demoenvironment = {
   production: false,
   demo: true,
   apiUrl: `${APIURLLOCAL}${ApiEnvironments.LOCAL}`,
+  /** URL base de la API de producción para enviar el lead de la demo (email + actividad). La demo no usa backend propio. */
+  demoLeadApiUrl: `${APIURLPROD2}${ApiEnvironments.PRO}`.replace(/\/$/, ''),
   prospectorApiUrl: 'http://localhost:8100/api/',
   /** Ruta absoluta para que el logo del club y demás imágenes carguen bien desde cualquier ruta (ej. /dashboard/equipos). */
   images: '/assets/images/',

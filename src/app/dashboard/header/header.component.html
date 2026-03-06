@@ -19,17 +19,17 @@
     <div class="row align-items-center">
 
       <!-- ================= LOGO ================= -->
-      <div class="col-auto me-auto" style="cursor: pointer;" *ngIf="profileId < 2">
+      <div class="col-auto me-auto" style="cursor: pointer;" *ngIf="profileId < 2" data-tutorial="header-logo">
         <img [src]="isDarkMode ? 'assets/images/club.svg' : 'assets/images/club.png'" alt="Logo" (click)="goInicio()"
           class="logo-image" />
       </div>
 
-      <div class="col-auto me-auto" style="cursor: pointer;" *ngIf="profileId === 2 || profileId === 6 || profileId === 7">
+      <div class="col-auto me-auto" style="cursor: pointer;" *ngIf="profileId === 2 || profileId === 6 || profileId === 7" data-tutorial="header-logo">
         <img [src]="isDarkMode ? 'assets/images/coach.svg' : 'assets/images/coach.png'" alt="Logo" (click)="goInicio()"
           class="logo-image" />
       </div>
 
-      <div class="col-auto me-auto" style="cursor: pointer;" *ngIf="profileId > 2 && profileId < 6">
+      <div class="col-auto me-auto" style="cursor: pointer;" *ngIf="profileId > 2 && profileId < 6" data-tutorial="header-logo">
         <img [src]="isDarkMode ? 'assets/images/player.svg' : 'assets/images/player.png'" alt="Logo"
           (click)="goInicio()" class="logo-image" />
       </div>
@@ -38,16 +38,16 @@
       <div class="col-auto d-flex align-items-center gap-2">
 
         <!-- ===== CTA SUSCRIBIRSE A SPHAIRA (todos los roles: premium y dinámico) ===== -->
-        <a class="header-cta-subscribe" (click)="goSuscripcionClub()" role="button" tabindex="0"
-           (keydown.enter)="goSuscripcionClub()" (keydown.space)="goSuscripcionClub(); $event.preventDefault()"
-           [attr.aria-label]="'Suscribirse a Sphaira'">
+        <button type="button" class="header-cta-subscribe" data-tutorial="header-cta-subscribe"
+           (click)="goSuscripcionClub($event)"
+           [attr.aria-label]="'HEADER.SUBSCRIBE_CTA' | translate">
           <span class="header-cta-subscribe-glow" aria-hidden="true"></span>
           <span class="header-cta-subscribe-sweep" aria-hidden="true"></span>
           <span class="header-cta-subscribe-inner">
             <i class="bi bi-rocket-takeoff-fill" aria-hidden="true"></i>
             <span class="header-cta-subscribe-text">{{ 'HEADER.SUBSCRIBE_CTA' | translate }}</span>
           </span>
-        </a>
+        </button>
 
         <!-- ===== SUGERENCIAS BADGE (solo admin) ===== -->
         <div *ngIf="userId === 9" class="position-relative header-action-icon-container" style="cursor: pointer;" (click)="goToSugerencias()">
@@ -119,7 +119,7 @@
         </div>
 
         <!-- ===== VER TUTORIAL (premium: circular + pulso, según pantalla actual) ===== -->
-        <button type="button" class="header-tutorial-btn" (click)="openTutorial()"
+        <button type="button" class="header-tutorial-btn" data-tutorial="header-tutorial-btn" (click)="openTutorial()"
           [attr.aria-label]="'Ver tutorial de esta pantalla'">
           <span class="header-tutorial-btn__pulse" aria-hidden="true"></span>
           <span class="header-tutorial-btn__circle">
@@ -168,7 +168,7 @@
 
         <!-- ===== NOTIFICACIONES USUARIO (Club / Coach / Player) ===== -->
         <div class="dropdown" *ngIf="canShowUserNotificationsBell()">
-          <a class="nav-link dropdown-toggle header-action-icon-container position-relative"
+          <a class="nav-link dropdown-toggle header-action-icon-container position-relative" data-tutorial="header-notifications"
             data-bs-toggle="dropdown" role="button" aria-expanded="false"
             [attr.aria-label]="'HEADER.NOTIFICATIONS.TITLE' | translate">
             <i class="bi bi-bell fs-5 header-action-icon"></i>
@@ -221,7 +221,7 @@
 
         <!-- ===== USUARIO / PERFIL ===== -->
         <div class="dropdown" style="cursor: pointer; text-align: center;">
-          <a class="nav-link dropdown-toggle arrow-none nav-user px-2 user-container" data-bs-toggle="dropdown"
+          <a class="nav-link dropdown-toggle arrow-none nav-user px-2 user-container" data-tutorial="header-user-menu" data-bs-toggle="dropdown"
             role="button">
 
             <!-- Avatar (en demo muestra siempre avatar por rol: club/coach/player) -->

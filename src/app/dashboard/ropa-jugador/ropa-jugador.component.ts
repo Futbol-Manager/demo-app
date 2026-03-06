@@ -4,8 +4,10 @@ import { Location } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 import { RopaCatalogoService, RopaCatalogoPrenda, RopaCatalogoSeleccion } from 'src/app/core/services/ropa-catalogo/ropa-catalogo.service';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-ropa-jugador',
@@ -32,9 +34,11 @@ export class RopaJugadorComponent implements OnInit, OnDestroy {
     private playerService: PlayerService,
     private loginService: LoginService,
     private ropaCatalogoService: RopaCatalogoService,
+    private tutorialService: TutorialService
   ) {}
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('ropa-jugador', true), 600);
     if (localStorage.getItem('temporada')) {
       this.temporada = localStorage.getItem('temporada')!;
     }
@@ -81,7 +85,8 @@ export class RopaJugadorComponent implements OnInit, OnDestroy {
   private cargarPrendas(): void {
     this.ropaCatalogoService.getPrendasByTeam(this.clubId, this.teamId, this.temporada).subscribe({
       next: (res: any) => {
-        this.prendas = (res?.data as RopaCatalogoPrenda[]) || [];
+        const raw = (res?.data as RopaCatalogoPrenda[]) || [];
+        this.prendas = raw.map((p: any) => this.normalizePrenda(p));
         this.cargarSelecciones();
       },
       error: () => {
@@ -89,6 +94,26 @@ export class RopaJugadorComponent implements OnInit, OnDestroy {
         this.cargando = false;
       }
     });
+  }
+
+  /** Normaliza una prenda del API (camelCase o snake_case) para tener imagenUrl e imagenNombre como en la vista del club. */
+  private normalizePrenda(p: any): RopaCatalogoPrenda {
+    const imagenUrl = p?.imagenUrl ?? p?.imagen_url ?? '';
+    const imagenNombre = p?.imagenNombre ?? p?.imagen_nombre ?? '';
+    return { ...p, imagenUrl: imagenUrl || '', imagenNombre: imagenNombre || '' } as RopaCatalogoPrenda;
+  }
+
+  /** URL de la imagen de la prenda: igual que en el club (imagenUrl del API o environment.images + ropa-catalogo/imagenNombre). */
+  getPrendaImageUrl(prenda: RopaCatalogoPrenda | null | undefined): string | null {
+    if (!prenda) return null;
+    const url = (prenda as any).imagenUrl ?? (prenda as any).imagen_url;
+    if (url && typeof url === 'string' && url.trim()) return url.trim();
+    const nombre = (prenda as any).imagenNombre ?? (prenda as any).imagen_nombre;
+    if (nombre && typeof nombre === 'string' && nombre.trim()) {
+      const base = (environment as { images?: string }).images ?? 'https://appsphairatech.com/images/';
+      return base.replace(/\/$/, '') + '/ropa-catalogo/' + nombre.trim();
+    }
+    return null;
   }
 
   private cargarSelecciones(): void {

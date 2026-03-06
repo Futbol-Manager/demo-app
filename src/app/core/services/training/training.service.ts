@@ -873,6 +873,9 @@ export class TrainingService {
   }
 
   getListGolesAvanzadoByTeamId(teamId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoGolesAvanzadoByTeamId(teamId)) as Response);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 

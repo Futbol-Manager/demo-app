@@ -1,48 +1,63 @@
 <app-publicidad></app-publicidad>
 
-<div *ngIf="datosCargados" class="page-header">
-    <div data-tutorial="jug-volver">
-    <button class="btn-back-clean" (click)="goBack()">
-        <i class="bi bi-arrow-left"></i>
-        <span>Volver</span>
-    </button>
-    </div>
-
-    <div class="page-header-title">
-        <h2 *ngIf="(usuarioActual?.profileType?.profileId ?? 0) < 3">
-            <i class="bi bi-people me-2"></i>Listado de Jugadores
-        </h2>
-        <h2 *ngIf="(usuarioActual?.profileType?.profileId ?? 0) > 2">
-            <i class="bi bi-person me-2"></i>Información
-        </h2>
-        <p class="header-subtitle">Consulta el listado y perfiles detallados de los jugadores</p>
-    </div>
-
-    <div *ngIf="(usuarioActual?.profileType?.profileId ?? 0) < 3" class="players-header-actions" data-tutorial="jug-crear">
-        <button type="button" class="btn-crear-jugador" (click)="abrirModalCrearJugador()">
-            <i class="bi bi-plus-lg"></i>
-            <span>Crear jugador</span>
+<!-- Encabezado: en modo solo jugador (Datos personales) mismo estilo que documentos-jugador/cuotas -->
+<div *ngIf="datosCargados" class="page-header" [class.page-header--solo]="soloPlayerMode">
+    <div class="back-container" data-tutorial="jug-volver">
+        <button class="btn-back-clean" (click)="goBack()">
+            <i class="bi bi-arrow-left"></i>
+            <span>{{ 'COMMON.BACK' | translate }}</span>
         </button>
     </div>
-    <div *ngIf="(usuarioActual?.profileType?.profileId ?? 0) >= 3" class="page-header-spacer"></div>
+
+    <ng-container *ngIf="soloPlayerMode">
+        <div class="header-center">
+            <h2 class="table-title">
+                <i class="bi bi-person-vcard table-title-icon"></i>
+                Datos personales
+            </h2>
+            <p class="header-subtitle">Consulta y edita la información del jugador</p>
+        </div>
+        <div class="page-header-spacer"></div>
+    </ng-container>
+
+    <ng-container *ngIf="!soloPlayerMode">
+        <div class="page-header-title">
+            <h2 *ngIf="(usuarioActual?.profileType?.profileId ?? 0) < 3">
+                <i class="bi bi-people me-2"></i>Listado de Jugadores
+            </h2>
+            <h2 *ngIf="(usuarioActual?.profileType?.profileId ?? 0) > 2">
+                <i class="bi bi-person me-2"></i>Información
+            </h2>
+            <p class="header-subtitle">Consulta el listado y perfiles detallados de los jugadores</p>
+        </div>
+        <div *ngIf="(usuarioActual?.profileType?.profileId ?? 0) < 3" class="players-header-actions" data-tutorial="jug-crear">
+            <button type="button" class="btn-crear-jugador" (click)="abrirModalCrearJugador()">
+                <i class="bi bi-plus-lg"></i>
+                <span>Crear jugador</span>
+            </button>
+        </div>
+        <div *ngIf="(usuarioActual?.profileType?.profileId ?? 0) >= 3" class="page-header-spacer"></div>
+    </ng-container>
 </div>
 
-<div *ngIf="datosCargados" class="container players-fifa-page">
+<div *ngIf="datosCargados && !soloPlayerMode" class="container players-fifa-page">
     <div class="players-fifa-content">
         <ul class="nav nav-tabs players-tabs" id="myTab" role="tablist" data-tutorial="jug-tabs">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="card-tab" data-bs-toggle="tab" data-bs-target="#card-content"
-                    type="button" role="tab" aria-controls="card-content" aria-selected="true">Vista de
+                <button class="nav-link" [class.active]="playersViewTab === 'cards'" id="card-tab"
+                    type="button" role="tab" aria-controls="card-content" [attr.aria-selected]="playersViewTab === 'cards'"
+                    (click)="playersViewTab = 'cards'">Vista de
                     tarjetas</button>
             </li>
             <li class="nav-item" role="presentation" *ngIf="(usuarioActual?.profileType?.profileId ?? 0) < 3">
-                <button class="nav-link" id="table-tab" data-bs-toggle="tab" data-bs-target="#table-content"
-                    type="button" role="tab" aria-controls="table-content" aria-selected="false">Vista de
+                <button class="nav-link" [class.active]="playersViewTab === 'table'" id="table-tab"
+                    type="button" role="tab" aria-controls="table-content" [attr.aria-selected]="playersViewTab === 'table'"
+                    (click)="playersViewTab = 'table'">Vista de
                     tabla</button>
             </li>
         </ul>
         <div class="tab-content players-tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="card-content" role="tabpanel" aria-labelledby="card-tab">
+            <div class="tab-pane fade" [class.show]="playersViewTab === 'cards'" [class.active]="playersViewTab === 'cards'" id="card-content" role="tabpanel" aria-labelledby="card-tab">
                 <!-- Contenido para la pestaña de tarjetas -->
                 <div class="row cards-pane-wrapper" data-tutorial="jug-cards">
                     <app-empty-state *ngIf="players.length === 0"
@@ -150,7 +165,7 @@
 
                 </div>
             </div>
-            <div class="tab-pane fade" id="table-content" role="tabpanel" aria-labelledby="table-tab">
+            <div class="tab-pane fade" [class.show]="playersViewTab === 'table'" [class.active]="playersViewTab === 'table'" id="table-content" role="tabpanel" aria-labelledby="table-tab">
                 <div class="row table-pane-wrapper">
                     <!-- Barra de controles (búsqueda + Export Excel) -->
                     <div class="players-table-toolbar" data-tutorial="jug-toolbar">
@@ -273,17 +288,17 @@
     </div>
 </div>
 
-<!-- Modal Crear/Editar jugador - PRO SaaS FIFA -->
-<div class="modal modal-fifa-pro" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
-        <div class="modal-content modal-content-fifa">
-            <div class="modal-header modal-header-fifa">
+<!-- Modal Crear/Editar jugador - PRO SaaS FIFA. En modo solo jugador (Datos personales) se muestra como página. -->
+<div class="modal modal-fifa-pro" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal, 'modal-solo-jugador': soloPlayerMode}">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable" [ngClass]="{'modal-fullscreen': soloPlayerMode}" role="document">
+        <div class="modal-content modal-content-fifa" [ngClass]="{'modal-content--page': soloPlayerMode}">
+            <div class="modal-header modal-header-fifa" *ngIf="!soloPlayerMode">
                 <h5 class="modal-title">{{ isEditing ? 'Editar Jugador' : 'Nuevo jugador' }}</h5>
                 <button type="button" class="btn-close btn-close-white" aria-label="Cerrar" (click)="cerrarModal()"></button>
             </div>
-            <div class="modal-body modal-body-fifa">
+            <div class="modal-body modal-body-fifa" [ngClass]="{'jugador-datos-page-body': soloPlayerMode}">
                 <form>
-                    <div class="row text-center align-items-center modal-section modal-section-photo">
+                    <div class="row text-center align-items-center modal-section modal-section-photo" data-tutorial="jd-foto">
                         <div class="col-12">
                             <div class="form-group">
                                 <ng-container *ngIf="player.playerId !== 0 && player.picturePlayer && !showPreview">
@@ -316,7 +331,7 @@
                     </div>
 
                     <!-- Pestañas: Información personal | Información deportiva -->
-                    <ul class="nav nav-tabs form-modal-tabs" role="tablist">
+                    <ul class="nav nav-tabs form-modal-tabs" role="tablist" data-tutorial="jd-tabs">
                         <li class="nav-item" role="presentation">
                             <button type="button" class="nav-link" [class.active]="formModalActiveTab === 'personal'" (click)="setFormModalTab('personal')">
                                 <i class="bi bi-person-vcard me-1"></i> Información personal
@@ -330,7 +345,7 @@
                     </ul>
                     <div class="tab-content form-modal-tab-content">
                         <!-- Pestaña: Información personal -->
-                        <div class="tab-pane" [class.active]="formModalActiveTab === 'personal'" role="tabpanel">
+                        <div class="tab-pane" [class.active]="formModalActiveTab === 'personal'" role="tabpanel" data-tutorial="jd-datos">
                             <h2 class="form-modal-section-heading">Datos del jugador</h2>
                             <div class="row g-3 form-modal-fields">
                                 <div class="col-12 col-md-6">
@@ -1070,7 +1085,7 @@
                             + Otros datos del jugador
                         </button>
                     </div>
-                    <div class="modal-footer modal-footer-fifa">
+                    <div class="modal-footer modal-footer-fifa" data-tutorial="jd-acciones">
                         <button type="button" class="btn btn-fifa btn-fifa-outline"
                             [ngClass]="{'btn-fifa-outline-warn': !player.imgDniUno || !player.imgDniDos, 'btn-fifa-outline': player.imgDniUno && player.imgDniDos}"
                             (click)="abrirModalDniJugador(player)">
@@ -1081,6 +1096,7 @@
                         </button>
                     </div>
                 </form>
+                <div *ngIf="soloPlayerMode" class="menu-bottom-spacer"></div>
             </div>
         </div>
     </div>

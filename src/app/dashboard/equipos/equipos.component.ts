@@ -991,13 +991,16 @@ export class EquiposComponent implements OnInit {
   }
 
   /**
-   * Devuelve la ruta del icono SVG según la categoría del equipo.
-   * El mapeo es por palabras clave en el nombre de la categoría (case-insensitive).
+   * Nombre completo del equipo para mostrar: "Nombre - Liga" (liga a la que pertenece).
+   * Si no hay liga, solo el nombre del equipo.
    */
   getTeamFullName(team: any): string {
-    return [team.category, team.levelLeague, team.name]
-      .filter(v => !!v)
-      .join(' ');
+    const namePart = (team?.name ?? team?.nameTeam ?? team?.category ?? '').toString().trim();
+    const leaguePart = (team?.levelLeague ?? '').toString().trim();
+    if (leaguePart) {
+      return namePart ? `${namePart} - ${leaguePart}` : leaguePart;
+    }
+    return namePart || (team?.category ?? '');
   }
 
   getCategoryIcon(category: string | null | undefined): string {

@@ -54,7 +54,7 @@
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
       <h3 class="lesiones-section-title mb-0"><i class="bi bi-heart-pulse me-2"></i>Historial de lesiones</h3>
       <div class="d-flex align-items-center gap-2 flex-wrap">
-        <div class="header-action-btns header-action-btns-sm">
+        <div class="header-action-btns header-action-btns-sm" data-tutorial="les-actions">
           <button class="btn-header-action btn-header-action-sm btn-export-pdf" title="Descargar informe PDF" (click)="exportInjuryReport()" [disabled]="isExporting">
             <span *ngIf="!isExporting"><i class="bi bi-file-earmark-pdf-fill"></i></span>
             <span *ngIf="isExporting" class="spinner-border spinner-border-sm" style="width:0.85rem;height:0.85rem;border-width:2px;"></span>
@@ -67,7 +67,7 @@
             <span class="notify-indicator" *ngIf="notificationConfig.autoNotify"></span>
           </button>
         </div>
-        <div class="mode-toggle-wrap mode-toggle-sm">
+        <div class="mode-toggle-wrap mode-toggle-sm" data-tutorial="les-mode">
           <span class="mode-label" [class.active]="!isPro">Base</span>
           <label class="mode-toggle">
             <input type="checkbox" [checked]="isPro" (change)="toggleMode()">

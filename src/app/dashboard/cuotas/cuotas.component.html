@@ -130,25 +130,30 @@
       </div>
     </div>
 
-    <!-- BARRA DE SELECCIÓN (aparece al seleccionar cuotas) -->
-    <div class="cq-selection-bar" *ngIf="stripeBtoShow && selectedCuotas.length > 0" data-tutorial="cq-selection-bar">
-      <div class="cq-selection-info">
-        <i class="bi bi-check2-square"></i>
-        <span class="cq-selection-count">
-          {{ selectedCuotas.length }} cuota{{ selectedCuotas.length !== 1 ? 's' : '' }} seleccionada{{ selectedCuotas.length !== 1 ? 's' : '' }}
-        </span>
-        <span class="cq-selection-sep">·</span>
-        <span class="cq-selection-total">Total: {{ selectedCuotasGrossTotal }} €</span>
+    <!-- BARRA DE SELECCIÓN (aparece al seleccionar cuotas). Contenedor siempre presente para el paso 3 del tutorial. -->
+    <div class="cq-selection-bar-wrap" data-tutorial="cq-selection-bar">
+      <div class="cq-selection-bar" *ngIf="stripeBtoShow && selectedCuotas.length > 0">
+        <div class="cq-selection-info">
+          <i class="bi bi-check2-square"></i>
+          <span class="cq-selection-count">
+            {{ selectedCuotas.length }} cuota{{ selectedCuotas.length !== 1 ? 's' : '' }} seleccionada{{ selectedCuotas.length !== 1 ? 's' : '' }}
+          </span>
+          <span class="cq-selection-sep">·</span>
+          <span class="cq-selection-total">Total: {{ selectedCuotasGrossTotal }} €</span>
+        </div>
+        <div class="cq-selection-actions">
+          <button class="cq-btn-clear" (click)="clearSelection()">
+            <i class="bi bi-x-lg"></i> Limpiar
+          </button>
+          <button class="cq-btn-pay" (click)="openMultiPayModal()">
+            <i class="bi bi-lightning-charge-fill"></i>
+            Pagar {{ selectedCuotasGrossTotal }} €
+          </button>
+        </div>
       </div>
-      <div class="cq-selection-actions">
-        <button class="cq-btn-clear" (click)="clearSelection()">
-          <i class="bi bi-x-lg"></i> Limpiar
-        </button>
-        <button class="cq-btn-pay" (click)="openMultiPayModal()">
-          <i class="bi bi-lightning-charge-fill"></i>
-          Pagar {{ selectedCuotasGrossTotal }} €
-        </button>
-      </div>
+      <p *ngIf="!(stripeBtoShow && selectedCuotas.length > 0)" class="cq-selection-bar-placeholder">
+        <i class="bi bi-check2-square"></i> Al marcar cuotas puntuales arriba aparecerá aquí la barra con el total y los botones Limpiar y Pagar.
+      </p>
     </div>
 
     <!-- CUOTAS OBLIGATORIAS -->

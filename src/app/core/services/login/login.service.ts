@@ -12,6 +12,7 @@ import { LocalStorage } from 'src/app/core/utils/local-storage';
 import { Router } from '@angular/router';
 import { Response } from 'src/app/core/services/models/response.model';
 import { DemoService, DemoRole } from '../demo/demo.service';
+import { DemoActivityService } from '../demo/demo-activity.service';
 
 
 
@@ -26,7 +27,7 @@ export class LoginService {
     private http: HttpClient,
     private router: Router,
     private demoService: DemoService,
-    //private localStorage: LocalStorage
+    private demoActivityService: DemoActivityService,
   ) {
     // Restaurar el usuario desde localStorage al iniciar la app (recarga de página / recompilación)
     const usuarioGuardado = localStorage.getItem('usuario');
@@ -125,6 +126,20 @@ export class LoginService {
    */
   cerrarSesion(byInactivity = false): void {
     const token = localStorage.getItem('token');
+
+    // En demo: enviar email + actividad al endpoint de producción antes de cerrar (email capturado en el login)
+    if (this.demoService.isDemoMode()) {
+      try {
+        const raw = localStorage.getItem('usuario');
+        if (raw) {
+          const user = JSON.parse(raw);
+          const email = (user && user.mail) ? String(user.mail).trim() : '';
+          if (email) {
+            this.demoActivityService.submitLead(email).subscribe({ error: () => {} });
+          }
+        }
+      } catch (_) {}
+    }
 
     // Emitir null ANTES de limpiar storage para que los guards reaccionen inmediatamente
     this['usuarioAutenticado'].next(null);

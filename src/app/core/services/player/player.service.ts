@@ -48,7 +48,8 @@ export class PlayerService {
 
     getListPlayersEstadisticsByTeam(teamId: number, tipoPartido: string): Observable<Response> {
         if (isDemoMode()) {
-            const data = DemoDataService.getDemoListPlayersStadistics();
+            console.log('getListPlayersEstadisticsByTeam: isDemoMode');
+            const data = DemoDataService.getDemoListPlayersStadistics(teamId, tipoPartido);
             return of(DemoDataService.response(data) as Response);
         }
         // Obtén el token almacenado en localStorage

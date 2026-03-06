@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { PlayerEstadistica } from 'src/app/core/services/player/player.model';
@@ -50,6 +51,8 @@ export class EstadisticasJugadoresComponent implements OnInit, OnDestroy {
   pageSizeGol = 10;
   readonly pageSizesGol = [10, 25, 50];
 
+  private tutorialSub?: Subscription;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -65,9 +68,31 @@ export class EstadisticasJugadoresComponent implements OnInit, OnDestroy {
     });
     this.cargarTablaJugadores('Liga');
     setTimeout(() => this.tutorialService.start('estadisticas-jugadores', true), 600);
+
+    this.tutorialSub = this.tutorialService.getState$().subscribe(state => {
+      if (state?.screenId !== 'estadisticas-jugadores') return;
+      const i = state.currentIndex;
+      // Paso 5 y 6 (índices 4 y 5): vista Gráficas. Pasos 1-4: vista Tabla.
+      const enGraficas = i === 4 || i === 5;
+      this.graficasPlayers = enGraficas;
+      // Al mostrar pasos 5 o 6, cargar datos de goles y dibujar gráfica (igual que verGraficaPlayers).
+      if (enGraficas) {
+        this.showGolesForPlayer();
+        setTimeout(() => {
+          if (this.players?.length) {
+            this.graficaUnica(
+              this.players.map(player => player.minTotales),
+              'Minutos totales de los jugadores',
+              'Minutos'
+            );
+          }
+        }, 200);
+      }
+    });
   }
 
   ngOnDestroy(): void {
+    this.tutorialSub?.unsubscribe();
     [this.barChartMinutos, this.barChartGoles, this.barChartUnica].forEach(chart => {
       if (chart) {
         chart.destroy();

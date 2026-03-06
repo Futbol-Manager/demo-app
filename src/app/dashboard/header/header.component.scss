@@ -76,6 +76,9 @@ $sphaira-blue-bright: #0a5f7a;
   overflow: hidden;
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
   animation: header-cta-breathe 2.2s ease-in-out infinite;
+  font-family: inherit;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 /* Anillo de pulso exterior — más visible en reposo */

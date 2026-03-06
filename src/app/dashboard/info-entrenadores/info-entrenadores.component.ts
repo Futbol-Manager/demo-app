@@ -84,6 +84,26 @@ export class InfoEntrenadoresComponent implements OnInit {
   imageBaseUrlUser: string = environment.images + 'user/';
   imageBaseUrlPlayerDni: string = environment.images + 'playerDni/';
   imageBaseUrlEntrenadorDocs: string = environment.images + 'entrenador-docs/';
+  /** Imágenes por defecto por género cuando el entrenador no tiene foto (variedad para no repetir) */
+  defaultCoachImageBase = 'assets/images/entrenadores/';
+  defaultCoachImagesMale: string[] = [
+    'entrenador-default-1.jpg', 'entrenador-default-2.jpg',
+    'entrenador-hombre-1.jpg', 'entrenador-hombre-2.jpg', 'entrenador-hombre-3.jpg',
+    'entrenador-hombre-4.jpg', 'entrenador-hombre-5.jpg'
+  ];
+  defaultCoachImagesFemale: string[] = [
+    'entrenador-default-3.jpg',
+    'entrenadora-mujer-1.jpg', 'entrenadora-mujer-2.jpg', 'entrenadora-mujer-3.jpg', 'entrenadora-mujer-4.jpg'
+  ];
+  /** Nombres considerados femeninos (español e internacionales) para asignar imagen por defecto */
+  private nombresFemeninos: Set<string> = new Set([
+    'maría', 'maria', 'laura', 'elena', 'ana', 'carmen', 'isabel', 'patricia', 'lucia', 'lucía',
+    'sofia', 'sofía', 'paula', 'andrea', 'claudia', 'marta', 'sara', 'irene', 'rocio', 'rocío',
+    'cristina', 'raquel', 'silvia', 'pilar', 'teresa', 'julia', 'alba', 'noelia', 'lidia', 'monica', 'mónica',
+    'diana', 'natalia', 'veronica', 'verónica', 'rosa', 'belen', 'belén', 'ines', 'ínés', 'adriana',
+    'elena', 'beatriz', 'angeles', 'ángeles', 'margarita', 'concepcion', 'concepción', 'mercedes',
+    'antonia', 'dolores', 'lola', 'gema', 'miriam', 'carla', 'alicia', 'eva', 'marina', 'nuria'
+  ]);
   perfilesEntrenadores: any[] = [];
 
   seasons = getSeasons();
@@ -743,6 +763,38 @@ export class InfoEntrenadoresComponent implements OnInit {
 
   goBack(): void {
     this.location.back();
+  }
+
+  /**
+   * Devuelve la URL de la imagen del entrenador: la foto del usuario si existe,
+   * o una imagen por defecto según el género del nombre, asignada de forma estable
+   * por entrenador (mismo nombre/ID = misma imagen) para mayor variedad sin repetición.
+   */
+  getTrainerImageUrl(trainer: Trainer | null | undefined, index: number = 0): string {
+    if (trainer?.picturePlayer) {
+      return this.imageBaseUrlUser + trainer.picturePlayer;
+    }
+    const nombre = (trainer?.nombre ?? '').toString().trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const esMujer = nombre && this.nombresFemeninos.has(nombre);
+    const imagenes = esMujer ? this.defaultCoachImagesFemale : this.defaultCoachImagesMale;
+    if (!imagenes.length) {
+      return this.defaultCoachImageBase + this.defaultCoachImagesMale[0];
+    }
+    // Asignación estable por entrenador: mismo nombre/ID siempre misma imagen
+    const seed = `${trainer?.userId ?? trainer?.trainerId ?? trainer?.playerId ?? ''}-${trainer?.nombre ?? ''}-${trainer?.apellido ?? ''}-${index}`;
+    const hash = this.hashString(seed);
+    const i = Math.abs(hash) % imagenes.length;
+    return this.defaultCoachImageBase + imagenes[i];
+  }
+
+  /** Hash simple para asignar imagen estable por entrenador */
+  private hashString(str: string): number {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) {
+      h = ((h << 5) - h) + str.charCodeAt(i);
+      h |= 0;
+    }
+    return h;
   }
 
   // ===== AI PANEL =====

@@ -5,6 +5,7 @@ import { TrainingService } from 'src/app/core/services/training/training.service
 import { TaskStorageService } from 'src/app/core/services/training/task-storage.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { NotificationService } from 'src/app/core/services/notification/notification.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -66,10 +67,12 @@ export class TareasCatalogComponent implements OnInit, OnDestroy {
     private trainingService: TrainingService,
     public taskStorage: TaskStorageService,
     private loginService: LoginService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private tutorialService: TutorialService
   ) {}
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('tareas-catalog', true), 600);
     this.route.params.subscribe(p => {
       this.teamId = +p['teamId'];
       if (this.teamId) {
@@ -178,7 +181,25 @@ export class TareasCatalogComponent implements OnInit, OnDestroy {
   getImage(task: any): string {
     return task.imagenBoard
       ? this.imageBaseUrl + task.imagenBoard
-      : 'https://appsphairatech.com/images/task-board/blank.png';
+      : this.localTaskBoardBase + 'pizarra-blank.svg';
+  }
+
+  /** Ruta local de imágenes tácticas (si falla la URL del servidor) */
+  readonly localTaskBoardBase = '/assets/images/task-board/';
+
+  /** Si la imagen del servidor falla, intentar la de assets locales */
+  onTaskImageError(evt: Event, task: any): void {
+    const img = evt.target as HTMLImageElement;
+    if (!img || img.dataset['fallbackUsed'] === '1') {
+      img.src = this.localTaskBoardBase + 'pizarra-blank.svg';
+      return;
+    }
+    if (task?.imagenBoard) {
+      img.dataset['fallbackUsed'] = '1';
+      img.src = this.localTaskBoardBase + task.imagenBoard;
+    } else {
+      img.src = this.localTaskBoardBase + 'pizarra-blank.svg';
+    }
   }
 
   // ── Favoritos ─────────────────────────────────────────────────────────────

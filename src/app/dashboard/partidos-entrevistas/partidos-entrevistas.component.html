@@ -177,7 +177,8 @@
       <div class="photo-grid" *ngIf="fotos.length > 0" data-tutorial="pe-grid">
         <div *ngFor="let foto of fotos; let i = index" class="photo-card"
              (click)="abrirModal(getImageUrl(foto))">
-          <img [src]="getImageUrl(foto)" alt="Foto galería" class="photo-card-img" loading="lazy">
+          <img [src]="getImageUrl(foto)" alt="Foto galería" class="photo-card-img" loading="lazy"
+               (error)="onPhotoError(foto)">
           <div class="photo-card-hover">
             <div class="hover-icon"><i class="bi bi-fullscreen"></i></div>
           </div>

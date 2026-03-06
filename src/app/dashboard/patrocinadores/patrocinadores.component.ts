@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { filter, distinctUntilChanged } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
 import { User } from 'src/app/core/models/users/user.model';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
@@ -22,7 +22,7 @@ declare var bootstrap: any;
   templateUrl: './patrocinadores.component.html',
   styleUrls: ['./patrocinadores.component.scss'],
 })
-export class PatrocinadoresComponent implements OnInit {
+export class PatrocinadoresComponent implements OnInit, OnDestroy {
   datosCargados: boolean = false;
   usuarioActual!: User | null;
   clubId = 0;
@@ -32,6 +32,9 @@ export class PatrocinadoresComponent implements OnInit {
   showModalCrearPatro = false;
   showModalUpdatePatrocinador = false;
   isSaving = false;
+  /** True cuando el tutorial muestra el modal de crear patrocinador (z-index correcto). */
+  tutorialModalCrearPatro = false;
+  private tutorialSub = new Subscription();
 
   patrocinadorObj: Patrocinador = new Patrocinador({});
   patrocinadorUpdate: Patrocinador = new Patrocinador({});
@@ -72,7 +75,32 @@ export class PatrocinadoresComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    setTimeout(() => this.tutorialService.start('patrocinadores', true), 600);
+    const isUsuario = this.route.snapshot.paramMap.has('userId');
+    setTimeout(() => this.tutorialService.start(isUsuario ? 'patrocinadores-usuario' : 'patrocinadores', true), 600);
+
+    if (!isUsuario) {
+      this.tutorialSub.add(
+        combineLatest([
+          this.tutorialService.getState$(),
+          this.tutorialService.currentStep$,
+        ]).subscribe(([state, payload]) => {
+          if (!state || state.screenId !== 'patrocinadores') {
+            this.closeTutorialModals();
+            return;
+          }
+          if (!payload) {
+            this.closeTutorialModals();
+            return;
+          }
+          if (payload.step.id === 'patro-modal-crear') {
+            this.tutorialModalCrearPatro = true;
+            this.abrirModalPatrocinador();
+          } else {
+            this.closeTutorialModals();
+          }
+        })
+      );
+    }
 
     this.loginService.usuarioActual.subscribe((user) => {
       this.usuarioActual = user;
@@ -200,6 +228,15 @@ export class PatrocinadoresComponent implements OnInit {
 
   cerrarModalCrearPatro() {
     this.showModalCrearPatro = false;
+  }
+
+  private closeTutorialModals(): void {
+    this.tutorialModalCrearPatro = false;
+    this.showModalCrearPatro = false;
+  }
+
+  ngOnDestroy(): void {
+    this.tutorialSub.unsubscribe();
   }
 
   createUpdatePatrocinador(opcion: number) {

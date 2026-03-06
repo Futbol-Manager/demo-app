@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
@@ -48,7 +49,7 @@ export interface ClubInfo {
   templateUrl: './perfil-entrenador.component.html',
   styleUrls: ['./perfil-entrenador.component.scss'],
 })
-export class PerfilEntrenadorComponent implements OnInit {
+export class PerfilEntrenadorComponent implements OnInit, OnDestroy {
   teamId = 0;
   playerId = 0;
   usuarioActual!: User | null;
@@ -127,6 +128,8 @@ export class PerfilEntrenadorComponent implements OnInit {
   coachBelongsToClub = false;
   loadingSubscription = false;
 
+  private tutorialSub?: Subscription;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -143,6 +146,17 @@ export class PerfilEntrenadorComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => this.tutorialService.start('perfil-entrenador', true), 600);
+    this.tutorialSub = this.tutorialService.getState$().subscribe(state => {
+      if (state?.screenId !== 'perfil-entrenador') return;
+      const i = state.currentIndex;
+      // Paso 4 (índice 3): mostrar modal/vista "Editar perfil" para que el paso tenga objetivo visible.
+      if (i === 3) {
+        this.editProfile = { ...this.profile };
+        this.editMode = true;
+      } else {
+        this.editMode = false;
+      }
+    });
     this.route.params.subscribe((params) => {
       this.teamId = +params['teamId'] || 0;
       if (params['playerId']) {
@@ -162,6 +176,10 @@ export class PerfilEntrenadorComponent implements OnInit {
         this.loadSubscriptionStatus();
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.tutorialSub?.unsubscribe();
   }
 
   loadSubscriptionStatus(): void {

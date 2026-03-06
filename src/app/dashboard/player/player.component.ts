@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { combineLatest } from 'rxjs';
 import { User } from 'src/app/core/models/users/user.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { Response } from 'src/app/core/services/models/response.model';
@@ -109,6 +110,13 @@ export class PlayerComponent implements OnInit, OnDestroy {
   categoryTypeIdActual = 0;
   indexSelected = 0;
   profileId = 0;
+
+  /** Pestaña activa del listado: tarjetas o tabla. Se fuerza a 'table' en pasos 5 y 6 del tutorial. */
+  playersViewTab: 'cards' | 'table' = 'cards';
+
+  /** Modo "solo un jugador": ruta jugador/:teamId/:playerId (ej. desde Opciones jugador > Datos personales). Oculta listado y muestra solo edición. */
+  soloPlayerMode = false;
+  soloPlayerId: number | null = null;
 
   showTutor1 = false;
   showTutor2 = false;
@@ -375,7 +383,27 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    setTimeout(() => this.tutorialService.start('jugadores', true), 600);
+    const screenId = this.route.snapshot.params['playerId'] != null && this.route.snapshot.params['playerId'] !== '' ? 'jugador' : 'jugadores';
+    const isSolo = screenId === 'jugador';
+    // En vista listado (jugadores) arrancar el tutorial a los 600ms. En vista solo (jugador) se arranca al abrir el formulario.
+    if (!isSolo) {
+      setTimeout(() => this.tutorialService.start(screenId, true), 600);
+    }
+
+    this.subs.push(
+      this.tutorialService.getState$().subscribe(state => {
+        if (state?.screenId !== 'jugadores') return;
+        const i = state.currentIndex;
+        // Pasos 1-4 (índices 0-3): vista tarjetas para que el paso 4 (jug-cards) muestre el contenido.
+        // Pasos 5-6 (índices 4-5): vista tabla para toolbar y tabla.
+        if (i === 4 || i === 5) {
+          this.playersViewTab = 'table';
+        } else {
+          this.playersViewTab = 'cards';
+        }
+        this.cdr.detectChanges();
+      })
+    );
 
     const userAgent = navigator.userAgent || navigator.vendor;
 
@@ -384,6 +412,9 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.subs.push(
       this.route.params.subscribe(params => {
         this.teamId = +params['teamId'];
+        const pid = params['playerId'];
+        this.soloPlayerId = pid != null && pid !== '' ? +pid : null;
+        this.soloPlayerMode = this.soloPlayerId != null;
         this.cargarListadoJugadores();
       })
     );
@@ -412,7 +443,11 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void {
-    this.location.back();
+    if (this.soloPlayerMode && this.teamId && this.soloPlayerId) {
+      this.router.navigate(['/dashboard/opcionesjugador', this.teamId, this.soloPlayerId]);
+    } else {
+      this.location.back();
+    }
   }
 
   // Método para cargar el listado de equipos
@@ -494,6 +529,18 @@ export class PlayerComponent implements OnInit, OnDestroy {
           if (pl) {
             this.editarJugador(pl.playerId);
             this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true });
+          }
+        }
+
+        // Si se entró por ruta jugador/:teamId/:playerId (solo edición de ese jugador)
+        if (this.soloPlayerId != null) {
+          const pl = this.players.find(p => p.playerId === this.soloPlayerId);
+          if (pl) {
+            this.editarJugador(pl.playerId);
+            // Arrancar tutorial de Datos personales cuando el formulario ya está visible
+            setTimeout(() => this.tutorialService.start('jugador', true), 500);
+          } else {
+            this.router.navigate(['/dashboard/opcionesjugador', this.teamId, this.soloPlayerId]);
           }
         }
       },
@@ -616,6 +663,10 @@ export class PlayerComponent implements OnInit, OnDestroy {
 
   // Método para cerrar el modal de creación de equipo
   cerrarModal(): void {
+    if (this.soloPlayerMode && this.teamId && this.soloPlayerId) {
+      this.router.navigate(['/dashboard/opcionesjugador', this.teamId, this.soloPlayerId]);
+      return;
+    }
     this.showModal = false;
     this.selectedFile = null;
     this.showPreview = false;

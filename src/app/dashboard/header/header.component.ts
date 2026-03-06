@@ -210,6 +210,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.loadHeaderNotifications();
       }
 
+      // Recalcular tutorial de inicio por rol: en /dashboard/inicio el screenId depende de profileId
+      this.updateTutorialScreenIdFromRoute(this.router.url);
+      this.cdr.markForCheck();
     });
 
     // Actualizar listado y contador de notificaciones cada cierto tiempo
@@ -258,6 +261,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.currentTutorialScreenId = 'estadisticas-equipo';
     } else if (url.includes('estadisticas_jugadores')) {
       this.currentTutorialScreenId = 'estadisticas-jugadores';
+    } else if (url.includes('/jugador/')) {
+      this.currentTutorialScreenId = 'jugador';
     } else if (url.includes('/jugadores/') || (url.includes('jugadores') && !url.includes('estadisticas_jugadores') && !url.includes('info-jugadores'))) {
       this.currentTutorialScreenId = 'jugadores';
     } else if (url.includes('calendario-club')) {
@@ -938,7 +943,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  goSuscripcionClub() {
+  goSuscripcionClub(event?: Event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
     this.showModal = false;
     this.router.navigate(['/dashboard/suscripcion-club']);
   }

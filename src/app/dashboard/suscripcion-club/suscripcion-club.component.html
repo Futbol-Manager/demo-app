@@ -128,7 +128,7 @@
       </ul>
 
       <!-- CTA -->
-      <button class="btn plan-cta" [ngClass]="[getPlanColorClass(plan.id), isPlanComingSoon(plan.id) ? 'disabled' : '']" (click)="selectPlan(plan.id)" [disabled]="isPlanComingSoon(plan.id)">
+      <button class="btn plan-cta" [ngClass]="[getPlanColorClass(plan.id), (isPlanComingSoon(plan.id) || profileId !== 1) ? 'disabled' : '']" (click)="selectPlan(plan.id)" [disabled]="isPlanComingSoon(plan.id) || profileId !== 1">
         <ng-container *ngIf="isPlanComingSoon(plan.id); else choosePlanText">
           Próximamente
           <i class="bi bi-clock"></i>

@@ -9,6 +9,7 @@ import { TeamService } from 'src/app/core/services/team/team.service';
 import { CuotasClub } from 'src/app/core/services/models/club.model';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 @Component({
   selector: 'app-historial-pagos-club',
@@ -38,7 +39,8 @@ export class HistorialPagosClubComponent implements OnInit {
     private route: ActivatedRoute,
     private location: Location,
     private clubService: ClubService,
-    private sanitizer: DomSanitizer) { }
+    private sanitizer: DomSanitizer,
+    private tutorialService: TutorialService) { }
 
   ngOnInit(): void {
     if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
@@ -58,6 +60,9 @@ export class HistorialPagosClubComponent implements OnInit {
     });
 
     this.loginService.usuarioActual.subscribe(() => {});
+
+    // Aviso para iniciar tutorial con voz (el clic del usuario desbloquea el audio en el navegador)
+    setTimeout(() => this.tutorialService.start('historial-pagos-club', true), 600);
   }
 
   goBack(): void {

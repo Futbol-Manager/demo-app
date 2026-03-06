@@ -137,6 +137,7 @@ const routes: Routes = [
       { path: 'documentos-jugador/:teamId/:playerId', component: DocumentosJugadorComponent },
       { path: 'documentos-entrenador/:clubId', component: DocumentosEntrenadorComponent },
       { path: 'clasificacion-resultados/:teamId', component: ClasificacionResultadosComponent },
+      { path: 'jugador/:teamId/:playerId', component: PlayerComponent },
       { path: 'jugadores/:teamId', component: PlayerComponent },
       { path: 'documentos-club/:clubId', component: DocumentosClubComponent, canActivate: [ClubOwnerGuard] },
       { path: 'estadisticas_equipo/:teamId', component: EstadisticasEquipoComponent, canActivate: [ClubPlanGuard] },

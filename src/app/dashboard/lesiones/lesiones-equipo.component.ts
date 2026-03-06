@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
+import { Subscription } from 'rxjs';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { InjuryService } from 'src/app/core/services/injury/injury.service';
@@ -36,7 +37,7 @@ import { User } from 'src/app/core/models/users/user.model';
       <div class="container-fluid px-3 px-md-4">
 
         <!-- Player selector: solo visible cuando no es vista "solo jugador" -->
-        <div class="player-selector-card" *ngIf="!soloJugador">
+        <div class="player-selector-card" *ngIf="!soloJugador" data-tutorial="les-selector-jugador">
           <label class="selector-label">Selecciona un jugador:</label>
           <div class="player-chips">
             <button *ngFor="let p of players" class="player-chip"
@@ -249,7 +250,7 @@ import { User } from 'src/app/core/models/users/user.model';
     }
   `]
 })
-export class LesionesEquipoComponent implements OnInit {
+export class LesionesEquipoComponent implements OnInit, OnDestroy {
 
   teamId: number = 0;
   players: any[] = [];
@@ -261,6 +262,7 @@ export class LesionesEquipoComponent implements OnInit {
 
   // Injury counts per player loaded from backend
   private playerInjuryCounts: Record<number, number> = {};
+  private tutorialSub?: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -287,6 +289,18 @@ export class LesionesEquipoComponent implements OnInit {
       }
     });
     setTimeout(() => this.tutorialService.start('lesiones', true), 600);
+
+    this.tutorialSub = this.tutorialService.getState$().subscribe(state => {
+      if (state?.screenId !== 'lesiones') return;
+      // Paso 0 = selector de jugador; paso 1 = bienvenida. Auto-seleccionar primer jugador al pasar al paso 1 si aún no hay ninguno seleccionado.
+      if (state.currentIndex === 1 && this.players.length > 0 && this.selectedPlayerId === 0) {
+        this.selectPlayer(this.players[0]);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.tutorialSub?.unsubscribe();
   }
 
   goBack(): void {
@@ -301,6 +315,13 @@ export class LesionesEquipoComponent implements OnInit {
           let list = data.players;
           if (!Array.isArray(list) && Array.isArray(data)) list = data;
           this.players = Array.isArray(list) ? list : [];
+
+          if (this.players.length > 0) {
+            const state = this.tutorialService.getState();
+            if (state?.screenId === 'lesiones' && state.currentIndex === 1 && this.selectedPlayerId === 0) {
+              this.selectPlayer(this.players[0]);
+            }
+          }
 
           // Load real injury counts from backend for the whole team
           this.injuryService.getInjuriesByTeam(this.teamId).subscribe(injuries => {

@@ -30,6 +30,8 @@ export class NewCuotasComponent implements OnInit {
   tutorialModalGestionPagos = false;
   /** True cuando el tutorial muestra el modal Cobros Sphaira Pay (z-index por encima del overlay). */
   tutorialModalCobrosSphaira = false;
+  /** True cuando el tutorial muestra el modal Notificaciones de Cuotas (z-index por encima del overlay). */
+  tutorialModalNotifConfig = false;
 
   /** Diálogo de confirmación premium — reemplaza window.confirm() */
   confirmDialog = {
@@ -291,8 +293,18 @@ export class NewCuotasComponent implements OnInit {
       } else if (stepId === 'cq-sphaira-pay') {
         this.tutorialModalGestionPagos = false;
         this.tutorialModalCobrosSphaira = false;
+        this.tutorialModalNotifConfig = false;
         this.showModalAutoPayments = false;
         this.showModalCuotas = false;
+        this.showModalNotifConfig = false;
+      } else if (stepId === 'cq-notif-config') {
+        this.tutorialModalGestionPagos = false;
+        this.tutorialModalCobrosSphaira = false;
+        this.showModalCuotas = false;
+        this.showModalAutoPayments = false;
+        this.tutorialModalNotifConfig = true;
+        this.notifConfig.clubId = this.clubId;
+        this.showModalNotifConfig = true;
       } else {
         this.closeTutorialModals();
       }
@@ -306,8 +318,10 @@ export class NewCuotasComponent implements OnInit {
   private closeTutorialModals(): void {
     this.tutorialModalGestionPagos = false;
     this.tutorialModalCobrosSphaira = false;
+    this.tutorialModalNotifConfig = false;
     this.showModalCuotas = false;
     this.showModalAutoPayments = false;
+    this.showModalNotifConfig = false;
   }
 
   loadTabla() {

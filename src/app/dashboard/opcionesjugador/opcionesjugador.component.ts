@@ -6,6 +6,7 @@ import { User } from 'src/app/core/models/users/user.model';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Location } from '@angular/common';
 
@@ -32,9 +33,11 @@ export class OpcionesjugadorComponent implements OnInit, OnDestroy {
     private teamService: TeamService,
     private http: HttpClient,
     private clubService: ClubService,
-    private location: Location) { }
+    private location: Location,
+    private tutorialService: TutorialService) { }
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('opcionesjugador', true), 600);
     // Suscríbete al observable del servicio para obtener el usuario actual
     this.subs.push(
       this.loginService.usuarioActual.subscribe(user => {
@@ -66,9 +69,7 @@ export class OpcionesjugadorComponent implements OnInit, OnDestroy {
         this.router.navigate(['/dashboard/inicio']);
         break;
       case 2:
-        this.router.navigate(['/dashboard/jugadores', this.teamId], {
-          queryParams: { editPlayer: this.playerId }
-        });
+        this.router.navigate(['/dashboard/jugador', this.teamId, this.playerId]);
         break;
       case 3:
         this.router.navigate(['/dashboard/clasificacion-resultados', this.teamId]);

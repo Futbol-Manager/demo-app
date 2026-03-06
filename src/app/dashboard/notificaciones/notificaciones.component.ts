@@ -12,6 +12,8 @@ import { Location } from '@angular/common';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 import { environment } from 'src/environments/environment';
 import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 declare var $: any; // Declaración para usar jQuery
 
 interface RecipientChip {
@@ -111,6 +113,7 @@ export class NotificacionesComponent implements OnInit {
   currentFilter: 'all' | 'read' | 'unread' = 'all';
   searchQuery = '';
   showDeleteConfirm = false;
+  private tutorialStepSub?: Subscription;
   correoToDelete: any = null;
   deleteIndex = -1;
   deleteOption = 0; // 0 = enviado, 1 = recibido
@@ -131,6 +134,17 @@ export class NotificacionesComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => this.tutorialService.start('notificaciones', true), 600);
+
+    // Al mostrar el paso 7 (Panel de lectura), seleccionar el primer mensaje para ver el contenido completo
+    this.tutorialStepSub = this.tutorialService.currentStep$
+      .pipe(filter((v) => v?.step?.id === 'notif-lector' && this.tutorialService.getState()?.screenId === 'notificaciones'))
+      .subscribe(() => {
+        setTimeout(() => {
+          if (this.correosFiltered.length > 0 && !this.selectCorreo) {
+            this.openCorreo(this.correosFiltered[0]);
+          }
+        }, 100);
+      });
 
     this.loadingCorreos = true;
     if (
@@ -455,6 +469,7 @@ export class NotificacionesComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
+    this.tutorialStepSub?.unsubscribe();
     this.destroySummernote(); // Limpia Summernote al destruir el componente
   }
 
@@ -512,16 +527,22 @@ export class NotificacionesComponent implements OnInit {
   }
 
   /**
-   * Decodifica el contenido en Base64 y lo carga en Summernote
+   * Decodifica el contenido en Base64 (soporta UTF-8 para tildes y caracteres especiales).
+   * Si el contenido se codificó con btoa(unescape(encodeURIComponent(str))), se decodifica correctamente.
    * @param base64String - Contenido codificado en Base64
    * @returns Contenido decodificado
    */
   private decodeBase64(base64String: string): string {
     try {
-      return atob(base64String);
+      const decoded = atob(base64String);
+      try {
+        return decodeURIComponent(escape(decoded));
+      } catch {
+        return decoded;
+      }
     } catch (error) {
       console.error('Error al decodificar Base64:', error);
-      return ''; // Devuelve un string vacío en caso de error
+      return '';
     }
   }
 

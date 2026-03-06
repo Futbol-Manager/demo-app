@@ -138,9 +138,9 @@
 <div class="modal-backdrop-custom" *ngIf="showModalCrearPatro"></div>
 
 <!-- Modal crear patrocinador -->
-<div class="modal d-block" tabindex="-1" role="dialog" *ngIf="showModalCrearPatro">
+<div class="modal d-block modal-overlay" tabindex="-1" role="dialog" *ngIf="showModalCrearPatro" [class.tutorial-modal-visible]="tutorialModalCrearPatro">
   <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
-    <div class="modal-content sponsor-modal">
+    <div class="modal-content sponsor-modal" data-tutorial="patro-modal-crear">
 
       <!-- HEADER -->
       <div class="modal-header sponsor-header">

@@ -287,6 +287,11 @@ export class PartidosEntrevistasComponent implements OnInit, AfterViewInit {
     }
   }
 
+  /** Quita de la lista una foto que no cargó (imagen dañada o URL rota) */
+  onPhotoError(foto: any): void {
+    this.fotos = this.fotos.filter(f => f.galeriaPartidoId !== foto.galeriaPartidoId);
+  }
+
   // ─── Upload de imagen por archivo ───────────────────────────
 
   onSubmit() {

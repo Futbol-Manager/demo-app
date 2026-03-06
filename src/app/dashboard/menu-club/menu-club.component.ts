@@ -11,6 +11,7 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { TrainingService } from 'src/app/core/services/training/training.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 import { Location } from '@angular/common';
 import {
   AsistenciaTraining,
@@ -42,9 +43,11 @@ export class MenuClubComponent implements OnInit {
     private playerService: PlayerService,
     private teamService: TeamService,
     private cdr: ChangeDetectorRef,
+    private tutorialService: TutorialService
   ) {}
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('menu-club', true), 600);
     // Suscríbete al observable del servicio para obtener el usuario actual
     this.loginService.usuarioActual.subscribe((user) => {
       this.usuarioActual = user;

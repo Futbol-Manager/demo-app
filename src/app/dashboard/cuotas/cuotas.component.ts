@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
@@ -13,6 +14,7 @@ import { environment } from 'src/environments/environment';
 import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
 import { firstValueFrom } from 'rxjs';
 import { ClubService } from 'src/app/core/services/club/club.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
@@ -21,7 +23,7 @@ import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
   templateUrl: './cuotas.component.html',
   styleUrls: ['./cuotas.component.scss']
 })
-export class CuotasComponent implements OnInit {
+export class CuotasComponent implements OnInit, OnDestroy {
 
   datosCargados: boolean = false;
   teamId!: number;
@@ -127,6 +129,8 @@ export class CuotasComponent implements OnInit {
   activePagoClubIds = new Set<number>();
   multiPayIsSubscription = false;
   multiPaySubscriptionCuota: any = null;
+
+  private tutorialSub?: Subscription;
 
   get selectedCuotasTotal(): number {
     return this.selectedCuotas.reduce((sum, c) => sum + (parseFloat(c.importe) || 0), 0);
@@ -311,10 +315,12 @@ export class CuotasComponent implements OnInit {
     private fb: FormBuilder,
     private clubService: ClubService,
     private location: Location,
-    private sanitizer: DomSanitizer) {
+    private sanitizer: DomSanitizer,
+    private tutorialService: TutorialService) {
   }
 
   async ngOnInit(): Promise<void> {
+    setTimeout(() => this.tutorialService.start('cuotas', true), 600);
     if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
     }
@@ -346,6 +352,23 @@ export class CuotasComponent implements OnInit {
 
       this.loadCuotasData();
     });
+
+    this.tutorialSub = this.tutorialService.getState$().subscribe(state => {
+      if (state?.screenId !== 'cuotas') return;
+      if (state.currentIndex === 2) setTimeout(() => this.selectFirstPuntualForTutorialStep(), 150);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.tutorialSub?.unsubscribe();
+  }
+
+  /** En el paso 3 del tutorial, selecciona una cuota puntual para que se muestre la barra de selección. */
+  selectFirstPuntualForTutorialStep(): void {
+    if (this.selectedCuotas.length > 0) return;
+    const all = [...(this.cuotasObligatorias || []), ...(this.cuotasNoObligatorias || [])];
+    const first = all.find(c => this.canSelectCuota(c));
+    if (first) this.selectedCuotas.push(first);
   }
 
   loadCuotasData(): void {
@@ -359,6 +382,24 @@ export class CuotasComponent implements OnInit {
           this.cuotasNoObligatorias = (this.historyCuotasPlayer.noObligatorios || []).filter((c: any) => !c.desistido);
           this.stripeBtoShow = !!(this.historyCuotasPlayer.stripeId);
           this.stripeId = this.historyCuotasPlayer.stripeId;
+          if (isDemoMode() && this.stripeBtoShow) {
+            const hasSelectable = [...this.cuotasObligatorias, ...this.cuotasNoObligatorias].some((c: any) => this.canSelectCuota(c));
+            if (!hasSelectable) {
+              this.cuotasObligatorias = [
+                {
+                  pagoClubId: -1,
+                  nombre: 'Cuota puntual (demo)',
+                  importe: '30',
+                  pagado: '0',
+                  stripe: 0,
+                  tipoCobro: 0,
+                  desistido: false,
+                  tipoPagoStripe: 0
+                },
+                ...this.cuotasObligatorias
+              ];
+            }
+          }
           this.banco = this.historyCuotasPlayer.banco;
           this.nameClub = this.historyCuotasPlayer.nameClub;
           this.clubId = this.historyCuotasPlayer.clubId;
@@ -372,6 +413,8 @@ export class CuotasComponent implements OnInit {
           this.loadFeeConfig();
           this.loadActiveSubscriptions();
           if (this.stripeBtoShow) this.loadSavedCards();
+          const state = this.tutorialService.getState();
+          if (state?.screenId === 'cuotas' && state.currentIndex === 2) setTimeout(() => this.selectFirstPuntualForTutorialStep(), 200);
         }
       },
       (error) => { console.error('Error al cargar cuotas', error); }

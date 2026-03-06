@@ -6,6 +6,7 @@ import { PlayerService } from 'src/app/core/services/player/player.service';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 import { environment } from 'src/environments/environment';
 import { Chart, registerables } from 'chart.js/auto';
 
@@ -74,10 +75,12 @@ export class ScoutingPlayerComponent implements OnInit, AfterViewInit, OnDestroy
     private location: Location,
     private playerService: PlayerService,
     private trainingService: TrainingService,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private tutorialService: TutorialService
   ) {}
 
   ngOnInit(): void {
+    setTimeout(() => this.tutorialService.start('scouting-player', true), 600);
     this.route.params.subscribe(params => {
       this.playerId = +params['playerId'] || 0;
     });

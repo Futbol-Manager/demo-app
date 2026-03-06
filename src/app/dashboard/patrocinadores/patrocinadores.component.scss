@@ -965,3 +965,10 @@ input[type="file"]:focus {
     filter: brightness(1.2) contrast(1.06);
   }
 }
+
+/* Modal visible durante el tutorial (z-index por encima del overlay del tutorial) */
+.modal-overlay {
+  &.tutorial-modal-visible {
+    z-index: 100001;
+  }
+}

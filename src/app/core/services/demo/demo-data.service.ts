@@ -13,15 +13,16 @@ const DEMO_POSITIONS = ['Portero', 'Portero', 'Defensa', 'Defensa', 'Defensa', '
 /** Pierna natural para variedad en la ficha del jugador */
 const DEMO_PIERNA = ['Derecha', 'Izquierda', 'Derecha', 'Izquierda', 'Ambidiestro', 'Derecha', 'Izquierda', 'Derecha', 'Izquierda', 'Derecha', 'Ambidiestro', 'Izquierda', 'Derecha', 'Izquierda', 'Derecha', 'Izquierda', 'Derecha', 'Ambidiestro'];
 
+/** Equipos demo: name = nombre corto del equipo, levelLeague = liga a la que pertenece (formato visual: "Nombre - Liga") */
 const DEMO_TEAMS_META: { teamId: number; name: string; category: string; levelLeague: string; trainingDays: string }[] = [
-  { teamId: 9001, name: 'Equipo Demo Senior', category: 'Senior', levelLeague: 'Primera Regional', trainingDays: 'Lunes, Miércoles, Viernes' },
-  { teamId: 9002, name: 'Equipo Demo Juvenil', category: 'Juvenil', levelLeague: 'Liga Juvenil', trainingDays: 'Martes, Jueves' },
-  { teamId: 9003, name: 'Equipo Demo Cadete', category: 'Cadete', levelLeague: 'Liga Cadete', trainingDays: 'Lunes, Miércoles' },
-  { teamId: 9004, name: 'Equipo Demo Infantil', category: 'Infantil', levelLeague: 'Liga Infantil', trainingDays: 'Martes, Jueves, Sábado' },
-  { teamId: 9005, name: 'Equipo Demo Alevín', category: 'Alevín', levelLeague: 'Liga Alevín', trainingDays: 'Lunes, Viernes' },
-  { teamId: 9006, name: 'Equipo Demo Benjamín', category: 'Benjamín', levelLeague: 'Liga Benjamín', trainingDays: 'Miércoles, Sábado' },
-  { teamId: 9007, name: 'Equipo Demo Prebenjamín', category: 'Prebenjamín', levelLeague: 'Liga Prebenjamín', trainingDays: 'Jueves, Sábado' },
-  { teamId: 9008, name: 'Equipo Demo Femenino', category: 'Femenino', levelLeague: 'Liga Femenina', trainingDays: 'Lunes, Miércoles, Viernes' },
+  { teamId: 9001, name: 'Senior Demo', category: 'Senior', levelLeague: 'SuperLiga', trainingDays: 'Lunes, Miércoles, Viernes' },
+  { teamId: 9002, name: 'Juvenil Demo', category: 'Juvenil', levelLeague: 'SuperLiga', trainingDays: 'Martes, Jueves' },
+  { teamId: 9003, name: 'Cadete Demo', category: 'Cadete', levelLeague: 'Liga Cadete', trainingDays: 'Lunes, Miércoles' },
+  { teamId: 9004, name: 'Infantil Demo', category: 'Infantil', levelLeague: 'Liga Infantil', trainingDays: 'Martes, Jueves, Sábado' },
+  { teamId: 9005, name: 'Alevin Demo', category: 'Alevín', levelLeague: 'SuperLiga', trainingDays: 'Lunes, Viernes' },
+  { teamId: 9006, name: 'Benjamín Demo', category: 'Benjamín', levelLeague: 'Liga Benjamín', trainingDays: 'Miércoles, Sábado' },
+  { teamId: 9007, name: 'Prebenjamín Demo', category: 'Prebenjamín', levelLeague: 'Liga Prebenjamín', trainingDays: 'Jueves, Sábado' },
+  { teamId: 9008, name: 'Femenino Demo', category: 'Femenino', levelLeague: 'Liga Femenina', trainingDays: 'Lunes, Miércoles, Viernes' },
 ];
 
 const PLAYERS_PER_TEAM = 18;
@@ -254,23 +255,49 @@ export class DemoDataService {
     };
   }
 
-  /** Estadísticas jugadores club (response.data.listDto) — 8 equipos x 18 jugadores con partidos, goles, asistencias, minutos */
-  static getDemoListPlayersStadistics(): any {
-    const listDto: any[] = [];
-    DEMO_TEAMS_META.forEach((meta, teamIndex) => {
-      const players = buildDemoPlayersForTeam(meta.teamId, teamIndex, meta.name);
-      players.forEach(p => {
-        listDto.push({
-          playerId: p.playerId,
-          nombre: p.nombre + ' ' + p.apellido,
-          nameTeam: meta.name,
-          partidosJugados: p.partidosJugados,
-          goles: p.goles,
-          asistencias: p.asistencias,
-          posicion: p.position,
-          minutos: p.minutos,
-        });
-      });
+  /** Estadísticas jugadores por equipo (estadisticas-jugadores). response.data = { listDto: PlayerEstadistica[], matchs: number }. Solo jugadores del teamId indicado, con campos para tabla y gráficas. */
+  static getDemoListPlayersStadistics(teamId?: number, _tipoPartido?: string): any {
+    const teamIndex = teamId != null && teamId >= 9001 && teamId <= 9008
+      ? teamId - 9001
+      : 0;
+    const meta = DEMO_TEAMS_META[teamIndex] ?? DEMO_TEAMS_META[0];
+    const players = buildDemoPlayersForTeam(meta.teamId, teamIndex, meta.name);
+    const listDto: any[] = players.map(p => {
+      const pj = p.partidosJugados ?? 0;
+      const g = p.goles ?? 0;
+      const a = p.asistencias ?? 0;
+      const min = p.minutos ?? 0;
+      const mediaMin = pj > 0 ? Math.round(min / pj) : 0;
+      const golesPenalti = p.posicion === 'Delantero' ? (p.goles > 0 ? Math.min(1, p.goles) : 0) : 0;
+      const penaltisFallados = p.posicion === 'Delantero' ? (p.playerId % 3 === 0 ? 1 : 0) : 0;
+      const tarAmarilla = 1 + (p.playerId % 3);
+      const tarRojas = p.playerId % 5 === 0 ? 1 : 0;
+      const golesFalta = p.posicion === 'Delantero' && p.playerId % 4 === 0 ? 1 : 0;
+      const gMasA = g + a;
+      const mediaG = pj > 0 ? (g / pj).toFixed(2) : '0';
+      const mediaA = pj > 0 ? (a / pj).toFixed(2) : '0';
+      const mediaGA = pj > 0 ? (gMasA / pj).toFixed(2) : '0';
+      return {
+        playerId: p.playerId,
+        nombre: (p.nombre || '') + ' ' + (p.apellido || ''),
+        posicion: p.posicion || p.position,
+        fecha: p.fechaDeNacimiento || '',
+        partidosJugados: String(pj),
+        minTotales: min,
+        mediaMinPorPartido: String(mediaMin),
+        goles: g,
+        asistencias: a,
+        golesAsistencias: String(gMasA),
+        mediaGolesPorPartido: mediaG,
+        MediaAsistPorPartido: mediaA,
+        mediaAsistPorPartido: mediaA,
+        mediaGolesAsistenciasPorPartido: mediaGA,
+        golesPenalti: String(golesPenalti),
+        golesFalta: String(golesFalta),
+        penaltisFallados: String(penaltisFallados),
+        tarAmarilla: String(tarAmarilla),
+        tarRojas: String(tarRojas),
+      };
     });
     return { listDto, matchs: 18 };
   }
@@ -541,23 +568,61 @@ export class DemoDataService {
     };
   }
 
-  /** Post-partidos por equipo y tipo (estadisticas-equipo). response.data = array con postPartidoId, resultado, golesAFavor, matchPreparation, etc. */
+  /** Post-partidos por equipo y tipo (estadisticas-equipo). response.data = array con postPartidoId, resultado, golesAFavor, matchPreparation y estadísticas para tabla y gráficas. */
   static getDemoListPostPartidoByTeam(_teamId?: number, _tipo?: string): any[] {
-    return [
-      { postPartidoId: 1, resultado: 'V', golesAFavor: 2, golesEnContra: 1, matchPreparation: { rivalName: 'Club Norte', terreno: 'local', matchDate: '2025-03-02', tipoPartido: 'Liga' } },
-      { postPartidoId: 2, resultado: 'E', golesAFavor: 1, golesEnContra: 1, matchPreparation: { rivalName: 'Escuela Sur', terreno: 'visitante', matchDate: '2025-02-28', tipoPartido: 'Liga' } },
-      { postPartidoId: 3, resultado: 'D', golesAFavor: 1, golesEnContra: 3, matchPreparation: { rivalName: 'Atlético Este', terreno: 'visitante', matchDate: '2025-02-20', tipoPartido: 'Copa' } },
-      { postPartidoId: 4, resultado: 'V', golesAFavor: 3, golesEnContra: 0, matchPreparation: { rivalName: 'Deportivo Centro', terreno: 'local', matchDate: '2025-02-15', tipoPartido: 'Liga' } },
-      { postPartidoId: 5, resultado: 'V', golesAFavor: 2, golesEnContra: 1, matchPreparation: { rivalName: 'Rival Oeste', terreno: 'local', matchDate: '2025-02-08', tipoPartido: 'Amistoso' } },
+    const base = [
+      { postPartidoId: 1, resultado: 'V', golesAFavor: 2, golesEnContra: 1, matchPreparation: { rivalName: 'Club Norte', terreno: 'Local', matchDate: '2025-03-02', tipoPartido: 'Liga' }, disparosAFavor: 14, disparosEnContra: 8, faltasRecibidas: 10, faltasCometidas: 12, cornersAFavor: 5, cornersEnContra: 3, recuperaciones: 22, perdidas: 15, tarjetasAmarillas: 2, tarjetasRojas: 0, llegadasPeligroAFavor: 6, llegadasPeligroEnContra: 3, penaltisAFavor: 1, penaltisEnContra: 0 },
+      { postPartidoId: 2, resultado: 'E', golesAFavor: 1, golesEnContra: 1, matchPreparation: { rivalName: 'Escuela Sur', terreno: 'Visitante', matchDate: '2025-02-28', tipoPartido: 'Liga' }, disparosAFavor: 9, disparosEnContra: 11, faltasRecibidas: 8, faltasCometidas: 9, cornersAFavor: 4, cornersEnContra: 5, recuperaciones: 18, perdidas: 20, tarjetasAmarillas: 1, tarjetasRojas: 0, llegadasPeligroAFavor: 4, llegadasPeligroEnContra: 5, penaltisAFavor: 0, penaltisEnContra: 0 },
+      { postPartidoId: 3, resultado: 'D', golesAFavor: 1, golesEnContra: 3, matchPreparation: { rivalName: 'Atlético Este', terreno: 'Visitante', matchDate: '2025-02-20', tipoPartido: 'Liga' }, disparosAFavor: 7, disparosEnContra: 16, faltasRecibidas: 14, faltasCometidas: 11, cornersAFavor: 2, cornersEnContra: 7, recuperaciones: 14, perdidas: 25, tarjetasAmarillas: 3, tarjetasRojas: 1, llegadasPeligroAFavor: 2, llegadasPeligroEnContra: 8, penaltisAFavor: 0, penaltisEnContra: 1 },
+      { postPartidoId: 4, resultado: 'V', golesAFavor: 3, golesEnContra: 0, matchPreparation: { rivalName: 'Deportivo Centro', terreno: 'Local', matchDate: '2025-02-15', tipoPartido: 'Liga' }, disparosAFavor: 18, disparosEnContra: 5, faltasRecibidas: 6, faltasCometidas: 8, cornersAFavor: 8, cornersEnContra: 2, recuperaciones: 28, perdidas: 10, tarjetasAmarillas: 0, tarjetasRojas: 0, llegadasPeligroAFavor: 9, llegadasPeligroEnContra: 1, penaltisAFavor: 0, penaltisEnContra: 0 },
+      { postPartidoId: 5, resultado: 'V', golesAFavor: 2, golesEnContra: 1, matchPreparation: { rivalName: 'Rival Oeste', terreno: 'Local', matchDate: '2025-02-08', tipoPartido: 'Liga' }, disparosAFavor: 12, disparosEnContra: 9, faltasRecibidas: 9, faltasCometidas: 7, cornersAFavor: 6, cornersEnContra: 4, recuperaciones: 20, perdidas: 16, tarjetasAmarillas: 1, tarjetasRojas: 0, llegadasPeligroAFavor: 5, llegadasPeligroEnContra: 4, penaltisAFavor: 1, penaltisEnContra: 0 },
     ];
+    return base;
   }
 
-  /** Galería de un partido (fotos y vídeos). response.data = array de { galeriaPartidoId, tipo: 0|1, url, ... } */
+  /** Goles avanzados por equipo (estadisticas-equipo y estadisticas-jugadores). response.data = { golesAFavor: [], golesEnContra: [] }. Incluye postPartido para tabla de goles por jugador. */
+  static getDemoGolesAvanzadoByTeamId(_teamId?: number): { golesAFavor: any[]; golesEnContra: any[] } {
+    const teamId = _teamId ?? 9001;
+    const teamIndex = teamId >= 9001 && teamId <= 9008 ? teamId - 9001 : 0;
+    const baseId = 8001 + teamIndex * PLAYERS_PER_TEAM;
+    const rivales = ['Club Norte', 'Escuela Sur', 'Atlético Este', 'Deportivo Centro', 'Rival Oeste'];
+    const fechas = ['2025-03-02', '2025-02-28', '2025-02-20', '2025-02-15', '2025-02-08'];
+    const golesAFavor = [
+      { golPostPartidoId: 1, category: 'Jugada combinativa', subCategory: 'Dentro del área', option: 'Tiro a portería', minuto: 23, playerId: baseId + 9, asistencia: baseId + 2, teamId, postPartido: { matchPreparation: { rivalName: rivales[0], matchDate: fechas[0] } } },
+      { golPostPartidoId: 2, category: 'Jugada combinativa', subCategory: 'Dentro del área', option: 'Remate de cabeza', minuto: 67, playerId: baseId + 10, asistencia: baseId + 5, teamId, postPartido: { matchPreparation: { rivalName: rivales[0], matchDate: fechas[0] } } },
+      { golPostPartidoId: 3, category: 'Jugada combinativa', subCategory: 'Banda Derecha', option: 'Tiro a portería', minuto: 45, playerId: baseId + 11, asistencia: baseId + 1, teamId, postPartido: { matchPreparation: { rivalName: rivales[1], matchDate: fechas[1] } } },
+      { golPostPartidoId: 4, category: 'Córner', subCategory: 'Izquierda', option: 'Primer palo', minuto: 78, playerId: baseId + 12, asistencia: 0, teamId, postPartido: { matchPreparation: { rivalName: rivales[1], matchDate: fechas[1] } } },
+      { golPostPartidoId: 5, category: 'Pérdida/Recuperación', subCategory: 'Zona interior', option: 'Tiro a portería', minuto: 12, playerId: baseId + 13, asistencia: baseId + 4, teamId, postPartido: { matchPreparation: { rivalName: rivales[2], matchDate: fechas[2] } } },
+      { golPostPartidoId: 6, category: 'Falta', subCategory: 'Fuera del área', option: 'Tiro a portería', minuto: 89, playerId: baseId + 9, asistencia: 0, teamId, postPartido: { matchPreparation: { rivalName: rivales[2], matchDate: fechas[2] } } },
+      { golPostPartidoId: 7, category: 'Jugada combinativa', subCategory: 'Fuera del área', option: 'Tiro a portería', minuto: 55, playerId: baseId + 14, asistencia: baseId + 6, teamId, postPartido: { matchPreparation: { rivalName: rivales[3], matchDate: fechas[3] } } },
+      { golPostPartidoId: 8, category: 'Penalti', subCategory: '', option: '', minuto: 34, playerId: baseId + 10, asistencia: 0, teamId, postPartido: { matchPreparation: { rivalName: rivales[4], matchDate: fechas[4] } } },
+    ];
+    const golesEnContra = [
+      { golPostPartidoId: 101, category: 'Jugada combinativa', subCategory: 'Dentro del área', option: 'Tiro a portería', minuto: 15, playerId: 0, asistencia: 0, teamId, postPartido: { matchPreparation: { rivalName: rivales[0], matchDate: fechas[0] } } },
+      { golPostPartidoId: 102, category: 'Córner', subCategory: 'Derecha', option: 'Segundo palo', minuto: 61, playerId: 0, asistencia: 0, teamId, postPartido: { matchPreparation: { rivalName: rivales[1], matchDate: fechas[1] } } },
+      { golPostPartidoId: 103, category: 'Jugada combinativa', subCategory: 'Banda Izquierda', option: 'Remate de cabeza', minuto: 72, playerId: 0, asistencia: 0, teamId, postPartido: { matchPreparation: { rivalName: rivales[2], matchDate: fechas[2] } } },
+      { golPostPartidoId: 104, category: 'En propia', subCategory: '', option: '', minuto: 40, playerId: 0, asistencia: 0, teamId, postPartido: { matchPreparation: { rivalName: rivales[3], matchDate: fechas[3] } } },
+    ];
+    return { golesAFavor, golesEnContra };
+  }
+
+  /** Galería de un partido (fotos y vídeos). response.data = array de { galeriaPartidoId, tipo: 0|1, urlImg, isExternal?, ... }. Solo imágenes que cargan bien. */
   static getDemoGaleriaPartidos(_postpartidoId: number): any[] {
+    const fotosReales: string[] = [
+      'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800',
+      'https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?w=800',
+      'https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=800',
+    ];
+    const descripciones = ['Celebración de gol', 'Acción de juego en el área', 'Vista del estadio'];
     return [
-      { galeriaPartidoId: 201, tipo: 0, url: 'demo-foto-1.jpg', descripcion: 'Celebración gol' },
-      { galeriaPartidoId: 202, tipo: 0, url: 'demo-foto-2.jpg', descripcion: 'Acción de juego' },
-      { galeriaPartidoId: 203, tipo: 1, url: 'demo-video-1.mp4', descripcion: 'Resumen del partido' },
+      ...fotosReales.map((urlImg, i) => ({
+        galeriaPartidoId: 200 + i,
+        tipo: 0,
+        urlImg,
+        isExternal: true,
+        descripcion: descripciones[i] || 'Foto del partido',
+      })),
+      { galeriaPartidoId: 205, tipo: 1, urlImg: 'KQ6zr6kCPj8', link: 'KQ6zr6kCPj8', descripcion: 'Resumen del partido' },
     ];
   }
 
@@ -567,6 +632,7 @@ export class DemoDataService {
     return {
       clasificacion: DEMO_TEAMS_META.map((t, i) => ({
         posicion: i + 1,
+        nombre: t.name,
         nombreEquipo: t.name,
         puntos: puntos[i],
         jugados: 12,
@@ -575,6 +641,8 @@ export class DemoDataService {
         perdidos: 12 - Math.floor(puntos[i] / 3) - (puntos[i] % 3),
         golesFavor: 20 + (i * 2),
         golesContra: 15 - i,
+        golesAFavor: 20 + (i * 2),
+        golesEnContra: 15 - i,
       })),
       partidos: [
         { jornada: 1, local: DEMO_TEAMS_META[0].name, visitante: 'Club Norte', golesLocal: 2, golesVisitante: 1 },
@@ -633,11 +701,11 @@ export class DemoDataService {
   /** Catálogo de tareas (filterTaskShopByOptions). response.data = array para tareas-catalog */
   static getDemoTaskShopCatalog(): any[] {
     return [
-      { taskId: 101, tasksShopId: 101, slogans: 'Rondo 4+2', description: 'Rondo en espacio reducido. Máximo 2 toques.', estrategia: 'Posesión', intencion: 'Conservar', worktime: '10 min', space: '20x20', material: 'Conos, petos', imagenBoard: 'rondo-demo.jpg' },
-      { taskId: 102, tasksShopId: 102, slogans: 'Finalización en área', description: 'Entrada desde banda y remate a portería.', estrategia: 'Situaciones Reducidas', intencion: 'Finalizar', worktime: '15 min', space: 'Área', material: 'Balones', imagenBoard: 'finalizacion-demo.jpg' },
-      { taskId: 103, tasksShopId: 103, slogans: 'Posesión 5v5', description: 'Mantener la posesión en espacio delimitado.', estrategia: 'Posesión', intencion: 'Conservar', worktime: '12 min', space: '30x30', material: 'Petos, conos', imagenBoard: null },
-      { taskId: 104, tasksShopId: 104, slogans: 'Transición defensiva', description: 'Recuperar balón y salir rápido.', estrategia: 'Transición Defensiva', intencion: 'Recuperar', worktime: '8 min', space: 'Medio campo', material: 'Balones, petos', imagenBoard: null },
-      { taskId: 105, tasksShopId: 105, slogans: 'Acción a balón parado', description: 'Ejecución de corner y estrategia de remate.', estrategia: 'Acciones a Balón Parado', intencion: 'ABP Ofensiva', worktime: '10 min', space: 'Área', material: 'Balones', imagenBoard: null },
+      { taskId: 101, tasksShopId: 101, slogans: 'Rondo 4+2', description: 'Rondo en espacio reducido. Máximo 2 toques.', estrategia: 'Posesión', intencion: 'Conservar', worktime: '10 min', space: '20x20', material: 'Conos, petos', imagenBoard: 'rondo-4-2.svg' },
+      { taskId: 102, tasksShopId: 102, slogans: 'Finalización en área', description: 'Entrada desde banda y remate a portería.', estrategia: 'Situaciones Reducidas', intencion: 'Finalizar', worktime: '15 min', space: 'Área', material: 'Balones', imagenBoard: 'finalizacion-area.svg' },
+      { taskId: 103, tasksShopId: 103, slogans: 'Posesión 5v5', description: 'Mantener la posesión en espacio delimitado.', estrategia: 'Posesión', intencion: 'Conservar', worktime: '12 min', space: '30x30', material: 'Petos, conos', imagenBoard: 'posesion-5v5.svg' },
+      { taskId: 104, tasksShopId: 104, slogans: 'Transición defensiva', description: 'Recuperar balón y salir rápido.', estrategia: 'Transición Defensiva', intencion: 'Recuperar', worktime: '8 min', space: 'Medio campo', material: 'Balones, petos', imagenBoard: 'transicion-defensiva.svg' },
+      { taskId: 105, tasksShopId: 105, slogans: 'Acción a balón parado', description: 'Ejecución de corner y estrategia de remate.', estrategia: 'Acciones a Balón Parado', intencion: 'ABP Ofensiva', worktime: '10 min', space: 'Área', material: 'Balones', imagenBoard: 'accion-balon-parado.svg' },
     ];
   }
 
@@ -839,21 +907,68 @@ export class DemoDataService {
   }
 
   // ─── Notificaciones / Correos ───────────────────────────────────────────────
-  /** Correos (enviados y recibidos). response.data: { enviados, recibidos } */
+  /** Avatares reales por mensaje (assets/images/user/notif-avatar-N.jpg). 16 avatares para rotar. */
+  private static readonly DEMO_NOTIF_AVATARS = 16;
+
+  /** Correos (enviados y recibidos). response.data: { enviados, recibidos }. 15+ notificaciones con avatar real por mensaje. */
   static getDemoCorreos(): any {
     const now = new Date();
     const ayer = new Date(now);
     ayer.setDate(ayer.getDate() - 1);
-    return {
-      enviados: [
-        { correoEnviadoId: 1, asunto: 'Recordatorio: entrenamiento de mañana', remitente: 'Club Demo', destinatario: 'Equipo Demo Senior', body: btoa('<p>Hola, os recordamos el entrenamiento de mañana a las 18:00.</p>'), fechaCreate: ayer.toISOString(), leido: 1 },
-        { correoEnviadoId: 2, asunto: 'Convocatoria partido domingo', remitente: 'Club Demo', destinatario: 'Equipo Demo Juvenil', body: btoa('<p>Convocatoria para el partido del domingo. Confirmar asistencia.</p>'), fechaCreate: now.toISOString(), leido: 1 },
-      ],
-      recibidos: [
-        { correoRecibidoId: 1, asunto: 'Consulta sobre horarios', remitente: 'Carlos García', destinatario: 'Club Demo', body: btoa('<p>Buenos días, quisiera consultar los horarios de la próxima semana.</p>'), fechaCreate: now.toISOString(), leido: 0 },
-        { correoRecibidoId: 2, asunto: 'Documentación actualizada', remitente: 'Miguel López', destinatario: 'Club Demo', body: btoa('<p>Adjunto la documentación solicitada.</p>'), fechaCreate: ayer.toISOString(), leido: 1 },
-      ],
-    };
+    const anteayer = new Date(now);
+    anteayer.setDate(anteayer.getDate() - 2);
+
+    const avatar = (i: number) => `notif-avatar-${((i - 1) % DemoDataService.DEMO_NOTIF_AVATARS) + 1}.jpg`;
+
+    const recibidosBase = [
+      { remitente: 'Carlos García', asunto: 'Consulta sobre horarios', body: '<p>Buenos días, quisiera consultar los horarios de la próxima semana.</p>', fecha: now, leido: 0 },
+      { remitente: 'Miguel López', asunto: 'Documentación actualizada', body: '<p>Adjunto la documentación solicitada.</p>', fecha: ayer, leido: 1 },
+      { remitente: 'Ana Martínez', asunto: 'Confirmación convocatoria', body: '<p>Confirmo mi asistencia al partido del sábado. Gracias.</p>', fecha: now, leido: 0 },
+      { remitente: 'David Sánchez', asunto: 'Duda sobre equipación', body: '<p>¿Podéis indicar dónde recoger la equipación nueva? Gracias.</p>', fecha: ayer, leido: 1 },
+      { remitente: 'Laura Fernández', asunto: 'Re: Entrenamiento de porteros', body: '<p>El entrenamiento de porteros queda confirmado para el jueves a las 18:00.</p>', fecha: now, leido: 0 },
+      { remitente: 'Pablo Ruiz', asunto: 'Baja por lesión', body: '<p>Comunico que no podré asistir esta semana por una pequeña lesión. Os mantendré informados.</p>', fecha: anteayer, leido: 1 },
+      { remitente: 'Elena Gómez', asunto: 'Horario de la próxima jornada', body: '<p>¿A qué hora es la concentración del próximo partido?</p>', fecha: now, leido: 0 },
+      { remitente: 'Javier Pérez', asunto: 'Cuota de temporada', body: '<p>He realizado el pago de la cuota. ¿Podéis confirmar que ha llegado?</p>', fecha: ayer, leido: 1 },
+      { remitente: 'Sara Díaz', asunto: 'Felicidades por el resultado', body: '<p>Enhorabuena por la victoria del domingo. ¡Seguimos así!</p>', fecha: now, leido: 0 },
+      { remitente: 'Roberto Moreno', asunto: 'Cambio de dorsal', body: '<p>Solicito cambio de dorsal para la próxima temporada si es posible.</p>', fecha: ayer, leido: 1 },
+      { remitente: 'Carmen López', asunto: 'Reunión de padres', body: '<p>¿La reunión de padres sigue siendo el viernes a las 19:00?</p>', fecha: now, leido: 0 },
+      { remitente: 'Antonio González', asunto: 'Material de entrenamiento', body: '<p>¿Necesitamos llevar algo especial al entrenamiento de mañana?</p>', fecha: anteayer, leido: 1 },
+      { remitente: 'Isabel Rodríguez', asunto: 'Cumpleaños del equipo', body: '<p>Propongo organizar una merienda para el cumple del equipo. ¿Qué os parece?</p>', fecha: now, leido: 0 },
+      { remitente: 'Francisco Martín', asunto: 'Acta del último partido', body: '<p>Cuando podáis, ¿me enviáis el acta del último partido? Gracias.</p>', fecha: ayer, leido: 1 },
+      { remitente: 'Patricia Jiménez', asunto: 'Vacaciones del entrenador', body: '<p>¿Quién cubre los entrenamientos la próxima semana?</p>', fecha: now, leido: 0 },
+      { remitente: 'Daniel Torres', asunto: 'Inscripción torneo verano', body: '<p>¿El club va a inscribir equipos en el torneo de verano? Estaríamos interesados.</p>', fecha: ayer, leido: 1 },
+    ];
+
+    const enviadosBase = [
+      { asunto: 'Recordatorio: entrenamiento de mañana', destinatario: 'Equipo Demo Senior', body: '<p>Hola, os recordamos el entrenamiento de mañana a las 18:00.</p>', fecha: ayer },
+      { asunto: 'Convocatoria partido domingo', destinatario: 'Equipo Demo Juvenil', body: '<p>Convocatoria para el partido del domingo. Confirmar asistencia.</p>', fecha: now },
+      { asunto: 'Cambio de horario entrenamiento', destinatario: 'Equipo Cadete Demo', body: '<p>Os informamos del cambio de horario del miércoles a las 18:30.</p>', fecha: now },
+      { asunto: 'Documentación obligatoria', destinatario: 'Todos los equipos', body: '<p>Recordatorio: enviar documentación actualizada antes del 15.</p>', fecha: anteayer },
+      { asunto: 'Fotos oficiales', destinatario: 'Equipo Infantil Demo', body: '<p>Las fotos oficiales serán el sábado a las 10:00 en las instalaciones.</p>', fecha: ayer },
+    ];
+
+    const recibidos = recibidosBase.map((r, i) => ({
+      correoRecibidoId: i + 1,
+      asunto: r.asunto,
+      remitente: r.remitente,
+      destinatario: 'Club Demo',
+      body: btoa(unescape(encodeURIComponent(r.body))),
+      fechaCreate: r.fecha.toISOString(),
+      leido: r.leido,
+      remitentePhotoUrl: avatar(i + 1),
+    }));
+
+    const enviados = enviadosBase.map((e, i) => ({
+      correoEnviadoId: i + 1,
+      asunto: e.asunto,
+      remitente: 'Club Demo',
+      destinatario: e.destinatario,
+      body: btoa(unescape(encodeURIComponent(e.body))),
+      fechaCreate: e.fecha.toISOString(),
+      leido: 1,
+    }));
+
+    return { enviados, recibidos };
   }
 
   /** Correos programados. response.data (array) */

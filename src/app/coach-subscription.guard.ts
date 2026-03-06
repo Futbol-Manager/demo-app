@@ -7,7 +7,7 @@ import { TeamService } from './core/services/team/team.service';
 
 const CACHE_KEY = 'coach_sub_status';
 const CACHE_TTL_MS = 5 * 60 * 1000;
-const EXEMPT_PATHS = ['suscripcion-coach', 'coach-suscripcion-success', 'suscripcion'];
+const EXEMPT_PATHS = ['suscripcion-coach', 'coach-suscripcion-success', 'suscripcion', 'suscripcion-club'];
 
 @Injectable({ providedIn: 'root' })
 export class CoachSubscriptionGuard implements CanActivateChild {

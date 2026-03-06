@@ -168,7 +168,7 @@
       <!-- Imagen de la tarea (vertical se voltea a horizontal) -->
       <div class="task-thumb">
         <img [src]="getImage(tarea)" [alt]="tarea.slogans" class="task-img"
-             (load)="onTaskImageLoad($event, tarea)" />
+             (load)="onTaskImageLoad($event, tarea)" (error)="onTaskImageError($event, tarea)" />
       </div>
 
       <div class="task-body">
@@ -227,7 +227,7 @@
       <!-- Imagen en detalle (vertical se voltea a horizontal) -->
       <div class="detail-image-wrap" *ngIf="selectedTask.imagenBoard">
         <img [src]="getImage(selectedTask)" [alt]="selectedTask.slogans" class="detail-image"
-             (load)="onDetailImageLoad($event)" />
+             (load)="onDetailImageLoad($event)" (error)="onTaskImageError($event, selectedTask)" />
       </div>
 
       <div class="detail-body">

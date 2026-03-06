@@ -83,6 +83,23 @@ export class FavoritasComponent implements OnInit, OnDestroy {
   getImage(task: StoredTask): string {
     return task.imagenBoard
       ? this.imageBaseUrl + task.imagenBoard
-      : 'https://appsphairatech.com/images/task-board/blank.png';
+      : this.localTaskBoardBase + 'pizarra-blank.svg';
+  }
+
+  readonly localTaskBoardBase = '/assets/images/task-board/';
+
+  onTaskImageError(evt: Event, task: StoredTask): void {
+    const img = evt.target as HTMLImageElement;
+    if (!img) return;
+    if (img.getAttribute('data-fallback-used') === '1') {
+      img.src = this.localTaskBoardBase + 'pizarra-blank.svg';
+      return;
+    }
+    if (task?.imagenBoard) {
+      img.setAttribute('data-fallback-used', '1');
+      img.src = this.localTaskBoardBase + task.imagenBoard;
+    } else {
+      img.src = this.localTaskBoardBase + 'pizarra-blank.svg';
+    }
   }
 }

@@ -149,8 +149,7 @@
           <!-- IMAGEN -->
           <td class="image-cell">
             <div class="image-wrapper">
-              <img *ngIf="trainer.picturePlayer" [src]="imageBaseUrlUser + trainer.picturePlayer" alt="trainer" />
-              <i *ngIf="!trainer.picturePlayer" class="bi bi-person"></i>
+              <img [src]="getTrainerImageUrl(trainer, i)" [alt]="trainer.nombre + ' ' + trainer.apellido" />
             </div>
           </td>
 
@@ -291,9 +290,7 @@
         <div class="trainer-info-card">
           <div class="trainer-info-header">
             <div class="trainer-avatar">
-              <img *ngIf="selectedTrainer?.picturePlayer"
-                [src]="imageBaseUrlUser + selectedTrainer.picturePlayer" alt="trainer" />
-              <i *ngIf="!selectedTrainer?.picturePlayer" class="bi bi-person"></i>
+              <img [src]="getTrainerImageUrl(selectedTrainer, 0)" [alt]="selectedTrainer?.nombre + ' ' + selectedTrainer?.apellido" />
             </div>
             <div class="trainer-info-data">
               <h4>{{ selectedTrainer?.nombre }} {{ selectedTrainer?.apellido }}</h4>

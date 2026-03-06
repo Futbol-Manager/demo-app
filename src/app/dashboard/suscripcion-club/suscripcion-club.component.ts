@@ -48,34 +48,46 @@ export class SuscripcionClubComponent implements OnInit {
       if (user) {
         this.profileId = user.profileType?.profileId || 0;
 
-        // Solo el perfil Club (1) puede acceder a la suscripción de club
-        if (this.profileId !== 1) {
-          this.router.navigate(['/dashboard/inicio']);
-          return;
+        // Solo el perfil Club (1) puede gestionar suscripción; entrenador y jugador pueden ver los planes
+        if (this.profileId === 1) {
+          this.clubId = user.userId || 0;
+          this.loadData();
+        } else {
+          this.clubId = 0;
+          this.loadPlansOnly();
         }
 
-        this.clubId = user.userId || 0;
-        this.loadData();
-        
-        // Escuchar parámetros de consulta para detectar cuando se activa un plan
-        this.route.queryParams.subscribe(params => {
-          if (params['planActivated'] === 'true') {
-            console.log('Plan activated detected, reloading data...');
-            // Recargar los datos después de activar un plan
-            setTimeout(() => this.loadData(), 500);
-            // Limpiar el parámetro de la URL
-            this.router.navigate([], {
-              relativeTo: this.route,
-              queryParams: {}
-            });
-          }
-        });
+        // Escuchar parámetros de consulta para detectar cuando se activa un plan (solo club)
+        if (this.profileId === 1) {
+          this.route.queryParams.subscribe(params => {
+            if (params['planActivated'] === 'true') {
+              setTimeout(() => this.loadData(), 500);
+              this.router.navigate([], {
+                relativeTo: this.route,
+                queryParams: {}
+              });
+            }
+          });
+        }
       }
     });
   }
 
   goBack(): void {
     this.location.back();
+  }
+
+  /** Solo cargar planes disponibles (entrenador/jugador: sin suscripción activa). */
+  loadPlansOnly(): void {
+    this.loading = true;
+    this.datosCargados = false;
+    this.subscription = null;
+    this.activePlanInfo = null;
+    this.subscriptionService.getAvailablePlans().subscribe(plans => {
+      this.plans = [...plans].sort((a, b) => this.getPlanOrder(a.id) - this.getPlanOrder(b.id));
+      this.loading = false;
+      this.datosCargados = true;
+    });
   }
 
   loadData(): void {

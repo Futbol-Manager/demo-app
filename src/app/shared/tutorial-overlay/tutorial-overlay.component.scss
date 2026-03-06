@@ -1,8 +1,8 @@
 .tutorial-overlay {
   position: fixed;
   inset: 0;
-  z-index: 99999;
-  /* Por encima de modales, tablas y grids (equipos, documentos-club, new-cuotas) */
+  z-index: 100002;
+  /* Por encima de modales (new-cuotas: Gestión de pagos, Cobros Sphaira Pay usan z-index 100001) */
   /* Sin backdrop-filter: así la tarjeta de instrucciones nunca se desenfoca */
   background: rgba(0, 20, 40, 0.5);
   padding: 0;
@@ -54,7 +54,7 @@
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.06);
   max-width: 420px;
   width: 100%;
-  overflow: hidden;
+  overflow: visible;
   animation: tutorialCardIn 0.3s ease;
   transition: left 0.25s ease, top 0.25s ease, right 0.25s ease, transform 0.25s ease;
 
@@ -102,6 +102,14 @@
   background: rgba(0, 0, 0, 0.08);
   border-radius: 2px;
   overflow: hidden;
+
+  &--clickable {
+    cursor: pointer;
+
+    .tutorial-progress-fill {
+      pointer-events: none;
+    }
+  }
 }
 
 .tutorial-progress-fill {
@@ -171,8 +179,206 @@
   color: var(--text-primary, #0f172a);
 }
 
+/* Transición suave al cambiar de paso */
+.tutorial-step-content {
+  animation: tutorialStepFade 0.25s ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes tutorialStepFade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Flecha dinámica azul Sphaira: fuera del clip, bien visible y superpuesta */
+.tutorial-arrow {
+  position: absolute;
+  z-index: 1100;
+  pointer-events: none;
+  animation: tutorialArrowPulse 1.8s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+
+  .tutorial-arrow-svg {
+    display: block;
+    width: 72px;
+    height: 40px;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.85)) drop-shadow(0 2px 10px rgba(0, 44, 64, 0.55)) drop-shadow(0 4px 16px rgba(0, 44, 64, 0.4));
+  }
+
+  /* Línea punteada azul Sphaira (estilo imagen 2) */
+  .tutorial-arrow-curve.tutorial-arrow-line {
+    stroke-dasharray: 6 5;
+    stroke-dashoffset: 160;
+    animation: tutorialArrowDraw 0.6s ease-out forwards;
+    @media (prefers-reduced-motion: reduce) {
+      stroke-dasharray: 6 5;
+      stroke-dashoffset: 0;
+      animation: none;
+    }
+  }
+
+  .tutorial-arrow-head {
+    opacity: 0;
+    transform-origin: center;
+    animation: tutorialArrowHeadIn 0.3s cubic-bezier(0.34, 1.2, 0.64, 1) 0.35s forwards;
+    @media (prefers-reduced-motion: reduce) {
+      opacity: 1;
+      animation: none;
+    }
+  }
+
+  &--left {
+    left: -56px;
+    top: 50%;
+    transform: translateY(-50%);
+    .tutorial-arrow-svg { width: 72px; height: 40px; }
+  }
+
+  &--right {
+    right: -56px;
+    top: 50%;
+    transform: translateY(-50%);
+    .tutorial-arrow-svg { width: 72px; height: 40px; }
+  }
+
+  &--top {
+    top: -52px;
+    left: 50%;
+    transform: translateX(-50%);
+    .tutorial-arrow-svg { width: 40px; height: 72px; }
+  }
+
+  &--bottom {
+    bottom: -52px;
+    left: 50%;
+    transform: translateX(-50%);
+    .tutorial-arrow-svg { width: 40px; height: 72px; }
+  }
+}
+
+@keyframes tutorialArrowDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes tutorialArrowHeadIn {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Pulso suave: solo opacidad para no alterar la posición de la flecha */
+@keyframes tutorialArrowPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
 .tutorial-card-body {
   padding: 1.5rem 1.25rem;
+
+  &--last {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.75rem 1.5rem;
+  }
+}
+
+/* Check premium dinámico y animado (último paso) */
+.tutorial-check-premium {
+  margin-bottom: 1.25rem;
+}
+
+.tutorial-check-circle {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  animation: tutorialCheckPulse 2s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+.tutorial-check-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 4px 12px rgba(30, 136, 50, 0.35));
+}
+
+.tutorial-check-circle-bg {
+  stroke-dasharray: 340;
+  stroke-dashoffset: 340;
+  transform-origin: 50% 50%;
+  animation: tutorialCircleDraw 0.6s ease-out 0.2s forwards;
+
+  @media (prefers-reduced-motion: reduce) {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+}
+
+.tutorial-check-path {
+  stroke-dasharray: 120;
+  stroke-dashoffset: 120;
+  transform-origin: 50% 50%;
+  animation: tutorialCheckDraw 0.5s ease-out 0.5s forwards;
+
+  @media (prefers-reduced-motion: reduce) {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+}
+
+@keyframes tutorialCircleDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes tutorialCheckDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes tutorialCheckPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 0.95;
+  }
+}
+
+.tutorial-title--last {
+  margin-bottom: 0.5rem;
+}
+
+.tutorial-text--last {
+  margin-bottom: 0;
+  max-width: 100%;
 }
 
 .tutorial-audio-hint {
@@ -267,4 +473,15 @@
 
 .tutorial-btn-secondary:hover {
   background: rgba(0, 0, 0, 0.1);
+}
+
+.tutorial-btn-skip {
+  color: var(--text-secondary, #64748b);
+  background: transparent;
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
+}
+
+.tutorial-btn-skip:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text-primary, #0f172a);
 }

@@ -1,5 +1,6 @@
-import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { PostPartido } from 'src/app/core/services/models/match.model';
@@ -41,6 +42,7 @@ export class EstadisticasEquipoComponent implements OnInit, OnDestroy {
 
   private pieChartResultados: Chart | null = null;
   private lineChartPuntos: Chart | null = null;
+  private tutorialSub?: Subscription;
 
   resumentotales: any = {
     equipo: '',
@@ -316,7 +318,8 @@ export class EstadisticasEquipoComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private elementRef: ElementRef,
     private location: Location,
-    private tutorialService: TutorialService) { }
+    private tutorialService: TutorialService,
+    private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -324,9 +327,31 @@ export class EstadisticasEquipoComponent implements OnInit, OnDestroy {
     });
     this.cargarNombreEquipo();
     setTimeout(() => this.tutorialService.start('estadisticas-equipo', true), 600);
+
+    this.tutorialSub = this.tutorialService.getState$().subscribe(state => {
+      if (state?.screenId !== 'estadisticas-equipo') {
+        // Tutorial cerrado o en otra pantalla: mostrar tabla para evitar pantalla en blanco.
+        this.graficasEquipo = false;
+        this.datosCargados = true;
+        return;
+      }
+      const i = state.currentIndex;
+      // Paso 5 (índice 4): vista Gráficas. Pasos 1-4: vista Tabla.
+      if (i === 4) {
+        this.graficasEquipo = true;
+        if (this.partidos?.length) {
+          this.verGraficaEquipo();
+        }
+      } else {
+        this.graficasEquipo = false;
+        // Al salir del paso de gráficas (o al cerrar el tutorial), mostrar de nuevo la tabla.
+        this.datosCargados = true;
+      }
+    });
   }
 
   ngOnDestroy(): void {
+    this.tutorialSub?.unsubscribe();
     const charts: (Chart | null)[] = [
       this.pieChartResultados,
       this.lineChartPuntos,
@@ -563,6 +588,7 @@ export class EstadisticasEquipoComponent implements OnInit, OnDestroy {
   verGraficaEquipo() {
     this.graficasEquipo = true;
     this.datosCargados = false;
+    this.cdr.detectChanges();
 
     this.trainingService.getListGolesAvanzadoByTeamId(this.teamId).subscribe(
       (resp) => {
@@ -570,21 +596,21 @@ export class EstadisticasEquipoComponent implements OnInit, OnDestroy {
           this.golesAvanzadoAFavor = resp.data.golesAFavor || [];
           this.golesAvanzadoEnContra = resp.data.golesEnContra || [];
         }
-
+        this.cdr.detectChanges();
         setTimeout(() => {
-          this.graficaUnica(this.partidosReverse.map(partido => partido.golesAFavor), 'Goles a favor', 'Goles');
+          this.graficaUnica(this.partidosReverse.map((p: any) => p.golesAFavor ?? 0), 'Goles a favor', 'Goles');
           this.graficaPrimera();
           this.createChart();
           this.createChartCategoryEnContra00();
           this.createChartCategoryEnContra01();
-          // Inicializar "Goles por subcategoría" con la primera categoría que tenga subcategorías
           const conSub = this.golTypesConSubcategorias;
           if (conSub.length > 0 && !this.selectedGolTypes) {
             this.selectedGolTypes = conSub[0].name;
             this.createChartCategoryAFavor();
             this.createChartCategoryEnContra();
           }
-        }, 100);
+          this.cdr.detectChanges();
+        }, 250);
       },
       (error) => {
         console.error('Error en la solicitud:', error);

@@ -735,9 +735,9 @@
 <!-- ════════════════════════════════════════════════════════════
      MODAL GESTIÓN DE PAGOS — Diseño Premium
 ════════════════════════════════════════════════════════════ -->
-<div class="modal d-block modal-overlay" *ngIf="showModalCuotas">
+<div class="modal d-block modal-overlay" *ngIf="showModalCuotas" tabindex="-1" [class.tutorial-modal-visible]="tutorialModalGestionPagos">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content gp-modal" [class.modal-closing]="closingModals.has('cuotas')">
+    <div class="modal-content gp-modal" [class.modal-closing]="closingModals.has('cuotas')" data-tutorial="cq-gestion-pagos">
 
       <!-- ── HEADER ── -->
       <div class="gp-header">
@@ -2355,9 +2355,9 @@
 <!-- ══════════════════════════════════════════════════════════════════════ -->
 <!-- MODAL: CONFIGURACIÓN DE NOTIFICACIONES DE CUOTAS                     -->
 <!-- ══════════════════════════════════════════════════════════════════════ -->
-<div class="modal d-block modal-overlay" *ngIf="showModalNotifConfig" tabindex="-1">
+<div class="modal d-block modal-overlay" *ngIf="showModalNotifConfig" tabindex="-1" [class.tutorial-modal-visible]="tutorialModalNotifConfig">
   <div class="modal-dialog modal-md modal-dialog-centered nc-dialog">
-    <div class="modal-content nc-modal" [class.modal-closing]="closingModals.has('notifConfig')">
+    <div class="modal-content nc-modal" [class.modal-closing]="closingModals.has('notifConfig')" data-tutorial="cq-notif-config">
 
       <!-- ── HEADER ── -->
       <div class="nc-header">

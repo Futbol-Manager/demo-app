@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Location } from '@angular/common';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { ActivatedRoute } from '@angular/router';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
+import { Subscription } from 'rxjs';
 import * as bootstrap from 'bootstrap';
 
 type WizardStep = 'url' | 'loading' | 'success' | 'error';
@@ -14,7 +15,7 @@ type WizardStep = 'url' | 'loading' | 'success' | 'error';
   templateUrl: './clasificacion-resultados.component.html',
   styleUrls: ['./clasificacion-resultados.component.scss']
 })
-export class ClasificacionResultadosComponent implements OnInit {
+export class ClasificacionResultadosComponent implements OnInit, OnDestroy {
 
   equipos: any[] = [];
   contenidoActivo = false;
@@ -53,6 +54,8 @@ export class ClasificacionResultadosComponent implements OnInit {
   urlActa: SafeResourceUrl = '';
   cachedActaUrl: SafeResourceUrl = '';
 
+  private tutorialSub?: Subscription;
+
   constructor(
     private location: Location,
     private route: ActivatedRoute,
@@ -67,6 +70,17 @@ export class ClasificacionResultadosComponent implements OnInit {
     this.jornadaSeleccionada = 1;
     this.loadTableTodo(1);
     setTimeout(() => this.tutorialService.start('clasificacion-resultados', true), 600);
+
+    this.tutorialSub = this.tutorialService.getState$().subscribe(state => {
+      if (state?.screenId !== 'clasificacion-resultados') return;
+      const i = state.currentIndex;
+      // Paso 5 (índice 4): activar pestaña Resultados.
+      this.contenidoActivo = i === 4;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.tutorialSub?.unsubscribe();
   }
 
   loadTableTodo(jornada: number) {

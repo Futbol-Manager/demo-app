@@ -51,6 +51,23 @@ const VOICE_SETTINGS = {
 
 // ── Textos de todos los pasos ──────────────────────────────────────────────────
 const STEPS = [
+  // ── Header (pasos comunes en dashboard/inicio por rol) ───────────────────────
+  { file: 'header_club_01.mp3', text: 'A la izquierda tienes el logo del club. Pulsa en él para volver siempre a esta pantalla de inicio.' },
+  { file: 'header_club_02.mp3', text: 'Este botón abre el tutorial de la pantalla en la que estés. Úsalo cuando quieras repasar los pasos de cualquier sección.' },
+  { file: 'header_club_03.mp3', text: 'Aquí puedes suscribirte o gestionar el plan de Sphaira de tu club.' },
+  { file: 'header_club_04.mp3', text: 'Las notificaciones del club aparecen aquí. Pulsa para ver el listado y marcar como leídas.' },
+  { file: 'header_club_05.mp3', text: 'Tu perfil, suscripción del club, idioma, cambio de rol y cerrar sesión están en este menú.' },
+  { file: 'header_coach_01.mp3', text: 'A la izquierda tienes el logo de entrenador. Pulsa en él para volver siempre a esta pantalla de inicio.' },
+  { file: 'header_coach_02.mp3', text: 'Este botón abre el tutorial de la pantalla actual. Úsalo cuando quieras repasar los pasos.' },
+  { file: 'header_coach_03.mp3', text: 'Aquí puedes suscribirte o gestionar tu plan Sphaira Coach.' },
+  { file: 'header_coach_04.mp3', text: 'Tus notificaciones aparecen aquí. Pulsa para ver el listado.' },
+  { file: 'header_coach_05.mp3', text: 'Tu perfil, idioma, cambio de rol y cerrar sesión están en este menú.' },
+  { file: 'header_player_01.mp3', text: 'A la izquierda tienes el logo de jugador. Pulsa en él para volver siempre a esta pantalla de inicio.' },
+  { file: 'header_player_02.mp3', text: 'Este botón abre el tutorial de la pantalla actual. Úsalo cuando quieras repasar los pasos.' },
+  { file: 'header_player_03.mp3', text: 'Aquí puedes consultar o gestionar la suscripción a Sphaira.' },
+  { file: 'header_player_04.mp3', text: 'Tus notificaciones aparecen aquí. Pulsa para ver el listado.' },
+  { file: 'header_player_05.mp3', text: 'Tu perfil, idioma, cambio de rol y cerrar sesión están en este menú.' },
+
   // ── Dashboard inicio Club (narrativo) ────────────────────────────────────────
   {
     file: 'inicio_01.mp3',
@@ -175,6 +192,10 @@ const STEPS = [
 
   // ── Demo role (selección de rol: voces españolas, narrativo) ──────────────
   {
+    file: 'demo_role_00.mp3',
+    text: 'Estás en la pantalla de selección de rol en modo demostración. Puedes probar la aplicación como Club, Entrenador o Jugador. Te explicamos cada opción; al final elige la que quieras para entrar.'
+  },
+  {
     file: 'demo_role_01.mp3',
     text: 'Si eliges el rol de Club, entrarás en el panel de quien lleva las riendas del día a día: equipos, cuadro de mandos, cuotas, documentos y toda la estructura del club. Pulsa esta tarjeta cuando quieras explorar esa experiencia.'
   },
@@ -185,6 +206,10 @@ const STEPS = [
   {
     file: 'demo_role_03.mp3',
     text: 'Y si eliges Jugador, accederás a la vista de quien juega en el campo: mis datos, calendario de partidos y entrenamientos, cuotas, documentación y galería del equipo. Pulsa esta tarjeta para explorar como uno más de la plantilla.'
+  },
+  {
+    file: 'demo_role_04.mp3',
+    text: 'Ya conoces los tres roles. Selecciona el que quieras para entrar en la aplicación y explorar la plataforma.'
   },
 
   // ── Dashboard inicio — Entrenador (coach), vista "Mis equipos" ──────────────
@@ -224,6 +249,7 @@ const STEPS = [
   { file: 'cuotas_gestion_pagos.mp3', text: 'Este es el modal de Gestión de pagos. Aquí configuras todas las cuotas de la temporada: creas cuotas, defines importes, fechas y tipo de cobro —pago puntual, Sphaira Pay u otro—. Puedes marcar cuotas como obligatorias y ver el listado completo para editarlas o eliminarlas.' },
   { file: 'cuotas_cobros_sphaira.mp3', text: 'En este modal ves los Cobros Sphaira Pay: los cobros programados por tarjeta guardada, agrupados por cuota. Aquí consultas qué cuotas tienen cobro automático activado, las fechas programadas y el estado de cada cobro. Es tu centro de control para el pago recurrente.' },
   { file: 'cuotas_sphaira_pay.mp3', text: 'Este botón abre el modal de Cobros Sphaira Pay que acabas de ver. Sphaira Pay permite a las familias guardar su tarjeta y cobrar las cuotas de forma automática en las fechas que configures. Úsalo para reducir impagados y ahorrar tiempo.' },
+  { file: 'cuotas_notif_config.mp3', text: 'Este es el modal de Notificaciones de Cuotas. Configura cuándo y cómo avisar a los responsables: elige los días antes del vencimiento para enviar el recordatorio, activa la notificación push en la app móvil y el correo electrónico con el detalle del pago pendiente. Guarda la configuración cuando termines.' },
   { file: 'cuotas_04.mp3', text: 'A continuación tienes el resumen. Las tarjetas muestran el total de jugadores, el importe a cobrar, lo ya cobrado con su barra de progreso y el importe pendiente. Te dan una visión rápida del estado de las cuotas.' },
   { file: 'cuotas_05.mp3', text: 'Para encontrar un jugador concreto, busca por nombre o filtra por tipo de cuota. El filtro permite ver solo los jugadores de una o varias cuotas específicas.' },
   { file: 'cuotas_06.mp3', text: 'Aquí tienes el listado completo. Cada fila muestra nombre, equipo, estado, total a pagar, pagado, restante y progreso por cuota. Desde las acciones puedes editar, registrar un pago o ver el historial del jugador.' },
@@ -242,6 +268,7 @@ const STEPS = [
   { file: 'patro_01.mp3', text: 'En esta pantalla gestionas los patrocinadores del club: añade logo, nombre, descripción y datos de contacto de cada uno para que todos los miembros del club los vean y puedas darles la visibilidad que merecen. Te explicamos cada parte.' },
   { file: 'patro_03.mp3', text: 'Empecemos por el carrusel de logos. Los patrocinadores con visibilidad activada aparecen aquí. Cualquier usuario del club puede hacer clic en un logo para ver la ficha completa del patrocinador.' },
   { file: 'patro_04.mp3', text: 'Para añadir un nuevo patrocinador, pulsa aquí. Sube el logo, rellena nombre, descripción, web, email y teléfono para que los miembros del club puedan conocerlo. Después podrás activar o desactivar su aparición en el carrusel.' },
+  { file: 'patro_crear_modal.mp3', text: 'Este es el formulario para crear un patrocinador. Arriba subes la imagen o logo del patrocinador; se recomienda 400 por 150 píxeles en JPG o PNG. En Datos del patrocinador rellena nombre, descripción, web, teléfono, email y beneficios. Cuando termines, pulsa Guardar para registrarlo en el club.' },
   { file: 'patro_05.mp3', text: 'Y aquí ves las fichas de todos los patrocinadores registrados. Cada tarjeta muestra logo, nombre, descripción, contacto y beneficios. Puedes ver la ficha completa, controlar su visibilidad o eliminarlo.' },
   { file: 'patro_06.mp3', text: 'Ya dominas la pantalla de patrocinadores. Usa el botón Nuevo para añadir patrocinadores y las tarjetas para editar o gestionar su visibilidad cuando lo necesites.' },
 
@@ -342,17 +369,16 @@ const STEPS = [
   { file: 'cal_07.mp3', text: 'Ya dominas el Calendario del club. Filtra los equipos que quieras ver, navega entre meses y pulsa en cualquier día o evento para acceder a todos los detalles cuando lo necesites.' },
 
   // ── Menú del equipo (club) ────────────────────────────────────────────────
-  { file: 'mc_01.mp3', text: 'Desde aquí accedes a todas las secciones del equipo. Cada tarjeta te lleva a una pantalla distinta con información y herramientas específicas.' },
-  { file: 'mc_02.mp3', text: 'Si en algún momento quieres volver atrás, este botón te lleva a la pantalla anterior.' },
-  { file: 'mc_03.mp3', text: 'Empecemos por el Calendario: aquí ves todos los partidos y entrenamientos del equipo organizados por fecha.' },
-  { file: 'mc_04.mp3', text: 'Continuamos con Jugadores, donde tienes el listado completo con la información de cada jugador del equipo.' },
-  { file: 'mc_05.mp3', text: 'Después tienes las Estadísticas de jugadores: goles, asistencias, minutos y mucho más para analizar el rendimiento individual.' },
-  { file: 'mc_06.mp3', text: 'Y también las Estadísticas del equipo, con los puntos acumulados, victorias, empates, derrotas y goles a favor y en contra.' },
-  { file: 'mc_07.mp3', text: 'Pasamos a Ranking y resultados, donde consultas la clasificación actual y el historial de partidos del equipo.' },
-  { file: 'mc_08.mp3', text: 'Siguiente, la Galería: fotos y momentos del equipo que puedes compartir con jugadores y familias.' },
-  { file: 'mc_09.mp3', text: 'También tienes Info del equipo, con toda la información general: nombre, categoría, liga y horarios.' },
-  { file: 'mc_10.mp3', text: 'Y para cerrar el menú, Lesiones: registra y haz seguimiento del estado de recuperación de los jugadores lesionados.' },
-  { file: 'mc_11.mp3', text: 'Ya conoces todas las opciones del menú del equipo. Pulsa en cualquier tarjeta para entrar en esa sección cuando lo necesites.' },
+  { file: 'mc_01.mp3', text: 'Estás en el menú del equipo. Desde aquí accedes a cada sección mediante tarjetas: Calendario, Jugadores, Estadísticas de jugadores y del equipo, Ranking y resultados, Galería, Info del equipo y Lesiones. Te explicamos cada una.' },
+  { file: 'mc_02.mp3', text: 'La tarjeta Calendario te lleva al calendario del equipo: partidos y entrenamientos organizados por fecha. Pulsa en ella para ver y gestionar el planning.' },
+  { file: 'mc_03.mp3', text: 'La tarjeta Jugadores abre el listado completo de jugadores del equipo con su información, datos de contacto y rendimiento.' },
+  { file: 'mc_04.mp3', text: 'Estadísticas de jugadores: desde aquí accedes a gráficos y tablas con goles, asistencias, minutos jugados y otras métricas individuales.' },
+  { file: 'mc_05.mp3', text: 'Estadísticas del equipo: puntos, victorias, empates, derrotas, goles a favor y en contra del equipo en la competición.' },
+  { file: 'mc_06.mp3', text: 'Ranking y resultados: consulta la clasificación de la liga y el historial de partidos del equipo.' },
+  { file: 'mc_07.mp3', text: 'Siguiente, la Galería. Aquí se muestran fotos y momentos del equipo que puedes compartir con jugadores y familias.' },
+  { file: 'mc_08.mp3', text: 'Info del equipo: nombre, categoría, liga, horarios y datos generales del equipo.' },
+  { file: 'mc_09.mp3', text: 'Lesiones: registra y haz seguimiento del estado de recuperación de cada jugador lesionado.' },
+  { file: 'mc_10.mp3', text: 'Has completado el recorrido. Ya conoces todas las opciones del menú. Pulsa en cualquier tarjeta para entrar en esa sección cuando lo necesites.' },
 
   // ── Menú entrenador ───────────────────────────────────────────────────────
   { file: 'me_01.mp3', text: 'Este es tu panel como entrenador. Desde aquí accedes a todo lo que necesitas: calendario, tareas, jugadores, estadísticas, notificaciones, galería, lesiones, asistente IA, debrief, perfil, documentos y análisis de vídeo.' },
@@ -374,21 +400,163 @@ const STEPS = [
   { file: 'me_17.mp3', text: 'Y para terminar, Análisis de vídeo: etiqueta jugadas de tus partidos o entrenamientos y crea playlists para compartir con el equipo.' },
   { file: 'me_18.mp3', text: 'Ya dominas todas las opciones del menú del entrenador. Tienes todo lo que necesitas para gestionar tu equipo en un solo lugar cuando lo necesites.' },
 
-  // ── Opciones del jugador ──────────────────────────────────────────────────
-  { file: 'oj_01.mp3', text: 'Desde aquí el jugador accede a todo lo que necesita: datos personales, calendario, cuotas, documentación, clasificación, estadísticas, galería, notificaciones, patrocinadores, lesiones y ropa.' },
-  { file: 'oj_02.mp3', text: 'Si en algún momento quieres volver atrás, este botón te lleva a la pantalla anterior.' },
-  { file: 'oj_03.mp3', text: 'Empecemos por los Datos personales: aquí el jugador consulta y edita su información personal como nombre, fecha de nacimiento, posición y contacto.' },
-  { file: 'oj_04.mp3', text: 'Continuamos con el Calendario: el jugador ve todos sus entrenamientos y partidos organizados por fecha.' },
-  { file: 'oj_05.mp3', text: 'Pasamos a Pagar cuotas, donde el jugador o la familia gestiona y abona las cuotas del club de forma segura.' },
-  { file: 'oj_06.mp3', text: 'Siguiente, la Documentación: todos los archivos y documentos del jugador que el club puede solicitar.' },
-  { file: 'oj_07.mp3', text: 'También tienes Clasificación y resultados: el jugador sigue la tabla de su equipo en la competición y consulta los últimos resultados.' },
-  { file: 'oj_08.mp3', text: 'Pasamos a Mis estadísticas: goles, asistencias, minutos y otras métricas de rendimiento personal del jugador.' },
-  { file: 'oj_09.mp3', text: 'Después, la Galería: fotos y momentos del equipo que el jugador puede ver y descargar.' },
-  { file: 'oj_10.mp3', text: 'Seguimos con Notificaciones: mensajes y avisos del club y del entrenador dirigidos al jugador.' },
-  { file: 'oj_11.mp3', text: 'También puedes ver los Patrocinadores del club: logos, información de contacto y beneficios que ofrecen a los jugadores.' },
-  { file: 'oj_12.mp3', text: 'Y el registro de Lesiones: el jugador puede consultar su historial de lesiones y el estado de su recuperación.' },
-  { file: 'oj_13.mp3', text: 'Y para cerrar, la Ropa del club: el catálogo de equipación y la opción de indicar las tallas para que el club lo gestione desde el panel.' },
-  { file: 'oj_14.mp3', text: 'Ya conoces todas las opciones disponibles para el jugador. Todo lo que necesitas está a un solo toque de distancia.' },
+  // ── Opciones jugador (sin paso Volver) ────────────────────────────────────
+  { file: 'oj_01.mp3', text: 'Estás en el menú del jugador. Desde aquí accedes a cada sección mediante tarjetas: Datos personales, Calendario, Pagar cuotas, Documentación, Clasificación y resultados, Mis estadísticas, Galería, Notificaciones, Patrocinadores, Lesiones y Ropa. Te explicamos cada una.' },
+  { file: 'oj_02.mp3', text: 'La tarjeta Datos personales abre tu perfil: consulta y edita nombre, fecha de nacimiento, posición, contacto y el resto de tu información personal.' },
+  { file: 'oj_03.mp3', text: 'La tarjeta Calendario muestra todos tus entrenamientos y partidos organizados por fecha. Entra para ver el planning completo.' },
+  { file: 'oj_04.mp3', text: 'Pagar cuotas: aquí tú o tu familia gestionáis y abonáis las cuotas del club. Vincula tarjeta con Sphaira Pay, revisa obligatorias y opcionales y pagad por transferencia si lo indica el club.' },
+  { file: 'oj_05.mp3', text: 'Documentación: todos los archivos y documentos que el club te solicita. Descarga los que comparte el club, sube los que te piden o rellena formularios.' },
+  { file: 'oj_06.mp3', text: 'Clasificación y resultados: consulta la tabla de tu equipo en la competición y el historial de partidos y resultados.' },
+  { file: 'oj_07.mp3', text: 'Mis estadísticas: goles, asistencias, minutos jugados y otras métricas de tu rendimiento personal en la temporada.' },
+  { file: 'oj_08.mp3', text: 'La Galería muestra fotos y momentos del equipo que puedes ver y descargar.' },
+  { file: 'oj_09.mp3', text: 'Notificaciones: mensajes y avisos del club y del entrenador dirigidos a ti.' },
+  { file: 'oj_10.mp3', text: 'Patrocinadores del club: logos, información de contacto y beneficios que ofrecen a los jugadores.' },
+  { file: 'oj_11.mp3', text: 'Lesiones: consulta tu historial de lesiones y el estado de recuperación si las hubiera.' },
+  { file: 'oj_12.mp3', text: 'Ropa del club: catálogo de equipación e indicación de tallas para que el club gestione los pedidos.' },
+  { file: 'oj_13.mp3', text: 'Has completado el recorrido. Ya conoces todas las opciones del jugador. Pulsa en cualquier tarjeta para entrar en esa sección cuando lo necesites.' },
+
+  // ── Cuotas (jugador/padre) ────────────────────────────────────────────────
+  { file: 'cq_01.mp3', text: 'Estás en la pantalla de pagar cuotas. Aquí consultas el estado de tus cuotas, vinculas tarjeta con Sphaira Pay para cobros automáticos, ves obligatorias y opcionales, y tienes los datos para pagar por transferencia. Te guiamos paso a paso.' },
+  { file: 'cq_02.mp3', text: 'Arriba verás las tarjetas de total pagado y pendiente. Desde aquí accedes a Sphaira Pay: vincular tarjeta, ver la asociada o gestionar cobros automáticos.' },
+  { file: 'cq_03.mp3', text: 'Al marcar cuotas puntuales aparece la barra con el total y los botones Limpiar y Pagar para abrir el modal de pago.' },
+  { file: 'cq_04.mp3', text: 'Panel de cuotas obligatorias: filtros por concepto, tipo de pago, estado, vencimiento y fecha. La tabla muestra concepto, tipo, importe, pagado, vencimiento y acciones como vincular tarjeta o cancelar.' },
+  { file: 'cq_05.mp3', text: 'Cuotas opcionales: misma estructura con filtros y lista. Puedes seleccionar varias y pagar en bloque si está disponible.' },
+  { file: 'cq_06.mp3', text: 'Datos bancarios del club: IBAN, concepto, contacto y Bizum. Realiza la transferencia y notifica al club cuando hayas pagado.' },
+  { file: 'cq_07.mp3', text: 'Ya dominas la pantalla de cuotas. Vincula tarjeta con Sphaira Pay si la usas, selecciona y paga las cuotas o usa transferencia según indique el club.' },
+
+  // ── Documentos jugador ────────────────────────────────────────────────────
+  { file: 'dj_01.mp3', text: 'Estás en la documentación que tu club te solicita. Puedes descargar los documentos que comparte el club, subir los que te piden o rellenar formularios. Cada tarjeta muestra el estado: pendiente o completado. Te guiamos paso a paso.' },
+  { file: 'dj_02.mp3', text: 'Usa el campo de búsqueda para filtrar la lista de documentos por nombre.' },
+  { file: 'dj_03.mp3', text: 'Cada tarjeta muestra nombre, descripción y estado: Pendiente descargar o Descargado, Pendiente subir o Subido, Pendiente rellenar o Completado. Según el tipo, usa el botón Descargar, Subir documento o Rellenar.' },
+  { file: 'dj_04.mp3', text: 'Ya conoces la documentación. Descarga, sube o rellena cada documento según lo que pida el club.' },
+  // ── Jugador datos personales (ruta jugador/:teamId/:playerId) ─────────────────
+  { file: 'jd_01.mp3', text: 'Estás en la ficha de datos personales del jugador. Aquí puedes consultar y editar su foto, datos personales, información deportiva, tutores y datos bancarios. Te guiamos paso a paso.' },
+  { file: 'jd_02.mp3', text: 'Arriba tienes la foto del jugador. Puedes subir una nueva en formato JPG o PNG; al crear un jugador la foto se sube al guardar.' },
+  { file: 'jd_03.mp3', text: 'Las pestañas Información personal e Información deportiva organizan el formulario. En personal verás nombre, apellido, fecha de nacimiento, contacto, dirección y datos de tutores y bancarios; en deportiva, posición, medidas y habilidades.' },
+  { file: 'jd_04.mp3', text: 'Aquí se muestran todos los campos del jugador: nombre, apellido, DNI, teléfono, email, dirección, nacionalidad y el resto. Rellena o modifica los que necesites.' },
+  { file: 'jd_05.mp3', text: 'En el pie tienes el botón DNI para subir o ver el documento de identidad del jugador, y Guardar para aplicar todos los cambios. Recuerda guardar después de editar.' },
+  { file: 'jd_06.mp3', text: 'Has completado el recorrido. Ya conoces la ficha de datos personales del jugador. Mantén la información actualizada cuando lo necesites.' },
+
+  // ── Scouting player (perfil jugador) ───────────────────────────────────────
+  { file: 'sp_01.mp3', text: 'Estás en el perfil deportivo del jugador. Aquí verás su foto, datos, radar de habilidades, estadísticas de partidos, gráficas y asistencia a entrenamientos. Te guiamos paso a paso.' },
+  { file: 'sp_02.mp3', text: 'Arriba: avatar, nombre y píldoras con posición, pierna y altura. El panel de habilidades muestra el radar con las valoraciones si hay datos cargados.' },
+  { file: 'sp_03.mp3', text: 'Datos deportivos: posición principal, posición secundaria, pierna natural, altura y peso.' },
+  { file: 'sp_04.mp3', text: 'Estadísticas de partidos: partidos jugados, titularidades, minutos, goles, tarjetas amarillas y rojas.' },
+  { file: 'sp_05.mp3', text: 'Pestañas Partidos y Asistencia: cambia entre la gráfica de estadísticas y la de asistencia a entrenamientos por mes.' },
+  { file: 'sp_06.mp3', text: 'Tabla de asistencia: fecha, si asistió y si llegó con retraso en cada sesión.' },
+  { file: 'sp_07.mp3', text: 'Ya conoces el perfil de jugador. Revisa datos, estadísticas y asistencia cuando lo necesites.' },
+
+  // ── Patrocinadores usuario (jugador/familia) ────────────────────────────────
+  { file: 'patrou_01.mp3', text: 'Estás en los patrocinadores del club. Verás un carrusel de logos y tarjetas con información, enlaces y beneficios. Es la vista de consulta para jugadores y familias. Te guiamos paso a paso.' },
+  { file: 'patrou_02.mp3', text: 'El carrusel muestra los logos de los patrocinadores. Pulsa en uno para ver su ficha con detalle.' },
+  { file: 'patrou_03.mp3', text: 'Cada tarjeta muestra logo, nombre, descripción, enlaces a web, email y teléfono, beneficios y el botón Ver para abrir el detalle completo.' },
+  { file: 'patrou_04.mp3', text: 'Ya conoces los patrocinadores del club. Consulta sus datos y beneficios cuando lo necesites.' },
+
+  // ── Ropa jugador (mis tallas) ──────────────────────────────────────────────
+  { file: 'rj_01.mp3', text: 'Estás en el catálogo de prendas del equipo. Selecciona tu talla para cada prenda; se guarda automáticamente y el club usa estas preferencias para los pedidos. Te guiamos paso a paso.' },
+  { file: 'rj_02.mp3', text: 'Cada tarjeta muestra la imagen, nombre, descripción y el selector de talla. Elige entre Sin seleccionar o las tallas disponibles; al elegir se guarda al instante y verás el estado guardando o completado.' },
+  { file: 'rj_03.mp3', text: 'Ya conoces mis tallas de ropa. Mantén tus preferencias actualizadas para cada prenda del equipo.' },
+
+  // ── Menu fisio, Entrenadores, Asistencia ───────────────────────────────────
+  { file: 'mf_01.mp3', text: 'Estás en el menú del fisio. Desde aquí accedes a Lesiones, Jugadores, Calendario, Estadísticas de jugadores y equipo, Clasificación, Documentos, Notificaciones, Mi perfil y Asistente de IA. Te guiamos paso a paso.' },
+  { file: 'mf_02.mp3', text: 'Cada tarjeta abre una sección: Lesiones, Jugadores, Calendario, Estadísticas jugadores, Estadísticas equipo, Clasificación y resultado, Documentos, Notificaciones, Mi perfil y Asistente de IA. Pulsa en una para entrar.' },
+  { file: 'mf_03.mp3', text: 'Ya conoces el menú del fisio. Elige la opción que necesites.' },
+  { file: 'ent_01.mp3', text: 'Estás en el listado de entrenadores del equipo. Desde aquí ves la información de cada uno y puedes editar sus datos. Te guiamos paso a paso.' },
+  { file: 'ent_02.mp3', text: 'Cada tarjeta muestra foto, nombre, posición, fecha de nacimiento y los botones Ver info y Editar. Pulsa en uno para abrir la ficha o editar.' },
+  { file: 'ent_03.mp3', text: 'Ya conoces el listado de entrenadores. Gestiona la información del cuerpo técnico desde aquí.' },
+  { file: 'asis_01.mp3', text: 'Estás en la pantalla de asistencia y multas del equipo. Consulta la asistencia de los jugadores por fecha y las multas asociadas. Hay dos pestañas: Asistencia y Multas. Te guiamos paso a paso.' },
+  { file: 'asis_02.mp3', text: 'Cambia entre Asistencia —tabla con fechas y asistencia por jugador— y Multas —importes y estado de pago por fecha y jugador.' },
+  { file: 'asis_03.mp3', text: 'En Asistencia verás el total por jugador y el detalle por fecha. En Multas podrás marcar cada multa como pagada o no.' },
+  { file: 'asis_04.mp3', text: 'Ya conoces la pantalla de asistencia y multas.' },
+
+  // ── Debrief templates, training, match, report ───────────────────────────
+  { file: 'dbtpl_01.mp3', text: 'Estás en la gestión de plantillas de formularios para los análisis pre y post de partidos y entrenamientos. Crea y edita plantillas a medida. Te guiamos paso a paso.' },
+  { file: 'dbtpl_02.mp3', text: 'Usa las pestañas para elegir el tipo: entrenamiento o partido. Cada tipo tiene sus propias plantillas.' },
+  { file: 'dbtpl_03.mp3', text: 'Aquí ves la lista de formularios creados. En cada uno tienes Editar y Eliminar. El botón de crear te permite añadir un nuevo formulario.' },
+  { file: 'dbtpl_04.mp3', text: 'Ya conoces la gestión de plantillas. Crea formularios a medida para tus debriefs.' },
+  { file: 'dbt_01.mp3', text: 'Estás en el debrief de entrenamiento. Completa el análisis post-entrenamiento respondiendo a las preguntas. La barra de progreso y los indicadores muestran tu avance. Te guiamos paso a paso.' },
+  { file: 'dbt_02.mp3', text: 'La barra y los puntos representan cada pregunta. Pulsa en un punto para ir a esa pregunta. Las ya respondidas se marcan.' },
+  { file: 'dbt_03.mp3', text: 'Responde cada pregunta o omítela. El botón de engranaje permite personalizar las preguntas del formulario.' },
+  { file: 'dbt_04.mp3', text: 'Completa todas las preguntas y guarda para generar el informe de debrief.' },
+  { file: 'dbm_01.mp3', text: 'Estás en el debrief de partido. Completa el análisis post-partido respondiendo a las preguntas. Es similar al debrief de entrenamiento, adaptado al partido. Te guiamos paso a paso.' },
+  { file: 'dbm_02.mp3', text: 'La barra y los puntos indican cada pregunta. Navega entre preguntas y completa el formulario.' },
+  { file: 'dbm_03.mp3', text: 'Responde cada pregunta del análisis del partido. Puedes personalizar las preguntas desde el engranaje.' },
+  { file: 'dbm_04.mp3', text: 'Completa el debrief y guarda para generar el informe.' },
+  { file: 'dbr_01.mp3', text: 'Estás viendo el informe generado del análisis de entrenamiento o partido. Verás el resumen, las secciones y las acciones: regenerar, descargar PDF y compartir. Te guiamos paso a paso.' },
+  { file: 'dbr_02.mp3', text: 'Usa Regenerar informe, Descargar PDF y Compartir según lo que necesites.' },
+  { file: 'dbr_03.mp3', text: 'El resumen y las secciones con el análisis. Este contenido se usa para generar el PDF.' },
+  { file: 'dbr_04.mp3', text: 'Ya conoces la vista del informe. Descarga o comparte cuando lo necesites.' },
+
+  // ── Contabilidad, Historial pagos, Abonados (club) ────────────────────────
+  { file: 'cont_01.mp3', text: 'Estás en la contabilidad del club. Verás el resumen de cuotas: total cuota, cuota ropa, pagado y pendiente. Hay pestañas Inicio, Abonados, Stripe y Configuración, y una tabla con búsqueda, paginación y exportar a Excel. Te guiamos paso a paso.' },
+  { file: 'cont_02.mp3', text: 'Cambia entre Inicio —resumen y tabla—, Abonados, Stripe —pasarela de pago— y Configuración.' },
+  { file: 'cont_03.mp3', text: 'Aquí ves la cuota total del club, cuota ropa si aplica, total pagado y restante pendiente.' },
+  { file: 'cont_04.mp3', text: 'Usa el botón Descargar Excel, el selector de registros por página y la búsqueda para filtrar la tabla.' },
+  { file: 'cont_05.mp3', text: 'Listado de abonados o jugadores con nombre, cuota, pagado, estado y más. Ordena por columnas haciendo clic en la cabecera.' },
+  { file: 'cont_06.mp3', text: 'Ya conoces la contabilidad del club. Exporta y filtra cuando lo necesites.' },
+  { file: 'hpc_01.mp3', text: 'Estás en el historial de cobros y pagos del club. Puedes filtrar por nombre y exportar a Excel. Te guiamos paso a paso.' },
+  { file: 'hpc_02.mp3', text: 'Usa el campo de búsqueda para filtrar y el botón Exportar a Excel para descargar el listado.' },
+  { file: 'hpc_03.mp3', text: 'La tabla muestra nombre, descripción, título, importe, método, tipo y fecha. Haz clic en la cabecera de una columna para ordenar.' },
+  { file: 'hpc_04.mp3', text: 'Ya conoces el historial de pagos. Filtra y exporta cuando lo necesites.' },
+  { file: 'abo_01.mp3', text: 'Estás en la gestión de abonados del club. Puedes crear abonados, ver el listado con búsqueda y paginación, y exportar a Excel. Te guiamos paso a paso.' },
+  { file: 'abo_02.mp3', text: 'Usa el botón Crear abonado para dar de alta uno nuevo y Descargar Excel para exportar el listado.' },
+  { file: 'abo_03.mp3', text: 'Ajusta los registros por página y usa la búsqueda para filtrar el listado.' },
+  { file: 'abo_04.mp3', text: 'La tabla muestra imagen, nombre, apellidos, email, teléfono, estado, cuota, pagado y más. Ordena por columnas haciendo clic en la cabecera.' },
+  { file: 'abo_05.mp3', text: 'Ya conoces la gestión de abonados.' },
+
+  // ── Suscripción club, wizard, sugerencias, listado clubes ───────────────────
+  { file: 'suc_01.mp3', text: 'Estás en la suscripción del club. Consulta tu plan activo o elige un plan: Familia, Club o Gratuito. Los asistentes te guían para contratar o activar el plan gratuito. Te guiamos paso a paso.' },
+  { file: 'suc_02.mp3', text: 'Si tienes plan de pago verás el tipo de plan, estado, fecha de inicio, período y jugadores incluidos en plan club. Aquí se resume qué incluye tu plan.' },
+  { file: 'suc_03.mp3', text: 'Las tarjetas muestran los planes Familia, Club y Gratuito con precio y botón para contratar o activar.' },
+  { file: 'suc_04.mp3', text: 'Ya conoces la suscripción del club. Elige o cambia de plan cuando lo necesites.' },
+  { file: 'scw_01.mp3', text: 'Estás en el asistente de suscripción. Te guía paso a paso para configurar el plan elegido. Completa cada paso y avanza hasta finalizar. Te explicamos cada parte.' },
+  { file: 'scw_02.mp3', text: 'El indicador muestra los pasos del asistente. Puedes pulsar en un paso ya completado para volver a él.' },
+  { file: 'scw_03.mp3', text: 'Aquí aparece el formulario o las opciones del paso actual. Rellena y pulsa Siguiente o Finalizar.' },
+  { file: 'scw_04.mp3', text: 'Completa todos los pasos para activar tu plan.' },
+  { file: 'sug_01.mp3', text: 'Estás en Sugerencias. Envía ideas al equipo de Sphaira y sigue el estado de tus sugerencias. Las mejores se convierten en funcionalidades. Te guiamos paso a paso.' },
+  { file: 'sug_02.mp3', text: 'El banner explica la sección. Usa el botón Nueva sugerencia para abrir el formulario.' },
+  { file: 'sug_03.mp3', text: 'Rellena categoría, título y descripción. Envía cuando esté completo.' },
+  { file: 'sug_04.mp3', text: 'Aquí ves el listado de sugerencias enviadas con su estado: pendiente, en revisión, etc.' },
+  { file: 'sug_05.mp3', text: 'Ya conoces las sugerencias. ¡Tu opinión construye Sphaira!' },
+  { file: 'lc_01.mp3', text: 'Estás en el listado de clubes. Puedes filtrar por nombre y ver la tabla con equipos, entrenadores, jugadores, padres y la acción Ver equipos. Te guiamos paso a paso.' },
+  { file: 'lc_02.mp3', text: 'Usa el campo de búsqueda para filtrar por nombre del club.' },
+  { file: 'lc_03.mp3', text: 'La tabla muestra número, nombre, equipos, entrenadores, jugadores, padres y la acción Ver equipos. Haz clic en la cabecera para ordenar.' },
+  { file: 'lc_04.mp3', text: 'Ya conoces el listado de clubes.' },
+
+  // ── ERP (club) ────────────────────────────────────────────────────────────
+  { file: 'erp_01.mp3', text: 'Estás en el módulo de gestión financiera del club: ingresos, gastos, resultado, facturas, plan contable, cobros y pagos, informes y configuración. Si el ERP no está inicializado, usa el botón para configurarlo. Te guiamos paso a paso.' },
+  { file: 'erp_02.mp3', text: 'Si el módulo no está configurado, aquí puedes inicializarlo. Se creará el plan contable, centros de coste y el ejercicio fiscal.' },
+  { file: 'erp_03.mp3', text: 'Usa el selector desde-hasta para filtrar los datos. El botón de engranaje abre la configuración de ejercicios fiscales.' },
+  { file: 'erp_04.mp3', text: 'Las tarjetas muestran ingresos, gastos, resultado neto, facturas pendientes y facturas vencidas.' },
+  { file: 'erp_05.mp3', text: 'Gráfica de barras y detalle por centro de coste. Puedes expandir para ver la tabla.' },
+  { file: 'erp_06.mp3', text: 'Enlaces a facturas emitidas, facturas recibidas, cobros y pagos, plan contable, informes, presupuestos, clientes, proveedores y configuración.' },
+  { file: 'erp_07.mp3', text: 'Ya conoces el dashboard ERP. Usa los accesos rápidos para gestionar la contabilidad del club.' },
+
+  // ── Suscripción coach, success, individual training ────────────────────────
+  { file: 'sco_01.mp3', text: 'Estás en la suscripción de Sphaira Coach. Elige el plan que se adapta a ti: gestión de equipo, asistente IA, estadísticas, lesiones, calendario e informes PDF. Te guiamos paso a paso.' },
+  { file: 'sco_02.mp3', text: 'Arriba verás el resumen de lo que incluye Sphaira Coach y las tarjetas de planes con precio y botón Empezar.' },
+  { file: 'sco_03.mp3', text: 'Cada tarjeta muestra el plan, precio y botón para contratar. El plan más popular está destacado.' },
+  { file: 'sco_04.mp3', text: 'Elige tu plan y serás redirigido al pago.' },
+  { file: 'css_01.mp3', text: 'Estás en la pantalla de resultado del pago. Verás el estado: verificando, éxito con bienvenida y acceso, o error con opción de reintentar o ir al panel.' },
+  { file: 'css_02.mp3', text: 'Si el pago fue correcto verás tu plan activo, los beneficios y el botón Ir al panel principal.' },
+  { file: 'css_03.mp3', text: 'Usa Ir al panel principal para continuar. En caso de error, puedes Intentar de nuevo o Ir al panel.' },
+  { file: 'css_04.mp3', text: 'Ya conoces esta pantalla. Usa Ir al panel para continuar.' },
+  { file: 'it_01.mp3', text: 'Estás en el entrenamiento individual. Como jugador verás los planes asignados por el entrenador, el progreso y las pestañas Hoy, Planificación e Historial. Como entrenador podrás crear y gestionar planes. Te guiamos paso a paso.' },
+  { file: 'it_02.mp3', text: 'Arriba verás el título y la descripción según el modo: jugador o entrenador.' },
+  { file: 'it_03.mp3', text: 'Lista de planes: como jugador selecciona uno; como entrenador crea y gestiona planes.' },
+  { file: 'it_04.mp3', text: 'Pestañas para ver la sesión de hoy, la planificación semanal o el historial de sesiones.' },
+  { file: 'it_05.mp3', text: 'Según la pestaña verás la sesión de hoy, el calendario de la semana o el listado de sesiones realizadas.' },
+  { file: 'it_06.mp3', text: 'Ya conoces el entrenamiento individual.' },
+
+  // ── Suscripción jugador, Inicio deportes ───────────────────────────────────
+  { file: 'sus_01.mp3', text: 'Estás en Mi suscripción. Elige el perfil del jugador si hay varios y consulta el estado: activa o inactiva, tipo, fechas y opciones de renovación o contratación. Te guiamos paso a paso.' },
+  { file: 'sus_02.mp3', text: 'Las tarjetas muestran los jugadores asociados. Pulsa en uno para ver su suscripción.' },
+  { file: 'sus_03.mp3', text: 'Aquí ves si el plan está activo o inactivo, el tipo —mensual, trimestral o anual—, fecha de inicio y de renovación o fin.' },
+  { file: 'sus_04.mp3', text: 'Según el estado puedes contratar, renovar o gestionar. Hay enlaces a planes si aplica.' },
+  { file: 'sus_05.mp3', text: 'Ya conoces tu suscripción.' },
+  { file: 'id_01.mp3', text: 'Estás en la pantalla de deportes de Sphaira. Selecciona el deporte con el que quieres trabajar. Fútbol está disponible; otros deportes pueden estar en desarrollo. Te guiamos paso a paso.' },
+  { file: 'id_02.mp3', text: 'Cada tarjeta corresponde a un deporte: Fútbol, Baloncesto, Balonmano, Voleibol, etc. Pulsa en uno para acceder.' },
+  { file: 'id_03.mp3', text: 'Elige tu deporte para continuar.' },
 
   // ── Calendario equipo (entrenador) ─────────────────────────────────────────
   { file: 'caleq_01.mp3', text: 'Aquí ves el calendario de entrenamientos y partidos del equipo. Puedes cambiar entre vista año, mes y semana, y usar el planificador con IA para organizar la semana. Te guiamos paso a paso.' },
@@ -503,6 +671,7 @@ const STEPS = [
   { file: 'pente_07.mp3', text: 'Ya dominas la galería de partidos. Elige partido, sube contenido y consulta fotos y vídeos cuando lo necesites.' },
 
   // ── Lesiones (entrenador) ──────────────────────────────────────────────────
+  { file: 'les_00.mp3', text: 'Selecciona un jugador del equipo para ver y gestionar sus lesiones. Puedes cambiar de jugador en cualquier momento. La insignia roja indica cuántas lesiones activas tiene cada uno.' },
   { file: 'les_01.mp3', text: 'Registro y seguimiento de lesiones del equipo: mapa corporal, línea temporal y estadísticas (Pro). Exporta informes PDF, imprime y configura notificaciones. Te guiamos paso a paso.' },
   { file: 'les_02.mp3', text: 'Alterna entre modo Base y Pro. En Pro se desbloquean estadísticas, notas médicas, fase RTP y gestión de Return to Play.' },
   { file: 'les_03.mp3', text: 'Descargar informe PDF, imprimir o exportar y configurar notificaciones (cuándo enviar avisos al crear, cambiar estado o avanzar RTP).' },
@@ -577,7 +746,14 @@ async function main() {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   }
 
-  console.log(`\n🎙️  Generando ${STEPS.length} archivos de audio para el tutorial de Sphaira`);
+  const onlyPrefix = process.argv.find(a => a.startsWith('--only='));
+  const prefix = onlyPrefix ? onlyPrefix.split('=')[1] : '';
+  const force = process.argv.includes('--force');
+  const steps = prefix ? STEPS.filter(s => s.file.startsWith(prefix)) : STEPS;
+
+  console.log(`\n🎙️  Generando ${steps.length} archivos de audio para el tutorial de Sphaira`);
+  if (prefix) console.log(`   Solo archivos: ${prefix}*`);
+  if (force) console.log(`   Modo: --force (regenerar aunque existan)`);
   console.log(`   Voz: ${VOICE_ID}  |  Modelo: ${MODEL_ID}`);
   console.log(`   Destino: ${OUTPUT_DIR}\n`);
 
@@ -585,10 +761,10 @@ async function main() {
   let skipped = 0;
   let errors = 0;
 
-  for (const step of STEPS) {
+  for (const step of steps) {
     const outputPath = path.join(OUTPUT_DIR, step.file);
 
-    if (fs.existsSync(outputPath)) {
+    if (!force && fs.existsSync(outputPath)) {
       console.log(`   ⏭️  ${step.file}  (ya existe, omitiendo)`);
       skipped++;
       continue;

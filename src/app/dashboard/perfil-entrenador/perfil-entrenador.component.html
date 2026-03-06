@@ -22,43 +22,50 @@
 <div class="perfil-entrenador-page">
 
   <!-- ========== TARJETA DE SUSCRIPCIÓN (solo coach independiente) ========== -->
-  <div class="subscription-card" *ngIf="profileId === 2 && !coachBelongsToClub && subscriptionStatus !== null" data-tutorial="pe-suscripcion">
-    <div class="sub-left">
-      <i class="bi bi-credit-card-2-front sub-icon"></i>
-      <div class="sub-info">
-        <span class="sub-title">Mi suscripción</span>
-        <span class="sub-plan">{{ subscriptionPlan || 'Sin plan activo' }}</span>
+  <!-- Contenedor siempre presente para que el paso 2 del tutorial tenga objetivo -->
+  <div class="pe-suscripcion-wrap" data-tutorial="pe-suscripcion">
+    <div class="subscription-card" *ngIf="profileId === 2 && !coachBelongsToClub && subscriptionStatus !== null">
+      <div class="sub-left">
+        <i class="bi bi-credit-card-2-front sub-icon"></i>
+        <div class="sub-info">
+          <span class="sub-title">Mi suscripción</span>
+          <span class="sub-plan">{{ subscriptionPlan || 'Sin plan activo' }}</span>
+        </div>
+      </div>
+      <div class="sub-right">
+        <span class="sub-badge"
+          [class.sub-active]="subscriptionStatus === 'ACTIVE'"
+          [class.sub-trial]="subscriptionStatus === 'TRIAL'"
+          [class.sub-expired]="subscriptionStatus === 'EXPIRED'"
+          [class.sub-none]="subscriptionStatus === 'NONE'">
+          <ng-container [ngSwitch]="subscriptionStatus">
+            <span *ngSwitchCase="'ACTIVE'"><i class="bi bi-check-circle me-1"></i>Activa</span>
+            <span *ngSwitchCase="'TRIAL'"><i class="bi bi-clock me-1"></i>Período de prueba</span>
+            <span *ngSwitchCase="'EXPIRED'"><i class="bi bi-x-circle me-1"></i>Vencida</span>
+            <span *ngSwitchDefault><i class="bi bi-dash-circle me-1"></i>Sin suscripción</span>
+          </ng-container>
+        </span>
+        <span class="sub-expiry" *ngIf="subscriptionDateFinal">
+          Vence: {{ subscriptionDateFinal }}
+        </span>
+        <span class="sub-months" *ngIf="subscriptionMonths > 0">
+          {{ subscriptionMonths }} mes<span *ngIf="subscriptionMonths > 1">es</span> activo
+        </span>
+        <button class="btn-manage-sub"
+          *ngIf="subscriptionStatus === 'NONE' || subscriptionStatus === 'TRIAL' || subscriptionStatus === 'EXPIRED'"
+          (click)="goToSubscriptionPage()">
+          Ver planes <i class="bi bi-arrow-right ms-1"></i>
+        </button>
+        <button class="btn-manage-sub"
+          *ngIf="subscriptionStatus === 'ACTIVE'"
+          (click)="goToSubscriptionPage()">
+          Gestionar <i class="bi bi-arrow-right ms-1"></i>
+        </button>
       </div>
     </div>
-    <div class="sub-right">
-      <span class="sub-badge"
-        [class.sub-active]="subscriptionStatus === 'ACTIVE'"
-        [class.sub-trial]="subscriptionStatus === 'TRIAL'"
-        [class.sub-expired]="subscriptionStatus === 'EXPIRED'"
-        [class.sub-none]="subscriptionStatus === 'NONE'">
-        <ng-container [ngSwitch]="subscriptionStatus">
-          <span *ngSwitchCase="'ACTIVE'"><i class="bi bi-check-circle me-1"></i>Activa</span>
-          <span *ngSwitchCase="'TRIAL'"><i class="bi bi-clock me-1"></i>Período de prueba</span>
-          <span *ngSwitchCase="'EXPIRED'"><i class="bi bi-x-circle me-1"></i>Vencida</span>
-          <span *ngSwitchDefault><i class="bi bi-dash-circle me-1"></i>Sin suscripción</span>
-        </ng-container>
-      </span>
-      <span class="sub-expiry" *ngIf="subscriptionDateFinal">
-        Vence: {{ subscriptionDateFinal }}
-      </span>
-      <span class="sub-months" *ngIf="subscriptionMonths > 0">
-        {{ subscriptionMonths }} mes<span *ngIf="subscriptionMonths > 1">es</span> activo
-      </span>
-      <button class="btn-manage-sub"
-        *ngIf="subscriptionStatus === 'NONE' || subscriptionStatus === 'TRIAL' || subscriptionStatus === 'EXPIRED'"
-        (click)="goToSubscriptionPage()">
-        Ver planes <i class="bi bi-arrow-right ms-1"></i>
-      </button>
-      <button class="btn-manage-sub"
-        *ngIf="subscriptionStatus === 'ACTIVE'"
-        (click)="goToSubscriptionPage()">
-        Gestionar <i class="bi bi-arrow-right ms-1"></i>
-      </button>
+    <div *ngIf="!(profileId === 2 && !coachBelongsToClub && subscriptionStatus !== null)" class="pe-suscripcion-placeholder">
+      <i class="bi bi-credit-card-2-front me-2"></i>
+      <span>Mi suscripción (visible solo para entrenadores sin club)</span>
     </div>
   </div>
 
@@ -232,25 +239,28 @@
     </div>
 
     <!-- ========== CAMPOS PERSONALIZADOS POR CLUB ========== -->
-    <ng-container *ngFor="let club of coachClubs">
-      <div class="section-card club-fields-card" [hidden]="clubFieldCounts[club.clubId] === 0" data-tutorial="pe-campos-club">
-        <div class="section-header navy">
-          <i class="bi bi-sliders"></i>
-          <span>{{ 'COACH_PROFILE.CUSTOM_FIELDS_TITLE' | translate }} — {{ club.clubName }}</span>
+    <div *ngIf="!loading" class="pe-campos-club-section" data-tutorial="pe-campos-club">
+      <ng-container *ngFor="let club of coachClubs">
+        <div class="section-card club-fields-card" [hidden]="clubFieldCounts[club.clubId] === 0">
+          <div class="section-header navy">
+            <i class="bi bi-sliders"></i>
+            <span>{{ 'COACH_PROFILE.CUSTOM_FIELDS_TITLE' | translate }} — {{ club.clubName }}</span>
+          </div>
+          <div class="section-body">
+            <p class="hint-text">{{ 'COACH_PROFILE.CUSTOM_FIELDS_HINT' | translate }}</p>
+            <app-form-renderer
+              [clubId]="club.clubId"
+              [contexto]="'PERFIL_ENTRENADOR'"
+              [userId]="userId"
+              [playerId]="0"
+              (onSave)="onDynamicFieldsSaved()"
+              (onFieldsLoaded)="onClubFieldsLoaded(club.clubId, $event)">
+            </app-form-renderer>
+          </div>
         </div>
-        <div class="section-body">
-          <p class="hint-text">{{ 'COACH_PROFILE.CUSTOM_FIELDS_HINT' | translate }}</p>
-          <app-form-renderer
-            [clubId]="club.clubId"
-            [contexto]="'PERFIL_ENTRENADOR'"
-            [userId]="userId"
-            [playerId]="0"
-            (onSave)="onDynamicFieldsSaved()"
-            (onFieldsLoaded)="onClubFieldsLoaded(club.clubId, $event)">
-          </app-form-renderer>
-        </div>
-      </div>
-    </ng-container>
+      </ng-container>
+      <p *ngIf="coachClubs.length === 0" class="hint-text">{{ 'COACH_PROFILE.CUSTOM_FIELDS_HINT' | translate }}</p>
+    </div>
 
     <!-- Documento de identidad Preview -->
     <div *ngIf="!loading" class="section-card" data-tutorial="pe-doc-identidad">

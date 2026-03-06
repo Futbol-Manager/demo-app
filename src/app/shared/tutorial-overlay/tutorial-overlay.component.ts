@@ -48,8 +48,12 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
 
   /** Rectángulo del "hueco" para efecto spotlight (resto de pantalla oscuro) */
   spotlightRect: SpotlightRect | null = null;
+  /** Lado de la tarjeta desde el que sale la flecha hacia el elemento (null si centrado) */
+  arrowSide: 'left' | 'right' | 'top' | 'bottom' | null = null;
+  /** Estilo dinámico para que la flecha apunte al centro del elemento destacado (opcional) */
+  arrowPositionStyle: { top?: string; left?: string; right?: string; bottom?: string; transform?: string } | null = null;
   /** Posición dinámica de la tarjeta para no superponer el elemento destacado */
-  cardStyle: { left?: string; top?: string; right?: string; transform?: string } = this.getDefaultCardStyle();
+  cardStyle: { left?: string; top?: string; right?: string; transform?: string } = this.getCenteredCardStyle();
 
   /** Drag de la tarjeta */
   isDragging = false;
@@ -92,6 +96,8 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
           this.isFirst = true;
           this.isLast = false;
           this.spotlightRect = null;
+          this.arrowSide = null;
+          this.arrowPositionStyle = null;
           this.currentStepAudioFile = null;
           this.audioPlayBlocked = false;
           this.updateCardPosition();
@@ -107,7 +113,9 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
         this.audioPlayBlocked = false;
         // Al cambiar de paso, reseteamos la posición manual del drag
         this.draggedThisStep = false;
-        setTimeout(() => this.applyHighlight(payload.step.targetSelector), 150);
+        // En el último paso no mostramos spotlight: fondo uniforme y modal centrado con check
+        const selector = this.isLast ? undefined : payload.step.targetSelector;
+        setTimeout(() => this.applyHighlight(selector), 150);
         if (this.audioEnabled && payload.step.audioFile) {
           this.playAudio(payload.step.audioFile);
         } else if (!this.isLast) {
@@ -276,14 +284,24 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
     this.updateCardPosition();
   }
 
-  private getDefaultCardStyle(): { right: string; top: string; transform: string } {
-    return { right: VIEWPORT_PADDING + 'px', top: '50%', transform: 'translateY(-50%)' };
+  /** Tarjeta centrada en pantalla (usado en paso 1 y cuando no hay elemento a resaltar). */
+  private getCenteredCardStyle(): { left: string; top: string; transform: string } {
+    return { left: '50%', top: '50%', transform: 'translate(-50%, -50%)' };
   }
 
-  /** Calcula la posición de la tarjeta para no superponer el elemento en spotlight (UX: modal dinámico). */
+  /** Posiciona la tarjeta: paso 1 y último paso siempre centrados; resto dinámico para no tapar el elemento. */
   private updateCardPosition(): void {
+    if (this.stepIndex === 1 || this.isLast) {
+      this.arrowSide = null;
+      this.arrowPositionStyle = null;
+      this.cardStyle = this.getCenteredCardStyle();
+      this.cdr.markForCheck();
+      return;
+    }
     if (!this.spotlightRect) {
-      this.cardStyle = this.getDefaultCardStyle();
+      this.arrowSide = null;
+      this.arrowPositionStyle = null;
+      this.cardStyle = this.getCenteredCardStyle();
       this.cdr.markForCheck();
       return;
     }
@@ -299,25 +317,51 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
     let top: number;
 
     if (spaceRight >= CARD_WIDTH + CARD_GAP) {
+      this.arrowSide = 'left';
       left = r.left + r.width + CARD_GAP;
       top = Math.max(VIEWPORT_PADDING, Math.min(r.top + r.height / 2 - CARD_HEIGHT_EST / 2, vh - CARD_HEIGHT_EST - VIEWPORT_PADDING));
       this.cardStyle = { left: left + 'px', top: top + 'px' };
+      // Flecha apuntando al centro vertical del spotlight
+      const arrowCenterY = r.top + r.height / 2;
+      const arrowTopPx = arrowCenterY - top - 20; // 20 = mitad de la altura del SVG (40px)
+      const clampedTop = Math.max(0, Math.min(CARD_HEIGHT_EST - 40, arrowTopPx));
+      this.arrowPositionStyle = { top: clampedTop + 'px', transform: 'translateY(-50%)' };
     } else if (spaceLeft >= CARD_WIDTH + CARD_GAP) {
+      this.arrowSide = 'right';
       left = r.left - CARD_WIDTH - CARD_GAP;
       top = Math.max(VIEWPORT_PADDING, Math.min(r.top + r.height / 2 - CARD_HEIGHT_EST / 2, vh - CARD_HEIGHT_EST - VIEWPORT_PADDING));
       this.cardStyle = { left: left + 'px', top: top + 'px' };
+      const arrowCenterY = r.top + r.height / 2;
+      const arrowTopPx = arrowCenterY - top - 20;
+      const clampedTop = Math.max(0, Math.min(CARD_HEIGHT_EST - 40, arrowTopPx));
+      this.arrowPositionStyle = { top: clampedTop + 'px', transform: 'translateY(-50%)' };
     } else if (spaceBottom >= CARD_HEIGHT_EST + CARD_GAP) {
+      this.arrowSide = 'top';
       left = Math.max(VIEWPORT_PADDING, Math.min(r.left + r.width / 2 - CARD_WIDTH / 2, vw - CARD_WIDTH - VIEWPORT_PADDING));
       top = r.top + r.height + CARD_GAP;
       this.cardStyle = { left: left + 'px', top: top + 'px' };
+      const arrowCenterX = r.left + r.width / 2;
+      const arrowLeftPx = arrowCenterX - left - 20; // 20 = mitad del ancho del SVG (40px)
+      const clampedLeft = Math.max(0, Math.min(CARD_WIDTH - 40, arrowLeftPx));
+      this.arrowPositionStyle = { left: clampedLeft + 'px', transform: 'translateX(-50%)' };
     } else if (spaceTop >= CARD_HEIGHT_EST + CARD_GAP) {
+      this.arrowSide = 'bottom';
       left = Math.max(VIEWPORT_PADDING, Math.min(r.left + r.width / 2 - CARD_WIDTH / 2, vw - CARD_WIDTH - VIEWPORT_PADDING));
       top = r.top - CARD_HEIGHT_EST - CARD_GAP;
       this.cardStyle = { left: left + 'px', top: top + 'px' };
+      const arrowCenterX = r.left + r.width / 2;
+      const arrowLeftPx = arrowCenterX - left - 20;
+      const clampedLeft = Math.max(0, Math.min(CARD_WIDTH - 40, arrowLeftPx));
+      this.arrowPositionStyle = { left: clampedLeft + 'px', transform: 'translateX(-50%)' };
     } else {
+      this.arrowSide = 'left';
       left = Math.max(VIEWPORT_PADDING, Math.min(r.left + r.width + CARD_GAP, vw - CARD_WIDTH - VIEWPORT_PADDING));
       top = Math.max(VIEWPORT_PADDING, Math.min(r.top, vh - CARD_HEIGHT_EST - VIEWPORT_PADDING));
       this.cardStyle = { left: left + 'px', top: top + 'px' };
+      const arrowCenterY = r.top + r.height / 2;
+      const arrowTopPx = arrowCenterY - top - 20;
+      const clampedTop = Math.max(0, Math.min(CARD_HEIGHT_EST - 40, arrowTopPx));
+      this.arrowPositionStyle = { top: clampedTop + 'px', transform: 'translateY(-50%)' };
     }
     this.cdr.markForCheck();
   }
@@ -325,6 +369,7 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
   private applyHighlight(selector?: string): void {
     if (!selector) {
       this.spotlightRect = null;
+      this.updateCardPosition();
       return;
     }
     const el = document.querySelector(selector);
@@ -429,10 +474,6 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
 
   // ── Acciones del usuario ───────────────────────────────────────────────────
 
-  onBackdropClick(): void {
-    this.tutorial.close();
-  }
-
   onNext(): void {
     this.clearAutoAdvance();
     this.stopAudio();
@@ -453,5 +494,58 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
 
   onDontShowAgainChange(checked: boolean): void {
     this.tutorial.setDontShowAgain(checked);
+  }
+
+  /** Omitir tutorial (solo en paso 1). */
+  onSkipTutorial(): void {
+    this.tutorial.close();
+  }
+
+  /** Clic en la barra de progreso: ir al paso correspondiente (pasos 2 a N-1 saltables). */
+  onProgressBarClick(evt: MouseEvent): void {
+    if (this.stepTotal <= 1) return;
+    const el = evt.currentTarget as HTMLElement;
+    const rect = el.getBoundingClientRect();
+    const x = evt.clientX - rect.left;
+    const pct = Math.max(0, Math.min(1, x / rect.width));
+    const step = Math.min(this.stepTotal, Math.max(1, Math.round(pct * this.stepTotal) || 1));
+    if (step !== this.stepIndex) this.tutorial.goToStep(step);
+  }
+
+  /** Repetir tutorial desde el paso 1 (último paso). */
+  onRepeatTutorial(): void {
+    if (this.currentScreenId) this.tutorial.restart();
+  }
+
+  /** Para re-ejecutar animación de transición al cambiar de paso */
+  trackByStepId(_idx: number, stepIndex: number): number {
+    return stepIndex;
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onKeydown(evt: KeyboardEvent): void {
+    if (!this.isOpen) return;
+    const tag = (evt.target as HTMLElement)?.tagName?.toLowerCase();
+    if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+    switch (evt.key) {
+      case 'Escape':
+        evt.preventDefault();
+        this.onClose();
+        break;
+      case 'Enter':
+        evt.preventDefault();
+        this.onNext();
+        break;
+      case 'ArrowLeft':
+        evt.preventDefault();
+        if (!this.isFirst) this.onPrevious();
+        break;
+      case 'ArrowRight':
+        evt.preventDefault();
+        this.onNext();
+        break;
+      default:
+        break;
+    }
   }
 }

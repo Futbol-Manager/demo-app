@@ -82,7 +82,7 @@
       (click)="openDetail(task)">
 
       <div class="task-image">
-        <img [src]="getImage(task)" alt="" loading="lazy" />
+        <img [src]="getImage(task)" alt="" loading="lazy" (error)="onTaskImageError($event, task)" />
         <button
           class="btn-fav"
           [class.active]="isFav(task)"
@@ -135,7 +135,7 @@
     </div>
 
     <div class="detail-body">
-      <img class="detail-img" [src]="getImage(selectedTask)" alt="" />
+      <img class="detail-img" [src]="getImage(selectedTask)" alt="" (error)="onTaskImageError($event, selectedTask)" />
 
       <div class="detail-tags" *ngIf="selectedTask.estrategia || selectedTask.intencion">
         <span class="badge badge-secondary" *ngIf="selectedTask.estrategia && selectedTask.estrategia !== '-'">{{ selectedTask.estrategia }}</span>

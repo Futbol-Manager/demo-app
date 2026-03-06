@@ -74,6 +74,7 @@ export class TutorialService {
     this.screens.set('tareas-favoritas', this.getTareasFavoritasSteps());
     this.screens.set('tareas-mis', this.getTareasMisSteps());
     this.screens.set('jugadores', this.getJugadoresSteps());
+    this.screens.set('jugador', this.getJugadorSteps());
     this.screens.set('informacion-equipo', this.getInformacionEquipoSteps());
     this.screens.set('estadisticas-equipo', this.getEstadisticasEquipoSteps());
     this.screens.set('estadisticas-jugadores', this.getEstadisticasJugadoresSteps());
@@ -124,6 +125,46 @@ export class TutorialService {
         text: 'Estás en el corazón de tu club: este es tu panel de gestión. Desde aquí se abre todo: equipos, documentos, pagos, equipación y mucho más. En los próximos pasos te guiamos por cada sección para que no te pierdas nada.',
         audioFile: 'inicio_01.mp3',
         position: 'bottom'
+      },
+      {
+        id: 'inicio-header-logo',
+        title: 'Logo del club',
+        text: 'A la izquierda tienes el logo del club. Pulsa en él para volver siempre a esta pantalla de inicio.',
+        audioFile: 'header_club_01.mp3',
+        targetSelector: '[data-tutorial="header-logo"]',
+        position: 'bottom'
+      },
+      {
+        id: 'inicio-header-tutorial',
+        title: 'Ver tutorial',
+        text: 'Este botón abre el tutorial de la pantalla en la que estés. Úsalo cuando quieras repasar los pasos de cualquier sección.',
+        audioFile: 'header_club_02.mp3',
+        targetSelector: '[data-tutorial="header-tutorial-btn"]',
+        position: 'left'
+      },
+      {
+        id: 'inicio-header-cta',
+        title: 'Gestionar suscripción con Sphaira',
+        text: 'Desde este botón puedes gestionar la suscripción del club con Sphaira: consultar el plan actual, ver los planes disponibles —Gratuito, Familia y Club— y cambiar o activar el que mejor se adapte a las necesidades del club. Está disponible desde cualquier pantalla y te lleva siempre a la misma página de suscripción.',
+        audioFile: 'header_club_03.mp3',
+        targetSelector: '[data-tutorial="header-cta-subscribe"]',
+        position: 'bottom'
+      },
+      {
+        id: 'inicio-header-notifications',
+        title: 'Notificaciones',
+        text: 'Las notificaciones del club aparecen aquí. Pulsa para ver el listado y marcar como leídas.',
+        audioFile: 'header_club_04.mp3',
+        targetSelector: '[data-tutorial="header-notifications"]',
+        position: 'left'
+      },
+      {
+        id: 'inicio-header-user',
+        title: 'Menú de usuario',
+        text: 'Tu perfil, suscripción del club, idioma, cambio de rol y cerrar sesión están en este menú.',
+        audioFile: 'header_club_05.mp3',
+        targetSelector: '[data-tutorial="header-user-menu"]',
+        position: 'left'
       },
       {
         id: 'inicio-cuadro',
@@ -343,6 +384,46 @@ export class TutorialService {
         position: 'bottom'
       },
       {
+        id: 'inicio-coach-header-logo',
+        title: 'Logo de entrenador',
+        text: 'A la izquierda tienes el logo de entrenador. Pulsa en él para volver siempre a esta pantalla de inicio.',
+        audioFile: 'header_coach_01.mp3',
+        targetSelector: '[data-tutorial="header-logo"]',
+        position: 'bottom'
+      },
+      {
+        id: 'inicio-coach-header-tutorial',
+        title: 'Ver tutorial',
+        text: 'Este botón abre el tutorial de la pantalla actual. Úsalo cuando quieras repasar los pasos.',
+        audioFile: 'header_coach_02.mp3',
+        targetSelector: '[data-tutorial="header-tutorial-btn"]',
+        position: 'left'
+      },
+      {
+        id: 'inicio-coach-header-cta',
+        title: 'Gestionar suscripción del club con Sphaira',
+        text: 'Desde este botón accedes a la suscripción del club con Sphaira: ver el plan actual y los disponibles —Gratuito, Familia y Club— y gestionarlos. Está disponible desde cualquier pantalla y te lleva siempre a la misma página de suscripción del club.',
+        audioFile: 'header_coach_03.mp3',
+        targetSelector: '[data-tutorial="header-cta-subscribe"]',
+        position: 'bottom'
+      },
+      {
+        id: 'inicio-coach-header-notifications',
+        title: 'Notificaciones',
+        text: 'Tus notificaciones aparecen aquí. Pulsa para ver el listado.',
+        audioFile: 'header_coach_04.mp3',
+        targetSelector: '[data-tutorial="header-notifications"]',
+        position: 'left'
+      },
+      {
+        id: 'inicio-coach-header-user',
+        title: 'Menú de usuario',
+        text: 'Tu perfil, idioma, cambio de rol y cerrar sesión están en este menú.',
+        audioFile: 'header_coach_05.mp3',
+        targetSelector: '[data-tutorial="header-user-menu"]',
+        position: 'left'
+      },
+      {
         id: 'inicio-coach-temporada',
         title: 'Temporada',
         text: 'Arriba tienes el selector de temporada. Cámbialo para ver los equipos asignados en otro curso; el listado se actualiza al instante. Así puedes saltar de una temporada a otra sin salir de esta pantalla.',
@@ -385,6 +466,46 @@ export class TutorialService {
         text: 'Esta es tu pantalla principal como padre o jugador. Aquí ves los deportistas vinculados a tu cuenta en la temporada elegida. Cada tarjeta te lleva a su mundo: calendario, cuotas, documentación, estadísticas y galería. Te contamos en un momento qué ver en cada parte.',
         audioFile: 'player_01.mp3',
         position: 'bottom'
+      },
+      {
+        id: 'inicio-player-header-logo',
+        title: 'Logo de jugador',
+        text: 'A la izquierda tienes el logo de jugador. Pulsa en él para volver siempre a esta pantalla de inicio.',
+        audioFile: 'header_player_01.mp3',
+        targetSelector: '[data-tutorial="header-logo"]',
+        position: 'bottom'
+      },
+      {
+        id: 'inicio-player-header-tutorial',
+        title: 'Ver tutorial',
+        text: 'Este botón abre el tutorial de la pantalla actual. Úsalo cuando quieras repasar los pasos.',
+        audioFile: 'header_player_02.mp3',
+        targetSelector: '[data-tutorial="header-tutorial-btn"]',
+        position: 'left'
+      },
+      {
+        id: 'inicio-player-header-cta',
+        title: 'Gestionar suscripción del club con Sphaira',
+        text: 'Desde este botón accedes a la suscripción del club con Sphaira: consultar el plan actual y los planes disponibles —Gratuito, Familia y Club— para el club. Está disponible desde cualquier pantalla.',
+        audioFile: 'header_player_03.mp3',
+        targetSelector: '[data-tutorial="header-cta-subscribe"]',
+        position: 'bottom'
+      },
+      {
+        id: 'inicio-player-header-notifications',
+        title: 'Notificaciones',
+        text: 'Tus notificaciones aparecen aquí. Pulsa para ver el listado.',
+        audioFile: 'header_player_04.mp3',
+        targetSelector: '[data-tutorial="header-notifications"]',
+        position: 'left'
+      },
+      {
+        id: 'inicio-player-header-user',
+        title: 'Menú de usuario',
+        text: 'Tu perfil, idioma, cambio de rol y cerrar sesión están en este menú.',
+        audioFile: 'header_player_05.mp3',
+        targetSelector: '[data-tutorial="header-user-menu"]',
+        position: 'left'
       },
       {
         id: 'inicio-player-temporada',
@@ -575,6 +696,14 @@ export class TutorialService {
         position: 'bottom'
       },
       {
+        id: 'cq-notif-config',
+        title: 'Notificaciones de Cuotas',
+        text: 'Este es el modal de Notificaciones de Cuotas. Configura cuándo y cómo avisar a los responsables: elige los días antes del vencimiento para enviar el recordatorio, activa la notificación push en la app móvil y el correo electrónico con el detalle del pago pendiente. Guarda la configuración cuando termines.',
+        audioFile: 'cuotas_notif_config.mp3',
+        targetSelector: '[data-tutorial="cq-notif-config"]',
+        position: 'left'
+      },
+      {
         id: 'cuotas-resumen',
         title: 'Resumen',
         text: 'A continuación tienes el resumen. Las tarjetas muestran el total de jugadores, el importe a cobrar, lo ya cobrado con su barra de progreso y el importe pendiente. Te dan una visión rápida del estado de las cuotas.',
@@ -693,6 +822,14 @@ export class TutorialService {
         audioFile: 'patro_04.mp3',
         targetSelector: '[data-tutorial="patro-nuevo"]',
         position: 'bottom'
+      },
+      {
+        id: 'patro-modal-crear',
+        title: 'Crear nuevo patrocinador',
+        text: 'Este es el formulario para crear un patrocinador. Arriba subes la imagen o logo del patrocinador; se recomienda 400 por 150 píxeles en JPG o PNG. En Datos del patrocinador rellena nombre, descripción, web, teléfono, email y beneficios. Cuando termines, pulsa Guardar para registrarlo en el club.',
+        audioFile: 'patro_crear_modal.mp3',
+        targetSelector: '[data-tutorial="patro-modal-crear"]',
+        position: 'left'
       },
       {
         id: 'patro-grid',
@@ -1126,20 +1263,19 @@ export class TutorialService {
     ];
   }
 
-  /** Pasos del tutorial Menu Club: una opción por paso, sin omitir ninguna. */
+  /** Pasos del tutorial Menu Club: una opción por paso, sin Volver; textos instructivos. */
   private getMenuClubSteps(): TutorialStep[] {
     return [
-      { id: 'mc-bienvenida', title: 'Menú del equipo', text: 'Desde aquí accedes a todas las secciones del equipo. Cada tarjeta te lleva a una pantalla distinta con información y herramientas específicas.', audioFile: 'mc_01.mp3', position: 'bottom' },
-      { id: 'mc-volver', title: 'Volver', text: 'Si en algún momento quieres volver atrás, este botón te lleva a la pantalla anterior.', audioFile: 'mc_02.mp3', targetSelector: '[data-tutorial="mc-volver"]', position: 'bottom' },
-      { id: 'mc-calendar', title: 'Calendario', text: 'Empecemos por el Calendario: aquí ves todos los partidos y entrenamientos del equipo organizados por fecha.', audioFile: 'mc_03.mp3', targetSelector: '[data-tutorial="mc-calendar"]', position: 'bottom' },
-      { id: 'mc-players', title: 'Jugadores', text: 'Continuamos con Jugadores, donde tienes el listado completo con la información de cada jugador del equipo.', audioFile: 'mc_04.mp3', targetSelector: '[data-tutorial="mc-players"]', position: 'bottom' },
-      { id: 'mc-stats-players', title: 'Estadísticas jugadores', text: 'Después tienes las Estadísticas de jugadores: goles, asistencias, minutos y mucho más para analizar el rendimiento individual.', audioFile: 'mc_05.mp3', targetSelector: '[data-tutorial="mc-stats-players"]', position: 'bottom' },
-      { id: 'mc-stats-team', title: 'Estadísticas equipo', text: 'Y también las Estadísticas del equipo, con los puntos acumulados, victorias, empates, derrotas y goles a favor y en contra.', audioFile: 'mc_06.mp3', targetSelector: '[data-tutorial="mc-stats-team"]', position: 'bottom' },
-      { id: 'mc-ranking', title: 'Ranking y resultados', text: 'Pasamos a Ranking y resultados, donde consultas la clasificación actual y el historial de partidos del equipo.', audioFile: 'mc_07.mp3', targetSelector: '[data-tutorial="mc-ranking"]', position: 'bottom' },
-      { id: 'mc-gallery', title: 'Galería', text: 'Siguiente, la Galería: fotos y momentos del equipo que puedes compartir con jugadores y familias.', audioFile: 'mc_08.mp3', targetSelector: '[data-tutorial="mc-gallery"]', position: 'bottom' },
-      { id: 'mc-team-info', title: 'Info equipo', text: 'También tienes Info del equipo, con toda la información general: nombre, categoría, liga y horarios.', audioFile: 'mc_09.mp3', targetSelector: '[data-tutorial="mc-team-info"]', position: 'bottom' },
-      { id: 'mc-injuries', title: 'Lesiones', text: 'Y para cerrar el menú, Lesiones: registra y haz seguimiento del estado de recuperación de los jugadores lesionados.', audioFile: 'mc_10.mp3', targetSelector: '[data-tutorial="mc-injuries"]', position: 'bottom' },
-      { id: 'mc-fin', title: 'Listo', text: 'Ya conoces todas las opciones del menú del equipo. Pulsa en cualquier tarjeta para entrar en esa sección cuando lo necesites.', audioFile: 'mc_11.mp3', position: 'bottom' }
+      { id: 'mc-bienvenida', title: 'Menú del equipo', text: 'Estás en el menú del equipo. Desde aquí accedes a cada sección mediante tarjetas: Calendario, Jugadores, Estadísticas de jugadores y del equipo, Ranking y resultados, Galería, Info del equipo y Lesiones. Te explicamos cada una.', audioFile: 'mc_01.mp3', position: 'bottom' },
+      { id: 'mc-calendar', title: 'Calendario', text: 'La tarjeta Calendario te lleva al calendario del equipo: partidos y entrenamientos organizados por fecha. Pulsa en ella para ver y gestionar el planning.', audioFile: 'mc_02.mp3', targetSelector: '[data-tutorial="mc-calendar"]', position: 'bottom' },
+      { id: 'mc-players', title: 'Jugadores', text: 'La tarjeta Jugadores abre el listado completo de jugadores del equipo con su información, datos de contacto y rendimiento.', audioFile: 'mc_03.mp3', targetSelector: '[data-tutorial="mc-players"]', position: 'bottom' },
+      { id: 'mc-stats-players', title: 'Estadísticas jugadores', text: 'Estadísticas de jugadores: desde aquí accedes a gráficos y tablas con goles, asistencias, minutos jugados y otras métricas individuales.', audioFile: 'mc_04.mp3', targetSelector: '[data-tutorial="mc-stats-players"]', position: 'bottom' },
+      { id: 'mc-stats-team', title: 'Estadísticas equipo', text: 'Estadísticas del equipo: puntos, victorias, empates, derrotas, goles a favor y en contra del equipo en la competición.', audioFile: 'mc_05.mp3', targetSelector: '[data-tutorial="mc-stats-team"]', position: 'bottom' },
+      { id: 'mc-ranking', title: 'Ranking y resultados', text: 'Ranking y resultados: consulta la clasificación de la liga y el historial de partidos del equipo.', audioFile: 'mc_06.mp3', targetSelector: '[data-tutorial="mc-ranking"]', position: 'bottom' },
+      { id: 'mc-gallery', title: 'Galería', text: 'Siguiente, la Galería. Aquí se muestran fotos y momentos del equipo que puedes compartir con jugadores y familias.', audioFile: 'mc_07.mp3', targetSelector: '[data-tutorial="mc-gallery"]', position: 'bottom' },
+      { id: 'mc-team-info', title: 'Info equipo', text: 'Info del equipo: nombre, categoría, liga, horarios y datos generales del equipo.', audioFile: 'mc_08.mp3', targetSelector: '[data-tutorial="mc-team-info"]', position: 'bottom' },
+      { id: 'mc-injuries', title: 'Lesiones', text: 'Lesiones: registra y haz seguimiento del estado de recuperación de cada jugador lesionado.', audioFile: 'mc_09.mp3', targetSelector: '[data-tutorial="mc-injuries"]', position: 'bottom' },
+      { id: 'mc-fin', title: 'Listo', text: 'Has completado el recorrido. Ya conoces todas las opciones del menú. Pulsa en cualquier tarjeta para entrar en esa sección cuando lo necesites.', audioFile: 'mc_10.mp3', position: 'bottom' }
     ];
   }
 
@@ -1166,23 +1302,22 @@ export class TutorialService {
     ];
   }
 
-  /** Pasos del tutorial Opciones Jugador: una opción por paso, sin omitir ninguna. */
+  /** Pasos del tutorial Opciones Jugador: sin paso Volver; textos instructivos. */
   private getOpcionesjugadorSteps(): TutorialStep[] {
     return [
-      { id: 'oj-bienvenida', title: 'Opciones del jugador', text: 'Desde aquí el jugador accede a todo lo que necesita: datos personales, calendario, cuotas, documentación, clasificación, estadísticas, galería, notificaciones, patrocinadores, lesiones y ropa.', audioFile: 'oj_01.mp3', position: 'bottom' },
-      { id: 'oj-volver', title: 'Volver', text: 'Si en algún momento quieres volver atrás, este botón te lleva a la pantalla anterior.', audioFile: 'oj_02.mp3', targetSelector: '[data-tutorial="oj-volver"]', position: 'bottom' },
-      { id: 'oj-datos-personales', title: 'Datos personales', text: 'Empecemos por los Datos personales: aquí el jugador consulta y edita su información personal como nombre, fecha de nacimiento, posición y contacto.', audioFile: 'oj_03.mp3', targetSelector: '[data-tutorial="oj-datos-personales"]', position: 'bottom' },
-      { id: 'oj-calendario', title: 'Calendario', text: 'Continuamos con el Calendario: el jugador ve todos sus entrenamientos y partidos organizados por fecha.', audioFile: 'oj_04.mp3', targetSelector: '[data-tutorial="oj-calendario"]', position: 'bottom' },
-      { id: 'oj-pagar-cuotas', title: 'Pagar cuotas', text: 'Pasamos a Pagar cuotas, donde el jugador o la familia gestiona y abona las cuotas del club de forma segura.', audioFile: 'oj_05.mp3', targetSelector: '[data-tutorial="oj-pagar-cuotas"]', position: 'bottom' },
-      { id: 'oj-documentacion', title: 'Documentación', text: 'Siguiente, la Documentación: todos los archivos y documentos del jugador que el club puede solicitar.', audioFile: 'oj_06.mp3', targetSelector: '[data-tutorial="oj-documentacion"]', position: 'bottom' },
-      { id: 'oj-clasificacion', title: 'Clasificación y resultados', text: 'También tienes Clasificación y resultados: el jugador sigue la tabla de su equipo en la competición y consulta los últimos resultados.', audioFile: 'oj_07.mp3', targetSelector: '[data-tutorial="oj-clasificacion"]', position: 'bottom' },
-      { id: 'oj-mis-estadisticas', title: 'Mis estadísticas', text: 'Pasamos a Mis estadísticas: goles, asistencias, minutos y otras métricas de rendimiento personal del jugador.', audioFile: 'oj_08.mp3', targetSelector: '[data-tutorial="oj-mis-estadisticas"]', position: 'bottom' },
-      { id: 'oj-galeria', title: 'Galería', text: 'Después, la Galería: fotos y momentos del equipo que el jugador puede ver y descargar.', audioFile: 'oj_09.mp3', targetSelector: '[data-tutorial="oj-galeria"]', position: 'bottom' },
-      { id: 'oj-notificaciones', title: 'Notificaciones', text: 'Seguimos con Notificaciones: mensajes y avisos del club y del entrenador dirigidos al jugador.', audioFile: 'oj_10.mp3', targetSelector: '[data-tutorial="oj-notificaciones"]', position: 'bottom' },
-      { id: 'oj-patrocinadores', title: 'Patrocinadores', text: 'También puedes ver los Patrocinadores del club: logos, información de contacto y beneficios que ofrecen a los jugadores.', audioFile: 'oj_11.mp3', targetSelector: '[data-tutorial="oj-patrocinadores"]', position: 'bottom' },
-      { id: 'oj-lesiones', title: 'Lesiones', text: 'Y el registro de Lesiones: el jugador puede consultar su historial de lesiones y el estado de su recuperación.', audioFile: 'oj_12.mp3', targetSelector: '[data-tutorial="oj-lesiones"]', position: 'bottom' },
-      { id: 'oj-ropa', title: 'Ropa', text: 'Y para cerrar, la Ropa del club: el catálogo de equipación y la opción de indicar las tallas para que el club lo gestione desde el panel.', audioFile: 'oj_13.mp3', targetSelector: '[data-tutorial="oj-ropa"]', position: 'bottom' },
-      { id: 'oj-fin', title: 'Listo', text: 'Ya conoces todas las opciones disponibles para el jugador. Todo lo que necesitas está a un solo toque de distancia.', audioFile: 'oj_14.mp3', position: 'bottom' }
+      { id: 'oj-bienvenida', title: 'Opciones del jugador', text: 'Estás en el menú del jugador. Desde aquí accedes a cada sección mediante tarjetas: Datos personales, Calendario, Pagar cuotas, Documentación, Clasificación y resultados, Mis estadísticas, Galería, Notificaciones, Patrocinadores, Lesiones y Ropa. Te explicamos cada una.', audioFile: 'oj_01.mp3', position: 'bottom' },
+      { id: 'oj-datos-personales', title: 'Datos personales', text: 'La tarjeta Datos personales abre tu perfil: consulta y edita nombre, fecha de nacimiento, posición, contacto y el resto de tu información personal.', audioFile: 'oj_02.mp3', targetSelector: '[data-tutorial="oj-datos-personales"]', position: 'bottom' },
+      { id: 'oj-calendario', title: 'Calendario', text: 'La tarjeta Calendario muestra todos tus entrenamientos y partidos organizados por fecha. Entra para ver el planning completo.', audioFile: 'oj_03.mp3', targetSelector: '[data-tutorial="oj-calendario"]', position: 'bottom' },
+      { id: 'oj-pagar-cuotas', title: 'Pagar cuotas', text: 'Pagar cuotas: aquí tú o tu familia gestionáis y abonáis las cuotas del club. Vincula tarjeta con Sphaira Pay, revisa obligatorias y opcionales y pagad por transferencia si lo indica el club.', audioFile: 'oj_04.mp3', targetSelector: '[data-tutorial="oj-pagar-cuotas"]', position: 'bottom' },
+      { id: 'oj-documentacion', title: 'Documentación', text: 'Documentación: todos los archivos y documentos que el club te solicita. Descarga los que comparte el club, sube los que te piden o rellena formularios.', audioFile: 'oj_05.mp3', targetSelector: '[data-tutorial="oj-documentacion"]', position: 'bottom' },
+      { id: 'oj-clasificacion', title: 'Clasificación y resultados', text: 'Clasificación y resultados: consulta la tabla de tu equipo en la competición y el historial de partidos y resultados.', audioFile: 'oj_06.mp3', targetSelector: '[data-tutorial="oj-clasificacion"]', position: 'bottom' },
+      { id: 'oj-mis-estadisticas', title: 'Mis estadísticas', text: 'Mis estadísticas: goles, asistencias, minutos jugados y otras métricas de tu rendimiento personal en la temporada.', audioFile: 'oj_07.mp3', targetSelector: '[data-tutorial="oj-mis-estadisticas"]', position: 'bottom' },
+      { id: 'oj-galeria', title: 'Galería', text: 'La Galería muestra fotos y momentos del equipo que puedes ver y descargar.', audioFile: 'oj_08.mp3', targetSelector: '[data-tutorial="oj-galeria"]', position: 'bottom' },
+      { id: 'oj-notificaciones', title: 'Notificaciones', text: 'Notificaciones: mensajes y avisos del club y del entrenador dirigidos a ti.', audioFile: 'oj_09.mp3', targetSelector: '[data-tutorial="oj-notificaciones"]', position: 'bottom' },
+      { id: 'oj-patrocinadores', title: 'Patrocinadores', text: 'Patrocinadores del club: logos, información de contacto y beneficios que ofrecen a los jugadores.', audioFile: 'oj_10.mp3', targetSelector: '[data-tutorial="oj-patrocinadores"]', position: 'bottom' },
+      { id: 'oj-lesiones', title: 'Lesiones', text: 'Lesiones: consulta tu historial de lesiones y el estado de recuperación si las hubiera.', audioFile: 'oj_11.mp3', targetSelector: '[data-tutorial="oj-lesiones"]', position: 'bottom' },
+      { id: 'oj-ropa', title: 'Ropa', text: 'Ropa del club: catálogo de equipación e indicación de tallas para que el club gestione los pedidos.', audioFile: 'oj_12.mp3', targetSelector: '[data-tutorial="oj-ropa"]', position: 'bottom' },
+      { id: 'oj-fin', title: 'Listo', text: 'Has completado el recorrido. Ya conoces todas las opciones del jugador. Pulsa en cualquier tarjeta para entrar en esa sección cuando lo necesites.', audioFile: 'oj_13.mp3', position: 'bottom' }
     ];
   }
 
@@ -1284,6 +1419,18 @@ export class TutorialService {
     ];
   }
 
+  /** Pasos del tutorial Datos personales del jugador (ruta jugador/:teamId/:playerId). Sin paso Volver. */
+  private getJugadorSteps(): TutorialStep[] {
+    return [
+      { id: 'jd-bienvenida', title: 'Datos personales del jugador', text: 'Estás en la ficha de datos personales del jugador. Aquí puedes consultar y editar su foto, datos personales, información deportiva, tutores y datos bancarios. Te guiamos paso a paso.', audioFile: 'jd_01.mp3', position: 'bottom' },
+      { id: 'jd-foto', title: 'Foto del jugador', text: 'Arriba tienes la foto del jugador. Puedes subir una nueva en formato JPG o PNG; al crear un jugador la foto se sube al guardar.', audioFile: 'jd_02.mp3', targetSelector: '[data-tutorial="jd-foto"]', position: 'bottom' },
+      { id: 'jd-tabs', title: 'Pestañas de información', text: 'Las pestañas Información personal e Información deportiva organizan el formulario. En personal verás nombre, apellido, fecha de nacimiento, contacto, dirección y datos de tutores y bancarios; en deportiva, posición, medidas y habilidades.', audioFile: 'jd_03.mp3', targetSelector: '[data-tutorial="jd-tabs"]', position: 'bottom' },
+      { id: 'jd-datos', title: 'Datos del jugador', text: 'Aquí se muestran todos los campos del jugador: nombre, apellido, DNI, teléfono, email, dirección, nacionalidad y el resto. Rellena o modifica los que necesites.', audioFile: 'jd_04.mp3', targetSelector: '[data-tutorial="jd-datos"]', position: 'left' },
+      { id: 'jd-acciones', title: 'Acciones', text: 'En el pie tienes el botón DNI para subir o ver el documento de identidad del jugador, y Guardar para aplicar todos los cambios. Recuerda guardar después de editar.', audioFile: 'jd_05.mp3', targetSelector: '[data-tutorial="jd-acciones"]', position: 'top' },
+      { id: 'jd-fin', title: 'Listo', text: 'Has completado el recorrido. Ya conoces la ficha de datos personales del jugador. Mantén la información actualizada cuando lo necesites.', audioFile: 'jd_06.mp3', position: 'bottom' }
+    ];
+  }
+
   /** Pasos del tutorial Información del equipo (sin paso Volver; narrativo). */
   private getInformacionEquipoSteps(): TutorialStep[] {
     return [
@@ -1353,6 +1500,7 @@ export class TutorialService {
   /** Pasos del tutorial Lesiones (sin paso Volver; narrativo). */
   private getLesionesSteps(): TutorialStep[] {
     return [
+      { id: 'les-selector-jugador', title: 'Selecciona un jugador', text: 'Selecciona un jugador del equipo para ver y gestionar sus lesiones. Puedes cambiar de jugador en cualquier momento. La insignia roja indica cuántas lesiones activas tiene cada uno.', audioFile: 'les_00.mp3', targetSelector: '[data-tutorial="les-selector-jugador"]', position: 'bottom' },
       { id: 'les-bienvenida', title: 'Gestión de lesiones', text: 'Registro y seguimiento de lesiones del equipo: mapa corporal, línea temporal y estadísticas (Pro). Exporta informes PDF, imprime y configura notificaciones. Te guiamos paso a paso.', audioFile: 'les_01.mp3', position: 'bottom' },
       { id: 'les-mode', title: 'Modo Base / Pro', text: 'Alterna entre modo Base y Pro. En Pro se desbloquean estadísticas, notas médicas, fase RTP y gestión de Return to Play.', audioFile: 'les_02.mp3', targetSelector: '[data-tutorial="les-mode"]', position: 'bottom' },
       { id: 'les-actions', title: 'Acciones del encabezado', text: 'Descargar informe PDF, imprimir/exportar y configurar notificaciones (cuándo enviar avisos al crear, cambiar estado o avanzar RTP).', audioFile: 'les_03.mp3', targetSelector: '[data-tutorial="les-actions"]', position: 'bottom' },
@@ -1412,63 +1560,58 @@ export class TutorialService {
     ];
   }
 
-  /** Pasos del tutorial Cuotas (jugador/padre). */
+  /** Pasos del tutorial Cuotas (jugador/padre): sin paso Volver; textos instructivos. */
   private getCuotasSteps(): TutorialStep[] {
     return [
-      { id: 'cq-bienvenida', title: 'Pagar cuotas', text: 'Consulta y paga las cuotas del club: estado pagado/pendiente, Sphaira Pay para vincular tarjeta y cobros automáticos, lista obligatoria y opcional, filtros y pago por transferencia.', position: 'bottom' },
-      { id: 'cq-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="cq-volver"]', position: 'bottom' },
-      { id: 'cq-estado', title: 'Estado y Sphaira Pay', text: 'Tarjetas de total pagado y pendiente. Acceso rápido a Sphaira Pay: vincular tarjeta, ver la asociada o gestionar cobros automáticos.', targetSelector: '[data-tutorial="cq-estado"]', position: 'bottom' },
-      { id: 'cq-selection-bar', title: 'Barra de selección', text: 'Al marcar cuotas puntuales aparece la barra con total y botones Limpiar y Pagar para abrir el modal de pago.', targetSelector: '[data-tutorial="cq-selection-bar"]', position: 'top' },
-      { id: 'cq-obligatorias', title: 'Cuotas obligatorias', text: 'Panel con filtros (concepto, tipo de pago, estado, vencimiento, fecha pago) y lista: concepto, tipo (Puntual/Sphaira Pay/Manual), importe, pagado, vencimiento, fecha pago y acciones (vincular tarjeta, cancelar).', targetSelector: '[data-tutorial="cq-obligatorias"]', position: 'left' },
-      { id: 'cq-opcionales', title: 'Cuotas opcionales', text: 'Misma estructura: filtros y lista de cuotas opcionales con selección y pago múltiple si está disponible.', targetSelector: '[data-tutorial="cq-opcionales"]', position: 'left' },
-      { id: 'cq-transfer', title: 'Pago por transferencia', text: 'Datos bancarios del club (IBAN, concepto, contacto, Bizum) para pagar por transferencia. Notifica al club cuando hayas realizado el pago.', targetSelector: '[data-tutorial="cq-transfer"]', position: 'left' },
-      { id: 'cq-fin', title: 'Listo', text: 'Ya conoces la pantalla de cuotas. Vincula tarjeta si usas Sphaira Pay, selecciona y paga o usa transferencia según indique el club.', position: 'bottom' }
+      { id: 'cq-bienvenida', title: 'Pagar cuotas', text: 'Estás en la pantalla de pagar cuotas. Aquí consultas el estado de tus cuotas, vinculas tarjeta con Sphaira Pay para cobros automáticos, ves obligatorias y opcionales, y tienes los datos para pagar por transferencia. Te guiamos paso a paso.', audioFile: 'cq_01.mp3', position: 'bottom' },
+      { id: 'cq-estado', title: 'Estado y Sphaira Pay', text: 'Arriba verás las tarjetas de total pagado y pendiente. Desde aquí accedes a Sphaira Pay: vincular tarjeta, ver la asociada o gestionar cobros automáticos.', audioFile: 'cq_02.mp3', targetSelector: '[data-tutorial="cq-estado"]', position: 'bottom' },
+      { id: 'cq-selection-bar', title: 'Barra de selección', text: 'Al marcar cuotas puntuales aparece la barra con el total y los botones Limpiar y Pagar para abrir el modal de pago.', audioFile: 'cq_03.mp3', targetSelector: '[data-tutorial="cq-selection-bar"]', position: 'top' },
+      { id: 'cq-obligatorias', title: 'Cuotas obligatorias', text: 'Panel de cuotas obligatorias: filtros por concepto, tipo de pago, estado, vencimiento y fecha. La tabla muestra concepto, tipo, importe, pagado, vencimiento y acciones como vincular tarjeta o cancelar.', audioFile: 'cq_04.mp3', targetSelector: '[data-tutorial="cq-obligatorias"]', position: 'left' },
+      { id: 'cq-opcionales', title: 'Cuotas opcionales', text: 'Cuotas opcionales: misma estructura con filtros y lista. Puedes seleccionar varias y pagar en bloque si está disponible.', audioFile: 'cq_05.mp3', targetSelector: '[data-tutorial="cq-opcionales"]', position: 'left' },
+      { id: 'cq-transfer', title: 'Pago por transferencia', text: 'Datos bancarios del club: IBAN, concepto, contacto y Bizum. Realiza la transferencia y notifica al club cuando hayas pagado.', audioFile: 'cq_06.mp3', targetSelector: '[data-tutorial="cq-transfer"]', position: 'left' },
+      { id: 'cq-fin', title: 'Listo', text: 'Ya dominas la pantalla de cuotas. Vincula tarjeta con Sphaira Pay si la usas, selecciona y paga las cuotas o usa transferencia según indique el club.', audioFile: 'cq_07.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Documentos jugador. */
+  /** Pasos del tutorial Documentos jugador: sin paso Volver; textos instructivos. */
   private getDocumentosJugadorSteps(): TutorialStep[] {
     return [
-      { id: 'dj-bienvenida', title: 'Documentación', text: 'Documentos que tu club te solicita: descargar los que comparte el club, subir los que te piden o rellenar formularios personalizados. Cada tarjeta muestra el estado (pendiente/completado).', position: 'bottom' },
-      { id: 'dj-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="dj-volver"]', position: 'bottom' },
-      { id: 'dj-busqueda', title: 'Buscar documento', text: 'Campo de búsqueda para filtrar la lista por nombre.', targetSelector: '[data-tutorial="dj-busqueda"]', position: 'bottom' },
-      { id: 'dj-grid', title: 'Lista de documentos', text: 'Tarjetas con nombre, descripción, estado (Pendiente descargar/Descargado, Pendiente subir/Subido, Pendiente rellenar/Completado) y botón Descargar, Subir documento o Rellenar según el tipo.', targetSelector: '[data-tutorial="dj-grid"]', position: 'left' },
-      { id: 'dj-fin', title: 'Listo', text: 'Ya conoces la documentación. Descarga, sube o rellena según lo que pida el club.', position: 'bottom' }
+      { id: 'dj-bienvenida', title: 'Documentación', text: 'Estás en la documentación que tu club te solicita. Puedes descargar los documentos que comparte el club, subir los que te piden o rellenar formularios. Cada tarjeta muestra el estado: pendiente o completado. Te guiamos paso a paso.', audioFile: 'dj_01.mp3', position: 'bottom' },
+      { id: 'dj-busqueda', title: 'Buscar documento', text: 'Usa el campo de búsqueda para filtrar la lista de documentos por nombre.', audioFile: 'dj_02.mp3', targetSelector: '[data-tutorial="dj-busqueda"]', position: 'bottom' },
+      { id: 'dj-grid', title: 'Lista de documentos', text: 'Cada tarjeta muestra nombre, descripción y estado: Pendiente descargar o Descargado, Pendiente subir o Subido, Pendiente rellenar o Completado. Según el tipo, usa el botón Descargar, Subir documento o Rellenar.', audioFile: 'dj_03.mp3', targetSelector: '[data-tutorial="dj-grid"]', position: 'left' },
+      { id: 'dj-fin', title: 'Listo', text: 'Ya conoces la documentación. Descarga, sube o rellena cada documento según lo que pida el club.', audioFile: 'dj_04.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Perfil de jugador (scouting-player). */
+  /** Pasos del tutorial Perfil de jugador (scouting-player): sin paso Volver; textos instructivos. */
   private getScoutingPlayerSteps(): TutorialStep[] {
     return [
-      { id: 'sp-bienvenida', title: 'Perfil de jugador', text: 'Vista del perfil deportivo: foto, datos, radar de habilidades, estadísticas de partidos, gráficas y asistencia a entrenamientos.', position: 'bottom' },
-      { id: 'sp-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="sp-volver"]', position: 'bottom' },
-      { id: 'sp-hero', title: 'Perfil y habilidades', text: 'Avatar, nombre, píldoras (posición, pierna, altura). Panel de perfil de habilidades con radar si hay datos.', targetSelector: '[data-tutorial="sp-hero"]', position: 'left' },
-      { id: 'sp-datos', title: 'Datos deportivos', text: 'Posición, posición 2, pierna natural, altura y peso.', targetSelector: '[data-tutorial="sp-datos"]', position: 'left' },
-      { id: 'sp-stats', title: 'Estadísticas de partidos', text: 'Partidos jugados, titularidades, minutos, goles, tarjetas amarillas y rojas.', targetSelector: '[data-tutorial="sp-stats"]', position: 'left' },
-      { id: 'sp-graficas', title: 'Gráficas', text: 'Pestañas Partidos y Asistencia para ver gráficas de estadísticas o de asistencia por mes.', targetSelector: '[data-tutorial="sp-graficas"]', position: 'left' },
-      { id: 'sp-asistencia', title: 'Asistencia a entrenamientos', text: 'Tabla con fecha, asistencia y retraso de cada sesión.', targetSelector: '[data-tutorial="sp-asistencia"]', position: 'left' },
-      { id: 'sp-fin', title: 'Listo', text: 'Ya conoces el perfil de jugador. Revisa datos, estadísticas y asistencia.', position: 'bottom' }
+      { id: 'sp-bienvenida', title: 'Perfil de jugador', text: 'Estás en el perfil deportivo del jugador. Aquí verás su foto, datos, radar de habilidades, estadísticas de partidos, gráficas y asistencia a entrenamientos. Te guiamos paso a paso.', audioFile: 'sp_01.mp3', position: 'bottom' },
+      { id: 'sp-hero', title: 'Perfil y habilidades', text: 'Arriba: avatar, nombre y píldoras con posición, pierna y altura. El panel de habilidades muestra el radar con las valoraciones si hay datos cargados.', audioFile: 'sp_02.mp3', targetSelector: '[data-tutorial="sp-hero"]', position: 'left' },
+      { id: 'sp-datos', title: 'Datos deportivos', text: 'Datos deportivos: posición principal, posición secundaria, pierna natural, altura y peso.', audioFile: 'sp_03.mp3', targetSelector: '[data-tutorial="sp-datos"]', position: 'left' },
+      { id: 'sp-stats', title: 'Estadísticas de partidos', text: 'Estadísticas de partidos: partidos jugados, titularidades, minutos, goles, tarjetas amarillas y rojas.', audioFile: 'sp_04.mp3', targetSelector: '[data-tutorial="sp-stats"]', position: 'left' },
+      { id: 'sp-graficas', title: 'Gráficas', text: 'Pestañas Partidos y Asistencia: cambia entre la gráfica de estadísticas y la de asistencia a entrenamientos por mes.', audioFile: 'sp_05.mp3', targetSelector: '[data-tutorial="sp-graficas"]', position: 'left' },
+      { id: 'sp-asistencia', title: 'Asistencia a entrenamientos', text: 'Tabla de asistencia: fecha, si asistió y si llegó con retraso en cada sesión.', audioFile: 'sp_06.mp3', targetSelector: '[data-tutorial="sp-asistencia"]', position: 'left' },
+      { id: 'sp-fin', title: 'Listo', text: 'Ya conoces el perfil de jugador. Revisa datos, estadísticas y asistencia cuando lo necesites.', audioFile: 'sp_07.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Patrocinadores (vista usuario/jugador). */
+  /** Pasos del tutorial Patrocinadores (vista usuario/jugador): sin paso Volver; textos instructivos. */
   private getPatrocinadoresUsuarioSteps(): TutorialStep[] {
     return [
-      { id: 'patrou-bienvenida', title: 'Patrocinadores', text: 'Patrocinadores del club: carrusel de logos y tarjetas con información, enlaces y beneficios. Vista de consulta para jugadores y familias.', position: 'bottom' },
-      { id: 'patrou-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="patro-volver"]', position: 'bottom' },
-      { id: 'patrou-carrusel', title: 'Carrusel de logos', text: 'Carrusel con los logos de los patrocinadores. Pulsa en uno para ver su detalle.', targetSelector: '[data-tutorial="patro-carrusel"]', position: 'bottom' },
-      { id: 'patrou-grid', title: 'Tarjetas de patrocinadores', text: 'Cada tarjeta muestra logo, nombre, descripción, enlaces (web, email, teléfono), beneficios y botón Ver para abrir el detalle.', targetSelector: '[data-tutorial="patro-grid"]', position: 'left' },
-      { id: 'patrou-fin', title: 'Listo', text: 'Ya conoces los patrocinadores del club. Consulta sus datos y beneficios cuando lo necesites.', position: 'bottom' }
+      { id: 'patrou-bienvenida', title: 'Patrocinadores', text: 'Estás en los patrocinadores del club. Verás un carrusel de logos y tarjetas con información, enlaces y beneficios. Es la vista de consulta para jugadores y familias. Te guiamos paso a paso.', audioFile: 'patrou_01.mp3', position: 'bottom' },
+      { id: 'patrou-carrusel', title: 'Carrusel de logos', text: 'El carrusel muestra los logos de los patrocinadores. Pulsa en uno para ver su ficha con detalle.', audioFile: 'patrou_02.mp3', targetSelector: '[data-tutorial="patro-carrusel"]', position: 'bottom' },
+      { id: 'patrou-grid', title: 'Tarjetas de patrocinadores', text: 'Cada tarjeta muestra logo, nombre, descripción, enlaces a web, email y teléfono, beneficios y el botón Ver para abrir el detalle completo.', audioFile: 'patrou_03.mp3', targetSelector: '[data-tutorial="patro-grid"]', position: 'left' },
+      { id: 'patrou-fin', title: 'Listo', text: 'Ya conoces los patrocinadores del club. Consulta sus datos y beneficios cuando lo necesites.', audioFile: 'patrou_04.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Ropa jugador (mis tallas). */
+  /** Pasos del tutorial Ropa jugador (mis tallas): sin paso Volver; textos instructivos. */
   private getRopaJugadorSteps(): TutorialStep[] {
     return [
-      { id: 'rj-bienvenida', title: 'Mis tallas de ropa', text: 'Catálogo de prendas del equipo. Selecciona tu talla para cada prenda; se guarda automáticamente. El club usa estas preferencias para pedidos.', position: 'bottom' },
-      { id: 'rj-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="rj-volver"]', position: 'bottom' },
-      { id: 'rj-grid', title: 'Catálogo de prendas', text: 'Cada tarjeta muestra la imagen, nombre, descripción, selector de talla (— Sin seleccionar — o tallas disponibles) y estado (guardando/completado). Elige la talla y se guarda al instante.', targetSelector: '[data-tutorial="rj-grid"]', position: 'left' },
-      { id: 'rj-fin', title: 'Listo', text: 'Ya conoces mis tallas de ropa. Mantén tus preferencias actualizadas para cada prenda del equipo.', position: 'bottom' }
+      { id: 'rj-bienvenida', title: 'Mis tallas de ropa', text: 'Estás en el catálogo de prendas del equipo. Selecciona tu talla para cada prenda; se guarda automáticamente y el club usa estas preferencias para los pedidos. Te guiamos paso a paso.', audioFile: 'rj_01.mp3', position: 'bottom' },
+      { id: 'rj-grid', title: 'Catálogo de prendas', text: 'Cada tarjeta muestra la imagen, nombre, descripción y el selector de talla. Elige entre Sin seleccionar o las tallas disponibles; al elegir se guarda al instante y verás el estado guardando o completado.', audioFile: 'rj_02.mp3', targetSelector: '[data-tutorial="rj-grid"]', position: 'left' },
+      { id: 'rj-fin', title: 'Listo', text: 'Ya conoces mis tallas de ropa. Mantén tus preferencias actualizadas para cada prenda del equipo.', audioFile: 'rj_03.mp3', position: 'bottom' }
     ];
   }
 
@@ -1489,233 +1632,221 @@ export class TutorialService {
     ];
   }
 
-  /** Pasos del tutorial ERP (dashboard financiero club). */
+  /** Pasos del tutorial ERP (dashboard financiero club): con audio. */
   private getErpSteps(): TutorialStep[] {
     return [
-      { id: 'erp-bienvenida', title: 'ERP - Dashboard financiero', text: 'Módulo de gestión financiera del club: ingresos, gastos, resultado, facturas, plan contable, cobros y pagos, informes y configuración. Si el ERP no está inicializado, usa el botón para configurarlo.', position: 'bottom' },
-      { id: 'erp-init', title: 'Inicialización', text: 'Si el módulo no está configurado, aquí puedes inicializarlo. Se creará el plan contable, centros de coste y el ejercicio fiscal.', targetSelector: '[data-tutorial="erp-init"]', position: 'bottom' },
-      { id: 'erp-daterange', title: 'Rango de fechas', text: 'Selector desde/hasta para filtrar los datos. El botón de engranaje lleva a la configuración de ejercicios fiscales.', targetSelector: '[data-tutorial="erp-daterange"]', position: 'bottom' },
-      { id: 'erp-kpis', title: 'Indicadores', text: 'Tarjetas de ingresos, gastos, resultado neto, facturas pendientes y facturas vencidas.', targetSelector: '[data-tutorial="erp-kpis"]', position: 'left' },
-      { id: 'erp-income', title: 'Ingresos por centro de coste', text: 'Gráfica de barras y detalle por centro de coste. Puedes expandir para ver la tabla.', targetSelector: '[data-tutorial="erp-income"]', position: 'left' },
-      { id: 'erp-quicklinks', title: 'Accesos rápidos', text: 'Enlaces a facturas emitidas, facturas recibidas, cobros y pagos, plan contable, informes, presupuestos, clientes, proveedores y configuración.', targetSelector: '[data-tutorial="erp-quicklinks"]', position: 'left' },
-      { id: 'erp-fin', title: 'Listo', text: 'Ya conoces el dashboard ERP. Usa los accesos rápidos para gestionar la contabilidad del club.', position: 'bottom' }
+      { id: 'erp-bienvenida', title: 'ERP - Dashboard financiero', text: 'Estás en el módulo de gestión financiera del club: ingresos, gastos, resultado, facturas, plan contable, cobros y pagos, informes y configuración. Si el ERP no está inicializado, usa el botón para configurarlo. Te guiamos paso a paso.', audioFile: 'erp_01.mp3', position: 'bottom' },
+      { id: 'erp-init', title: 'Inicialización', text: 'Si el módulo no está configurado, aquí puedes inicializarlo. Se creará el plan contable, centros de coste y el ejercicio fiscal.', audioFile: 'erp_02.mp3', targetSelector: '[data-tutorial="erp-init"]', position: 'bottom' },
+      { id: 'erp-daterange', title: 'Rango de fechas', text: 'Usa el selector desde-hasta para filtrar los datos. El botón de engranaje abre la configuración de ejercicios fiscales.', audioFile: 'erp_03.mp3', targetSelector: '[data-tutorial="erp-daterange"]', position: 'bottom' },
+      { id: 'erp-kpis', title: 'Indicadores', text: 'Las tarjetas muestran ingresos, gastos, resultado neto, facturas pendientes y facturas vencidas.', audioFile: 'erp_04.mp3', targetSelector: '[data-tutorial="erp-kpis"]', position: 'left' },
+      { id: 'erp-income', title: 'Ingresos por centro de coste', text: 'Gráfica de barras y detalle por centro de coste. Puedes expandir para ver la tabla.', audioFile: 'erp_05.mp3', targetSelector: '[data-tutorial="erp-income"]', position: 'left' },
+      { id: 'erp-quicklinks', title: 'Accesos rápidos', text: 'Enlaces a facturas emitidas, facturas recibidas, cobros y pagos, plan contable, informes, presupuestos, clientes, proveedores y configuración.', audioFile: 'erp_06.mp3', targetSelector: '[data-tutorial="erp-quicklinks"]', position: 'left' },
+      { id: 'erp-fin', title: 'Listo', text: 'Ya conoces el dashboard ERP. Usa los accesos rápidos para gestionar la contabilidad del club.', audioFile: 'erp_07.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Menú fisio. */
+  /** Pasos del tutorial Menú fisio: sin paso Volver; con audio. */
   private getMenuFisioSteps(): TutorialStep[] {
     return [
-      { id: 'mf-bienvenida', title: 'Menú del fisio', text: 'Acceso rápido a Lesiones, Jugadores, Calendario, Estadísticas jugadores y equipo, Clasificación, Documentos, Notificaciones, Mi perfil y Asistente de IA.', position: 'bottom' },
-      { id: 'mf-volver', title: 'Volver', text: 'Regresa al listado de equipos.', targetSelector: '[data-tutorial="mf-volver"]', position: 'bottom' },
-      { id: 'mf-grid', title: 'Opciones', text: 'Tarjetas para Lesiones, Jugadores, Calendario, Estadísticas jugadores, Estadísticas equipo, Clasificación y resultado, Documentos, Notificaciones, Mi perfil y Asistente de IA. Pulsa en una para entrar.', targetSelector: '[data-tutorial="mf-grid"]', position: 'left' },
-      { id: 'mf-fin', title: 'Listo', text: 'Ya conoces el menú del fisio. Elige la opción que necesites.', position: 'bottom' }
+      { id: 'mf-bienvenida', title: 'Menú del fisio', text: 'Estás en el menú del fisio. Desde aquí accedes a Lesiones, Jugadores, Calendario, Estadísticas de jugadores y equipo, Clasificación, Documentos, Notificaciones, Mi perfil y Asistente de IA. Te guiamos paso a paso.', audioFile: 'mf_01.mp3', position: 'bottom' },
+      { id: 'mf-grid', title: 'Opciones', text: 'Cada tarjeta abre una sección: Lesiones, Jugadores, Calendario, Estadísticas jugadores, Estadísticas equipo, Clasificación y resultado, Documentos, Notificaciones, Mi perfil y Asistente de IA. Pulsa en una para entrar.', audioFile: 'mf_02.mp3', targetSelector: '[data-tutorial="mf-grid"]', position: 'left' },
+      { id: 'mf-fin', title: 'Listo', text: 'Ya conoces el menú del fisio. Elige la opción que necesites.', audioFile: 'mf_03.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Listado de entrenadores. */
+  /** Pasos del tutorial Listado de entrenadores: sin paso Volver; con audio. */
   private getEntrenadoresSteps(): TutorialStep[] {
     return [
-      { id: 'ent-bienvenida', title: 'Listado de entrenadores', text: 'Lista de entrenadores del equipo. Desde aquí puedes ver la información de cada uno y editar sus datos.', position: 'bottom' },
-      { id: 'ent-volver', title: 'Volver', text: 'Regresa a la pantalla anterior.', targetSelector: '[data-tutorial="ent-volver"]', position: 'bottom' },
-      { id: 'ent-list', title: 'Tarjetas de entrenadores', text: 'Cada tarjeta muestra foto, nombre, posición, fecha de nacimiento y botones Ver info y Editar.', targetSelector: '[data-tutorial="ent-list"]', position: 'left' },
-      { id: 'ent-fin', title: 'Listo', text: 'Ya conoces el listado de entrenadores. Gestiona la información del cuerpo técnico desde aquí.', position: 'bottom' }
+      { id: 'ent-bienvenida', title: 'Listado de entrenadores', text: 'Estás en el listado de entrenadores del equipo. Desde aquí ves la información de cada uno y puedes editar sus datos. Te guiamos paso a paso.', audioFile: 'ent_01.mp3', position: 'bottom' },
+      { id: 'ent-list', title: 'Tarjetas de entrenadores', text: 'Cada tarjeta muestra foto, nombre, posición, fecha de nacimiento y los botones Ver info y Editar. Pulsa en uno para abrir la ficha o editar.', audioFile: 'ent_02.mp3', targetSelector: '[data-tutorial="ent-list"]', position: 'left' },
+      { id: 'ent-fin', title: 'Listo', text: 'Ya conoces el listado de entrenadores. Gestiona la información del cuerpo técnico desde aquí.', audioFile: 'ent_03.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Asistencia (equipo). */
+  /** Pasos del tutorial Asistencia (equipo): sin paso Volver; con audio. */
   private getAsistenciaSteps(): TutorialStep[] {
     return [
-      { id: 'asis-bienvenida', title: 'Asistencia y multas', text: 'Consulta la asistencia de los jugadores por fecha y las multas asociadas. Pestañas Asistencia y Multas.', position: 'bottom' },
-      { id: 'asis-volver', title: 'Volver', text: 'Regresa a la información del equipo.', targetSelector: '[data-tutorial="asis-volver"]', position: 'bottom' },
-      { id: 'asis-tabs', title: 'Pestañas', text: 'Asistencia: tabla con fechas y asistencia por jugador. Multas: importes y estado de pago por fecha y jugador.', targetSelector: '[data-tutorial="asis-tabs"]', position: 'bottom' },
-      { id: 'asis-content', title: 'Tabla', text: 'En Asistencia verás el total por jugador y el detalle por fecha. En Multas podrás marcar como pagada o no.', targetSelector: '[data-tutorial="asis-content"]', position: 'left' },
-      { id: 'asis-fin', title: 'Listo', text: 'Ya conoces la pantalla de asistencia y multas.', position: 'bottom' }
+      { id: 'asis-bienvenida', title: 'Asistencia y multas', text: 'Estás en la pantalla de asistencia y multas del equipo. Consulta la asistencia de los jugadores por fecha y las multas asociadas. Hay dos pestañas: Asistencia y Multas. Te guiamos paso a paso.', audioFile: 'asis_01.mp3', position: 'bottom' },
+      { id: 'asis-tabs', title: 'Pestañas', text: 'Cambia entre Asistencia —tabla con fechas y asistencia por jugador— y Multas —importes y estado de pago por fecha y jugador.', audioFile: 'asis_02.mp3', targetSelector: '[data-tutorial="asis-tabs"]', position: 'bottom' },
+      { id: 'asis-content', title: 'Tabla', text: 'En Asistencia verás el total por jugador y el detalle por fecha. En Multas podrás marcar cada multa como pagada o no.', audioFile: 'asis_03.mp3', targetSelector: '[data-tutorial="asis-content"]', position: 'left' },
+      { id: 'asis-fin', title: 'Listo', text: 'Ya conoces la pantalla de asistencia y multas.', audioFile: 'asis_04.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Plantillas de formularios debrief. */
+  /** Pasos del tutorial Plantillas de formularios debrief: sin paso Volver; con audio. */
   private getDebriefTemplatesSteps(): TutorialStep[] {
     return [
-      { id: 'dbtpl-bienvenida', title: 'Formularios personalizados debrief', text: 'Crea y gestiona plantillas de formularios para los análisis pre y post de partidos y entrenamientos.', position: 'bottom' },
-      { id: 'dbtpl-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="dbtpl-volver"]', position: 'bottom' },
-      { id: 'dbtpl-tabs', title: 'Tipo de formulario', text: 'Pestañas para elegir el tipo: entrenamiento o partido. Cada tipo tiene sus propias plantillas.', targetSelector: '[data-tutorial="dbtpl-tabs"]', position: 'bottom' },
-      { id: 'dbtpl-list', title: 'Plantillas', text: 'Lista de formularios creados. En cada uno: Editar y Eliminar. Botón para crear nuevo formulario.', targetSelector: '[data-tutorial="dbtpl-list"]', position: 'left' },
-      { id: 'dbtpl-fin', title: 'Listo', text: 'Ya conoces la gestión de plantillas. Crea formularios a medida para tus debriefs.', position: 'bottom' }
+      { id: 'dbtpl-bienvenida', title: 'Formularios personalizados debrief', text: 'Estás en la gestión de plantillas de formularios para los análisis pre y post de partidos y entrenamientos. Crea y edita plantillas a medida. Te guiamos paso a paso.', audioFile: 'dbtpl_01.mp3', position: 'bottom' },
+      { id: 'dbtpl-tabs', title: 'Tipo de formulario', text: 'Usa las pestañas para elegir el tipo: entrenamiento o partido. Cada tipo tiene sus propias plantillas.', audioFile: 'dbtpl_02.mp3', targetSelector: '[data-tutorial="dbtpl-tabs"]', position: 'bottom' },
+      { id: 'dbtpl-list', title: 'Plantillas', text: 'Aquí ves la lista de formularios creados. En cada uno tienes Editar y Eliminar. El botón de crear te permite añadir un nuevo formulario.', audioFile: 'dbtpl_03.mp3', targetSelector: '[data-tutorial="dbtpl-list"]', position: 'left' },
+      { id: 'dbtpl-fin', title: 'Listo', text: 'Ya conoces la gestión de plantillas. Crea formularios a medida para tus debriefs.', audioFile: 'dbtpl_04.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Debrief entrenamiento (sesión). */
+  /** Pasos del tutorial Debrief entrenamiento (sesión): sin paso Volver; con audio. */
   private getDebriefTrainingSteps(): TutorialStep[] {
     return [
-      { id: 'dbt-bienvenida', title: 'Debrief de entrenamiento', text: 'Completa el análisis post-entrenamiento respondiendo a las preguntas. La barra de progreso y los indicadores muestran tu avance.', position: 'bottom' },
-      { id: 'dbt-volver', title: 'Volver', text: 'Regresa sin guardar o después de completar.', targetSelector: '[data-tutorial="dbt-volver"]', position: 'bottom' },
-      { id: 'dbt-progress', title: 'Progreso', text: 'Barra y puntos por pregunta. Pulsa en un punto para ir a esa pregunta. Las respondidas se marcan.', targetSelector: '[data-tutorial="dbt-progress"]', position: 'bottom' },
-      { id: 'dbt-questions', title: 'Preguntas', text: 'Responde cada pregunta o omítela. El botón de engranaje permite personalizar las preguntas del formulario.', targetSelector: '[data-tutorial="dbt-questions"]', position: 'left' },
-      { id: 'dbt-fin', title: 'Listo', text: 'Completa todas las preguntas y guarda para generar el informe de debrief.', position: 'bottom' }
+      { id: 'dbt-bienvenida', title: 'Debrief de entrenamiento', text: 'Estás en el debrief de entrenamiento. Completa el análisis post-entrenamiento respondiendo a las preguntas. La barra de progreso y los indicadores muestran tu avance. Te guiamos paso a paso.', audioFile: 'dbt_01.mp3', position: 'bottom' },
+      { id: 'dbt-progress', title: 'Progreso', text: 'La barra y los puntos representan cada pregunta. Pulsa en un punto para ir a esa pregunta. Las ya respondidas se marcan.', audioFile: 'dbt_02.mp3', targetSelector: '[data-tutorial="dbt-progress"]', position: 'bottom' },
+      { id: 'dbt-questions', title: 'Preguntas', text: 'Responde cada pregunta o omítela. El botón de engranaje permite personalizar las preguntas del formulario.', audioFile: 'dbt_03.mp3', targetSelector: '[data-tutorial="dbt-questions"]', position: 'left' },
+      { id: 'dbt-fin', title: 'Listo', text: 'Completa todas las preguntas y guarda para generar el informe de debrief.', audioFile: 'dbt_04.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Debrief partido (sesión). */
+  /** Pasos del tutorial Debrief partido (sesión): sin paso Volver; con audio. */
   private getDebriefMatchSteps(): TutorialStep[] {
     return [
-      { id: 'dbm-bienvenida', title: 'Debrief de partido', text: 'Completa el análisis post-partido respondiendo a las preguntas. Similar al debrief de entrenamiento, adaptado al partido.', position: 'bottom' },
-      { id: 'dbm-volver', title: 'Volver', text: 'Regresa sin guardar o después de completar.', targetSelector: '[data-tutorial="dbm-volver"]', position: 'bottom' },
-      { id: 'dbm-progress', title: 'Progreso', text: 'Barra y puntos por pregunta. Navega entre preguntas y completa el formulario.', targetSelector: '[data-tutorial="dbm-progress"]', position: 'bottom' },
-      { id: 'dbm-questions', title: 'Preguntas', text: 'Responde cada pregunta del análisis del partido. Puedes personalizar las preguntas desde el engranaje.', targetSelector: '[data-tutorial="dbm-questions"]', position: 'left' },
-      { id: 'dbm-fin', title: 'Listo', text: 'Completa el debrief y guarda para generar el informe.', position: 'bottom' }
+      { id: 'dbm-bienvenida', title: 'Debrief de partido', text: 'Estás en el debrief de partido. Completa el análisis post-partido respondiendo a las preguntas. Es similar al debrief de entrenamiento, adaptado al partido. Te guiamos paso a paso.', audioFile: 'dbm_01.mp3', position: 'bottom' },
+      { id: 'dbm-progress', title: 'Progreso', text: 'La barra y los puntos indican cada pregunta. Navega entre preguntas y completa el formulario.', audioFile: 'dbm_02.mp3', targetSelector: '[data-tutorial="dbm-progress"]', position: 'bottom' },
+      { id: 'dbm-questions', title: 'Preguntas', text: 'Responde cada pregunta del análisis del partido. Puedes personalizar las preguntas desde el engranaje.', audioFile: 'dbm_03.mp3', targetSelector: '[data-tutorial="dbm-questions"]', position: 'left' },
+      { id: 'dbm-fin', title: 'Listo', text: 'Completa el debrief y guarda para generar el informe.', audioFile: 'dbm_04.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Contabilidad (club). */
+  /** Pasos del tutorial Contabilidad (club): con audio. */
   private getContabilidadSteps(): TutorialStep[] {
     return [
-      { id: 'cont-bienvenida', title: 'Contabilidad', text: 'Resumen de cuotas del club: total cuota, cuota ropa, pagado y pendiente. Pestañas: Inicio, Abonados, Stripe y Configuración. Tabla con búsqueda, paginación y exportar a Excel.', position: 'bottom' },
-      { id: 'cont-tabs', title: 'Pestañas', text: 'Inicio (resumen y tabla), Abonados, Stripe (pasarela de pago) y Configuración.', targetSelector: '[data-tutorial="cont-tabs"]', position: 'bottom' },
-      { id: 'cont-totales', title: 'Totales', text: 'Cuota total del club, cuota ropa (si aplica), total pagado y restante pendiente.', targetSelector: '[data-tutorial="cont-totales"]', position: 'bottom' },
-      { id: 'cont-toolbar', title: 'Exportar y controles', text: 'Botón Descargar Excel. Selector de registros por página y búsqueda para filtrar la tabla.', targetSelector: '[data-tutorial="cont-toolbar"]', position: 'bottom' },
-      { id: 'cont-tabla', title: 'Tabla', text: 'Listado de abonados/jugadores con nombre, cuota, pagado, estado, etc. Ordenable por columnas.', targetSelector: '[data-tutorial="cont-tabla"]', position: 'left' },
-      { id: 'cont-fin', title: 'Listo', text: 'Ya conoces la contabilidad del club. Exporta y filtra cuando lo necesites.', position: 'bottom' }
+      { id: 'cont-bienvenida', title: 'Contabilidad', text: 'Estás en la contabilidad del club. Verás el resumen de cuotas: total cuota, cuota ropa, pagado y pendiente. Hay pestañas Inicio, Abonados, Stripe y Configuración, y una tabla con búsqueda, paginación y exportar a Excel. Te guiamos paso a paso.', audioFile: 'cont_01.mp3', position: 'bottom' },
+      { id: 'cont-tabs', title: 'Pestañas', text: 'Cambia entre Inicio —resumen y tabla—, Abonados, Stripe —pasarela de pago— y Configuración.', audioFile: 'cont_02.mp3', targetSelector: '[data-tutorial="cont-tabs"]', position: 'bottom' },
+      { id: 'cont-totales', title: 'Totales', text: 'Aquí ves la cuota total del club, cuota ropa si aplica, total pagado y restante pendiente.', audioFile: 'cont_03.mp3', targetSelector: '[data-tutorial="cont-totales"]', position: 'bottom' },
+      { id: 'cont-toolbar', title: 'Exportar y controles', text: 'Usa el botón Descargar Excel, el selector de registros por página y la búsqueda para filtrar la tabla.', audioFile: 'cont_04.mp3', targetSelector: '[data-tutorial="cont-toolbar"]', position: 'bottom' },
+      { id: 'cont-tabla', title: 'Tabla', text: 'Listado de abonados o jugadores con nombre, cuota, pagado, estado y más. Ordena por columnas haciendo clic en la cabecera.', audioFile: 'cont_05.mp3', targetSelector: '[data-tutorial="cont-tabla"]', position: 'left' },
+      { id: 'cont-fin', title: 'Listo', text: 'Ya conoces la contabilidad del club. Exporta y filtra cuando lo necesites.', audioFile: 'cont_06.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Historial de pagos club. */
+  /** Pasos del tutorial Historial de pagos club: sin paso Volver; con audio. */
   private getHistorialPagosClubSteps(): TutorialStep[] {
     return [
-      { id: 'hpc-bienvenida', title: 'Historial de pagos', text: 'Listado de cobros y pagos del club. Filtra por nombre y exporta a Excel.', position: 'bottom' },
-      { id: 'hpc-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="hpc-volver"]', position: 'bottom' },
-      { id: 'hpc-toolbar', title: 'Buscar y exportar', text: 'Campo de búsqueda para filtrar y botón Exportar a Excel.', targetSelector: '[data-tutorial="hpc-toolbar"]', position: 'bottom' },
-      { id: 'hpc-tabla', title: 'Tabla de pagos', text: 'Columnas: nombre, descripción, título, importe, método, tipo y fecha. Clic en cabecera para ordenar.', targetSelector: '[data-tutorial="hpc-tabla"]', position: 'left' },
-      { id: 'hpc-fin', title: 'Listo', text: 'Ya conoces el historial de pagos. Filtra y exporta cuando lo necesites.', position: 'bottom' }
+      { id: 'hpc-bienvenida', title: 'Historial de pagos', text: 'Estás en el historial de cobros y pagos del club. Puedes filtrar por nombre y exportar a Excel. Te guiamos paso a paso.', audioFile: 'hpc_01.mp3', position: 'bottom' },
+      { id: 'hpc-toolbar', title: 'Buscar y exportar', text: 'Usa el campo de búsqueda para filtrar y el botón Exportar a Excel para descargar el listado.', audioFile: 'hpc_02.mp3', targetSelector: '[data-tutorial="hpc-toolbar"]', position: 'bottom' },
+      { id: 'hpc-tabla', title: 'Tabla de pagos', text: 'La tabla muestra nombre, descripción, título, importe, método, tipo y fecha. Haz clic en la cabecera de una columna para ordenar.', audioFile: 'hpc_03.mp3', targetSelector: '[data-tutorial="hpc-tabla"]', position: 'left' },
+      { id: 'hpc-fin', title: 'Listo', text: 'Ya conoces el historial de pagos. Filtra y exporta cuando lo necesites.', audioFile: 'hpc_04.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Abonados (club). */
+  /** Pasos del tutorial Abonados (club): sin paso Volver; con audio. */
   private getAbonadosSteps(): TutorialStep[] {
     return [
-      { id: 'abo-bienvenida', title: 'Abonados', text: 'Gestión de abonados del club: crear, listado con búsqueda y paginación, exportar a Excel.', position: 'bottom' },
-      { id: 'abo-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="abo-volver"]', position: 'bottom' },
-      { id: 'abo-actions', title: 'Crear y exportar', text: 'Botón Crear abonado y Descargar Excel.', targetSelector: '[data-tutorial="abo-actions"]', position: 'bottom' },
-      { id: 'abo-controls', title: 'Controles de tabla', text: 'Registros por página y búsqueda para filtrar.', targetSelector: '[data-tutorial="abo-controls"]', position: 'bottom' },
-      { id: 'abo-tabla', title: 'Tabla de abonados', text: 'Imagen, nombre, apellidos, email, teléfono, estado, cuota, pagado, etc. Ordenable por columnas.', targetSelector: '[data-tutorial="abo-tabla"]', position: 'left' },
-      { id: 'abo-fin', title: 'Listo', text: 'Ya conoces la gestión de abonados.', position: 'bottom' }
+      { id: 'abo-bienvenida', title: 'Abonados', text: 'Estás en la gestión de abonados del club. Puedes crear abonados, ver el listado con búsqueda y paginación, y exportar a Excel. Te guiamos paso a paso.', audioFile: 'abo_01.mp3', position: 'bottom' },
+      { id: 'abo-actions', title: 'Crear y exportar', text: 'Usa el botón Crear abonado para dar de alta uno nuevo y Descargar Excel para exportar el listado.', audioFile: 'abo_02.mp3', targetSelector: '[data-tutorial="abo-actions"]', position: 'bottom' },
+      { id: 'abo-controls', title: 'Controles de tabla', text: 'Ajusta los registros por página y usa la búsqueda para filtrar el listado.', audioFile: 'abo_03.mp3', targetSelector: '[data-tutorial="abo-controls"]', position: 'bottom' },
+      { id: 'abo-tabla', title: 'Tabla de abonados', text: 'La tabla muestra imagen, nombre, apellidos, email, teléfono, estado, cuota, pagado y más. Ordena por columnas haciendo clic en la cabecera.', audioFile: 'abo_04.mp3', targetSelector: '[data-tutorial="abo-tabla"]', position: 'left' },
+      { id: 'abo-fin', title: 'Listo', text: 'Ya conoces la gestión de abonados.', audioFile: 'abo_05.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Suscripción club (planes y estado). */
+  /** Pasos del tutorial Suscripción club: sin paso Volver; con audio. */
   private getSuscripcionClubSteps(): TutorialStep[] {
     return [
-      { id: 'suc-bienvenida', title: 'Suscripción del club', text: 'Consulta tu plan activo o elige un plan (Familia, Club, Gratuito). Los wizards te guían para contratar o activar el plan gratuito.', position: 'bottom' },
-      { id: 'suc-volver', title: 'Volver', text: 'Regresa al dashboard.', targetSelector: '[data-tutorial="suc-volver"]', position: 'bottom' },
-      { id: 'suc-activa', title: 'Plan activo', text: 'Si tienes plan de pago: tipo de plan, estado, fecha inicio, período, jugadores (plan club). Qué incluye tu plan.', targetSelector: '[data-tutorial="suc-activa"]', position: 'left' },
-      { id: 'suc-planes', title: 'Selección de planes', text: 'Tarjetas de planes Familia, Club y Gratuito con precio y botón para contratar o activar.', targetSelector: '[data-tutorial="suc-planes"]', position: 'left' },
-      { id: 'suc-fin', title: 'Listo', text: 'Ya conoces la suscripción del club. Elige o cambia de plan cuando lo necesites.', position: 'bottom' }
+      { id: 'suc-bienvenida', title: 'Suscripción del club', text: 'Estás en la suscripción del club. Consulta tu plan activo o elige un plan: Familia, Club o Gratuito. Los asistentes te guían para contratar o activar el plan gratuito. Te guiamos paso a paso.', audioFile: 'suc_01.mp3', position: 'bottom' },
+      { id: 'suc-activa', title: 'Plan activo', text: 'Si tienes plan de pago verás el tipo de plan, estado, fecha de inicio, período y jugadores incluidos en plan club. Aquí se resume qué incluye tu plan.', audioFile: 'suc_02.mp3', targetSelector: '[data-tutorial="suc-activa"]', position: 'left' },
+      { id: 'suc-planes', title: 'Selección de planes', text: 'Las tarjetas muestran los planes Familia, Club y Gratuito con precio y botón para contratar o activar.', audioFile: 'suc_03.mp3', targetSelector: '[data-tutorial="suc-planes"]', position: 'left' },
+      { id: 'suc-fin', title: 'Listo', text: 'Ya conoces la suscripción del club. Elige o cambia de plan cuando lo necesites.', audioFile: 'suc_04.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Wizard suscripción club (familia/club/gratuito). */
+  /** Pasos del tutorial Wizard suscripción club: sin paso Volver; con audio. */
   private getSuscripcionClubWizardSteps(): TutorialStep[] {
     return [
-      { id: 'scw-bienvenida', title: 'Asistente de suscripción', text: 'El asistente te guía paso a paso para configurar el plan elegido. Completa cada paso y avanza hasta finalizar.', position: 'bottom' },
-      { id: 'scw-volver', title: 'Volver', text: 'Regresa sin completar el asistente.', targetSelector: '[data-tutorial="scw-volver"]', position: 'bottom' },
-      { id: 'scw-stepper', title: 'Pasos', text: 'Indicador de pasos del asistente. Pulsa en un paso completado para volver a él.', targetSelector: '[data-tutorial="scw-stepper"]', position: 'bottom' },
-      { id: 'scw-content', title: 'Contenido del paso', text: 'Formulario o opciones del paso actual. Rellena y pulsa Siguiente o Finalizar.', targetSelector: '[data-tutorial="scw-content"]', position: 'left' },
-      { id: 'scw-fin', title: 'Listo', text: 'Completa todos los pasos para activar tu plan.', position: 'bottom' }
+      { id: 'scw-bienvenida', title: 'Asistente de suscripción', text: 'Estás en el asistente de suscripción. Te guía paso a paso para configurar el plan elegido. Completa cada paso y avanza hasta finalizar. Te explicamos cada parte.', audioFile: 'scw_01.mp3', position: 'bottom' },
+      { id: 'scw-stepper', title: 'Pasos', text: 'El indicador muestra los pasos del asistente. Puedes pulsar en un paso ya completado para volver a él.', audioFile: 'scw_02.mp3', targetSelector: '[data-tutorial="scw-stepper"]', position: 'bottom' },
+      { id: 'scw-content', title: 'Contenido del paso', text: 'Aquí aparece el formulario o las opciones del paso actual. Rellena y pulsa Siguiente o Finalizar.', audioFile: 'scw_03.mp3', targetSelector: '[data-tutorial="scw-content"]', position: 'left' },
+      { id: 'scw-fin', title: 'Listo', text: 'Completa todos los pasos para activar tu plan.', audioFile: 'scw_04.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Sugerencias club. */
+  /** Pasos del tutorial Sugerencias club: sin paso Volver; con audio. */
   private getSugerenciasClubSteps(): TutorialStep[] {
     return [
-      { id: 'sug-bienvenida', title: 'Sugerencias', text: 'Envía ideas al equipo de Sphaira y sigue el estado de tus sugerencias. Las mejores se convierten en funcionalidades.', position: 'bottom' },
-      { id: 'sug-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="sug-volver"]', position: 'bottom' },
-      { id: 'sug-hero', title: 'Nueva sugerencia', text: 'Banner con descripción y botón Nueva sugerencia para abrir el formulario.', targetSelector: '[data-tutorial="sug-hero"]', position: 'bottom' },
-      { id: 'sug-form', title: 'Formulario', text: 'Categoría, título y descripción. Envía cuando esté completo.', targetSelector: '[data-tutorial="sug-form"]', position: 'left' },
-      { id: 'sug-list', title: 'Mis sugerencias', text: 'Listado de sugerencias enviadas con estado (pendiente, en revisión, etc.).', targetSelector: '[data-tutorial="sug-list"]', position: 'left' },
-      { id: 'sug-fin', title: 'Listo', text: 'Ya conoces las sugerencias. ¡Tu opinión construye Sphaira!', position: 'bottom' }
+      { id: 'sug-bienvenida', title: 'Sugerencias', text: 'Estás en Sugerencias. Envía ideas al equipo de Sphaira y sigue el estado de tus sugerencias. Las mejores se convierten en funcionalidades. Te guiamos paso a paso.', audioFile: 'sug_01.mp3', position: 'bottom' },
+      { id: 'sug-hero', title: 'Nueva sugerencia', text: 'El banner explica la sección. Usa el botón Nueva sugerencia para abrir el formulario.', audioFile: 'sug_02.mp3', targetSelector: '[data-tutorial="sug-hero"]', position: 'bottom' },
+      { id: 'sug-form', title: 'Formulario', text: 'Rellena categoría, título y descripción. Envía cuando esté completo.', audioFile: 'sug_03.mp3', targetSelector: '[data-tutorial="sug-form"]', position: 'left' },
+      { id: 'sug-list', title: 'Mis sugerencias', text: 'Aquí ves el listado de sugerencias enviadas con su estado: pendiente, en revisión, etc.', audioFile: 'sug_04.mp3', targetSelector: '[data-tutorial="sug-list"]', position: 'left' },
+      { id: 'sug-fin', title: 'Listo', text: 'Ya conoces las sugerencias. ¡Tu opinión construye Sphaira!', audioFile: 'sug_05.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Listado de clubes. */
+  /** Pasos del tutorial Listado de clubes: sin paso Volver; con audio. */
   private getListadoClubesSteps(): TutorialStep[] {
     return [
-      { id: 'lc-bienvenida', title: 'Listado de clubes', text: 'Vista de clubes (federación/asociación): filtro por nombre, tabla con equipos, entrenadores, jugadores, padres y acción Ver equipos.', position: 'bottom' },
-      { id: 'lc-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="lc-volver"]', position: 'bottom' },
-      { id: 'lc-filtro', title: 'Filtrar', text: 'Campo para filtrar por nombre del club.', targetSelector: '[data-tutorial="lc-filtro"]', position: 'bottom' },
-      { id: 'lc-tabla', title: 'Tabla', text: 'Columnas: nº, nombre, equipos, entrenadores, jugadores, padres, acciones (Ver equipos). Clic en cabecera para ordenar.', targetSelector: '[data-tutorial="lc-tabla"]', position: 'left' },
-      { id: 'lc-fin', title: 'Listo', text: 'Ya conoces el listado de clubes.', position: 'bottom' }
+      { id: 'lc-bienvenida', title: 'Listado de clubes', text: 'Estás en el listado de clubes. Puedes filtrar por nombre y ver la tabla con equipos, entrenadores, jugadores, padres y la acción Ver equipos. Te guiamos paso a paso.', audioFile: 'lc_01.mp3', position: 'bottom' },
+      { id: 'lc-filtro', title: 'Filtrar', text: 'Usa el campo de búsqueda para filtrar por nombre del club.', audioFile: 'lc_02.mp3', targetSelector: '[data-tutorial="lc-filtro"]', position: 'bottom' },
+      { id: 'lc-tabla', title: 'Tabla', text: 'La tabla muestra número, nombre, equipos, entrenadores, jugadores, padres y la acción Ver equipos. Haz clic en la cabecera para ordenar.', audioFile: 'lc_03.mp3', targetSelector: '[data-tutorial="lc-tabla"]', position: 'left' },
+      { id: 'lc-fin', title: 'Listo', text: 'Ya conoces el listado de clubes.', audioFile: 'lc_04.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Suscripción coach. */
+  /** Pasos del tutorial Suscripción coach: con audio. */
   private getSuscripcionCoachSteps(): TutorialStep[] {
     return [
-      { id: 'sco-bienvenida', title: 'Suscripción Sphaira Coach', text: 'Elige el plan que se adapta a ti: gestión de equipo, asistente IA, estadísticas, lesiones, calendario e informes PDF.', position: 'bottom' },
-      { id: 'sco-hero', title: 'Planes y características', text: 'Resumen de lo que incluye Sphaira Coach y tarjetas de planes con precio y botón Empezar.', targetSelector: '[data-tutorial="sco-hero"]', position: 'left' },
-      { id: 'sco-planes', title: 'Seleccionar plan', text: 'Cada tarjeta muestra el plan, precio y botón para contratar. El más popular está destacado.', targetSelector: '[data-tutorial="sco-planes"]', position: 'left' },
-      { id: 'sco-fin', title: 'Listo', text: 'Elige tu plan y serás redirigido al pago.', position: 'bottom' }
+      { id: 'sco-bienvenida', title: 'Suscripción Sphaira Coach', text: 'Estás en la suscripción de Sphaira Coach. Elige el plan que se adapta a ti: gestión de equipo, asistente IA, estadísticas, lesiones, calendario e informes PDF. Te guiamos paso a paso.', audioFile: 'sco_01.mp3', position: 'bottom' },
+      { id: 'sco-hero', title: 'Planes y características', text: 'Arriba verás el resumen de lo que incluye Sphaira Coach y las tarjetas de planes con precio y botón Empezar.', audioFile: 'sco_02.mp3', targetSelector: '[data-tutorial="sco-hero"]', position: 'left' },
+      { id: 'sco-planes', title: 'Seleccionar plan', text: 'Cada tarjeta muestra el plan, precio y botón para contratar. El plan más popular está destacado.', audioFile: 'sco_03.mp3', targetSelector: '[data-tutorial="sco-planes"]', position: 'left' },
+      { id: 'sco-fin', title: 'Listo', text: 'Elige tu plan y serás redirigido al pago.', audioFile: 'sco_04.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Coach suscripción success. */
+  /** Pasos del tutorial Coach suscripción success: con audio. */
   private getCoachSuscripcionSuccessSteps(): TutorialStep[] {
     return [
-      { id: 'css-bienvenida', title: 'Resultado del pago', text: 'Pantalla de verificación y resultado: verificando, éxito (bienvenida y acceso) o error (reintentar o ir al panel).', position: 'bottom' },
-      { id: 'css-success', title: 'Éxito', text: 'Si el pago fue correcto: plan activo, beneficios y botón Ir al panel principal.', targetSelector: '[data-tutorial="css-success"]', position: 'left' },
-      { id: 'css-actions', title: 'Acciones', text: 'Ir al panel principal o, en caso de error, Intentar de nuevo e Ir al panel.', targetSelector: '[data-tutorial="css-actions"]', position: 'bottom' },
-      { id: 'css-fin', title: 'Listo', text: 'Ya conoces esta pantalla. Usa Ir al panel para continuar.', position: 'bottom' }
+      { id: 'css-bienvenida', title: 'Resultado del pago', text: 'Estás en la pantalla de resultado del pago. Verás el estado: verificando, éxito con bienvenida y acceso, o error con opción de reintentar o ir al panel.', audioFile: 'css_01.mp3', position: 'bottom' },
+      { id: 'css-success', title: 'Éxito', text: 'Si el pago fue correcto verás tu plan activo, los beneficios y el botón Ir al panel principal.', audioFile: 'css_02.mp3', targetSelector: '[data-tutorial="css-success"]', position: 'left' },
+      { id: 'css-actions', title: 'Acciones', text: 'Usa Ir al panel principal para continuar. En caso de error, puedes Intentar de nuevo o Ir al panel.', audioFile: 'css_03.mp3', targetSelector: '[data-tutorial="css-actions"]', position: 'bottom' },
+      { id: 'css-fin', title: 'Listo', text: 'Ya conoces esta pantalla. Usa Ir al panel para continuar.', audioFile: 'css_04.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Entrenamiento individual. */
+  /** Pasos del tutorial Entrenamiento individual: sin paso Volver; con audio. */
   private getIndividualTrainingSteps(): TutorialStep[] {
     return [
-      { id: 'it-bienvenida', title: 'Entrenamiento individual', text: 'Vista jugador: planes asignados por el entrenador, progreso, pestañas Hoy, Planificación e Historial. Vista entrenador: crear y gestionar planes.', position: 'bottom' },
-      { id: 'it-volver', title: 'Volver', text: 'Regresa al menú anterior.', targetSelector: '[data-tutorial="it-volver"]', position: 'bottom' },
-      { id: 'it-hero', title: 'Resumen', text: 'Título y descripción según el modo (jugador o entrenador).', targetSelector: '[data-tutorial="it-hero"]', position: 'bottom' },
-      { id: 'it-planes', title: 'Planes', text: 'Lista de planes (jugador: selecciona uno; entrenador: crear y gestionar).', targetSelector: '[data-tutorial="it-planes"]', position: 'left' },
-      { id: 'it-tabs', title: 'Hoy / Planificación / Historial', text: 'Pestañas para ver la sesión de hoy, la planificación semanal o el historial de sesiones.', targetSelector: '[data-tutorial="it-tabs"]', position: 'bottom' },
-      { id: 'it-content', title: 'Contenido', text: 'Sesión de hoy, calendario de la semana o listado de sesiones realizadas según la pestaña.', targetSelector: '[data-tutorial="it-content"]', position: 'left' },
-      { id: 'it-fin', title: 'Listo', text: 'Ya conoces el entrenamiento individual.', position: 'bottom' }
+      { id: 'it-bienvenida', title: 'Entrenamiento individual', text: 'Estás en el entrenamiento individual. Como jugador verás los planes asignados por el entrenador, el progreso y las pestañas Hoy, Planificación e Historial. Como entrenador podrás crear y gestionar planes. Te guiamos paso a paso.', audioFile: 'it_01.mp3', position: 'bottom' },
+      { id: 'it-hero', title: 'Resumen', text: 'Arriba verás el título y la descripción según el modo: jugador o entrenador.', audioFile: 'it_02.mp3', targetSelector: '[data-tutorial="it-hero"]', position: 'bottom' },
+      { id: 'it-planes', title: 'Planes', text: 'Lista de planes: como jugador selecciona uno; como entrenador crea y gestiona planes.', audioFile: 'it_03.mp3', targetSelector: '[data-tutorial="it-planes"]', position: 'left' },
+      { id: 'it-tabs', title: 'Hoy / Planificación / Historial', text: 'Pestañas para ver la sesión de hoy, la planificación semanal o el historial de sesiones.', audioFile: 'it_04.mp3', targetSelector: '[data-tutorial="it-tabs"]', position: 'bottom' },
+      { id: 'it-content', title: 'Contenido', text: 'Según la pestaña verás la sesión de hoy, el calendario de la semana o el listado de sesiones realizadas.', audioFile: 'it_05.mp3', targetSelector: '[data-tutorial="it-content"]', position: 'left' },
+      { id: 'it-fin', title: 'Listo', text: 'Ya conoces el entrenamiento individual.', audioFile: 'it_06.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Informe debrief (vista completada). */
+  /** Pasos del tutorial Informe debrief (vista completada): sin paso Volver; con audio. */
   private getDebriefReportSteps(): TutorialStep[] {
     return [
-      { id: 'dbr-bienvenida', title: 'Informe de debrief', text: 'Informe generado del análisis de entrenamiento o partido. Resumen, secciones y acciones: regenerar, descargar PDF y compartir.', position: 'bottom' },
-      { id: 'dbr-volver', title: 'Volver', text: 'Regresa al historial o al menú.', targetSelector: '[data-tutorial="dbr-volver"]', position: 'bottom' },
-      { id: 'dbr-actions', title: 'Acciones', text: 'Regenerar informe, Descargar PDF y Compartir.', targetSelector: '[data-tutorial="dbr-actions"]', position: 'bottom' },
-      { id: 'dbr-content', title: 'Contenido del informe', text: 'Resumen y secciones con el análisis. Se usa para generar el PDF.', targetSelector: '[data-tutorial="dbr-content"]', position: 'left' },
-      { id: 'dbr-fin', title: 'Listo', text: 'Ya conoces la vista del informe. Descarga o comparte cuando lo necesites.', position: 'bottom' }
+      { id: 'dbr-bienvenida', title: 'Informe de debrief', text: 'Estás viendo el informe generado del análisis de entrenamiento o partido. Verás el resumen, las secciones y las acciones: regenerar, descargar PDF y compartir. Te guiamos paso a paso.', audioFile: 'dbr_01.mp3', position: 'bottom' },
+      { id: 'dbr-actions', title: 'Acciones', text: 'Usa Regenerar informe, Descargar PDF y Compartir según lo que necesites.', audioFile: 'dbr_02.mp3', targetSelector: '[data-tutorial="dbr-actions"]', position: 'bottom' },
+      { id: 'dbr-content', title: 'Contenido del informe', text: 'El resumen y las secciones con el análisis. Este contenido se usa para generar el PDF.', audioFile: 'dbr_03.mp3', targetSelector: '[data-tutorial="dbr-content"]', position: 'left' },
+      { id: 'dbr-fin', title: 'Listo', text: 'Ya conoces la vista del informe. Descarga o comparte cuando lo necesites.', audioFile: 'dbr_04.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Suscripción (jugador/familia). */
+  /** Pasos del tutorial Suscripción (jugador/familia): con audio. */
   private getSuscripcionSteps(): TutorialStep[] {
     return [
-      { id: 'sus-bienvenida', title: 'Mi suscripción', text: 'Elige el perfil del jugador (si hay varios) y consulta el estado de la suscripción: activa/inactiva, tipo, fechas y opciones de renovación o contratación.', position: 'bottom' },
-      { id: 'sus-perfiles', title: 'Perfiles', text: 'Tarjetas de jugadores asociados. Pulsa en uno para ver su suscripción.', targetSelector: '[data-tutorial="sus-perfiles"]', position: 'left' },
-      { id: 'sus-estado', title: 'Estado', text: 'Tarjeta con plan activo o inactivo, tipo (mensual, trimestral, anual), fecha inicio y renovación o fin.', targetSelector: '[data-tutorial="sus-estado"]', position: 'left' },
-      { id: 'sus-opciones', title: 'Opciones', text: 'Contratar, renovar o gestionar según el estado. Enlaces a planes si aplica.', targetSelector: '[data-tutorial="sus-opciones"]', position: 'left' },
-      { id: 'sus-fin', title: 'Listo', text: 'Ya conoces tu suscripción.', position: 'bottom' }
+      { id: 'sus-bienvenida', title: 'Mi suscripción', text: 'Estás en Mi suscripción. Elige el perfil del jugador si hay varios y consulta el estado: activa o inactiva, tipo, fechas y opciones de renovación o contratación. Te guiamos paso a paso.', audioFile: 'sus_01.mp3', position: 'bottom' },
+      { id: 'sus-perfiles', title: 'Perfiles', text: 'Las tarjetas muestran los jugadores asociados. Pulsa en uno para ver su suscripción.', audioFile: 'sus_02.mp3', targetSelector: '[data-tutorial="sus-perfiles"]', position: 'left' },
+      { id: 'sus-estado', title: 'Estado', text: 'Aquí ves si el plan está activo o inactivo, el tipo —mensual, trimestral o anual—, fecha de inicio y de renovación o fin.', audioFile: 'sus_03.mp3', targetSelector: '[data-tutorial="sus-estado"]', position: 'left' },
+      { id: 'sus-opciones', title: 'Opciones', text: 'Según el estado puedes contratar, renovar o gestionar. Hay enlaces a planes si aplica.', audioFile: 'sus_04.mp3', targetSelector: '[data-tutorial="sus-opciones"]', position: 'left' },
+      { id: 'sus-fin', title: 'Listo', text: 'Ya conoces tu suscripción.', audioFile: 'sus_05.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Inicio deportes. */
+  /** Pasos del tutorial Inicio deportes: con audio. */
   private getInicioDeportesSteps(): TutorialStep[] {
     return [
-      { id: 'id-bienvenida', title: 'Deportes de Sphaira', text: 'Selecciona el deporte con el que quieres trabajar. Fútbol está disponible; otros deportes pueden estar en desarrollo.', position: 'bottom' },
-      { id: 'id-grid', title: 'Deportes', text: 'Tarjetas de deportes (Fútbol, Baloncesto, Balonmano, Voleibol, etc.). Pulsa en uno para acceder.', targetSelector: '[data-tutorial="id-grid"]', position: 'left' },
-      { id: 'id-fin', title: 'Listo', text: 'Elige tu deporte para continuar.', position: 'bottom' }
+      { id: 'id-bienvenida', title: 'Deportes de Sphaira', text: 'Estás en la pantalla de deportes de Sphaira. Selecciona el deporte con el que quieres trabajar. Fútbol está disponible; otros deportes pueden estar en desarrollo. Te guiamos paso a paso.', audioFile: 'id_01.mp3', position: 'bottom' },
+      { id: 'id-grid', title: 'Deportes', text: 'Cada tarjeta corresponde a un deporte: Fútbol, Baloncesto, Balonmano, Voleibol, etc. Pulsa en uno para acceder.', audioFile: 'id_02.mp3', targetSelector: '[data-tutorial="id-grid"]', position: 'left' },
+      { id: 'id-fin', title: 'Listo', text: 'Elige tu deporte para continuar.', audioFile: 'id_03.mp3', position: 'bottom' }
     ];
   }
 
-  /** Pasos del tutorial Selección de rol demo (solo Club, Entrenador, Jugador). Textos narrativos con voz española en assets. */
+  /** Pasos del tutorial Selección de rol demo: bienvenida (contexto), Club, Entrenador, Jugador, finalización (seleccionar un rol). */
   private getDemoRoleSteps(): TutorialStep[] {
     return [
+      { id: 'dr-bienvenida', title: 'Selección de rol', text: 'Estás en la pantalla de selección de rol en modo demostración. Puedes probar la aplicación como Club, Entrenador o Jugador. Te explicamos cada opción; al final elige la que quieras para entrar.', audioFile: 'demo_role_00.mp3', targetSelector: '[data-tutorial="dr-header"]', position: 'bottom' },
       { id: 'dr-club', title: 'Club', text: 'Si eliges el rol de Club, entrarás en el panel de quien lleva las riendas del día a día: equipos, cuadro de mandos, cuotas, documentos y toda la estructura del club. Pulsa esta tarjeta cuando quieras explorar esa experiencia.', targetSelector: '[data-tutorial="dr-club"]', position: 'top', audioFile: 'demo_role_01.mp3' },
       { id: 'dr-coach', title: 'Entrenador', text: 'Como Entrenador verás la app con ojos de cuerpo técnico: tus equipos, las tareas de entrenamiento, el calendario, los jugadores y sus estadísticas. Todo lo que necesitas para dirigir desde la banda. Pulsa aquí para vivir esa perspectiva.', targetSelector: '[data-tutorial="dr-coach"]', position: 'top', audioFile: 'demo_role_02.mp3' },
-      { id: 'dr-player', title: 'Jugador', text: 'Y si eliges Jugador, accederás a la vista de quien juega en el campo: mis datos, calendario de partidos y entrenamientos, cuotas, documentación y galería del equipo. Pulsa esta tarjeta para explorar como uno más de la plantilla.', targetSelector: '[data-tutorial="dr-player"]', position: 'top', audioFile: 'demo_role_03.mp3' }
+      { id: 'dr-player', title: 'Jugador', text: 'Y si eliges Jugador, accederás a la vista de quien juega en el campo: mis datos, calendario de partidos y entrenamientos, cuotas, documentación y galería del equipo. Pulsa esta tarjeta para explorar como uno más de la plantilla.', targetSelector: '[data-tutorial="dr-player"]', position: 'top', audioFile: 'demo_role_03.mp3' },
+      { id: 'dr-fin', title: 'Selecciona un rol', text: 'Ya conoces los tres roles. Selecciona el que quieras para entrar en la aplicación y explorar la plataforma.', audioFile: 'demo_role_04.mp3', targetSelector: '[data-tutorial="dr-cards"]', position: 'top' }
     ];
   }
 
@@ -1796,6 +1927,23 @@ export class TutorialService {
     const newIndex = state.currentIndex - 1;
     this.state$.next({ ...state, currentIndex: newIndex });
     this.emitCurrentStep(state.steps, newIndex);
+  }
+
+  /** Salta al paso indicado (stepNumber es 1-based). Útil para progreso clicable. */
+  goToStep(stepNumber: number): void {
+    const state = this.state$.value;
+    if (!state || state.steps.length === 0) return;
+    const index = Math.max(0, Math.min(stepNumber - 1, state.steps.length - 1));
+    if (index === state.currentIndex) return;
+    this.state$.next({ ...state, currentIndex: index });
+    this.emitCurrentStep(state.steps, index);
+  }
+
+  /** Reinicia el tutorial desde el paso 1 (misma pantalla). */
+  restart(): void {
+    const state = this.state$.value;
+    if (!state?.screenId) return;
+    this.start(state.screenId, true);
   }
 
   close(): void {
