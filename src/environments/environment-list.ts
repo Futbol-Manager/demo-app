@@ -1,11 +1,11 @@
-import { APIURLPROD, APIURLLOCAL, ApiEnvironments, APIURLPROD2, ImageEnvironments } from "src/app/core/models/master/masters.enum";
+import { APIURLPROD, APIURLLOCAL, ApiEnvironments, APIURLPROD2, APIURLDEMO, ImageEnvironments } from "src/app/core/models/master/masters.enum";
 
-/** Entorno para la app demo: login solo con email y datos hardcodeados en pantalla. Imágenes desde assets. */
+/** Entorno para la app demo en LOCAL/desarrollo: login solo con email, leads se envían a la API que indiques (por defecto producción). */
 export const demoenvironment = {
   production: false,
   demo: true,
   apiUrl: `${APIURLLOCAL}${ApiEnvironments.LOCAL}`,
-  /** URL base de la API de producción para enviar el lead de la demo (email + actividad). La demo no usa backend propio. */
+  /** En desarrollo local los leads pueden ir a producción; para desplegar en demo.sphairatech.com usa la config "demo-deploy". */
   demoLeadApiUrl: `${APIURLPROD2}${ApiEnvironments.PRO}`.replace(/\/$/, ''),
   prospectorApiUrl: 'http://localhost:8100/api/',
   /** Ruta absoluta para que el logo del club y demás imágenes carguen bien desde cualquier ruta (ej. /dashboard/equipos). */
@@ -23,6 +23,20 @@ export const demoenvironment = {
   /** ElevenLabs TTS para voces del tutorial demo. Voice ID: cambia en elevenlabs.io si quieres otra voz. */
   elevenLabsApiKey: 'sk_f7c4288883b554c1650b4bd1aec01f082aaca09258796c52',
   elevenLabsVoiceId: '21m00Tcm4TlvDq8ikWAM' // Rachel (multilingual). Puedes usar otro voice_id desde tu cuenta ElevenLabs.
+};
+
+/** Para desplegar en demo.sphairatech.com: leads a API dedicada (APIURLDEMO), que debe usar una BD distinta a producción. */
+export const demoenvironmentDeploy = {
+  ...demoenvironment,
+  production: true,
+  /** API de demo: base de datos separada de producción. Configurar APIURLDEMO en masters.enum. */
+  demoLeadApiUrl: `${APIURLDEMO}/api/rest`.replace(/\/\/+/g, '/'),
+};
+
+/** Igual que demoenvironment pero envía el lead a la API local (api-futbol-manager en :8081). Para verificar envío. */
+export const demoenvironmentLocal = {
+  ...demoenvironment,
+  demoLeadApiUrl: 'http://localhost:8081/api/rest',
 };
 
 export const localenvironment = {

@@ -801,7 +801,7 @@ export class EquiposComponent implements OnInit {
         this.router.navigate(['/dashboard/new-cuotas', this.clubId]);
         break;
       case 8:
-        this.router.navigate(['/dashboard/inicio-federacion']);
+        this.router.navigate(['/dashboard/inicio']);
         break;
       case 9:
         this.router.navigate(['/dashboard/inicio']);

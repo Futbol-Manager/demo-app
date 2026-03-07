@@ -12,16 +12,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthPagesModule } from './pages/auth-pages.module';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
-import { DashboardModule } from './dashboard/dashboard.module';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule } from '@angular/material/dialog';
 
-import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ChangePasswordComponent } from './pages/change-password/change-password.component';
-import { AsistenciaComponent } from './dashboard/asistencia/asistencia.component';
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { ParentChildrenComponent } from './pages/register/parent-children/parent-children.component';
@@ -40,7 +37,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     DemoRoleSelectionComponent,
     ChangePasswordComponent,
     ProfileComponent,
-    AsistenciaComponent,
     ParentChildrenComponent,
     ConfirmationDialogComponent,
     TutorialOverlayComponent,
@@ -72,9 +68,7 @@ export function HttpLoaderFactory(http: HttpClient) {
       preventDuplicates: true
     }),
 
-    DashboardModule,
     CommonModule,
-    NgxDatatableModule,
     MatSnackBarModule,
     MatDialogModule,
     MatFormFieldModule,

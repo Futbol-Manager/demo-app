@@ -20,7 +20,6 @@ import { EstadisticasEntrenadoresClubComponent } from './estadisticas-entrenador
 import { AsistenciaComponent } from './asistencia/asistencia.component';
 import { SuscripcionComponent } from './suscripcion/suscripcion.component';
 import { ScoutingPlayerComponent } from './scouting-player/scouting-player.component';
-import { AdminsettingsComponent } from './adminsettings/adminsettings.component';
 import { AbonadosComponent } from './abonados/abonados.component';
 import { PatrocinadoresComponent } from './patrocinadores/patrocinadores.component';
 import { NotificacionesComponent } from './notificaciones/notificaciones.component';
@@ -47,18 +46,8 @@ import { DocumentosJugadorComponent } from './documentos-jugador/documentos-juga
 import { DocumentosEntrenadorComponent } from './documentos-entrenador/documentos-entrenador.component';
 import { NewCuotasComponent } from './new-cuotas/new-cuotas.component';
 import { HistorialPagosClubComponent } from './historial-pagos-club/historial-pagos-club.component';
-import { InicioFederacionComponent } from './inicio-federacion/inicio-federacion.component';
-import { InfoJugadoresFederacionComponent } from './info-jugadores-federacion/info-jugadores-federacion.component';
-import { NotificacionesFederacionComponent } from './notificaciones-federacion/notificaciones-federacion.component';
-import { ListadoClubesComponent } from './listado-clubes/listado-clubes.component';
 import { EquiposComponent } from './equipos/equipos.component';
-import { AdminClubesComponent } from './admin-clubes/admin-clubes.component';
-import { AdminClubDetailComponent } from './admin-club-detail/admin-club-detail.component';
-import { AdminInicioComponent } from './admin-inicio/admin-inicio.component';
 import { SugerenciasClubComponent } from './sugerencias-club/sugerencias-club.component';
-import { AdminSugerenciasComponent } from './admin-sugerencias/admin-sugerencias.component';
-import { AdminChartsComponent } from './admin-charts/admin-charts.component';
-import { AdminAiInsightsComponent } from './admin-ai-insights/admin-ai-insights.component';
 import { CalendarioClubComponent } from './calendario-club/calendario-club.component';
 import { AsistenteIaComponent } from './asistente-ia/asistente-ia.component';
 import { AsistenteIaCoachComponent } from './asistente-ia-coach/asistente-ia-coach.component';
@@ -76,18 +65,10 @@ import { DebriefReportComponent } from './debrief/debrief-report/debrief-report.
 import { DebriefHistoryComponent } from './debrief/debrief-history/debrief-history.component';
 import { FormTemplatesComponent } from './debrief/form-templates/form-templates.component';
 import { ClubOwnerGuard } from '../club-owner.guard';
-import { AdminGuard } from '../admin.guard';
 import { CoachSubscriptionGuard } from '../coach-subscription.guard';
 import { ClubPlanGuard } from '../guards/club-plan.guard';
 import { SuscripcionCoachComponent } from './suscripcion-coach/suscripcion-coach.component';
 import { CoachSuscripcionSuccessComponent } from './coach-suscripcion-success/coach-suscripcion-success.component';
-import { AdminCoachesComponent } from './admin-coaches/admin-coaches.component';
-import { AdminProspectorComponent } from './admin-prospector/admin-prospector.component';
-import { RrssComponent } from './rrss/rrss.component';
-import { AdminRegistrosComponent } from './admin-registros/admin-registros.component';
-import { AdminActivityComponent } from './admin-activity/admin-activity.component';
-import { AdminAiUsageComponent } from './admin-ai-usage/admin-ai-usage.component';
-import { AdminAiConfigComponent } from './admin-ai-config/admin-ai-config.component';
 import { AiCreditsSuccessComponent } from './ai-credits-success/ai-credits-success.component';
 import { ScoutingClubComponent } from './scouting-club/scouting-club.component';
 import { ScoutingPlayerProfileComponent } from './scouting-player-profile/scouting-player-profile.component';
@@ -102,18 +83,7 @@ import { PlaylistViewerComponent } from './video-analysis/playlists/playlist-vie
 import { CanvasTaggerWindowComponent } from './video-analysis/canvas-tagger-window/canvas-tagger-window.component';
 import { ScreenCaptureWorkspaceComponent } from './video-analysis/screen-capture/screen-capture-workspace.component';
 import { ExternalVideoWorkspaceComponent } from './video-analysis/external-workspace/external-video-workspace.component';
-import { ErpDashboardComponent } from './erp/erp-dashboard/erp-dashboard.component';
 import { StaffClubComponent } from './staff-club/staff-club.component';
-import { ErpAccountsComponent } from './erp/erp-accounts/erp-accounts.component';
-import { ErpJournalEntriesComponent } from './erp/erp-journal-entries/erp-journal-entries.component';
-import { ErpSalesInvoicesComponent } from './erp/erp-sales-invoices/erp-sales-invoices.component';
-import { ErpPurchaseInvoicesComponent } from './erp/erp-purchase-invoices/erp-purchase-invoices.component';
-import { ErpPaymentsComponent } from './erp/erp-payments/erp-payments.component';
-import { ErpCustomersComponent } from './erp/erp-customers/erp-customers.component';
-import { ErpSuppliersComponent } from './erp/erp-suppliers/erp-suppliers.component';
-import { ErpBudgetsComponent } from './erp/erp-budgets/erp-budgets.component';
-import { ErpReportsComponent } from './erp/erp-reports/erp-reports.component';
-import { ErpSetupComponent } from './erp/erp-setup/erp-setup.component';
 import { IndividualTrainingComponent } from './individual-training/individual-training.component';
 import { RopaJugadorComponent } from './ropa-jugador/ropa-jugador.component';
 
@@ -126,8 +96,6 @@ const routes: Routes = [
       { path: 'inicio-deportes', component: InicioDeportesComponent },
       { path: 'inicio', component: InicioComponent },
       { path: 'equipos', component: EquiposComponent },
-      { path: 'inicio-federacion', component: InicioFederacionComponent },
-      { path: 'info-jugadores-federacion', component: InfoJugadoresFederacionComponent },
       { path: 'calendario/:teamId/:playerId', component: CalendarioComponent },
       { path: 'menu-entrenador/:teamId/:playerId', component: MenuEntrenadorComponent, canActivate: [ClubPlanGuard] },
       { path: 'menu-fisio/:teamId/:playerId', component: MenuFisioComponent },
@@ -179,25 +147,9 @@ const routes: Routes = [
       { path: 'informacion_equipo/asistencia/:teamId', component: AsistenciaComponent },
       { path: 'suscripcion/:userId', component: SuscripcionComponent },
       { path: 'scouting-player/:playerId', component: ScoutingPlayerComponent },
-      { path: 'adminsettings', component: AdminsettingsComponent },
       { path: 'notificaciones/:clubId', component: NotificacionesComponent },
       { path: 'notificaciones-usuario/:userId', component: NotificacionesComponent },
-      { path: 'notificaciones-federacion', component: NotificacionesFederacionComponent },
-      { path: 'listado-clubes', component: ListadoClubesComponent },
-      { path: 'admin-clubes', component: AdminClubesComponent, canActivate: [AdminGuard] },
-      { path: 'admin-club-detail/:clubId', component: AdminClubDetailComponent, canActivate: [AdminGuard] },
-      { path: 'admin-inicio/:clubId/:userId', component: AdminInicioComponent, canActivate: [AdminGuard] },
       { path: 'sugerencias-club', component: SugerenciasClubComponent },
-      { path: 'admin-sugerencias', component: AdminSugerenciasComponent, canActivate: [AdminGuard] },
-      { path: 'admin-charts', component: AdminChartsComponent, canActivate: [AdminGuard] },
-      { path: 'admin-ai-insights', component: AdminAiInsightsComponent, canActivate: [AdminGuard] },
-      { path: 'admin-registros', component: AdminRegistrosComponent, canActivate: [AdminGuard] },
-      { path: 'admin-activity', component: AdminActivityComponent, canActivate: [AdminGuard] },
-      { path: 'admin-ai-usage', component: AdminAiUsageComponent, canActivate: [AdminGuard] },
-      { path: 'admin-ai-config', component: AdminAiConfigComponent, canActivate: [AdminGuard] },
-      { path: 'admin-coaches', component: AdminCoachesComponent, canActivate: [AdminGuard] },
-      { path: 'admin-prospector', component: AdminProspectorComponent, canActivate: [AdminGuard] },
-      { path: 'rrss', component: RrssComponent, canActivate: [AdminGuard] },
       { path: 'ai-credits-success', component: AiCreditsSuccessComponent },
       { path: 'video-plan-success', component: VideoPlanSuccessComponent },
       { path: 'club-videos/:clubId', component: ClubVideoLibraryComponent, canActivate: [ClubOwnerGuard, ClubPlanGuard] },
@@ -212,17 +164,6 @@ const routes: Routes = [
       { path: 'video-analysis/external-workspace', component: ExternalVideoWorkspaceComponent },
       { path: 'scouting-club/:clubId', component: ScoutingClubComponent, canActivate: [ClubOwnerGuard, ClubPlanGuard] },
       { path: 'scouting-player-profile/:playerId', component: ScoutingPlayerProfileComponent },
-      { path: 'erp', component: ErpDashboardComponent, canActivate: [ClubOwnerGuard] },
-      { path: 'erp/accounts', component: ErpAccountsComponent, canActivate: [ClubOwnerGuard] },
-      { path: 'erp/journal-entries', component: ErpJournalEntriesComponent, canActivate: [ClubOwnerGuard] },
-      { path: 'erp/sales-invoices', component: ErpSalesInvoicesComponent, canActivate: [ClubOwnerGuard] },
-      { path: 'erp/purchase-invoices', component: ErpPurchaseInvoicesComponent, canActivate: [ClubOwnerGuard] },
-      { path: 'erp/payments', component: ErpPaymentsComponent, canActivate: [ClubOwnerGuard] },
-      { path: 'erp/customers', component: ErpCustomersComponent, canActivate: [ClubOwnerGuard] },
-      { path: 'erp/suppliers', component: ErpSuppliersComponent, canActivate: [ClubOwnerGuard] },
-      { path: 'erp/budgets', component: ErpBudgetsComponent, canActivate: [ClubOwnerGuard] },
-      { path: 'erp/reports', component: ErpReportsComponent, canActivate: [ClubOwnerGuard] },
-      { path: 'erp/setup', component: ErpSetupComponent, canActivate: [ClubOwnerGuard] },
       { path: 'suscripcion-club', component: SuscripcionClubComponent },
       { path: 'suscripcion-club/wizard/familia', component: WizardFamiliaComponent },
       { path: 'suscripcion-club/wizard/club', component: WizardClubComponent },

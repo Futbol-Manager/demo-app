@@ -29,14 +29,8 @@ export class AlreadyAuthGuard implements CanActivate {
         if (!user) {
           return true;
         }
-        const profileId = user.profileType?.profileId ?? -1;
-        const userId = user.userId ?? 0;
-        // Federación: profileId 0 y no es el admin especial (userId !== 9)
-        if (profileId === 0 && userId !== 9) {
-          this.router.navigate(['/dashboard/inicio-federacion']);
-        } else {
-          this.router.navigate(['/dashboard/inicio']);
-        }
+        // Usuario ya autenticado: ir al dashboard (inicio)
+        this.router.navigate(['/dashboard/inicio']);
         return false;
       })
     );

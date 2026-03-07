@@ -95,7 +95,34 @@
               "buildOptimizer": false,
               "optimization": false,
               "vendorChunk": true,
-              "sourceMap": true
+              "sourceMap": false,
+              "namedChunks": false
+            },
+            "demo-local": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.demo-local.ts"
+                }
+              ],
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "sourceMap": true,
+              "namedChunks": true
+            },
+            "demo-deploy": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.demo-deploy.ts"
+                }
+              ],
+              "buildOptimizer": true,
+              "optimization": true,
+              "vendorChunk": true,
+              "sourceMap": false,
+              "outputHashing": "all"
             }
           },
           "defaultConfiguration": "production"
@@ -114,6 +141,12 @@
             },
             "demo": {
               "browserTarget": "rep-espi:build:demo"
+            },
+            "demo-local": {
+              "browserTarget": "rep-espi:build:demo-local"
+            },
+            "demo-deploy": {
+              "browserTarget": "rep-espi:build:demo-deploy"
             }
           },
           "defaultConfiguration": "development"

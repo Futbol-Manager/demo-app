@@ -315,7 +315,7 @@ export class InicioComponent implements OnInit {
         this.router.navigate(['/dashboard/equipos']);
         break;
       case 10:
-        this.router.navigate(['/dashboard/admin-clubes']);
+        this.router.navigate(['/dashboard/inicio']);
         break;
       case 11:
         this.router.navigate(['/dashboard/asistente-ia']);

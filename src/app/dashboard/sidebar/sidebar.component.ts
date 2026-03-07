@@ -599,27 +599,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
       if (has('SCOUTING'))      staffItems.push({ id: 'scouting',       label: 'Scouting',              icon: 'bi-binoculars',       route: `/dashboard/scouting-club/${this.clubId}` });
       if (has('AI_ASSISTANT'))  staffItems.push({ id: 'ai',             label: 'Asistente de IA',       icon: 'bi-robot',            route: '/dashboard/asistente-ia' });
       if (has('VIDEO_ANALYSIS'))staffItems.push({ id: 'video-analysis', label: 'Análisis de vídeo',    icon: 'bi-camera-reels',     route: '/dashboard/video-analysis' });
-      if (has('ERP'))           staffItems.push({ id: 'erp',            label: 'Gestión / ERP',         icon: 'bi-gear',             route: '/dashboard/erp' });
 
       if (staffItems.length > 0) {
         this.sections.push({ id: 'staff', title: 'Mi acceso', items: staffItems, visible: true });
       }
     }
 
-    // ─── Admin (solo userId 9) ───
-    if (this.userId === 9) {
-      const adminItems: SidebarItem[] = [
-        { id: 'admin', label: 'SIDEBAR.ADMIN', icon: 'bi-shield-lock', route: '/dashboard/admin-clubes' },
-        { id: 'registros', label: 'SIDEBAR.REGISTERS', icon: 'bi-journal-text', route: '/dashboard/admin-registros' },
-        { id: 'actividad', label: 'SIDEBAR.ACTIVITY', icon: 'bi-activity', route: '/dashboard/admin-activity' },
-        { id: 'charts', label: 'SIDEBAR.CHARTS', icon: 'bi-graph-up-arrow', route: '/dashboard/admin-charts' },
-        { id: 'sugerencias', label: 'SIDEBAR.SUGGESTIONS', icon: 'bi-chat-dots', route: '/dashboard/admin-sugerencias' },
-        { id: 'prospector', label: 'Prospector', icon: 'bi-bullseye', route: '/dashboard/admin-prospector' },
-        { id: 'rrss', label: 'Redes Sociales', icon: 'bi-calendar3', route: '/dashboard/rrss' },
-      ];
-      this.sections.push({ id: 'admin', title: 'SIDEBAR.SECTION_ADMIN', items: adminItems, visible: true });
-    }
-    
     console.log('[SIDEBAR DEBUG] Final sections summary:');
     console.log('[SIDEBAR DEBUG] Total sections created:', this.sections.length);
     this.sections.forEach(section => {

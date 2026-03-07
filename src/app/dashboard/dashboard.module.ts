@@ -26,8 +26,8 @@ import { EstadisticasEquiposClubComponent } from './estadisticas-equipos-club/es
 import { EstadisticasEntrenadoresClubComponent } from './estadisticas-entrenadores-club/estadisticas-entrenadores-club.component';
 import { SuscripcionComponent } from './suscripcion/suscripcion.component';
 import { ScoutingPlayerComponent } from './scouting-player/scouting-player.component';
-import { AdminsettingsComponent } from './adminsettings/adminsettings.component';
 import { AbonadosComponent } from './abonados/abonados.component';
+import { AsistenciaComponent } from './asistencia/asistencia.component';
 import { PatrocinadoresComponent } from './patrocinadores/patrocinadores.component';
 import { PublicidadComponent } from './publicidad/publicidad.component';
 import { NotificacionesComponent } from './notificaciones/notificaciones.component';
@@ -54,29 +54,19 @@ import { DocumentosJugadorComponent } from './documentos-jugador/documentos-juga
 import { DocumentosEntrenadorComponent } from './documentos-entrenador/documentos-entrenador.component';
 import { NewCuotasComponent } from './new-cuotas/new-cuotas.component';
 import { HistorialPagosClubComponent } from './historial-pagos-club/historial-pagos-club.component';
-import { InicioFederacionComponent } from './inicio-federacion/inicio-federacion.component';
-import { InfoJugadoresFederacionComponent } from './info-jugadores-federacion/info-jugadores-federacion.component';
-import { NotificacionesFederacionComponent } from './notificaciones-federacion/notificaciones-federacion.component';
-import { ListadoClubesComponent } from './listado-clubes/listado-clubes.component';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateModule } from '@ngx-translate/core';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { EquiposComponent } from './equipos/equipos.component';
+import { SugerenciasClubComponent } from './sugerencias-club/sugerencias-club.component';
 import { LogoSpinnerComponent } from '../shared/logo-spinner/logo-spinner.component';
 import { FooterComponent } from '../shared/footer/footer.component';
 import { InfoEquipoComponent } from './info-equipo/info-equipo.component';
-import { AdminClubesComponent } from './admin-clubes/admin-clubes.component';
-import { AdminClubDetailComponent } from './admin-club-detail/admin-club-detail.component';
-import { AdminInicioComponent } from './admin-inicio/admin-inicio.component';
-import { SugerenciasClubComponent } from './sugerencias-club/sugerencias-club.component';
-import { AdminSugerenciasComponent } from './admin-sugerencias/admin-sugerencias.component';
-import { AdminChartsComponent } from './admin-charts/admin-charts.component';
-import { AdminAiInsightsComponent } from './admin-ai-insights/admin-ai-insights.component';
-import { PlayerInfoDialogComponent } from './player-info-dialog/player-info-dialog.component';
 import { CalendarioClubComponent } from './calendario-club/calendario-club.component';
 import { AsistenteIaComponent, Nl2brPipe } from './asistente-ia/asistente-ia.component';
 import { AsistenteIaCoachComponent } from './asistente-ia-coach/asistente-ia-coach.component';
+import { PlayerInfoDialogComponent } from './player-info-dialog/player-info-dialog.component';
 import { AiFabComponent } from './ai-fab/ai-fab.component';
 import { LesionesComponent } from './lesiones/lesiones.component';
 import { LesionesEquipoComponent } from './lesiones/lesiones-equipo.component';
@@ -99,10 +89,6 @@ import { DebriefReportComponent } from './debrief/debrief-report/debrief-report.
 import { DebriefHistoryComponent } from './debrief/debrief-history/debrief-history.component';
 import { FormBuilderComponent } from './shared/form-builder/form-builder.component';
 import { FormRendererComponent } from './shared/form-renderer/form-renderer.component';
-import { AdminRegistrosComponent } from './admin-registros/admin-registros.component';
-import { AdminActivityComponent } from './admin-activity/admin-activity.component';
-import { AdminAiUsageComponent } from './admin-ai-usage/admin-ai-usage.component';
-import { AdminAiConfigComponent } from './admin-ai-config/admin-ai-config.component';
 import { CreditsModalComponent } from './credits-modal/credits-modal.component';
 import { AiCreditsSuccessComponent } from './ai-credits-success/ai-credits-success.component';
 import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.component';
@@ -115,16 +101,6 @@ import { ClubVideoLibraryComponent } from './club-video-library/club-video-libra
 import { VideoPlanSuccessComponent } from './video-plan-success/video-plan-success.component';
 import { SuscripcionCoachComponent } from './suscripcion-coach/suscripcion-coach.component';
 import { CoachSuscripcionSuccessComponent } from './coach-suscripcion-success/coach-suscripcion-success.component';
-import { AdminCoachesComponent } from './admin-coaches/admin-coaches.component';
-import { AdminProspectorComponent } from './admin-prospector/admin-prospector.component';
-import { RrssComponent } from './rrss/rrss.component';
-import { RrssCalendarComponent } from './rrss/rrss-calendar/rrss-calendar.component';
-import { RrssPostsComponent } from './rrss/rrss-posts/rrss-posts.component';
-import { RrssSettingsComponent } from './rrss/rrss-settings/rrss-settings.component';
-import { RrssCommentsComponent } from './rrss/rrss-comments/rrss-comments.component';
-import { PostEditorModalComponent } from './rrss/post-editor-modal/post-editor-modal.component';
-import { MonthlyPlanWizardComponent } from './rrss/monthly-plan-wizard/monthly-plan-wizard.component';
-import { TaskEditModalComponent } from './task-edit-modal/task-edit-modal.component';
 import { FormTemplateSelectorComponent } from './shared/form-template-selector/form-template-selector.component';
 import { FormTemplatesComponent } from './debrief/form-templates/form-templates.component';
 import { PaymentTableComponent } from './new-cuotas/components/payment-table/payment-table.component';
@@ -154,25 +130,14 @@ import { CanvasTaggerWindowComponent } from './video-analysis/canvas-tagger-wind
 import { ScreenCaptureWorkspaceComponent } from './video-analysis/screen-capture/screen-capture-workspace.component';
 import { ExternalVideoWorkspaceComponent } from './video-analysis/external-workspace/external-video-workspace.component';
 import { ClipAnnotationEditorComponent } from './video-analysis/workspace/clip-annotation-editor/clip-annotation-editor.component';
-import { ErpDashboardComponent } from './erp/erp-dashboard/erp-dashboard.component';
-import { ErpAccountsComponent } from './erp/erp-accounts/erp-accounts.component';
-import { ErpJournalEntriesComponent } from './erp/erp-journal-entries/erp-journal-entries.component';
-import { ErpSalesInvoicesComponent } from './erp/erp-sales-invoices/erp-sales-invoices.component';
-import { ErpPurchaseInvoicesComponent } from './erp/erp-purchase-invoices/erp-purchase-invoices.component';
-import { ErpPaymentsComponent } from './erp/erp-payments/erp-payments.component';
-import { ErpCustomersComponent } from './erp/erp-customers/erp-customers.component';
-import { ErpSuppliersComponent } from './erp/erp-suppliers/erp-suppliers.component';
-import { ErpBudgetsComponent } from './erp/erp-budgets/erp-budgets.component';
-import { ErpReportsComponent } from './erp/erp-reports/erp-reports.component';
-import { ErpSetupComponent } from './erp/erp-setup/erp-setup.component';
 import { IndividualTrainingComponent } from './individual-training/individual-training.component';
 import { RopaJugadorComponent } from './ropa-jugador/ropa-jugador.component';
-import { ErpAiConsentModalComponent } from './erp/erp-ai-consent-modal/erp-ai-consent-modal.component';
 import { StaffClubComponent } from './staff-club/staff-club.component';
 import { ModalBackdropDirective } from './shared/modal-backdrop.directive';
 import { PlanificadorSemanalIaComponent } from './planificador-semanal-ia/planificador-semanal-ia.component';
 import { RopaCatalogoComponent } from './ropa/ropa-catalogo/ropa-catalogo.component';
 import { RopaTablaCartalogComponent } from './ropa/ropa-tabla-catalogo/ropa-tabla-catalogo.component';
+import { TaskEditModalComponent } from './task-edit-modal/task-edit-modal.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -204,8 +169,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     EstadisticasEntrenadoresClubComponent,
     SuscripcionComponent,
     ScoutingPlayerComponent,
-    AdminsettingsComponent,
     AbonadosComponent,
+    AsistenciaComponent,
     PatrocinadoresComponent,
     PublicidadComponent,
     NotificacionesComponent,
@@ -232,20 +197,10 @@ export function HttpLoaderFactory(http: HttpClient) {
     DocumentosEntrenadorComponent,
     NewCuotasComponent,
     HistorialPagosClubComponent,
-    InicioFederacionComponent,
-    InfoJugadoresFederacionComponent,
-    NotificacionesFederacionComponent,
-    ListadoClubesComponent,
     EquiposComponent,
     LogoSpinnerComponent,
     FooterComponent,
-    AdminClubesComponent,
-    AdminClubDetailComponent,
-    AdminInicioComponent,
     SugerenciasClubComponent,
-    AdminSugerenciasComponent,
-    AdminChartsComponent,
-    AdminAiInsightsComponent,
     PlayerInfoDialogComponent,
     CalendarioClubComponent,
     AsistenteIaComponent,
@@ -273,10 +228,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     DebriefHistoryComponent,
     FormBuilderComponent,
     FormRendererComponent,
-    AdminRegistrosComponent,
-    AdminActivityComponent,
-    AdminAiUsageComponent,
-    AdminAiConfigComponent,
     CreditsModalComponent,
     AiCreditsSuccessComponent,
     ConfirmDialogComponent,
@@ -289,15 +240,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     VideoPlanSuccessComponent,
     SuscripcionCoachComponent,
     CoachSuscripcionSuccessComponent,
-    AdminCoachesComponent,
-    AdminProspectorComponent,
-    RrssComponent,
-    RrssCalendarComponent,
-    RrssPostsComponent,
-    RrssSettingsComponent,
-    RrssCommentsComponent,
-    PostEditorModalComponent,
-    MonthlyPlanWizardComponent,
     TaskEditModalComponent,
     FormTemplateSelectorComponent,
     FormTemplatesComponent,
@@ -328,18 +270,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     ScreenCaptureWorkspaceComponent,
     ExternalVideoWorkspaceComponent,
     ClipAnnotationEditorComponent,
-    ErpDashboardComponent,
-    ErpAccountsComponent,
-    ErpJournalEntriesComponent,
-    ErpSalesInvoicesComponent,
-    ErpPurchaseInvoicesComponent,
-    ErpPaymentsComponent,
-    ErpCustomersComponent,
-    ErpSuppliersComponent,
-    ErpBudgetsComponent,
-    ErpReportsComponent,
-    ErpSetupComponent,
-    ErpAiConsentModalComponent,
     StaffClubComponent,
     IndividualTrainingComponent,
     RopaJugadorComponent,

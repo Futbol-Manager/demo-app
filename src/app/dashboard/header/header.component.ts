@@ -362,7 +362,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     } else if (url.includes('abonados')) {
       this.currentTutorialScreenId = 'abonados';
     } else if (url.includes('listado-clubes')) {
-      this.currentTutorialScreenId = 'listado-clubes';
+      this.currentTutorialScreenId = 'dashboard-inicio';
     } else if (url.includes('sugerencias-club')) {
       this.currentTutorialScreenId = 'sugerencias-club';
     } else if (url.includes('coach-suscripcion-success')) {
@@ -651,7 +651,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   goToSugerencias(): void {
-    this.router.navigate(['/dashboard/admin-sugerencias']);
+    this.router.navigate(['/dashboard/inicio']);
   }
 
   goToSugerenciasUsuario(): void {
@@ -659,27 +659,27 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   goToAdminClubes(): void {
-    this.router.navigate(['/dashboard/admin-clubes']);
+    this.router.navigate(['/dashboard/inicio']);
   }
 
   goToAdminSugerencias(): void {
-    this.router.navigate(['/dashboard/admin-sugerencias']);
+    this.router.navigate(['/dashboard/inicio']);
   }
 
   goToAdminCharts(): void {
-    this.router.navigate(['/dashboard/admin-charts']);
+    this.router.navigate(['/dashboard/inicio']);
   }
 
   goToAdminAiInsights(): void {
-    this.router.navigate(['/dashboard/admin-ai-insights']);
+    this.router.navigate(['/dashboard/inicio']);
   }
 
   goToAdminAiUsage(): void {
-    this.router.navigate(['/dashboard/admin-ai-usage']);
+    this.router.navigate(['/dashboard/inicio']);
   }
 
   goToAdminRegistros(): void {
-    this.router.navigate(['/dashboard/admin-registros']);
+    this.router.navigate(['/dashboard/inicio']);
   }
 
   private detectDevice(): void {
@@ -713,15 +713,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   goToAdminCoaches(): void {
-    this.router.navigate(['/dashboard/admin-coaches']);
+    this.router.navigate(['/dashboard/inicio']);
   }
 
   goToAdminProspector(): void {
-    this.router.navigate(['/dashboard/admin-prospector']);
+    this.router.navigate(['/dashboard/inicio']);
   }
 
   goToRrss(): void {
-    this.router.navigate(['/dashboard/rrss']);
+    this.router.navigate(['/dashboard/inicio']);
   }
 
   ngAfterViewInit() {
@@ -745,11 +745,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   goInicio() {
-    if (this.profileId == 0) {
-      this.router.navigate(['/dashboard/inicio-federacion']);
-    } else {
-      this.router.navigate(['/dashboard/inicio']);
-    }
+    this.router.navigate(['/dashboard/inicio']);
   }
 
   logOut(): void {

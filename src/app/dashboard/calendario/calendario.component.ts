@@ -1095,7 +1095,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     } else if (id === 5) {
       this.router.navigate(['/dashboard/cuotas', this.teamId, this.playerId]);
     } else if (id === 6) {
-      this.router.navigate(['/dashboard/adminsettings']);
+      this.router.navigate(['/dashboard/inicio']);
     } else if (id === 7) {
       this.router.navigate(['/dashboard/tareas', this.teamId]);
     } else if (id === 8) {

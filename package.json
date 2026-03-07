@@ -3,8 +3,11 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
+    "start": "node --max-old-space-size=8192 node_modules/@angular/cli/bin/ng serve",
+    "start:demo": "node --max-old-space-size=8192 node_modules/@angular/cli/bin/ng serve --configuration=demo",
+    "serve": "node --max-old-space-size=8192 node_modules/@angular/cli/bin/ng serve",
+    "build": "node --max-old-space-size=8192 node_modules/@angular/cli/bin/ng build",
+    "build:demo": "node --max-old-space-size=8192 node_modules/@angular/cli/bin/ng build --configuration=demo",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "generate-tutorial-audio": "node scripts/generate-tutorial-audio.mjs"
@@ -60,6 +63,7 @@
     "@angular/cli": "~13.3.0",
     "@angular/compiler-cli": "~13.3.0",
     "@schematics/angular": "~13.3.0",
+    "@types/body-parser": "^1.19.6",
     "@types/bootstrap": "^5.2.10",
     "@types/datatables.net": "^1.10.28",
     "@types/jasmine": "~3.10.0",

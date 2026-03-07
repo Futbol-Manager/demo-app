@@ -104,7 +104,7 @@ export class LoginComponent implements OnInit {
       return;
     }
     if (profileId === 0 && userId !== 9) {
-      this.router.navigate(['/dashboard/inicio-federacion']);
+      this.router.navigate(['/dashboard/inicio']);
     } else {
       this.router.navigate(['/dashboard/inicio']);
     }

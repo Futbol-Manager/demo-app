@@ -105,7 +105,6 @@ export class TutorialService {
     this.screens.set('suscripcion-club', this.getSuscripcionClubSteps());
     this.screens.set('suscripcion-club-wizard', this.getSuscripcionClubWizardSteps());
     this.screens.set('sugerencias-club', this.getSugerenciasClubSteps());
-    this.screens.set('listado-clubes', this.getListadoClubesSteps());
     this.screens.set('suscripcion-coach', this.getSuscripcionCoachSteps());
     this.screens.set('coach-suscripcion-success', this.getCoachSuscripcionSuccessSteps());
     this.screens.set('individual-training', this.getIndividualTrainingSteps());
@@ -1764,16 +1763,6 @@ export class TutorialService {
       { id: 'sug-form', title: 'Formulario', text: 'Rellena categoría, título y descripción. Envía cuando esté completo.', audioFile: 'sug_03.mp3', targetSelector: '[data-tutorial="sug-form"]', position: 'left' },
       { id: 'sug-list', title: 'Mis sugerencias', text: 'Aquí ves el listado de sugerencias enviadas con su estado: pendiente, en revisión, etc.', audioFile: 'sug_04.mp3', targetSelector: '[data-tutorial="sug-list"]', position: 'left' },
       { id: 'sug-fin', title: 'Listo', text: 'Ya conoces las sugerencias. ¡Tu opinión construye Sphaira!', audioFile: 'sug_05.mp3', position: 'bottom' }
-    ];
-  }
-
-  /** Pasos del tutorial Listado de clubes: sin paso Volver; con audio. */
-  private getListadoClubesSteps(): TutorialStep[] {
-    return [
-      { id: 'lc-bienvenida', title: 'Listado de clubes', text: 'Estás en el listado de clubes. Puedes filtrar por nombre y ver la tabla con equipos, entrenadores, jugadores, padres y la acción Ver equipos. Te guiamos paso a paso.', audioFile: 'lc_01.mp3', position: 'bottom' },
-      { id: 'lc-filtro', title: 'Filtrar', text: 'Usa el campo de búsqueda para filtrar por nombre del club.', audioFile: 'lc_02.mp3', targetSelector: '[data-tutorial="lc-filtro"]', position: 'bottom' },
-      { id: 'lc-tabla', title: 'Tabla', text: 'La tabla muestra número, nombre, equipos, entrenadores, jugadores, padres y la acción Ver equipos. Haz clic en la cabecera para ordenar.', audioFile: 'lc_03.mp3', targetSelector: '[data-tutorial="lc-tabla"]', position: 'left' },
-      { id: 'lc-fin', title: 'Listo', text: 'Ya conoces el listado de clubes.', audioFile: 'lc_04.mp3', position: 'bottom' }
     ];
   }
 
