@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, EMPTY, Observable, tap } from "rxjs";
+import { timeout, catchError, finalize } from 'rxjs/operators';
 
 import { LoginModel } from '../../models/users/login.model';
 import { LoginResponse } from '../../models/users/login-response.model';
@@ -127,7 +128,7 @@ export class LoginService {
   cerrarSesion(byInactivity = false): void {
     const token = localStorage.getItem('token');
 
-    // En demo: enviar email + actividad al endpoint de producción antes de cerrar (email capturado en el login)
+    // En demo: enviar email + actividad al endpoint antes de cerrar; esperar a que termine (o timeout) para que no se pierda la petición
     if (this.demoService.isDemoMode()) {
       try {
         const raw = localStorage.getItem('usuario');
@@ -135,16 +136,35 @@ export class LoginService {
           const user = JSON.parse(raw);
           const email = (user && user.mail) ? String(user.mail).trim() : '';
           if (email) {
-            this.demoActivityService.submitLead(email).subscribe({ error: () => {} });
+            this.demoActivityService.submitLead(email).pipe(
+              timeout(8000),
+              catchError((err) => {
+                console.warn('[Demo] Error al enviar lead (revisa consola del API o usa configuración demo-local):', err?.message || err);
+                return EMPTY;
+              }),
+              finalize(() => this.ejecutarCierreSesion(token, byInactivity))
+            ).subscribe({
+              next: (result) => {
+                if (result && !result.success) {
+                  console.warn('[Demo] Lead no guardado:', result.message);
+                }
+              },
+            });
+            return;
           }
         }
       } catch (_) {}
+      this.ejecutarCierreSesion(token, byInactivity);
+      return;
     }
 
-    // Emitir null ANTES de limpiar storage para que los guards reaccionen inmediatamente
+    this.ejecutarCierreSesion(token, byInactivity);
+  }
+
+  /** Limpia estado, storage y navega. Llamado después de enviar el lead en demo o directamente en modo no-demo. */
+  private ejecutarCierreSesion(token: string | null, byInactivity: boolean): void {
     this['usuarioAutenticado'].next(null);
 
-    // En demo no se llama al backend
     if (token && !this.demoService.isDemoMode()) {
       const url = environment.apiUrl + 'auth/logout';
       this.http.post(url, {}, {

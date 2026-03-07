@@ -113,8 +113,8 @@ export class DemoActivityService {
   }
 
   /**
-   * Envía el correo y la actividad al endpoint de producción.
-   * En demo usa demoLeadApiUrl (producción); no usa el apiUrl del entorno demo.
+   * Envía el correo y la actividad al endpoint configurado (demoLeadApiUrl).
+   * Con config "demo" va a producción; con "demo-local" va a http://localhost:8081 para ver datos en tu BD.
    */
   submitLead(email: string): Observable<{ success: boolean; message?: string }> {
     const baseUrl = (environment as { demoLeadApiUrl?: string }).demoLeadApiUrl;
@@ -122,6 +122,9 @@ export class DemoActivityService {
       return of({ success: false, message: 'Endpoint de demo no configurado' });
     }
     const url = `${baseUrl.replace(/\/$/, '')}/public/demo-lead`;
+    if (!(environment as { production?: boolean }).production) {
+      console.log('[Demo] Enviando lead a:', url, '→ Para guardar en tu BD local usa: ng serve --configuration=demo-local (y API en :8081)');
+    }
     const role = this.demoService.getDemoRole();
     const payload: DemoLeadPayload = {
       email: email.trim(),
@@ -135,6 +138,9 @@ export class DemoActivityService {
       }),
       catchError((err) => {
         const msg = err.error?.error?.msg || err.message || 'Error de conexión';
+        if (!(environment as { production?: boolean }).production) {
+          console.warn('[Demo] Fallo al enviar lead:', msg, err.status ? `(HTTP ${err.status})` : '');
+        }
         return of({ success: false, message: msg });
       })
     );
