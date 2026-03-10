@@ -1,4 +1,3 @@
-<app-publicidad></app-publicidad>
 
 <!-- ===== PAGE HEADER ===== -->
 <div class="page-header">
@@ -260,7 +259,7 @@
   <div class="ai-sidebar-body">
     <div class="ai-suggestions-section">
       <p class="ai-intro">💡 {{ 'AI_PANEL.HELP_TEXT' | translate }}</p>
-      
+
       <div class="suggestion-chips">
         <button class="suggestion-chip" (click)="useSuggestion('¿Qué equipo tiene más victorias?')">
           🏆 {{ 'AI_PANEL.SUGGESTION_BEST_TEAM' | translate }}
@@ -292,7 +291,7 @@
             <div [innerHTML]="message.content | markdownAi"></div>
           </div>
         </div>
-        
+
         <div *ngIf="aiLoading" class="ai-message assistant">
           <div class="message-content">
             <strong>🤖 IA:</strong>
@@ -304,8 +303,8 @@
       </div>
 
       <div class="ai-input-section">
-        <textarea 
-          [(ngModel)]="aiPrompt" 
+        <textarea
+          [(ngModel)]="aiPrompt"
           [placeholder]="'AI_PANEL.PLACEHOLDER' | translate"
           rows="3"
           (keydown)="onKeyDown($event)"

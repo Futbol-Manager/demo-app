@@ -1338,7 +1338,7 @@ export class TutorialService {
       { id: 'tareas-bienvenida', title: 'Tareas', text: 'Centro de tareas del equipo: pizarra táctica, catálogo en la nube, historial, favoritas y mis tareas propias. Elige una opción para continuar. Te explicamos cada parte.', audioFile: 'tareas_01.mp3', position: 'bottom' },
       { id: 'tareas-pizarra', title: 'Dibujar / Pizarra táctica', text: 'Abre la pizarra táctica para dibujar jugadas, tácticas y animaciones. Puedes guardar imágenes o GIF en una tarea.', audioFile: 'tareas_02.mp3', targetSelector: '[data-tutorial="tareas-pizarra"]', position: 'left' },
       { id: 'tareas-nube', title: 'Nube', text: 'Catálogo de tareas en la nube: busca por estrategia e intención y añade tareas a tus entrenamientos.', audioFile: 'tareas_03.mp3', targetSelector: '[data-tutorial="tareas-nube"]', position: 'left' },
-      { id: 'tareas-historial', title: 'Historial', text: 'Tareas que ya has usado en entrenamientos. Consulta y vuelve a añadirlas o marcarlas como favoritas.', audioFile: 'tareas_04.mp3', targetSelector: '[data-tutorial="tareas-historial"]', position: 'left' },
+      { id: 'tareas-historial', title: 'Historial', text: 'Aquí ves las tareas que ya has usado en tus entrenamientos. Puedes reutilizarlas en una sesión nueva o guardarlas en favoritas para tenerlas a mano.', audioFile: 'tareas_04.mp3', targetSelector: '[data-tutorial="tareas-historial"]', position: 'left' },
       { id: 'tareas-favoritas', title: 'Favoritas', text: 'Tus tareas marcadas como favoritas para acceso rápido.', audioFile: 'tareas_05.mp3', targetSelector: '[data-tutorial="tareas-favoritas"]', position: 'left' },
       { id: 'tareas-mis', title: 'Mis tareas', text: 'Tareas creadas por ti (desde la pizarra o manualmente). Crea, edita y elimina tus propias tareas.', audioFile: 'tareas_06.mp3', targetSelector: '[data-tutorial="tareas-mis"]', position: 'left' },
       { id: 'tareas-fin', title: 'Listo', text: 'Ya dominas el hub de tareas. Entra en la opción que necesites para preparar tus sesiones cuando lo necesites.', audioFile: 'tareas_07.mp3', position: 'bottom' }
@@ -1861,8 +1861,15 @@ export class TutorialService {
         title: 'Iniciar sesión',
         text: 'Cuando hayas introducido tu correo, pulsa aquí para entrar.',
         audioFile: 'login_04.mp3',
-        targetSelector: '.form-login .btn-custom',
+        targetSelector: '[data-tutorial="login-submit"]',
         position: 'top'
+      },
+      {
+        id: 'login-listo',
+        title: 'Listo',
+        text: 'Listo, ya sabes cómo iniciar sesión. Introduce tu correo y pulsa el botón cuando quieras entrar.',
+        audioFile: 'login_05.mp3',
+        position: 'bottom'
       },
     ];
   }

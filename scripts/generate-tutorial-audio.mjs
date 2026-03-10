@@ -16,8 +16,22 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = path.join(__dirname, '..', 'src', 'assets', 'audio', 'tutorial');
-
+const PROJECT_ROOT = path.join(__dirname, '..');
 const KEY_FILE = path.join(__dirname, '.elevenlabs-api-key');
+
+// Cargar .env del proyecto (ELEVENLABS_API_KEY=xxx) si existe
+function loadEnv() {
+  const envPath = path.join(PROJECT_ROOT, '.env');
+  if (!fs.existsSync(envPath)) return;
+  try {
+    const content = fs.readFileSync(envPath, 'utf8');
+    for (const line of content.split(/\r?\n/)) {
+      const m = line.match(/^\s*ELEVENLABS_API_KEY\s*=\s*(.+)\s*$/);
+      if (m) process.env.ELEVENLABS_API_KEY = m[1].replace(/^["']|["']$/g, '').trim();
+    }
+  } catch (_) {}
+}
+loadEnv();
 
 let API_KEY = process.env.ELEVENLABS_API_KEY;
 if (!API_KEY) {
@@ -30,8 +44,9 @@ if (!API_KEY) {
 if (!API_KEY) {
   console.error('❌  Falta la API key de ElevenLabs.');
   console.error('   Opciones:');
-  console.error('   1. Crear el archivo scripts/.elevenlabs-api-key con tu clave (una línea).');
-  console.error('   2. Ejecutar: ELEVENLABS_API_KEY=tu_clave npm run generate-tutorial-audio');
+  console.error('   1. Crear scripts/.elevenlabs-api-key con tu clave (una línea).');
+  console.error('   2. Crear .env en la raíz del proyecto con: ELEVENLABS_API_KEY=tu_clave');
+  console.error('   3. Ejecutar: ELEVENLABS_API_KEY=tu_clave npm run generate-tutorial-audio');
   process.exit(1);
 }
 
@@ -185,9 +200,10 @@ const STEPS = [
     file: 'login_02.mp3',
     text: 'Introduce aquí tu correo electrónico para acceder a Sphaira. Asegúrate de que es un correo válido y al que tienes acceso.'
   },
+
   {
     file: 'login_04.mp3',
-    text: 'Cuando hayas introducido tu correo, pulsa aquí para entrar.'
+    text: 'Listo, ya sabes cómo iniciar sesión. Introduce tu correo y pulsa el botón cuando quieras entrar.'
   },
 
   // ── Demo role (selección de rol: voces españolas, narrativo) ──────────────
@@ -570,7 +586,7 @@ const STEPS = [
   { file: 'tareas_01.mp3', text: 'Centro de tareas del equipo: pizarra táctica, catálogo en la nube, historial, favoritas y mis tareas propias. Elige una opción para continuar. Te explicamos cada parte.' },
   { file: 'tareas_02.mp3', text: 'Abre la pizarra táctica para dibujar jugadas, tácticas y animaciones. Puedes guardar imágenes o GIF en una tarea.' },
   { file: 'tareas_03.mp3', text: 'Catálogo de tareas en la nube: busca por estrategia e intención y añade tareas a tus entrenamientos.' },
-  { file: 'tareas_04.mp3', text: 'Tareas que ya has usado en entrenamientos. Consulta y vuelve a añadirlas o marcarlas como favoritas.' },
+  { file: 'tareas_04.mp3', text: 'Aquí ves las tareas que ya has usado en tus entrenamientos. Puedes reutilizarlas en una sesión nueva o guardarlas en favoritas para tenerlas a mano.' },
   { file: 'tareas_05.mp3', text: 'Tus tareas marcadas como favoritas para acceso rápido.' },
   { file: 'tareas_06.mp3', text: 'Tareas creadas por ti (desde la pizarra o manualmente). Crea, edita y elimina tus propias tareas.' },
   { file: 'tareas_07.mp3', text: 'Ya dominas el hub de tareas. Entra en la opción que necesites para preparar tus sesiones cuando lo necesites.' },
@@ -765,7 +781,7 @@ async function main() {
     const outputPath = path.join(OUTPUT_DIR, step.file);
 
     if (!force && fs.existsSync(outputPath)) {
-      console.log(`   ⏭️  ${step.file}  (ya existe, omitiendo)`);
+      console.log(`   ⏭️  ${step.file}  (ya existe, usa --force para reemplazar)`);
       skipped++;
       continue;
     }

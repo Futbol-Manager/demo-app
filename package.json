@@ -10,7 +10,8 @@
     "build:demo": "node --max-old-space-size=8192 node_modules/@angular/cli/bin/ng build --configuration=demo",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "generate-tutorial-audio": "node scripts/generate-tutorial-audio.mjs"
+    "generate-tutorial-audio": "node scripts/generate-tutorial-audio.mjs",
+    "generate-tutorial-audio:tareas04": "node scripts/generate-tutorial-audio.mjs --only=tareas_04 --force"
   },
   "private": true,
   "dependencies": {
