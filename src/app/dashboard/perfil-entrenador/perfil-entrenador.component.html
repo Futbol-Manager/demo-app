@@ -1,0 +1,578 @@
+
+<!-- Encabezado premium (mismo estilo y altura que info-jugadores) -->
+<header class="page-header page-header--premium">
+  <div class="back-container" data-tutorial="pe-volver">
+    <button type="button" class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h2 class="table-title">
+      <i class="bi bi-person-badge table-title-icon"></i>
+      {{ profileTitle || ('COACH_PROFILE.TITLE' | translate) }}
+    </h2>
+    <p class="header-subtitle">{{ 'COACH_PROFILE.SUBTITLE' | translate }}</p>
+  </div>
+</header>
+
+<!-- PERFIL ENTRENADOR -->
+<div class="perfil-entrenador-page">
+
+  <!-- ========== TARJETA DE SUSCRIPCIÓN (solo coach independiente) ========== -->
+  <!-- Contenedor siempre presente para que el paso 2 del tutorial tenga objetivo -->
+  <div class="pe-suscripcion-wrap" data-tutorial="pe-suscripcion">
+    <div class="subscription-card" *ngIf="profileId === 2 && !coachBelongsToClub && subscriptionStatus !== null">
+      <div class="sub-left">
+        <i class="bi bi-credit-card-2-front sub-icon"></i>
+        <div class="sub-info">
+          <span class="sub-title">Mi suscripción</span>
+          <span class="sub-plan">{{ subscriptionPlan || 'Sin plan activo' }}</span>
+        </div>
+      </div>
+      <div class="sub-right">
+        <span class="sub-badge"
+          [class.sub-active]="subscriptionStatus === 'ACTIVE'"
+          [class.sub-trial]="subscriptionStatus === 'TRIAL'"
+          [class.sub-expired]="subscriptionStatus === 'EXPIRED'"
+          [class.sub-none]="subscriptionStatus === 'NONE'">
+          <ng-container [ngSwitch]="subscriptionStatus">
+            <span *ngSwitchCase="'ACTIVE'"><i class="bi bi-check-circle me-1"></i>Activa</span>
+            <span *ngSwitchCase="'TRIAL'"><i class="bi bi-clock me-1"></i>Período de prueba</span>
+            <span *ngSwitchCase="'EXPIRED'"><i class="bi bi-x-circle me-1"></i>Vencida</span>
+            <span *ngSwitchDefault><i class="bi bi-dash-circle me-1"></i>Sin suscripción</span>
+          </ng-container>
+        </span>
+        <span class="sub-expiry" *ngIf="subscriptionDateFinal">
+          Vence: {{ subscriptionDateFinal }}
+        </span>
+        <span class="sub-months" *ngIf="subscriptionMonths > 0">
+          {{ subscriptionMonths }} mes<span *ngIf="subscriptionMonths > 1">es</span> activo
+        </span>
+        <button class="btn-manage-sub"
+          *ngIf="subscriptionStatus === 'NONE' || subscriptionStatus === 'TRIAL' || subscriptionStatus === 'EXPIRED'"
+          (click)="goToSubscriptionPage()">
+          Ver planes <i class="bi bi-arrow-right ms-1"></i>
+        </button>
+        <button class="btn-manage-sub"
+          *ngIf="subscriptionStatus === 'ACTIVE'"
+          (click)="goToSubscriptionPage()">
+          Gestionar <i class="bi bi-arrow-right ms-1"></i>
+        </button>
+      </div>
+    </div>
+    <div *ngIf="!(profileId === 2 && !coachBelongsToClub && subscriptionStatus !== null)" class="pe-suscripcion-placeholder">
+      <i class="bi bi-credit-card-2-front me-2"></i>
+      <span>Mi suscripción (visible solo para entrenadores sin club)</span>
+    </div>
+  </div>
+
+  <!-- ========== CONTENIDO PRINCIPAL ========== -->
+  <div class="page-body">
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="skeleton-card">
+      <div class="skeleton-circle"></div>
+      <div class="skeleton-lines">
+        <div class="skeleton-line w75"></div>
+        <div class="skeleton-line w50"></div>
+        <div class="skeleton-line w90"></div>
+        <div class="skeleton-line w60"></div>
+      </div>
+    </div>
+
+    <!-- ========== DATOS PERSONALES (lectura) ========== -->
+    <div *ngIf="!loading && !editMode" class="section-card" data-tutorial="pe-datos">
+      <div class="section-header green">
+        <i class="bi bi-person-circle"></i>
+        <span>{{ profileTitle || ('COACH_PROFILE.TITLE' | translate) }}</span>
+      </div>
+
+      <div class="section-body">
+        <div class="profile-top">
+          <!-- Foto con opción de cambiar -->
+          <div class="profile-avatar" (click)="inputPhoto.click()" title="Cambiar foto de perfil">
+            <img *ngIf="profile.picture" [src]="imageBaseUrlUser + profile.picture" alt="Coach" />
+            <div *ngIf="!profile.picture" class="avatar-placeholder">
+              <i class="bi bi-person-fill"></i>
+            </div>
+            <div class="avatar-overlay" [class.uploading]="uploadingPhoto">
+              <i *ngIf="!uploadingPhoto" class="bi bi-camera-fill"></i>
+              <i *ngIf="uploadingPhoto" class="bi bi-arrow-repeat spin"></i>
+            </div>
+            <input #inputPhoto type="file" accept="image/*" hidden (change)="onProfilePhotoChange($event)" />
+          </div>
+          <div class="profile-name-actions">
+            <h2>{{ profile.nombre }} {{ profile.apellido }}</h2>
+            <div class="profile-actions">
+              <button class="btn-primary-sp" (click)="enableEdit()">
+                <i class="bi bi-pencil-fill"></i> {{ 'COACH_PROFILE.EDIT' | translate }}
+              </button>
+              <button class="btn-outline-sp" (click)="abrirModalDoc()">
+                <i class="bi bi-card-image"></i> {{ 'COACH_PROFILE.UPLOAD_ID_DOC' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info grid -->
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label"><i class="bi bi-envelope"></i> {{ 'COACH_PROFILE.EMAIL' | translate }}</span>
+            <span class="info-value">{{ profile.email || '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label"><i class="bi bi-phone"></i> {{ 'COACH_PROFILE.PHONE' | translate }}</span>
+            <span class="info-value">{{ profile.telefono || '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label"><i class="bi bi-calendar-event"></i> {{ 'COACH_PROFILE.BIRTHDATE' | translate }}</span>
+            <span class="info-value">{{ formatFecha(profile.fechaNacimiento) }} <small *ngIf="profile.fechaNacimiento">({{ calcularEdad(profile.fechaNacimiento) }} {{ 'COACH_PROFILE.YEARS' | translate }})</small></span>
+          </div>
+          <div class="info-item">
+            <span class="info-label"><i class="bi bi-card-heading"></i> {{ 'COACH_PROFILE.ID_DOCUMENT' | translate }}</span>
+            <span class="info-value">{{ profile.documentoIdentidad || '—' }} <small *ngIf="profile.tipoDocumento">({{ profile.tipoDocumento }})</small></span>
+          </div>
+          <div class="info-item">
+            <span class="info-label"><i class="bi bi-geo-alt"></i> {{ 'COACH_PROFILE.ADDRESS' | translate }}</span>
+            <span class="info-value">{{ profile.direccion || '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label"><i class="bi bi-flag"></i> {{ 'COACH_PROFILE.NATIONALITY' | translate }}</span>
+            <span class="info-value">{{ profile.nacionalidad || '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label"><i class="bi bi-award"></i> {{ 'COACH_PROFILE.FEDERATION_LICENSE' | translate }}</span>
+            <span class="info-value">{{ profile.licenciaFederativa || '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label"><i class="bi bi-mortarboard"></i> {{ 'COACH_PROFILE.SPORTS_QUALIFICATION' | translate }}</span>
+            <span class="info-value">{{ profile.titulacionDeportiva || '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label"><i class="bi bi-telephone"></i> {{ 'COACH_PROFILE.EMERGENCY_CONTACT' | translate }}</span>
+            <span class="info-value">{{ profile.contactoEmergenciaNombre || '—' }} <small *ngIf="profile.contactoEmergenciaTelefono">· {{ profile.contactoEmergenciaTelefono }}</small></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== DATOS PERSONALES (edición) ========== -->
+    <div *ngIf="!loading && editMode" class="section-card" data-tutorial="pe-edicion">
+      <div class="section-header navy">
+        <i class="bi bi-pencil-square"></i>
+        <span>{{ 'COACH_PROFILE.EDITING' | translate }}</span>
+      </div>
+
+      <div class="section-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.NAME' | translate }}</label>
+            <input type="text" [(ngModel)]="editProfile.nombre" />
+          </div>
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.SURNAME' | translate }}</label>
+            <input type="text" [(ngModel)]="editProfile.apellido" />
+          </div>
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.EMAIL' | translate }}</label>
+            <input type="email" [(ngModel)]="editProfile.email" />
+          </div>
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.PHONE' | translate }}</label>
+            <input type="tel" [(ngModel)]="editProfile.telefono" />
+          </div>
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.BIRTHDATE' | translate }}</label>
+            <input type="date" [(ngModel)]="editProfile.fechaNacimiento" />
+          </div>
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.ID_DOC_TYPE' | translate }}</label>
+            <select [(ngModel)]="editProfile.tipoDocumento">
+              <option *ngFor="let t of tiposDocumento" [value]="t">{{ t }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.ID_DOCUMENT' | translate }}</label>
+            <input type="text" [(ngModel)]="editProfile.documentoIdentidad" />
+          </div>
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.ADDRESS' | translate }}</label>
+            <input type="text" [(ngModel)]="editProfile.direccion" />
+          </div>
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.NATIONALITY' | translate }}</label>
+            <input type="text" [(ngModel)]="editProfile.nacionalidad" />
+          </div>
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.FEDERATION_LICENSE' | translate }}</label>
+            <input type="text" [(ngModel)]="editProfile.licenciaFederativa" />
+          </div>
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.SPORTS_QUALIFICATION' | translate }}</label>
+            <select [(ngModel)]="editProfile.titulacionDeportiva">
+              <option value="">—</option>
+              <option *ngFor="let t of tiposTitulacion" [value]="t">{{ t }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.EMERGENCY_CONTACT_NAME' | translate }}</label>
+            <input type="text" [(ngModel)]="editProfile.contactoEmergenciaNombre" />
+          </div>
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.EMERGENCY_CONTACT_PHONE' | translate }}</label>
+            <input type="tel" [(ngModel)]="editProfile.contactoEmergenciaTelefono" />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-success-sp" (click)="saveProfile()" [disabled]="saving">
+            <i class="bi bi-check-lg"></i> {{ saving ? ('COACH_PROFILE.SAVING' | translate) : ('COACH_PROFILE.SAVE' | translate) }}
+          </button>
+          <button class="btn-outline-sp" (click)="cancelEdit()">
+            <i class="bi bi-x-lg"></i> {{ 'COACH_PROFILE.CANCEL' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CAMPOS PERSONALIZADOS POR CLUB ========== -->
+    <div *ngIf="!loading" class="pe-campos-club-section" data-tutorial="pe-campos-club">
+      <ng-container *ngFor="let club of coachClubs">
+        <div class="section-card club-fields-card" [hidden]="clubFieldCounts[club.clubId] === 0">
+          <div class="section-header navy">
+            <i class="bi bi-sliders"></i>
+            <span>{{ 'COACH_PROFILE.CUSTOM_FIELDS_TITLE' | translate }} — {{ club.clubName }}</span>
+          </div>
+          <div class="section-body">
+            <p class="hint-text">{{ 'COACH_PROFILE.CUSTOM_FIELDS_HINT' | translate }}</p>
+            <app-form-renderer
+              [clubId]="club.clubId"
+              [contexto]="'PERFIL_ENTRENADOR'"
+              [userId]="userId"
+              [playerId]="0"
+              (onSave)="onDynamicFieldsSaved()"
+              (onFieldsLoaded)="onClubFieldsLoaded(club.clubId, $event)">
+            </app-form-renderer>
+          </div>
+        </div>
+      </ng-container>
+      <p *ngIf="coachClubs.length === 0" class="hint-text">{{ 'COACH_PROFILE.CUSTOM_FIELDS_HINT' | translate }}</p>
+    </div>
+
+    <!-- Documento de identidad Preview -->
+    <div *ngIf="!loading" class="section-card" data-tutorial="pe-doc-identidad">
+      <div class="section-header navy">
+        <i class="bi bi-card-image"></i>
+        <span>{{ 'COACH_PROFILE.ID_DOC_IMAGES' | translate }}</span>
+      </div>
+      <div class="section-body">
+        <div *ngIf="!profile.imgDocFrontal && !profile.imgDocTrasera" class="empty-hint">
+          <i class="bi bi-card-image"></i>
+          <p>No se han subido imágenes del documento de identidad.</p>
+          <button class="btn-primary-sp" (click)="abrirModalDoc()">
+            <i class="bi bi-upload"></i> {{ 'COACH_PROFILE.UPLOAD_ID_DOC' | translate }}
+          </button>
+        </div>
+        <div class="dni-images" *ngIf="profile.imgDocFrontal || profile.imgDocTrasera">
+          <div class="dni-img-card" *ngIf="profile.imgDocFrontal">
+            <span class="dni-label">{{ 'COACH_PROFILE.DOC_FRONT' | translate }}</span>
+            <img [src]="imageBaseUrlEntrenadorDocs + profile.imgDocFrontal" alt="Anverso" />
+            <div class="dni-img-actions">
+              <button class="btn-outline-sp btn-sm" (click)="abrirModalDoc()">
+                <i class="bi bi-arrow-repeat"></i> Cambiar
+              </button>
+              <button class="btn-danger-sp btn-sm" (click)="eliminarDoc('doc_frontal')">
+                <i class="bi bi-trash"></i> Eliminar
+              </button>
+            </div>
+          </div>
+          <div class="dni-img-card" *ngIf="profile.imgDocTrasera">
+            <span class="dni-label">{{ 'COACH_PROFILE.DOC_BACK' | translate }}</span>
+            <img [src]="imageBaseUrlEntrenadorDocs + profile.imgDocTrasera" alt="Reverso" />
+            <div class="dni-img-actions">
+              <button class="btn-outline-sp btn-sm" (click)="abrirModalDoc()">
+                <i class="bi bi-arrow-repeat"></i> Cambiar
+              </button>
+              <button class="btn-danger-sp btn-sm" (click)="eliminarDoc('doc_trasera')">
+                <i class="bi bi-trash"></i> Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CERTIFICADOS ========== -->
+    <div *ngIf="!loading" class="section-card" data-tutorial="pe-certificados">
+      <div class="section-header green">
+        <i class="bi bi-file-earmark-check"></i>
+        <span>{{ 'COACH_PROFILE.CERTIFICATES_TITLE' | translate }}</span>
+      </div>
+      <div class="section-body">
+        <div class="cert-grid">
+
+          <!-- Cert Delitos Sexuales -->
+          <div class="cert-card">
+            <div class="cert-icon"><i class="bi bi-shield-check"></i></div>
+            <div class="cert-info">
+              <span class="cert-name">{{ 'COACH_PROFILE.CERT_SEX_OFFENSES' | translate }}</span>
+              <span class="cert-status" [class.uploaded]="profile.certDelitosSexuales">
+                {{ profile.certDelitosSexuales ? ('COACH_PROFILE.UPLOADED' | translate) : ('COACH_PROFILE.PENDING' | translate) }}
+              </span>
+              <button *ngIf="profile.certDelitosSexuales" class="cert-file-link-btn" (click)="abrirModalVistaArchivo(profile.certDelitosSexuales)">
+                <i class="bi bi-eye"></i> Ver archivo
+              </button>
+            </div>
+            <div class="cert-actions">
+              <button class="btn-icon-sp" (click)="abrirModalCert('cert_delitos', 'Certificado de delitos sexuales')" title="Subir/Cambiar">
+                <i class="bi" [ngClass]="profile.certDelitosSexuales ? 'bi-arrow-repeat' : 'bi-upload'"></i>
+              </button>
+              <button *ngIf="profile.certDelitosSexuales" class="btn-icon-sp danger" (click)="eliminarDoc('cert_delitos')" title="Eliminar">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Cert Antecedentes Penales -->
+          <div class="cert-card">
+            <div class="cert-icon"><i class="bi bi-file-earmark-text"></i></div>
+            <div class="cert-info">
+              <span class="cert-name">{{ 'COACH_PROFILE.CERT_CRIMINAL_RECORD' | translate }}</span>
+              <span class="cert-status" [class.uploaded]="profile.certAntecedentesPenales">
+                {{ profile.certAntecedentesPenales ? ('COACH_PROFILE.UPLOADED' | translate) : ('COACH_PROFILE.PENDING' | translate) }}
+              </span>
+              <button *ngIf="profile.certAntecedentesPenales" class="cert-file-link-btn" (click)="abrirModalVistaArchivo(profile.certAntecedentesPenales)">
+                <i class="bi bi-eye"></i> Ver archivo
+              </button>
+            </div>
+            <div class="cert-actions">
+              <button class="btn-icon-sp" (click)="abrirModalCert('cert_antecedentes', 'Certificado de antecedentes penales')" title="Subir/Cambiar">
+                <i class="bi" [ngClass]="profile.certAntecedentesPenales ? 'bi-arrow-repeat' : 'bi-upload'"></i>
+              </button>
+              <button *ngIf="profile.certAntecedentesPenales" class="btn-icon-sp danger" (click)="eliminarDoc('cert_antecedentes')" title="Eliminar">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Seguro -->
+          <div class="cert-card">
+            <div class="cert-icon"><i class="bi bi-heart-pulse"></i></div>
+            <div class="cert-info">
+              <span class="cert-name">{{ 'COACH_PROFILE.INSURANCE' | translate }}</span>
+              <span class="cert-status" [class.uploaded]="profile.seguroResponsabilidad">
+                {{ profile.seguroResponsabilidad ? ('COACH_PROFILE.UPLOADED' | translate) : ('COACH_PROFILE.PENDING' | translate) }}
+              </span>
+              <button *ngIf="profile.seguroResponsabilidad" class="cert-file-link-btn" (click)="abrirModalVistaArchivo(profile.seguroResponsabilidad)">
+                <i class="bi bi-eye"></i> Ver archivo
+              </button>
+            </div>
+            <div class="cert-actions">
+              <button class="btn-icon-sp" (click)="abrirModalCert('seguro', 'Seguro de responsabilidad civil')" title="Subir/Cambiar">
+                <i class="bi" [ngClass]="profile.seguroResponsabilidad ? 'bi-arrow-repeat' : 'bi-upload'"></i>
+              </button>
+              <button *ngIf="profile.seguroResponsabilidad" class="btn-icon-sp danger" (click)="eliminarDoc('seguro')" title="Eliminar">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Primeros Auxilios -->
+          <div class="cert-card">
+            <div class="cert-icon"><i class="bi bi-bandaid"></i></div>
+            <div class="cert-info">
+              <span class="cert-name">{{ 'COACH_PROFILE.FIRST_AID' | translate }}</span>
+              <span class="cert-status" [class.uploaded]="profile.formacionPrimerosAuxilios">
+                {{ profile.formacionPrimerosAuxilios ? ('COACH_PROFILE.UPLOADED' | translate) : ('COACH_PROFILE.PENDING' | translate) }}
+              </span>
+              <button *ngIf="profile.formacionPrimerosAuxilios" class="cert-file-link-btn" (click)="abrirModalVistaArchivo(profile.formacionPrimerosAuxilios)">
+                <i class="bi bi-eye"></i> Ver archivo
+              </button>
+            </div>
+            <div class="cert-actions">
+              <button class="btn-icon-sp" (click)="abrirModalCert('primeros_auxilios', 'Formación en primeros auxilios')" title="Subir/Cambiar">
+                <i class="bi" [ngClass]="profile.formacionPrimerosAuxilios ? 'bi-arrow-repeat' : 'bi-upload'"></i>
+              </button>
+              <button *ngIf="profile.formacionPrimerosAuxilios" class="btn-icon-sp danger" (click)="eliminarDoc('primeros_auxilios')" title="Eliminar">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== DOCUMENTOS REQUERIDOS POR EL CLUB ========== -->
+    <ng-container *ngFor="let clubDoc of clubDocuments">
+      <div class="section-card" *ngIf="clubDoc.docs.length > 0" data-tutorial="pe-docs-club">
+        <div class="section-header navy">
+          <i class="bi bi-building"></i>
+          <span>{{ 'COACH_PROFILE.CLUB_DOCS_TITLE' | translate }} — {{ clubDoc.clubName }}</span>
+        </div>
+        <div class="section-body">
+          <div class="club-doc-list">
+            <div *ngFor="let doc of clubDoc.docs" class="club-doc-item" [class.doc-uploaded]="doc.subido === 1" [class.doc-pending]="doc.subido !== 1">
+
+              <!-- Documento que el club sube (requiere 0) -->
+              <ng-container *ngIf="doc.requiere === 0 || doc.fileClub">
+                <div class="club-doc-info">
+                  <i class="bi bi-file-earmark-arrow-down"></i>
+                  <div>
+                    <span class="club-doc-name">{{ doc.nombre }}</span>
+                    <span class="club-doc-desc" *ngIf="doc.descripcion">{{ doc.descripcion }}</span>
+                  </div>
+                </div>
+                <button class="btn-primary-sp btn-sm" (click)="descargarDocClub(doc)" *ngIf="doc.fileClub">
+                  <i class="bi bi-download"></i> Descargar
+                </button>
+              </ng-container>
+
+              <!-- Documento que el entrenador debe subir (requiere 1) -->
+              <ng-container *ngIf="doc.requiere === 1 && !doc.fileClub">
+                <div class="club-doc-info">
+                  <i class="bi" [ngClass]="doc.subido === 1 ? 'bi-check-circle-fill text-success' : 'bi-exclamation-circle text-warning'"></i>
+                  <div>
+                    <span class="club-doc-name">{{ doc.nombre }}</span>
+                    <span class="club-doc-status" [class.uploaded]="doc.subido === 1">
+                      {{ doc.subido === 1 ? 'Subido' : 'Pendiente de subir' }}
+                    </span>
+                  </div>
+                </div>
+                <div class="club-doc-actions">
+                  <button *ngIf="doc.subido === 1" class="btn-outline-sp btn-sm" (click)="verDocSubidoClub(doc)">
+                    <i class="bi bi-eye"></i> Ver
+                  </button>
+                  <label class="btn-primary-sp btn-sm upload-btn-label">
+                    <i class="bi bi-upload"></i> {{ doc.subido === 1 ? 'Cambiar' : 'Subir' }}
+                    <input type="file" hidden accept=".pdf,.jpg,.jpeg,.png" (change)="subirDocClub(doc, $event)" />
+                  </label>
+                </div>
+              </ng-container>
+
+              <!-- Formulario personalizado (requiere 2) -->
+              <ng-container *ngIf="doc.requiere === 2">
+                <div class="club-doc-info">
+                  <i class="bi bi-card-text"></i>
+                  <div>
+                    <span class="club-doc-name">{{ doc.nombre }}</span>
+                    <span class="club-doc-desc">Formulario personalizado</span>
+                  </div>
+                </div>
+                <div class="club-doc-form-area">
+                  <app-form-renderer
+                    [docClubesId]="doc.docClubesId"
+                    [contexto]="'DOCUMENTO'"
+                    [userId]="userId"
+                    [playerId]="0">
+                  </app-form-renderer>
+                </div>
+              </ng-container>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+  </div>
+</div>
+
+<!-- ========== MODAL VISOR DE ARCHIVOS ========== -->
+<div class="modal-overlay" *ngIf="mostrarModalVistaArchivo" (click)="cerrarModalVistaArchivo()" appModalBackdrop>
+  <div class="sp-modal sp-modal-lg" (click)="$event.stopPropagation()">
+    <div class="sp-modal-header">
+      <h3><i class="bi bi-eye"></i> {{ vistaArchivoNombre }}</h3>
+      <div class="modal-header-actions">
+        <a class="btn-icon-sp light" [href]="vistaArchivoUrl" target="_blank" title="Abrir en nueva pestaña">
+          <i class="bi bi-box-arrow-up-right"></i>
+        </a>
+        <button class="btn-close-sp" aria-label="Cerrar" (click)="cerrarModalVistaArchivo()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
+    <div class="sp-modal-body file-viewer-body">
+      <img *ngIf="vistaArchivoEsImagen" [src]="vistaArchivoUrl" class="viewer-img" />
+      <iframe *ngIf="!vistaArchivoEsImagen" [src]="vistaArchivoUrlSafe" class="viewer-iframe"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL DOCUMENTO DE IDENTIDAD ========== -->
+<div class="modal-overlay" *ngIf="mostrarModalDoc" (click)="cerrarModalDoc()" appModalBackdrop>
+  <div class="sp-modal" (click)="$event.stopPropagation()">
+    <div class="sp-modal-header">
+      <h3><i class="bi bi-card-image"></i> {{ 'COACH_PROFILE.ID_DOC_MODAL_TITLE' | translate }}</h3>
+      <button class="btn-close-sp" aria-label="Cerrar" (click)="cerrarModalDoc()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="sp-modal-body">
+      <div class="dni-upload-row">
+        <div class="dni-upload-col">
+          <label>{{ 'COACH_PROFILE.DOC_FRONT' | translate }}</label>
+          <div class="upload-zone" (click)="inputDoc1.click()">
+            <img *ngIf="docCara1" [src]="docCara1" />
+            <div *ngIf="!docCara1" class="upload-placeholder">
+              <i class="bi bi-cloud-arrow-up"></i>
+              <span>{{ 'COACH_PROFILE.UPLOAD_CLICK' | translate }}</span>
+            </div>
+            <input #inputDoc1 type="file" accept="image/png,image/jpeg" hidden (change)="onFileChangeDoc($event, 'cara1')" />
+          </div>
+        </div>
+        <div class="dni-upload-col">
+          <label>{{ 'COACH_PROFILE.DOC_BACK' | translate }}</label>
+          <div class="upload-zone" (click)="inputDoc2.click()">
+            <img *ngIf="docCara2" [src]="docCara2" />
+            <div *ngIf="!docCara2" class="upload-placeholder">
+              <i class="bi bi-cloud-arrow-up"></i>
+              <span>{{ 'COACH_PROFILE.UPLOAD_CLICK' | translate }}</span>
+            </div>
+            <input #inputDoc2 type="file" accept="image/png,image/jpeg" hidden (change)="onFileChangeDoc($event, 'cara2')" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sp-modal-footer">
+      <button class="btn-outline-sp" (click)="cerrarModalDoc()">{{ 'COACH_PROFILE.CANCEL' | translate }}</button>
+      <button class="btn-success-sp" [disabled]="(!docCara1 && !docCara2) || uploadingDoc" (click)="guardarDocIdentidad()">
+        <i class="bi bi-check-lg"></i> {{ uploadingDoc ? ('COACH_PROFILE.SAVING' | translate) : ('COACH_PROFILE.SAVE' | translate) }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL SUBIR CERTIFICADO ========== -->
+<div class="modal-overlay" *ngIf="mostrarModalCert" (click)="cerrarModalCert()" appModalBackdrop>
+  <div class="sp-modal" (click)="$event.stopPropagation()">
+    <div class="sp-modal-header">
+      <h3><i class="bi bi-file-earmark-arrow-up"></i> {{ certLabel }}</h3>
+      <button class="btn-close-sp" aria-label="Cerrar" (click)="cerrarModalCert()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="sp-modal-body">
+      <div class="upload-zone" (click)="inputCert.click()">
+        <div *ngIf="!selectedCertFile" class="upload-placeholder">
+          <i class="bi bi-cloud-arrow-up"></i>
+          <span>{{ 'COACH_PROFILE.UPLOAD_CLICK' | translate }}</span>
+          <small>PDF, PNG, JPEG</small>
+        </div>
+        <div *ngIf="selectedCertFile" class="upload-placeholder uploaded">
+          <i class="bi bi-file-earmark-check"></i>
+          <span>{{ selectedCertFile.name }}</span>
+        </div>
+        <input #inputCert type="file" accept=".pdf,image/png,image/jpeg" hidden (change)="onCertFileChange($event)" />
+      </div>
+    </div>
+    <div class="sp-modal-footer">
+      <button class="btn-outline-sp" (click)="cerrarModalCert()">{{ 'COACH_PROFILE.CANCEL' | translate }}</button>
+      <button class="btn-success-sp" [disabled]="!selectedCertFile || uploadingCert" (click)="guardarCertificado()">
+        <i class="bi bi-check-lg"></i> {{ uploadingCert ? ('COACH_PROFILE.SAVING' | translate) : ('COACH_PROFILE.SAVE' | translate) }}
+      </button>
+    </div>
+  </div>
+</div>

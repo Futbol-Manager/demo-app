@@ -1,0 +1,538 @@
+/* ═══════════════════════════════════════
+   DOCUMENTOS ENTRENADOR — Premium UX/UI
+   Colores Sphaira: navy #002c40, green #31b270
+═══════════════════════════════════════ */
+$sp-navy: #002c40;
+$sp-navy-mid: #0a4a6e;
+$sp-green: #31b270;
+$sp-green-dark: #1f8f5a;
+$g-brand: linear-gradient(135deg, $sp-navy 0%, $sp-navy-mid 50%, $sp-green 100%);
+$bg-page: #f4f7fa;
+$text-main: #1a2332;
+$text-muted: #6b7a8d;
+$border: rgba(0, 44, 64, 0.12);
+$radius: 14px;
+$radius-lg: 18px;
+$shadow-sm: 0 2px 12px rgba(0, 44, 64, 0.06);
+$shadow-md: 0 6px 24px rgba(0, 44, 64, 0.1);
+$warning: #f59e0b;
+
+/* ─── Page header (Sphaira premium) ───────────────────────────────────────── */
+.page-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  min-height: 80px;
+  padding: 1.35rem 2rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0 0 20px 20px;
+  background: $g-brand;
+  box-shadow:
+    0 14px 40px rgba($sp-navy, 0.32),
+    0 4px 12px rgba($sp-navy-mid, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -4%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba($sp-green, 0.32) 0%, transparent 60%);
+    pointer-events: none;
+    border-radius: 50%;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -50%;
+    left: 5%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba($sp-green, 0.18) 0%, transparent 65%);
+    pointer-events: none;
+    border-radius: 50%;
+  }
+}
+
+.back-container { flex-shrink: 0; z-index: 1; }
+
+.btn-back-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  background: rgba(255, 255, 255, 0.13);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  color: #fff;
+  font-size: 0.84rem;
+  font-weight: 600;
+  padding: 0.45rem 0.9rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+  backdrop-filter: blur(4px);
+
+  i { font-size: 1rem; }
+  &:hover {
+    background: rgba(255, 255, 255, 0.22);
+    transform: translateX(-2px);
+  }
+  &:active { transform: translateX(0) scale(0.98); }
+}
+
+.header-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.table-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  letter-spacing: -0.025em;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
+  .table-title-icon { font-size: 1.2rem; opacity: 0.95; }
+}
+
+.header-subtitle {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.72);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ─── Main content ──────────────────────────────────────────────────────── */
+.docs-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1.5rem 2.5rem;
+  min-height: 40vh;
+}
+
+.docs-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1rem;
+  gap: 1rem;
+}
+
+.docs-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba($sp-navy, 0.12);
+  border-top-color: $sp-green;
+  border-radius: 50%;
+  animation: docs-spin 0.8s linear infinite;
+}
+
+.docs-loading-text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: $text-muted;
+  font-weight: 500;
+}
+
+@keyframes docs-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Empty state ───────────────────────────────────────────────────────── */
+.docs-empty {
+  text-align: center;
+  padding: 4rem 1.5rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.docs-empty-illustration {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 1.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba($sp-green, 0.12), rgba($sp-navy, 0.06));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $sp-green;
+  font-size: 2.25rem;
+}
+
+.docs-empty-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: $text-main;
+  margin: 0 0 0.5rem 0;
+}
+
+.docs-empty-msg {
+  font-size: 0.9375rem;
+  color: $text-muted;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ─── Document grid & cards ─────────────────────────────────────────────── */
+.docs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+.doc-card {
+  background: #fff;
+  border-radius: $radius-lg;
+  border: 1px solid $border;
+  box-shadow: $shadow-sm;
+  padding: 1.5rem;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    border-color: rgba($sp-green, 0.25);
+  }
+}
+
+.doc-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.doc-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba($sp-green, 0.12), rgba($sp-navy, 0.08));
+  color: $sp-green;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.doc-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: $text-main;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.doc-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  width: 100%;
+
+  &.doc-status--pending {
+    background: rgba($warning, 0.12);
+    color: darken($warning, 8%);
+  }
+
+  &.doc-status--done {
+    background: rgba($sp-green, 0.12);
+    color: $sp-green-dark;
+  }
+}
+
+.doc-desc {
+  font-size: 0.875rem;
+  color: $text-muted;
+  line-height: 1.5;
+  margin: 0 0 1rem 0;
+}
+
+.doc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.doc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid $border;
+  background: #fff;
+  color: $sp-navy;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+
+  i { font-size: 1rem; }
+
+  &:hover {
+    background: rgba($sp-green, 0.08);
+    border-color: $sp-green;
+    color: $sp-green-dark;
+  }
+
+  &.doc-btn--download:hover { border-color: $sp-green; color: $sp-green-dark; }
+  &.doc-btn--upload:hover { border-color: $sp-green; color: $sp-green-dark; }
+  &.doc-btn--fill:hover { border-color: $sp-green; color: $sp-green-dark; }
+
+  &.doc-btn--done {
+    background: rgba($sp-green, 0.12);
+    border-color: rgba($sp-green, 0.4);
+    color: $sp-green-dark;
+    &:hover {
+      background: rgba($sp-green, 0.18);
+      border-color: $sp-green;
+    }
+  }
+}
+
+/* ─── Modals (Sphaira premium) ────────────────────────────────────────────── */
+.docs-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba($sp-navy, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1040;
+}
+
+.docs-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1041;
+  padding: 1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+
+  &.docs-modal--show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.docs-modal-dialog {
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow: auto;
+
+  &--lg {
+    max-width: 720px;
+  }
+}
+
+.docs-modal-content {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid $border;
+  box-shadow: 0 20px 50px rgba($sp-navy, 0.2);
+  overflow: hidden;
+  animation: docs-modal-in 0.25s ease;
+}
+
+@keyframes docs-modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.docs-modal-header {
+  background: $g-brand;
+  color: #fff;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.docs-modal-header-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.docs-modal-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+}
+
+.docs-modal-subtitle {
+  font-size: 0.8rem;
+  opacity: 0.88;
+  font-weight: 500;
+}
+
+.docs-modal-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+}
+
+.docs-modal-body {
+  padding: 1.5rem 1.25rem;
+
+  &--form {
+    padding: 0;
+  }
+}
+
+.docs-modal-hint {
+  font-size: 0.9rem;
+  color: $text-muted;
+  line-height: 1.5;
+  margin: 0 0 1rem 0;
+}
+
+.docs-file-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $text-main;
+  margin-bottom: 0.5rem;
+}
+
+.docs-file-input {
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  border: 1.5px solid $border;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: $sp-green;
+    box-shadow: 0 0 0 3px rgba($sp-green, 0.15);
+  }
+}
+
+.docs-modal-footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid $border;
+  background: rgba($sp-navy, 0.02);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.docs-btn {
+  padding: 0.5rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+
+  &--secondary {
+    background: #fff;
+    border: 1px solid $border;
+    color: $text-main;
+    &:hover {
+      background: rgba($sp-navy, 0.06);
+    }
+  }
+
+  &--primary {
+    background: $sp-green;
+    border: none;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba($sp-green, 0.35);
+    display: inline-flex;
+    align-items: center;
+    &:hover {
+      background: $sp-green-dark;
+      box-shadow: 0 6px 20px rgba($sp-green, 0.4);
+    }
+  }
+}
+
+/* ─── Responsive ────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .page-header {
+    flex-wrap: wrap;
+    padding: 0.875rem 1rem;
+    min-height: 64px;
+    border-radius: 0 0 16px 16px;
+  }
+
+  .header-center {
+    position: static;
+    transform: none;
+    order: 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .table-title { font-size: 1.15rem; white-space: normal; }
+
+  .docs-page {
+    padding: 0 1rem 1.5rem;
+  }
+
+  .docs-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .doc-card {
+    padding: 1.25rem;
+  }
+}

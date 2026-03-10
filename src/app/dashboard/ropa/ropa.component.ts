@@ -1,0 +1,823 @@
+import { HttpClient } from '@angular/common/http';
+import { Component, ElementRef, OnInit, OnDestroy, ViewChild, AfterViewChecked } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router, ActivatedRoute } from '@angular/router';
+import { User } from 'src/app/core/models/users/user.model';
+import { ClubService } from 'src/app/core/services/club/club.service';
+import { LoginService } from 'src/app/core/services/login/login.service';
+import { RegisterService } from 'src/app/core/services/register/register.service';
+import { Response } from 'src/app/core/services/models/response.model';
+import * as $ from 'jquery';
+import 'datatables.net';
+import { RopaClub, RopaJugador } from 'src/app/core/services/team/club.model';
+import * as XLSX from 'xlsx';
+import { Subject, Subscription, debounceTime, combineLatest } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
+import { Location } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
+import { PlayerInfoDialogComponent, PlayerInfoDialogData } from '../player-info-dialog/player-info-dialog.component';
+import { getCurrentSeasonString, getSeasons } from 'src/app/core/utils/season.utils';
+import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
+
+@Component({
+  selector: 'app-ropa',
+  templateUrl: './ropa.component.html',
+  styleUrls: ['./ropa.component.scss'],
+})
+export class RopaComponent implements OnInit, AfterViewChecked, OnDestroy {
+  private needsFocusLabel = false;
+  private savePrefs$ = new Subject<void>();
+  private prefsSub!: Subscription;
+  private tutorialSub?: Subscription;
+  usuarioActual!: User | null;
+  clubId!: number; // Ajusta el valor según el clubId del equipo actual
+  userId!: number;
+  activeRopaTab: 'tallas' | 'catalogo' | 'tablaTallas' = 'tablaTallas';
+  dataTable: any;
+  ropaPlayers: any[] = [];
+  datosCargados = false;
+  showDropdown = false;
+  abrigoSizes: string[] = [
+    '',
+    '4',
+    '6',
+    '8',
+    '10',
+    '12',
+    '14',
+    '16',
+    '2XS',
+    'XS',
+    'S',
+    'M',
+    'L',
+    'XL',
+    '2XL',
+    '3XL',
+  ];
+  abrigoSizesMedias: string[] = ['', 'XS', 'S', 'M', 'L'];
+  private abrigoSubject = new Subject<RopaJugador>();
+  showModal = false;
+  ropaClub: any;
+  reloadPage = false;
+
+  /** Selector de temporada (como en Equipos): lista y valor actual para catálogo y tabla tallas */
+  seasons = getSeasons();
+
+  prendas = [
+    { label: 'Camiseta de Juego', property: 'camisetaJuego', index: 5, group: 'match1' },
+    { label: 'Pantalón de Juego', property: 'pantalonJuego', index: 6, group: 'match1' },
+    { label: 'Medias', property: 'medias', index: 7, group: 'match1' },
+    { label: 'Camiseta de Juego 2º', property: 'camisetaJuegoDos', index: 8, group: 'match2' },
+    { label: 'Pantalón de Juego 2º', property: 'pantalonJuegoDos', index: 9, group: 'match2' },
+    { label: 'Medias 2º', property: 'mediasDos', index: 10, group: 'match2' },
+    { label: 'Camiseta de Entreno', property: 'camisetaEntreno', index: 11, group: 'training' },
+    { label: 'Pantalón de Entreno', property: 'pantalonEntreno', index: 12, group: 'training' },
+    { label: 'Medias Entreno', property: 'mediasTres', index: 13, group: 'training' },
+    { label: 'Sudadera de Entreno', property: 'sudaderaEntreno', index: 14, group: 'training' },
+    { label: 'Chaqueta de Chándal', property: 'chaquetaChandal', index: 15, group: 'tracksuit' },
+    { label: 'Pantalón de Chándal', property: 'pantalonChandal', index: 16, group: 'tracksuit' },
+    { label: 'Polo de Paseo', property: 'poloPaseo', index: 17, group: 'casual' },
+    { label: 'Pantalón de Paseo', property: 'pantalonPaseo', index: 18, group: 'casual' },
+    { label: 'Abrigo', property: 'abrigo', index: 19, group: 'accessories' },
+    { label: 'Chubasquero', property: 'chubasquero', index: 20, group: 'accessories' },
+    { label: 'Mochila', property: 'mochila', index: 21, group: 'accessories' },
+  ];
+
+  prendasGroups = [
+    { key: 'match1', label: 'CLOTHES.GROUPS.MATCH_1', icon: 'bi-trophy' },
+    { key: 'match2', label: 'CLOTHES.GROUPS.MATCH_2', icon: 'bi-trophy-fill' },
+    { key: 'training', label: 'CLOTHES.GROUPS.TRAINING', icon: 'bi-lightning' },
+    { key: 'tracksuit', label: 'CLOTHES.GROUPS.TRACKSUIT', icon: 'bi-wind' },
+    { key: 'casual', label: 'CLOTHES.GROUPS.CASUAL', icon: 'bi-person-walking' },
+    { key: 'accessories', label: 'CLOTHES.GROUPS.ACCESSORIES', icon: 'bi-bag' },
+  ];
+
+  /** Mapping used by mobile card view to iterate clothing items dynamically. */
+  clothingItemsMobile = [
+    { label: 'CLOTHES.TABLE.MATCH_SHIRT',       sizeKey: 'camisetaJuego',     okKey: 'camisetaJuegoOk',     toggleKey: 2,  sizes: 'abrigoSizes',       clubProp: 'camisetaJuego' },
+    { label: 'CLOTHES.TABLE.MATCH_PANTS',       sizeKey: 'pantalonJuego',     okKey: 'pantalonJuegoOk',     toggleKey: 3,  sizes: 'abrigoSizes',       clubProp: 'pantalonJuego' },
+    { label: 'CLOTHES.TABLE.MATCH_SOCKS',       sizeKey: 'medias',            okKey: 'mediasOk',            toggleKey: 11, sizes: 'abrigoSizesMedias', clubProp: 'medias' },
+    { label: 'CLOTHES.TABLE.MATCH_SHIRT_2',     sizeKey: 'camisetaJuegoDos',  okKey: 'camisetaJuegoDosOk',  toggleKey: 14, sizes: 'abrigoSizes',       clubProp: 'camisetaJuegoDos' },
+    { label: 'CLOTHES.TABLE.MATCH_PANTS_2',     sizeKey: 'pantalonJuegoDos',  okKey: 'pantalonJuegoDosOk',  toggleKey: 15, sizes: 'abrigoSizes',       clubProp: 'pantalonJuegoDos' },
+    { label: 'CLOTHES.TABLE.MATCH_SOCKS_2',     sizeKey: 'mediasDos',         okKey: 'mediasDosOk',         toggleKey: 16, sizes: 'abrigoSizesMedias', clubProp: 'mediasDos' },
+    { label: 'CLOTHES.TABLE.TRAINING_SHIRT',    sizeKey: 'camisetaEntreno',   okKey: 'camisetaEntrenoOk',   toggleKey: 4,  sizes: 'abrigoSizes',       clubProp: 'camisetaEntreno' },
+    { label: 'CLOTHES.TABLE.TRAINING_PANTS',    sizeKey: 'pantalonEntreno',   okKey: 'pantalonEntrenoOk',   toggleKey: 5,  sizes: 'abrigoSizes',       clubProp: 'pantalonEntreno' },
+    { label: 'CLOTHES.TABLE.TRAINING_SOCKS',    sizeKey: 'mediasTres',        okKey: 'mediasTresOk',        toggleKey: 17, sizes: 'abrigoSizesMedias', clubProp: 'mediasTres' },
+    { label: 'CLOTHES.TABLE.TRAINING_SWEATSHIRT', sizeKey: 'sudaderaEntreno', okKey: 'sudaderaEntrenoOk',   toggleKey: 6,  sizes: 'abrigoSizes',       clubProp: 'sudaderaEntreno' },
+    { label: 'CLOTHES.TABLE.TRACKSUIT_JACKET',  sizeKey: 'chaquetaChandal',   okKey: 'chaquetaChandalOk',   toggleKey: 7,  sizes: 'abrigoSizes',       clubProp: 'chaquetaChandal' },
+    { label: 'CLOTHES.TABLE.TRACKSUIT_PANTS',   sizeKey: 'pantalonChandal',   okKey: 'pantalonChandalOk',   toggleKey: 8,  sizes: 'abrigoSizes',       clubProp: 'pantalonChandal' },
+    { label: 'CLOTHES.TABLE.POLO',              sizeKey: 'poloPaseo',         okKey: 'poloPaseoOk',         toggleKey: 9,  sizes: 'abrigoSizes',       clubProp: 'poloPaseo' },
+    { label: 'CLOTHES.TABLE.CASUAL_PANTS',      sizeKey: 'pantalonPaseo',     okKey: 'pantalonPaseoOk',     toggleKey: 10, sizes: 'abrigoSizes',       clubProp: 'pantalonPaseo' },
+    { label: 'CLOTHES.TABLE.COAT',              sizeKey: 'abrigo',            okKey: 'abrigoOk',            toggleKey: 1,  sizes: 'abrigoSizes',       clubProp: 'abrigo' },
+    { label: 'CLOTHES.TABLE.RAINCOAT',          sizeKey: 'chubasquero',       okKey: 'chubasqueroOk',       toggleKey: 12, sizes: 'abrigoSizes',       clubProp: 'chubasquero' },
+    { label: 'CLOTHES.TABLE.BACKPACK',          sizeKey: '',                  okKey: 'mochilaOk',           toggleKey: 13, sizes: '',                  clubProp: 'mochila' },
+  ];
+
+  prendasOcultar: number[] = [0];
+
+  ropaPrendas: RopaClub = new RopaClub({});
+  temporadaStoredValue = getCurrentSeasonString();
+
+  /** Preferencias de visibilidad de columnas por usuario (localStorage). */
+  userColumnPrefs: { [key: string]: number } = {};
+  /** Nombres personalizados de prendas por usuario (localStorage). */
+  userLabelPrefs: { [key: string]: string } = {};
+  /** Propiedad en edición inline (null = ninguna). */
+  editingLabelProperty: string | null = null;
+  editingLabelValue = '';
+
+  private get userPrefsKey(): string {
+    return `ropa_col_prefs_${this.userId}_${this.clubId}_${this.temporadaStoredValue}`;
+  }
+
+  private get userLabelsKey(): string {
+    return `ropa_label_prefs_${this.userId}_${this.clubId}_${this.temporadaStoredValue}`;
+  }
+
+  loadUserColumnPrefs(): void {
+    const saved = localStorage.getItem(this.userPrefsKey);
+    if (saved) {
+      try { this.userColumnPrefs = JSON.parse(saved); } catch { this.userColumnPrefs = {}; }
+    }
+    const savedLabels = localStorage.getItem(this.userLabelsKey);
+    if (savedLabels) {
+      try { this.userLabelPrefs = JSON.parse(savedLabels); } catch { this.userLabelPrefs = {}; }
+    }
+
+    this.clubService.getUserRopaPrefs(this.userId, this.clubId, this.temporadaStoredValue).subscribe(
+      (resp: Response) => {
+        if (resp?.data) {
+          const data = resp.data as any;
+          if (data.columnPrefs) {
+            try { this.userColumnPrefs = JSON.parse(data.columnPrefs); } catch { /* keep local */ }
+          }
+          if (data.labelPrefs) {
+            try { this.userLabelPrefs = JSON.parse(data.labelPrefs); } catch { /* keep local */ }
+          }
+          localStorage.setItem(this.userPrefsKey, JSON.stringify(this.userColumnPrefs));
+          localStorage.setItem(this.userLabelsKey, JSON.stringify(this.userLabelPrefs));
+          this.applyColumnVisibility();
+        }
+      },
+      (err) => console.error('Error cargando prefs de ropa desde API:', err)
+    );
+  }
+
+  saveUserColumnPrefs(): void {
+    localStorage.setItem(this.userPrefsKey, JSON.stringify(this.userColumnPrefs));
+    this.savePrefs$.next();
+  }
+
+  saveUserLabelPrefs(): void {
+    localStorage.setItem(this.userLabelsKey, JSON.stringify(this.userLabelPrefs));
+    this.savePrefs$.next();
+  }
+
+  private persistPrefsToApi(): void {
+    const dto = {
+      userId: this.userId,
+      clubId: this.clubId,
+      temporada: this.temporadaStoredValue,
+      columnPrefs: JSON.stringify(this.userColumnPrefs),
+      labelPrefs: JSON.stringify(this.userLabelPrefs)
+    };
+    this.clubService.saveUserRopaPrefs(dto).subscribe(
+      () => {},
+      (err: any) => console.error('Error guardando prefs de ropa en BD:', err)
+    );
+  }
+
+  private applyColumnVisibility(): void {
+    this.prendasOcultar = [0];
+    this.ocultarColumnasRopa();
+    if (this.dataTable) {
+      for (const prenda of this.prendas) {
+        const visible = this.isColumnVisible(prenda.property);
+        this.dataTable.column(prenda.index).visible(visible);
+      }
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.tutorialSub?.unsubscribe();
+    if (this.prefsSub) {
+      this.prefsSub.unsubscribe();
+    }
+    this.savePrefs$.complete();
+  }
+
+  /** Devuelve el nombre personalizado o el label por defecto de la prenda. */
+  getPrendaLabel(property: string): string {
+    if (this.userLabelPrefs[property]) {
+      return this.userLabelPrefs[property];
+    }
+    const prenda = this.prendas.find(p => p.property === property);
+    return prenda?.label || property;
+  }
+
+  /** Devuelve las prendas filtradas por grupo. */
+  getPrendasByGroup(groupKey: string): any[] {
+    return this.prendas.filter(p => p.group === groupKey);
+  }
+
+  ngAfterViewChecked(): void {
+    if (this.needsFocusLabel) {
+      const input = this.elementRef.nativeElement.querySelector('.inline-label-input');
+      if (input) {
+        input.focus();
+        input.select();
+        this.needsFocusLabel = false;
+      }
+    }
+  }
+
+  startEditLabel(property: string, event?: Event): void {
+    if (event) event.stopPropagation();
+    this.editingLabelProperty = property;
+    this.editingLabelValue = this.getPrendaLabel(property);
+    this.needsFocusLabel = true;
+  }
+
+  saveEditLabel(): void {
+    if (this.editingLabelProperty) {
+      const trimmed = this.editingLabelValue.trim();
+      const prenda = this.prendas.find(p => p.property === this.editingLabelProperty);
+      if (trimmed && prenda && trimmed !== prenda.label) {
+        this.userLabelPrefs[this.editingLabelProperty] = trimmed;
+      } else {
+        delete this.userLabelPrefs[this.editingLabelProperty!];
+      }
+      this.saveUserLabelPrefs();
+    }
+    this.editingLabelProperty = null;
+    this.editingLabelValue = '';
+  }
+
+  cancelEditLabel(): void {
+    this.editingLabelProperty = null;
+    this.editingLabelValue = '';
+  }
+
+  onLabelKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      this.saveEditLabel();
+    } else if (event.key === 'Escape') {
+      this.cancelEditLabel();
+    }
+  }
+
+  /** Devuelve true si la columna debe ser visible para el usuario actual. */
+  isColumnVisible(property: string): boolean {
+    if (this.userColumnPrefs.hasOwnProperty(property)) {
+      return this.userColumnPrefs[property] === 0;
+    }
+    return this.ropaClub?.[property] === 0;
+  }
+
+  resetColumnPrefs(): void {
+    this.userColumnPrefs = {};
+    this.userLabelPrefs = {};
+    localStorage.removeItem(this.userPrefsKey);
+    localStorage.removeItem(this.userLabelsKey);
+    this.editingLabelProperty = null;
+    this.prendasOcultar = [0];
+    this.ocultarColumnasRopa();
+    if (this.dataTable) {
+      for (const prenda of this.prendas) {
+        const visible = this.isColumnVisible(prenda.property);
+        this.dataTable.column(prenda.index).visible(visible);
+      }
+    }
+    this.persistPrefsToApi();
+  }
+
+  constructor(
+    private loginService: LoginService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private clubService: ClubService,
+    private elementRef: ElementRef,
+    private http: HttpClient,
+    private location: Location,
+    private dialog: MatDialog,
+    private tutorialService: TutorialService,
+  ) {
+    this.abrigoSubject
+      .pipe(
+        debounceTime(500),
+      )
+      .subscribe((value) => {
+        this.updateRopaJugador(value);
+      });
+
+    this.prefsSub = this.savePrefs$.pipe(debounceTime(800)).subscribe(() => {
+      this.persistPrefsToApi();
+    });
+  }
+
+  ngOnInit(): void {
+    if (
+      localStorage.getItem('temporada') != null &&
+      localStorage.getItem('temporada') != undefined
+    ) {
+      this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
+    }
+
+    setTimeout(() => this.tutorialService.start('ropa', true), 600);
+
+    // Sincronizar pestaña con el paso del tutorial: tabla primero, luego catálogo
+    this.tutorialSub = this.tutorialService.currentStep$.subscribe((payload) => {
+      const stepId = payload?.step?.id;
+      if (stepId === 'ropa-tabla-tallas' || stepId === 'ropa-tabs') {
+        this.activeRopaTab = 'tablaTallas';
+      } else if (stepId === 'ropa-catalogo-tab' || stepId === 'ropa-contenido') {
+        this.activeRopaTab = 'catalogo';
+      }
+    });
+
+    combineLatest([
+      this.route.params.pipe(take(1)),
+      this.loginService.usuarioActual.pipe(filter((u) => !!u), take(1)),
+    ]).subscribe(([params, user]) => {
+      this.clubId = +params['clubId'];
+      this.usuarioActual = user;
+      this.userId = this.usuarioActual!.userId;
+      this.loadUserColumnPrefs();
+
+      const cached = this.clubService.getRopaCache(this.clubId, this.temporadaStoredValue);
+      if (cached?.ropaClub && cached?.ropaPlayers?.length !== undefined) {
+        this.ropaClub = cached.ropaClub;
+        this.ropaClub.clubId = this.clubId;
+        this.ropaClub.temporada = this.temporadaStoredValue;
+        this.ropaPlayers = [...(cached.ropaPlayers || [])];
+        this.prendasOcultar = [0];
+        this.ocultarColumnasRopa();
+        setTimeout(() => {
+          this.inicializarDataTable();
+          this.datosCargados = true;
+        }, 100);
+      }
+
+      this.clubService
+        .getRopaClub(this.clubId.toString(), this.temporadaStoredValue)
+        .subscribe({
+          next: (response: Response) => {
+            if (response.data !== null) {
+              this.ropaClub = response.data;
+              this.ropaClub.clubId = this.clubId;
+              this.ropaClub.temporada = this.temporadaStoredValue;
+              this.prendasOcultar = [0];
+              this.ocultarColumnasRopa();
+              this.clubService
+                .getRopaJugadoresByClubForTemp(
+                  this.clubId.toString(),
+                  this.temporadaStoredValue,
+                )
+                .subscribe({
+                  next: (res: Response) => {
+                    if (res.data !== null) {
+                      this.ropaPlayers = res.data;
+                      this.clubService.setRopaCache(this.clubId, this.temporadaStoredValue, {
+                        ropaClub: this.ropaClub,
+                        ropaPlayers: this.ropaPlayers,
+                      });
+                      setTimeout(() => {
+                        this.inicializarDataTable();
+                        this.datosCargados = true;
+                      }, this.datosCargados ? 0 : 1000);
+                    }
+                  },
+                  error: (err) => {
+                    console.error('Error al cargar el listado de equipos', err);
+                  },
+                });
+            }
+          },
+          error: (error) => {
+            console.error('Error al cargar el listado de equipos', error);
+          },
+        });
+    });
+  }
+
+  goBack(): void {
+    this.location.back();
+  }
+
+  /** Al cambiar la temporada: persistir y mantener coherencia con el resto de la app (Equipos, Cuotas, etc.). */
+  onTemporadaChangeRopa(): void {
+    localStorage.setItem('temporada', this.temporadaStoredValue);
+    // Los hijos app-ropa-catalogo y app-ropa-tabla-catalogo reciben [temporada] y recargan en ngOnChanges
+  }
+
+  /** Abre el modal de información del jugador (misma lógica que info-jugadores / new-cuotas). */
+  abrirModalInfoJugador(ropa: any): void {
+    const player = ropa?.player;
+    const teamId = ropa?.team?.teamId;
+    if (!player?.playerId || teamId == null) return;
+    const data: PlayerInfoDialogData = {
+      player: { ...player, teamId },
+      teamId,
+      initialTab: 'personal',
+    };
+    this.dialog.open(PlayerInfoDialogComponent, {
+      data,
+      width: '95%',
+      maxWidth: '900px',
+      maxHeight: '90vh',
+      panelClass: 'player-info-dialog-panel',
+      backdropClass: 'player-info-dialog-backdrop',
+    });
+  }
+
+  ocultarColumnasRopa() {
+    for (const prenda of this.prendas) {
+      if (!this.isColumnVisible(prenda.property)) {
+        this.prendasOcultar.push(prenda.index);
+      }
+    }
+  }
+
+  onAbrigoChange(value: RopaJugador) {
+    this.abrigoSubject.next(value);
+  }
+
+  irAPantalla(id: number): void {
+    if (id === 1) {
+      this.router.navigate(['/dashboard/inicio']);
+    }
+  }
+
+  // Método para inicializar el DataTable
+  inicializarDataTable(): void {
+    const $dataTable = $('#dataTable');
+
+    if ($.fn.DataTable.isDataTable('#dataTable')) {
+      $dataTable.DataTable().destroy();
+    }
+
+    this.http.get('assets/dataTable/Spanish.json').subscribe((translation) => {
+      $(document).ready(() => {
+        this.dataTable = $('#dataTable').DataTable({
+          paging: true,
+          pagingType: 'simple',
+          searching: true,
+          ordering: true,
+          order: [[0, 'desc']],
+          pageLength: 50,
+          lengthChange: false,
+          info: false,
+          dom: 't',
+          columnDefs: [
+            {
+              targets: this.prendasOcultar,
+              visible: false,
+            },
+          ],
+          language: translation,
+        });
+
+        // Inicializar paginación custom
+        this.inicializarPaginacionCustom(this.dataTable);
+      });
+    });
+  }
+  inicializarPaginacionCustom(table: any): void {
+    const actualizarInfo = () => {
+      const info = table.page.info();
+
+      $('.pagination-info').text(
+        `Mostrando ${info.start + 1}–${info.end} de ${info.recordsTotal}`,
+      );
+
+      $('.page-indicator').text(`${info.page + 1} / ${info.pages}`);
+
+      $('.page-btn.prev').prop('disabled', info.page === 0);
+      $('.page-btn.next').prop('disabled', info.page === info.pages - 1);
+    };
+
+    // Botones
+    $('.page-btn.prev').on('click', () => {
+      table.page('previous').draw('page');
+      actualizarInfo();
+    });
+
+    $('.page-btn.next').on('click', () => {
+      table.page('next').draw('page');
+      actualizarInfo();
+    });
+
+    // Selector de tamaño
+    $('.pagination-select').on('change', (e: any) => {
+      const value = parseInt(e.target.value, 10);
+      table.page.len(value).draw();
+      actualizarInfo();
+    });
+
+    // Actualizar al inicio y en cada redraw
+    table.on('draw', () => {
+      actualizarInfo();
+    });
+
+    actualizarInfo();
+  }
+
+  moverElementosDataTable(name: string) {
+    // **Move buttons outside the table after initialization**
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        const layoutRowElements =
+          this.elementRef.nativeElement.querySelectorAll(
+            '.dt-layout-row:not(.dt-layout-table)',
+          );
+        const buttonDatatableElement =
+          this.elementRef.nativeElement.querySelector('#button_datatable');
+
+        if (layoutRowElements.length >= 2 && buttonDatatableElement) {
+          const layoutRowElement = layoutRowElements[1]; // Obtener el segundo elemento
+          $(layoutRowElement).appendTo(buttonDatatableElement);
+          observer.disconnect(); // Detiene la observación después de encontrar los elementos
+        }
+      });
+    });
+
+    observer.observe(this.elementRef.nativeElement, {
+      childList: true,
+      subtree: true,
+    });
+
+    //esto es para agregar una clase
+    const textcenter = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        const dataTableElement = document.querySelector('#' + name);
+
+        if (dataTableElement) {
+          dataTableElement.classList.add('text-center');
+          textcenter.disconnect(); // Detiene la observación después de encontrar el elemento
+        }
+      });
+    });
+
+    textcenter.observe(document.body, { childList: true, subtree: true });
+
+    //esto es para la parte donde pones las filas a ver
+    const length = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        const layoutRowElement =
+          this.elementRef.nativeElement.querySelector('.dt-length');
+        const buttonDatatableElement =
+          this.elementRef.nativeElement.querySelector('#dt-length');
+
+        if (layoutRowElement && buttonDatatableElement) {
+          $(layoutRowElement).appendTo(buttonDatatableElement);
+          length.disconnect(); // Detiene la observación después de encontrar los elementos
+        }
+      });
+    });
+
+    length.observe(this.elementRef.nativeElement, {
+      childList: true,
+      subtree: true,
+    });
+
+    //esto es para el input del buscador
+    const search = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        const layoutRowElement =
+          this.elementRef.nativeElement.querySelector('.dt-search');
+        const buttonDatatableElement =
+          this.elementRef.nativeElement.querySelector('#dt-search');
+
+        if (layoutRowElement && buttonDatatableElement) {
+          $(layoutRowElement).appendTo(buttonDatatableElement);
+          search.disconnect(); // Detiene la observación después de encontrar los elementos
+        }
+      });
+    });
+
+    search.observe(this.elementRef.nativeElement, {
+      childList: true,
+      subtree: true,
+    });
+  }
+
+  updateRopaJugador(ropa: RopaJugador) {
+    this.clubService.updateRopaJugadorByPk(ropa).subscribe(
+      (response) => {
+        //todo ok
+      },
+      (error) => {
+        console.error('Error al crear el equipo:', error);
+        // Puedes manejar el error según tus necesidades
+      },
+    );
+  }
+
+  togglePrendaOk(ropa: any, key: number): void {
+    switch (key) {
+      case 1:
+        ropa.abrigoOk = ropa.abrigoOk === 0 ? 1 : 0;
+        break;
+      case 2:
+        ropa.camisetaJuegoOk = ropa.camisetaJuegoOk === 0 ? 1 : 0;
+        break;
+      case 3:
+        ropa.pantalonJuegoOk = ropa.pantalonJuegoOk === 0 ? 1 : 0;
+        break;
+      case 4:
+        ropa.camisetaEntrenoOk = ropa.camisetaEntrenoOk === 0 ? 1 : 0;
+        break;
+      case 5:
+        ropa.pantalonEntrenoOk = ropa.pantalonEntrenoOk === 0 ? 1 : 0;
+        break;
+      case 6:
+        ropa.sudaderaEntrenoOk = ropa.sudaderaEntrenoOk === 0 ? 1 : 0;
+        break;
+      case 7:
+        ropa.chaquetaChandalOk = ropa.chaquetaChandalOk === 0 ? 1 : 0;
+        break;
+      case 8:
+        ropa.pantalonChandalOk = ropa.pantalonChandalOk === 0 ? 1 : 0;
+        break;
+      case 9:
+        ropa.poloPaseoOk = ropa.poloPaseoOk === 0 ? 1 : 0;
+        break;
+      case 10:
+        ropa.pantalonPaseoOk = ropa.pantalonPaseoOk === 0 ? 1 : 0;
+        break;
+      case 11:
+        ropa.mediasOk = ropa.mediasOk === 0 ? 1 : 0;
+        break;
+      case 12:
+        ropa.chubasqueroOk = ropa.chubasqueroOk === 0 ? 1 : 0;
+        break;
+      case 13:
+        ropa.mochilaOk = ropa.mochilaOk === 0 ? 1 : 0;
+        break;
+      case 14:
+        ropa.camisetaJuegoDosOk = ropa.camisetaJuegoDosOk === 0 ? 1 : 0;
+        break;
+      case 15:
+        ropa.pantalonJuegoDosOk = ropa.pantalonJuegoDosOk === 0 ? 1 : 0;
+        break;
+      case 16:
+        ropa.mediasDosOk = ropa.mediasDosOk === 0 ? 1 : 0;
+        break;
+      case 17:
+        ropa.mediasTresOk = ropa.mediasTresOk === 0 ? 1 : 0;
+        break;
+    }
+
+    ropa.estado = this.getStatusRopa(ropa);
+    //ropa.estado = ropa.estado === 1 ? 0 : 1;
+
+    this.reloadPage = true;
+    this.updateRopaJugador(ropa);
+  }
+
+  getStatusRopa(ropa: any): string {
+    let status = '1';
+    if (this.ropaClub.camisetaJuego === 0) {
+      if (ropa.camisetaJuegoOk === 0) status = '0';
+    }
+    if (this.ropaClub.pantalonJuego === 0) {
+      if (ropa.pantalonJuegoOk === 0) status = '0';
+    }
+    if (this.ropaClub.medias === 0) {
+      if (ropa.medias === 0) status = '0';
+    }
+    if (this.ropaClub.camisetaJuegoDos === 0) {
+      if (ropa.camisetaJuegoDosOk === 0) status = '0';
+    }
+    if (this.ropaClub.pantalonJuegoDos === 0) {
+      if (ropa.pantalonJuegoDosOk === 0) status = '0';
+    }
+    if (this.ropaClub.mediasDos === 0) {
+      if (ropa.mediasDosOk === 0) status = '0';
+    }
+    if (this.ropaClub.camisetaEntreno === 0) {
+      if (ropa.camisetaEntrenoOk === 0) status = '0';
+    }
+    if (this.ropaClub.pantalonEntreno === 0) {
+      if (ropa.pantalonEntrenoOk === 0) status = '0';
+    }
+    if (this.ropaClub.mediasTres === 0) {
+      if (ropa.mediasTresOk === 0) status = '0';
+    }
+    if (this.ropaClub.sudaderaEntreno === 0) {
+      if (ropa.sudaderaEntrenoOk === 0) status = '0';
+    }
+    if (this.ropaClub.chaquetaChandal === 0) {
+      if (ropa.chaquetaChandalOk === 0) status = '0';
+    }
+    if (this.ropaClub.pantalonChandal === 0) {
+      if (ropa.pantalonChandalOk === 0) status = '0';
+    }
+    if (this.ropaClub.poloPaseo === 0) {
+      if (ropa.poloPaseoOk === 0) status = '0';
+    }
+    if (this.ropaClub.pantalonPaseo === 0) {
+      if (ropa.pantalonPaseoOk === 0) status = '0';
+    }
+    if (this.ropaClub.abrigo === 0) {
+      if (ropa.abrigoOk === 0) status = '0';
+    }
+    if (this.ropaClub.chubasquero === 0) {
+      if (ropa.chubasqueroOk === 0) status = '0';
+    }
+    if (this.ropaClub.mochila === 0) {
+      if (ropa.mochilaOk === 0) status = '0';
+    }
+
+    return status;
+  }
+
+  @ViewChild('table1') table: ElementRef | undefined;
+  exportTableToExcel(): void {
+    // Comprobar si el elemento existe antes de usar su ID
+    const tableElement = document.getElementById('tablaExcel');
+
+    if (tableElement) {
+      const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(tableElement);
+
+      // Resto del código (asegurar formato de cadena, ancho de columnas, etc.)
+      // ... (puedes copiar y pegar el código de la respuesta anterior)
+
+      // Crear y guardar libro de trabajo
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+      // Personalizar nombre de archivo y opciones de guardado (opcional)
+      const fileName = 'tabla_exportada.xlsx'; // Ajustar según tus necesidades
+      XLSX.writeFile(wb, fileName, { bookType: 'xlsx' });
+    } else {
+      console.error("¡Elemento 'tablaExcel' no encontrado!");
+      // Manejar el error de forma adecuada (opcional)
+      // Por ejemplo, mostrar un mensaje de alerta al usuario
+    }
+  }
+
+  // Método para abrir el modal de creación de equipo
+  abrirModal(): void {
+    this.clubService
+      .getRopaClub(this.clubId.toString(), this.temporadaStoredValue)
+      .subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data !== null) {
+            this.ropaClub = response.data;
+            this.ropaClub.clubId = this.clubId;
+            this.ropaClub.temporada = this.temporadaStoredValue;
+          } else {
+            console.error(
+              'La respuesta del servicio no tiene la estructura esperada',
+              response,
+            );
+          }
+          this.showModal = true;
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
+        },
+      );
+  }
+
+  // Método para cerrar el modal de creación de equipo
+  cerrarModal(): void {
+    this.showModal = false;
+    if (this.reloadPage) this.router.navigate(['/dashboard/inicio']);
+  }
+
+  togglePrendaOkDesactivar(property: string) {
+    const currentVisible = this.isColumnVisible(property);
+    this.userColumnPrefs[property] = currentVisible ? 1 : 0;
+    this.saveUserColumnPrefs();
+
+    const prenda = this.prendas.find((p) => p.property === property);
+    if (prenda && this.dataTable) {
+      this.dataTable.column(prenda.index).visible(!currentVisible);
+    }
+  }
+
+  updateRopaClub(ropa: RopaClub) {
+    this.clubService.updateRopaClub(ropa).subscribe(
+      (response) => {
+        //todo ok
+      },
+      (error) => {
+        console.error('Error al crear el equipo:', error);
+        // Puedes manejar el error según tus necesidades
+      },
+    );
+  }
+
+  toggleDropdown() {
+    this.showDropdown = !this.showDropdown;
+  }
+
+  closeDropdown() {
+    this.showDropdown = false;
+  }
+}

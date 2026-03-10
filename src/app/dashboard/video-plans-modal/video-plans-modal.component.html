@@ -1,0 +1,106 @@
+<div class="modal-backdrop" (click)="closed.emit()">
+  <div class="modal-card plans-modal" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h3><i class="bi bi-camera-video-fill"></i> Almacenamiento de Vídeo</h3>
+      <button class="btn-close-modal" (click)="closed.emit()"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- Loading -->
+      <div *ngIf="loading" class="loading-state"><div class="spinner"></div></div>
+
+      <!-- Error de plan (no crítico, los planes estáticos se muestran igual) -->
+      <!-- (silenciado intencionalmente cuando el backend aún no está actualizado) -->
+
+      <ng-container *ngIf="!loading">
+
+        <!-- Plan activo -->
+        <div *ngIf="hasPlan && currentPlan" class="current-plan-card">
+          <div class="current-plan-header">
+            <div>
+              <span class="plan-badge">Plan activo</span>
+              <h4>{{ planLabel(currentPlan.planKey) }}</h4>
+            </div>
+            <span class="plan-status-pill" [class.active]="currentPlan.status === 'ACTIVE'">
+              {{ currentPlan.status === 'ACTIVE' ? 'Activo' : currentPlan.status }}
+            </span>
+          </div>
+
+          <div class="storage-bar-wrap">
+            <div class="storage-bar-labels">
+              <span>{{ currentPlan.storageUsedHuman }} usados</span>
+              <span>{{ currentPlan.storageLimitHuman }} total</span>
+            </div>
+            <div class="storage-bar-bg">
+              <div class="storage-bar-fill"
+                [style.width.%]="currentPlan.usedPercent"
+                [style.background]="barColor()"></div>
+            </div>
+            <span class="storage-pct">{{ currentPlan.usedPercent | number:'1.0-1' }}% usado</span>
+          </div>
+
+          <div class="next-billing" *ngIf="currentPlan.nextBillingDate">
+            <i class="bi bi-calendar3"></i>
+            Próxima renovación: {{ currentPlan.nextBillingDate | date:'dd/MM/yyyy' }}
+          </div>
+        </div>
+
+        <!-- Sin plan -->
+        <div *ngIf="!hasPlan" class="no-plan-notice">
+          <i class="bi bi-camera-video-off"></i>
+          <p>Tu club aún no tiene almacenamiento de vídeo. Elige un plan para comenzar a subir vídeos de tus jugadores.</p>
+        </div>
+
+        <!-- Selector de planes -->
+        <h4 class="plans-title">{{ hasPlan ? 'Cambiar de plan' : 'Elige tu plan' }}</h4>
+        <div class="plans-grid">
+          <div *ngFor="let plan of plans" class="plan-card"
+            [class.selected]="selectedPlan === plan.key"
+            [class.popular]="plan.key === 'PRO_5TB'"
+            (click)="selectPlan(plan.key)">
+
+            <div class="popular-badge" *ngIf="plan.key === 'PRO_5TB'">⭐ Más popular</div>
+            <div class="plan-icon"><i class="bi {{ planIcon(plan.key) }}"></i></div>
+            <h5>{{ planLabel(plan.key) }}</h5>
+            <div class="plan-storage">{{ plan.storageLimitHuman }}</div>
+            <div class="plan-price">
+              <span class="price-amount">€{{ plan.priceEur | number:'1.2-2' }}</span>
+              <span class="price-period">/mes</span>
+            </div>
+            <div class="plan-features">
+              <div><i class="bi bi-check-circle-fill"></i> Almacenamiento seguro B2</div>
+              <div><i class="bi bi-check-circle-fill"></i> CDN global, sin límite de reproducción</div>
+              <div><i class="bi bi-check-circle-fill"></i> Vinculado a perfiles de scouting</div>
+              <div *ngIf="plan.key !== 'STARTER_1TB'"><i class="bi bi-check-circle-fill"></i> Acceso multiusuario</div>
+              <div *ngIf="plan.key === 'ELITE_10TB'"><i class="bi bi-check-circle-fill"></i> Soporte prioritario</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error de pago -->
+        <div *ngIf="checkoutError" class="alert-error" style="margin-bottom:12px">
+          <i class="bi bi-exclamation-triangle-fill"></i> {{ checkoutError }}
+        </div>
+
+        <!-- Botón checkout -->
+        <div class="checkout-footer">
+          <button class="btn-checkout" [disabled]="!selectedPlan || checkoutLoading" (click)="startCheckout()">
+            <span *ngIf="!checkoutLoading">
+              <i class="bi bi-credit-card"></i>
+              Continuar con el pago — {{ planPrice(selectedPlan) }}
+            </span>
+            <span *ngIf="checkoutLoading">
+              <span class="spinner-sm"></span> Redirigiendo a Stripe…
+            </span>
+          </button>
+          <p class="checkout-note">
+            <i class="bi bi-shield-lock"></i> Pago seguro con Stripe. Cancela cuando quieras.
+          </p>
+        </div>
+
+      </ng-container>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,174 @@
+/* ===============================
+   COLORES SPHAIRA TECH
+================================ */
+$green: #31b270;
+$blue-dark: #002c40;
+$off-white: #f4f4f4;
+$beige: #efdcb6;
+$danger: #d9534f;
+
+/* ===============================
+   CONTENEDOR
+================================ */
+.subscription-wrapper {
+  background: $off-white;
+  padding: 2rem;
+  border-radius: 16px;
+}
+
+/* ===============================
+   TÍTULO
+================================ */
+.subscription-title {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: $blue-dark;
+  margin-bottom: 2rem;
+}
+
+/* ===============================
+   CARD BASE
+================================ */
+.subscription-card {
+  background: white;
+  border-radius: 18px;
+  padding: 1.8rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  height: 100%;
+}
+
+/* ===============================
+   ESTADO DE SUSCRIPCIÓN
+================================ */
+.status-card {
+  border-left: 6px solid $green;
+}
+
+.subscription-status {
+  display: inline-block;
+  padding: 0.35rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+
+  &.active {
+    background: rgba($green, 0.15);
+    color: $green;
+  }
+
+  &.inactive {
+    background: rgba($danger, 0.15);
+    color: $danger;
+  }
+}
+
+.subscription-plan {
+  text-align: center;
+  font-weight: 700;
+  color: $blue-dark;
+  margin-bottom: 1.5rem;
+}
+
+.subscription-info {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    padding: 0.4rem 0;
+    color: #555;
+
+    span {
+      opacity: 0.8;
+    }
+  }
+}
+
+/* ===============================
+   CAMBIAR SUSCRIPCIÓN
+================================ */
+.change-card {
+  border-top: 6px solid $green;
+}
+
+.change-title {
+  text-align: center;
+  font-weight: 700;
+  color: $blue-dark;
+  margin-bottom: 1.5rem;
+}
+
+/* ===============================
+   INPUTS
+================================ */
+.modern-input {
+  border-radius: 12px;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ddd;
+
+  &:focus {
+    border-color: $green;
+    box-shadow: 0 0 0 2px rgba($green, 0.2);
+  }
+}
+
+/* ===============================
+   TOTAL
+================================ */
+.total-box {
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: $blue-dark;
+  margin: 1.8rem 0;
+
+  span {
+    color: $green;
+  }
+}
+
+/* ===============================
+   BOTONES
+================================ */
+.btn {
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 0.7rem 1.2rem;
+  border: none;
+
+  &.primary {
+    background: $green;
+    color: white;
+
+    &:hover {
+      background: darken($green, 8%);
+    }
+  }
+
+  &.danger {
+    background: transparent;
+    color: $danger;
+  }
+
+  &.success {
+    background: transparent;
+    color: $green;
+  }
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 768px) {
+  .subscription-wrapper {
+    padding: 1.2rem;
+  }
+
+  .subscription-title {
+    font-size: 1.4rem;
+  }
+}

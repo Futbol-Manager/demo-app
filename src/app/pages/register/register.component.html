@@ -1,0 +1,592 @@
+<div class="rg-root" style="background-image: url('assets/images/fondoLoginV1.png')">
+
+  <!-- ═══════════════════════════════════════
+       PANEL IZQUIERDO — branding (desktop)
+  ═══════════════════════════════════════ -->
+  <aside class="rg-panel-left">
+    <div class="rg-panel-left__orb rg-panel-left__orb--1"></div>
+    <div class="rg-panel-left__orb rg-panel-left__orb--2"></div>
+
+    <div class="rg-panel-left__inner">
+      <img src="assets/images/Logo_SphairaTech1.svg" alt="Sphaira Tech" class="rg-panel-left__logo" />
+
+      <div class="rg-panel-left__content">
+        <h2 class="rg-panel-left__headline">{{ 'REGISTER.PANEL.HEADLINE' | translate }}</h2>
+        <p class="rg-panel-left__sub">{{ 'REGISTER.PANEL.TAGLINE' | translate }}</p>
+
+        <ul class="rg-features">
+          <li class="rg-feature"><div class="rg-feature__icon"><i class="bi bi-people-fill"></i></div><span>{{ 'REGISTER.PANEL.FEATURES.TEAMS' | translate }}</span></li>
+          <li class="rg-feature"><div class="rg-feature__icon"><i class="bi bi-cash-stack"></i></div><span>{{ 'REGISTER.PANEL.FEATURES.FINANCE' | translate }}</span></li>
+          <li class="rg-feature"><div class="rg-feature__icon"><i class="bi bi-phone-fill"></i></div><span>{{ 'REGISTER.PANEL.FEATURES.APP' | translate }}</span></li>
+          <li class="rg-feature"><div class="rg-feature__icon"><i class="bi bi-bar-chart-line-fill"></i></div><span>{{ 'REGISTER.PANEL.FEATURES.STATS' | translate }}</span></li>
+          <li class="rg-feature"><div class="rg-feature__icon"><i class="bi bi-shield-lock-fill"></i></div><span>{{ 'REGISTER.PANEL.FEATURES.SECURITY' | translate }}</span></li>
+        </ul>
+      </div>
+
+      <div class="rg-testimonial">
+        <div class="rg-testimonial__avatar"><i class="bi bi-person-circle"></i></div>
+        <div>
+          <p class="rg-testimonial__text">"{{ 'REGISTER.PANEL.TESTIMONIAL.TEXT' | translate }}"</p>
+          <span class="rg-testimonial__author">— {{ 'REGISTER.PANEL.TESTIMONIAL.AUTHOR' | translate }}</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════
+       PANEL DERECHO — el formulario
+  ═══════════════════════════════════════ -->
+  <main class="rg-panel-right">
+    <div class="rg-scroll">
+      <div class="rg-wrap">
+
+        <!-- Logo móvil -->
+        <div class="rg-mobile-logo">
+          <img src="assets/images/Logo_SphairaTech1.svg" alt="Sphaira Tech" />
+        </div>
+
+        <!-- ══════════════════════════════════
+             PASO 1 — Selección de tipo
+        ══════════════════════════════════ -->
+        <div class="rg-step" *ngIf="!showRegistro && isMenor === -1 && !showNextRegistro">
+
+          <div class="rg-step-header">
+            <h2 class="rg-step-title">{{ 'REGISTER.TITLE' | translate }}</h2>
+            <p class="rg-step-sub">{{ 'REGISTER.SELECT_USER_TYPE' | translate }}</p>
+          </div>
+
+          <div class="rg-type-grid" *ngIf="!btnRegistro">
+
+            <!-- Tarjeta CLUB -->
+            <div class="rg-type-card" [class.rg-type-card--active]="selected === 1" (click)="select(1)">
+              <div class="rg-type-card__check" *ngIf="selected === 1">
+                <i class="bi bi-check-circle-fill"></i>
+              </div>
+              <div class="rg-type-icon rg-type-icon--club">
+                <img src="/assets/images/club-verde.png" alt="Club" />
+              </div>
+              <div class="rg-type-body">
+                <h4 class="rg-type-title">{{ 'REGISTER.USER_TYPE.CLUB.TITLE' | translate }}</h4>
+                <p class="rg-type-desc">{{ 'REGISTER.CARDS.CLUB.DESC' | translate }}</p>
+                <ul class="rg-type-feats">
+                  <li><i class="bi bi-check2"></i>{{ 'REGISTER.CARDS.CLUB.FEAT_1' | translate }}</li>
+                  <li><i class="bi bi-check2"></i>{{ 'REGISTER.CARDS.CLUB.FEAT_2' | translate }}</li>
+                  <li><i class="bi bi-check2"></i>{{ 'REGISTER.CARDS.CLUB.FEAT_3' | translate }}</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Tarjeta ENTRENADOR -->
+            <div class="rg-type-card" [class.rg-type-card--active]="selected === 2" (click)="select(2)">
+              <div class="rg-type-card__check" *ngIf="selected === 2">
+                <i class="bi bi-check-circle-fill"></i>
+              </div>
+              <div class="rg-type-icon rg-type-icon--coach">
+                <img src="/assets/images/coach-verde.png" [attr.alt]="'REGISTER.USER_TYPE.COACH.TITLE' | translate" />
+              </div>
+              <div class="rg-type-body">
+                <h4 class="rg-type-title">{{ 'REGISTER.USER_TYPE.COACH.TITLE' | translate }}</h4>
+                <p class="rg-type-desc">{{ 'REGISTER.CARDS.COACH.DESC' | translate }}</p>
+                <ul class="rg-type-feats">
+                  <li><i class="bi bi-check2"></i>{{ 'REGISTER.CARDS.COACH.FEAT_1' | translate }}</li>
+                  <li><i class="bi bi-check2"></i>{{ 'REGISTER.CARDS.COACH.FEAT_2' | translate }}</li>
+                  <li><i class="bi bi-check2"></i>{{ 'REGISTER.CARDS.COACH.FEAT_3' | translate }}</li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+
+          <button class="rg-btn rg-btn--primary" [disabled]="selected === 0" (click)="nextRegistro()">
+            <span>{{ 'REGISTER.COMMON.NEXT' | translate }}</span>
+            <i class="bi bi-arrow-right ms-2"></i>
+          </button>
+
+        </div>
+
+        <!-- ══════════════════════════════════
+             PASO 2 — Formularios
+        ══════════════════════════════════ -->
+        <div class="rg-step" *ngIf="showNextRegistro">
+
+          <div class="rg-step-header">
+            <h2 class="rg-step-title">{{ 'REGISTER.TITLE' | translate }}</h2>
+            <p class="rg-step-sub">{{ 'REGISTER.STEP2.SUBTITLE' | translate }}</p>
+          </div>
+
+          <!-- Alerta menor -->
+          <div class="rg-alert rg-alert--warning" *ngIf="showPPlayer">
+            <i class="bi bi-info-circle-fill"></i>
+            <span>{{ 'REGISTER.MESSAGE.PLAYER_MS' | translate }}</span>
+          </div>
+
+          <!-- Selector de perfil -->
+          <div class="rg-field" *ngIf="!btnRegistro">
+            <label class="rg-label">{{ 'REGISTER.FORM.PROFILE_TYPE' | translate }}</label>
+            <select class="rg-select" (change)="onOptionChange($event)" [(ngModel)]="selectedOption" [disabled]="isReadOnly">
+              <option *ngFor="let option of selectOptions" [value]="option.value">{{ option.label | translate }}</option>
+            </select>
+          </div>
+
+          <!-- ════════ FORM CLUB ════════ -->
+          <div *ngIf="selectedOption == 1" class="rg-form-section">
+            <form [formGroup]="registerFormClub" (ngSubmit)="openModal(1)" autocomplete="off">
+
+              <div class="rg-row">
+                <div class="rg-field">
+                  <label class="rg-label"><i class="bi bi-building me-1"></i>{{ 'REGISTER.USER_TYPE.CLUB.NAME' | translate }}</label>
+                  <input class="rg-input" [class.rg-input--error]="registerFormClub.get('name')?.invalid && registerFormClub.get('name')?.touched"
+                    formControlName="name" type="text" [placeholder]="'REGISTER.USER_TYPE.CLUB.NAME' | translate" />
+                </div>
+                <div class="rg-field">
+                  <label class="rg-label"><i class="bi bi-calendar3 me-1"></i>{{ 'REGISTER.FORM.FOUNDATION_DATE' | translate }}</label>
+                  <input class="rg-input rg-input--date" formControlName="foundationDate" type="date" />
+                </div>
+              </div>
+
+              <div class="rg-row">
+                <div class="rg-field">
+                  <label class="rg-label"><i class="bi bi-envelope me-1"></i>{{ 'REGISTER.COMMON.EMAIL' | translate }}</label>
+                  <input class="rg-input" [class.rg-input--error]="registerFormClub.get('email')?.invalid && registerFormClub.get('email')?.touched"
+                    formControlName="email" type="email" [placeholder]="'REGISTER.COMMON.EMAIL' | translate" />
+                </div>
+                <div class="rg-field">
+                  <label class="rg-label"><i class="bi bi-telephone me-1"></i>{{ 'REGISTER.COMMON.PHONE' | translate }}</label>
+                  <input class="rg-input" formControlName="mobile" type="text" [placeholder]="'REGISTER.COMMON.PHONE' | translate" />
+                </div>
+              </div>
+
+              <div class="rg-row">
+                <div class="rg-field">
+                  <label class="rg-label"><i class="bi bi-lock me-1"></i>{{ 'REGISTER.COMMON.PASSWORD' | translate }}</label>
+                  <div class="rg-pass-wrap">
+                    <input class="rg-input"
+                      [type]="showPassClub ? 'text' : 'password'"
+                      formControlName="password"
+                      (input)="checkPasswordMatchClub()"
+                      [placeholder]="'REGISTER.COMMON.PASSWORD' | translate" />
+                    <button type="button" class="rg-pass-toggle" (click)="showPassClub = !showPassClub">
+                      <i class="bi" [class.bi-eye]="!showPassClub" [class.bi-eye-slash]="showPassClub"></i>
+                    </button>
+                  </div>
+                  <div class="rg-strength" *ngIf="registerFormClub.get('password')?.value">
+                    <div class="rg-strength-bars">
+                      <span class="rg-strength-bar" *ngFor="let b of [1,2,3,4]"
+                        [class.rg-strength-bar--filled]="getPasswordStrength(registerFormClub.get('password')?.value) >= b"
+                        [ngClass]="'rg-strength-bar--lvl-' + getPasswordStrength(registerFormClub.get('password')?.value)">
+                      </span>
+                    </div>
+                    <span class="rg-strength-label" [ngClass]="'rg-strength-label--lvl-' + getPasswordStrength(registerFormClub.get('password')?.value)">
+                      {{ ['', 'Débil', 'Regular', 'Buena', 'Fuerte'][getPasswordStrength(registerFormClub.get('password')?.value)] }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="rg-field">
+                  <label class="rg-label"><i class="bi bi-lock-fill me-1"></i>{{ 'REGISTER.COMMON.REPEAT_PASSWORD' | translate }}</label>
+                  <div class="rg-pass-wrap">
+                    <input class="rg-input" [class.rg-input--error]="passwordsDoNotMatch"
+                      [type]="showPassClub2 ? 'text' : 'password'"
+                      formControlName="password2"
+                      (input)="checkPasswordMatchClub()"
+                      [placeholder]="'REGISTER.COMMON.REPEAT_PASSWORD' | translate" />
+                    <button type="button" class="rg-pass-toggle" (click)="showPassClub2 = !showPassClub2">
+                      <i class="bi" [class.bi-eye]="!showPassClub2" [class.bi-eye-slash]="showPassClub2"></i>
+                    </button>
+                  </div>
+                  <small class="rg-error-text" *ngIf="passwordsDoNotMatch">
+                    <i class="bi bi-exclamation-circle me-1"></i>{{ 'REGISTER.ERROR.PASSWORD_MISMATCH' | translate }}
+                  </small>
+                </div>
+              </div>
+
+              <div class="rg-checks">
+                <label class="rg-check">
+                  <input type="checkbox" formControlName="terms" />
+                  <span class="rg-check__box"></span>
+                  <span class="rg-check__label">{{ 'REGISTER.COMMON.TERMS_PREFIX' | translate }}
+                    <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">{{ 'REGISTER.COMMON.TERMS_LINK' | translate }}</a>
+                  </span>
+                </label>
+                <label class="rg-check">
+                  <input type="checkbox" formControlName="comunicaciones" />
+                  <span class="rg-check__box"></span>
+                  <span class="rg-check__label">{{ 'REGISTER.COMMON.COMMS_PREFIX' | translate }}
+                    <a href="https://sphairatech.com/comunicaciones-comerciales" target="_blank">{{ 'REGISTER.COMMON.COMMS_LINK' | translate }}</a>
+                  </span>
+                </label>
+              </div>
+
+              <div class="rg-form-actions">
+                <button type="button" class="rg-btn rg-btn--ghost" *ngIf="btnRegistro" (click)="backRegistro()">
+                  <i class="bi bi-arrow-left me-1"></i>{{ 'REGISTER.COMMON.BACK' | translate }}
+                </button>
+                <button type="submit" class="rg-btn rg-btn--primary" [disabled]="passwordsDoNotMatch">
+                  <span>{{ 'REGISTER.REGISTER' | translate }}</span>
+                  <i class="bi bi-check-circle ms-2"></i>
+                </button>
+              </div>
+
+            </form>
+          </div>
+
+          <!-- ════════ FORM ENTRENADOR ════════ -->
+          <div *ngIf="selectedOption == 2 || selectedOption == 5" class="rg-form-section">
+            <form [formGroup]="registerFormEntrenador" (ngSubmit)="submitEntrenador()" autocomplete="off">
+
+              <!-- Rol como pills -->
+              <div class="rg-field rg-field--full">
+                <label class="rg-label"><i class="bi bi-person-badge me-1"></i>{{ 'REGISTER.ROLE.LABEL' | translate }}</label>
+                <div class="rg-role-pills">
+                  <button type="button" class="rg-role-pill"
+                    *ngFor="let role of staffRoleOptions"
+                    [class.rg-role-pill--active]="selectedStaffRole === role.value"
+                    (click)="selectedStaffRole = role.value">
+                    {{ role.label | translate }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="rg-row">
+                <div class="rg-field">
+                  <label class="rg-label"><i class="bi bi-person me-1"></i>{{ 'REGISTER.COMMON.NAME' | translate }}</label>
+                  <input class="rg-input" [class.rg-input--error]="isInvalidEntrenador('name')"
+                    formControlName="name" type="text" [placeholder]="'REGISTER.COMMON.NAME' | translate" />
+                  <small class="rg-error-text" *ngIf="isInvalidEntrenador('name')">
+                    <i class="bi bi-exclamation-circle me-1"></i>{{ 'ERRORS.REQUIRED_NAME' | translate }}
+                  </small>
+                </div>
+                <div class="rg-field">
+                  <label class="rg-label"><i class="bi bi-person me-1"></i>{{ 'REGISTER.COMMON.SURNAME' | translate }}</label>
+                  <input class="rg-input" [class.rg-input--error]="isInvalidEntrenador('surname')"
+                    formControlName="surname" type="text" [placeholder]="'REGISTER.COMMON.SURNAME' | translate" />
+                  <small class="rg-error-text" *ngIf="isInvalidEntrenador('surname')">
+                    <i class="bi bi-exclamation-circle me-1"></i>{{ 'ERRORS.REQUIRED_SURNAME' | translate }}
+                  </small>
+                </div>
+              </div>
+
+              <div class="rg-row">
+                <div class="rg-field">
+                  <label class="rg-label"><i class="bi bi-calendar3 me-1"></i>{{ 'REGISTER.FORM.BIRTH_DATE' | translate }}</label>
+                  <input class="rg-input rg-input--date" [class.rg-input--error]="isInvalidEntrenador('birthdate')"
+                    formControlName="birthdate" type="date" />
+                  <small class="rg-error-text" *ngIf="isInvalidEntrenador('birthdate')">
+                    <i class="bi bi-exclamation-circle me-1"></i>{{ 'ERRORS.REQUIRED_BIRTHDATE' | translate }}
+                  </small>
+                </div>
+                <div class="rg-field">
+                  <label class="rg-label"><i class="bi bi-gender-ambiguous me-1"></i>{{ 'REGISTER.COMMON.GENDER' | translate }}</label>
+                  <select class="rg-select" [class.rg-input--error]="isInvalidEntrenador('genre')" formControlName="genre">
+                    <option disabled hidden value="">{{ 'REGISTER.COMMON.GENDER' | translate }}</option>
+                    <option value="1">{{ 'PROFILE.GENDER_M' | translate }}</option>
+                    <option value="2">{{ 'PROFILE.GENDER_F' | translate }}</option>
+                    <option value="3">{{ 'PROFILE.GENDER_O' | translate }}</option>
+                  </select>
+                  <small class="rg-error-text" *ngIf="isInvalidEntrenador('genre')">
+                    <i class="bi bi-exclamation-circle me-1"></i>{{ 'ERRORS.REQUIRED_GENDER' | translate }}
+                  </small>
+                </div>
+              </div>
+
+              <div class="rg-row">
+                <div class="rg-field">
+                  <label class="rg-label"><i class="bi bi-envelope me-1"></i>{{ 'REGISTER.COMMON.EMAIL' | translate }}</label>
+                  <input class="rg-input" [class.rg-input--error]="isInvalidEntrenador('email')"
+                    formControlName="email" type="email" [placeholder]="'REGISTER.COMMON.EMAIL' | translate" />
+                  <small class="rg-error-text" *ngIf="isInvalidEntrenador('email')">
+                    <i class="bi bi-exclamation-circle me-1"></i>{{ 'ERRORS.REQUIRED_EMAIL' | translate }}
+                  </small>
+                </div>
+                <div class="rg-field">
+                  <label class="rg-label"><i class="bi bi-telephone me-1"></i>{{ 'REGISTER.COMMON.PHONE' | translate }}</label>
+                  <input class="rg-input" [class.rg-input--error]="isInvalidEntrenador('mobile')"
+                    formControlName="mobile" type="text" [placeholder]="'REGISTER.COMMON.PHONE' | translate" />
+                  <small class="rg-error-text" *ngIf="isInvalidEntrenador('mobile')">
+                    <i class="bi bi-exclamation-circle me-1"></i>{{ 'ERRORS.REQUIRED_PHONE' | translate }}
+                  </small>
+                </div>
+              </div>
+
+              <div class="rg-row">
+                <div class="rg-field">
+                  <label class="rg-label"><i class="bi bi-lock me-1"></i>{{ 'REGISTER.COMMON.PASSWORD' | translate }}</label>
+                  <div class="rg-pass-wrap">
+                    <input class="rg-input"
+                      [class.rg-input--error]="isInvalidEntrenador('password') || passwordsDoNotSize"
+                      [type]="showPassCoach ? 'text' : 'password'"
+                      formControlName="password"
+                      (input)="checkPasswordMatchEntrenador()"
+                      [placeholder]="'REGISTER.COMMON.PASSWORD' | translate" />
+                    <button type="button" class="rg-pass-toggle" (click)="showPassCoach = !showPassCoach">
+                      <i class="bi" [class.bi-eye]="!showPassCoach" [class.bi-eye-slash]="showPassCoach"></i>
+                    </button>
+                  </div>
+                  <div class="rg-strength" *ngIf="registerFormEntrenador.get('password')?.value">
+                    <div class="rg-strength-bars">
+                      <span class="rg-strength-bar" *ngFor="let b of [1,2,3,4]"
+                        [class.rg-strength-bar--filled]="getPasswordStrength(registerFormEntrenador.get('password')?.value) >= b"
+                        [ngClass]="'rg-strength-bar--lvl-' + getPasswordStrength(registerFormEntrenador.get('password')?.value)">
+                      </span>
+                    </div>
+                    <span class="rg-strength-label" [ngClass]="'rg-strength-label--lvl-' + getPasswordStrength(registerFormEntrenador.get('password')?.value)">
+                      {{ ['', 'Débil', 'Regular', 'Buena', 'Fuerte'][getPasswordStrength(registerFormEntrenador.get('password')?.value)] }}
+                    </span>
+                  </div>
+                  <small class="rg-error-text" *ngIf="isInvalidEntrenador('password')">
+                    <i class="bi bi-exclamation-circle me-1"></i>{{ 'ERRORS.REQUIRED_PASSWORD' | translate }}
+                  </small>
+                </div>
+
+                <div class="rg-field">
+                  <label class="rg-label"><i class="bi bi-lock-fill me-1"></i>{{ 'REGISTER.COMMON.REPEAT_PASSWORD' | translate }}</label>
+                  <div class="rg-pass-wrap">
+                    <input class="rg-input" [class.rg-input--error]="passwordsDoNotMatch"
+                      [type]="showPassCoach2 ? 'text' : 'password'"
+                      formControlName="password2"
+                      (input)="checkPasswordMatchEntrenador()"
+                      [placeholder]="'REGISTER.COMMON.REPEAT_PASSWORD' | translate" />
+                    <button type="button" class="rg-pass-toggle" (click)="showPassCoach2 = !showPassCoach2">
+                      <i class="bi" [class.bi-eye]="!showPassCoach2" [class.bi-eye-slash]="showPassCoach2"></i>
+                    </button>
+                  </div>
+                  <small class="rg-error-text" *ngIf="passwordsDoNotMatch">
+                    <i class="bi bi-exclamation-circle me-1"></i>{{ 'ERRORS.PASSWORD_MISMATCH' | translate }}
+                  </small>
+                </div>
+              </div>
+
+              <div class="rg-checks">
+                <label class="rg-check" [class.rg-check--error]="isInvalidEntrenador('terms')">
+                  <input type="checkbox" formControlName="terms" />
+                  <span class="rg-check__box"></span>
+                  <span class="rg-check__label">{{ 'REGISTER.COMMON.TERMS_PREFIX' | translate }}
+                    <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">{{ 'REGISTER.COMMON.TERMS_LINK' | translate }}</a>
+                  </span>
+                </label>
+                <small class="rg-error-text" *ngIf="isInvalidEntrenador('terms')">{{ 'ERRORS.TERMS_REQUIRED' | translate }}</small>
+
+                <label class="rg-check">
+                  <input type="checkbox" formControlName="comunicaciones" />
+                  <span class="rg-check__box"></span>
+                  <span class="rg-check__label">{{ 'REGISTER.COMMON.COMMS_PREFIX' | translate }}
+                    <a href="https://sphairatech.com/comunicaciones-comerciales" target="_blank">{{ 'REGISTER.COMMON.COMMS_LINK' | translate }}</a>
+                  </span>
+                </label>
+              </div>
+
+              <div class="rg-alert rg-alert--error" *ngIf="msgForm">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span>{{ 'REGISTER.ERROR.INCOMPLETE_FORM' | translate }}</span>
+              </div>
+
+              <div class="rg-form-actions">
+                <button type="button" class="rg-btn rg-btn--ghost" *ngIf="btnRegistro" (click)="backRegistro()">
+                  <i class="bi bi-arrow-left me-1"></i>{{ 'REGISTER.COMMON.BACK' | translate }}
+                </button>
+                <button type="submit" class="rg-btn rg-btn--primary" [disabled]="isLoading">
+                  <ng-container *ngIf="!isLoading">
+                    <span>{{ 'REGISTER.REGISTER' | translate }}</span>
+                    <i class="bi bi-check-circle ms-2"></i>
+                  </ng-container>
+                  <ng-container *ngIf="isLoading">
+                    <span class="rg-spinner me-2"></span>
+                    <span>Procesando…</span>
+                  </ng-container>
+                </button>
+              </div>
+
+            </form>
+          </div>
+
+        </div>
+
+        <!-- ── Footer links ── -->
+        <div class="rg-footer-links">
+          <p>{{ 'REGISTER.AUTH.ALREADY_HAVE_ACCOUNT' | translate }}
+            <a (click)="toLogin($event)" href="#">{{ 'REGISTER.AUTH.LOGIN_HERE' | translate }}</a>
+          </p>
+          <div class="rg-footer-contacts">
+            <a href="mailto:info@sphairatech.com"><i class="bi bi-envelope me-1"></i>info&#64;sphairatech.com</a>
+            <a href="tel:+34623911772"><i class="bi bi-telephone me-1"></i>+34 623 91 17 72</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL PRECIOS — registro completado
+══════════════════════════════════════════════════════ -->
+<div *ngIf="showModal" class="rg-overlay" role="dialog">
+  <div class="modal-dialog modal-dialog-centered rg-modal-dialog">
+    <div class="modal-content rg-modal">
+
+      <div class="rg-pricing-header">
+        <div class="rg-pricing-congrats">
+          <div class="rg-pricing-icon"><i class="bi bi-trophy-fill"></i></div>
+          <div>
+            <h3 class="rg-pricing-title">{{ 'REGISTER.MODAL_PRICING.TITLE' | translate }}</h3>
+            <p class="rg-pricing-sub">{{ 'REGISTER.MODAL_PRICING.SUBTITLE' | translate }}</p>
+          </div>
+        </div>
+        <span class="rg-discount-tag">{{ 'REGISTER.MODAL_PRICING.DISCOUNT' | translate }}</span>
+      </div>
+
+      <div class="rg-pricing-body">
+        <h4>{{ 'REGISTER.MODAL_PRICING.HEADLINE' | translate }}</h4>
+        <p class="text-muted">{{ 'REGISTER.MODAL_PRICING.TRIAL' | translate }}</p>
+
+        <div class="rg-price-display">
+          <span class="rg-price-old">9,99€</span>
+          <span class="rg-price-current">4,99€</span>
+          <span class="rg-price-period">/mes</span>
+        </div>
+
+        <ul class="rg-pricing-feats">
+          <li><i class="bi bi-check-circle-fill"></i>{{ 'REGISTER.MODAL_PRICING.FEAT_1' | translate }}</li>
+          <li><i class="bi bi-check-circle-fill"></i>{{ 'REGISTER.MODAL_PRICING.FEAT_2' | translate }}</li>
+          <li><i class="bi bi-check-circle-fill"></i>{{ 'REGISTER.MODAL_PRICING.FEAT_3' | translate }}</li>
+          <li><i class="bi bi-check-circle-fill"></i>{{ 'REGISTER.MODAL_PRICING.FEAT_4' | translate }}</li>
+          <li><i class="bi bi-check-circle-fill"></i>{{ 'REGISTER.MODAL_PRICING.FEAT_5' | translate }}</li>
+        </ul>
+
+        <div class="rg-check rg-check--pricing">
+          <input checked disabled type="checkbox" id="pricingTerms" />
+          <span class="rg-check__box"></span>
+          <label class="rg-check__label" for="pricingTerms">
+            {{ 'REGISTER.MODAL_PRICING.TERMS_PREFIX' | translate }}
+            <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">{{ 'REGISTER.MODAL_PRICING.TERMS_LINK' | translate }}</a>
+          </label>
+        </div>
+
+        <button class="rg-btn rg-btn--primary rg-btn--full" (click)="goLogin()">
+          <i class="bi bi-rocket-takeoff me-2"></i>{{ 'REGISTER.MODAL_PRICING.CTA' | translate }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL CLUB — contraseña de acceso
+══════════════════════════════════════════════════════ -->
+<div *ngIf="showModalClub" class="rg-overlay" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered rg-modal-dialog rg-modal-dialog--sm">
+    <div class="modal-content rg-modal">
+
+      <div class="rg-modal-header rg-modal-header--warning">
+        <div class="rg-modal-header-left">
+          <div class="rg-modal-icon"><i class="bi bi-shield-lock-fill"></i></div>
+          <div>
+            <h5 class="rg-modal-title">{{ 'REGISTER.MODAL_CLUB.TITLE' | translate }}</h5>
+            <p class="rg-modal-sub">{{ 'REGISTER.MODAL_CLUB.SUBTITLE' | translate }}</p>
+          </div>
+        </div>
+        <button class="rg-modal-close" (click)="cerrarModalClub()"><i class="bi bi-x-lg"></i></button>
+      </div>
+
+      <div class="rg-modal-body">
+        <div class="rg-alert rg-alert--warning">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <span>
+            {{ 'REGISTER.USER_TYPE.CLUB.MODAL.WARNING_PREFIX' | translate }}
+            <strong>{{ 'REGISTER.USER_TYPE.CLUB.MODAL.WARNING_HIGHLIGHT_1' | translate }}</strong>.
+            {{ 'REGISTER.USER_TYPE.CLUB.MODAL.WARNING_MIDDLE' | translate }}
+            <strong>{{ 'REGISTER.USER_TYPE.CLUB.MODAL.WARNING_HIGHLIGHT_2' | translate }}</strong>.
+            {{ 'REGISTER.USER_TYPE.CLUB.MODAL.WARNING_SUFFIX' | translate }}
+          </span>
+        </div>
+
+        <p class="rg-modal-info">{{ 'REGISTER.MODAL_CLUB.SECURITY_TEXT' | translate }}</p>
+
+        <div class="rg-contact-chips">
+          <a href="tel:+34623911772" class="rg-contact-chip">
+            <i class="bi bi-telephone-fill"></i>+34 623 91 17 72
+          </a>
+          <a href="mailto:info@sphairatech.com" class="rg-contact-chip">
+            <i class="bi bi-envelope-fill"></i>info&#64;sphairatech.com
+          </a>
+        </div>
+
+        <div class="rg-field mt-3">
+          <label class="rg-label"><i class="bi bi-key me-1"></i>{{ 'REGISTER.MODAL_CLUB.PASSWORD_LABEL' | translate }}</label>
+          <div class="rg-pass-wrap">
+            <input class="rg-input"
+              [type]="showPassClubModal ? 'text' : 'password'"
+              [(ngModel)]="inputPassword"
+              (keyup.enter)="validatePassword()"
+              [placeholder]="'REGISTER.MODAL_CLUB.PASSWORD_PLACEHOLDER' | translate" />
+            <button type="button" class="rg-pass-toggle" (click)="showPassClubModal = !showPassClubModal">
+              <i class="bi" [class.bi-eye]="!showPassClubModal" [class.bi-eye-slash]="showPassClubModal"></i>
+            </button>
+          </div>
+          <div *ngIf="mensajePassword" class="mt-2">
+            <div class="rg-alert" [class.rg-alert--success]="passwordValida === true" [class.rg-alert--error]="passwordValida === false">
+              <i class="bi me-2" [class.bi-check-circle-fill]="passwordValida === true" [class.bi-x-circle-fill]="passwordValida === false"></i>
+              {{ mensajePassword }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rg-modal-footer">
+        <button class="rg-btn rg-btn--ghost" (click)="cerrarModalClub()">{{ 'REGISTER.MODAL_CLUB.CANCEL' | translate }}</button>
+        <button class="rg-btn rg-btn--primary" (click)="validatePassword()">
+          <i class="bi bi-unlock me-2"></i>{{ 'REGISTER.MODAL_CLUB.SUBMIT' | translate }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL COACH — aviso
+══════════════════════════════════════════════════════ -->
+<div *ngIf="showModalCoach" class="rg-overlay" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered rg-modal-dialog rg-modal-dialog--sm">
+    <div class="modal-content rg-modal">
+
+      <div class="rg-modal-header rg-modal-header--info">
+        <div class="rg-modal-header-left">
+          <div class="rg-modal-icon rg-modal-icon--info"><i class="bi bi-info-circle-fill"></i></div>
+          <div>
+            <h5 class="rg-modal-title">{{ 'REGISTER.MESSAGE.ATTENTION' | translate }}</h5>
+            <p class="rg-modal-sub">{{ 'REGISTER.MODAL_COACH.SUBTITLE' | translate }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="rg-modal-body">
+        <div class="rg-alert rg-alert--warning">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <span>
+            {{ 'REGISTER.USER_TYPE.CLUB.MODAL.WARNING_PREFIX' | translate }}
+            <strong>{{ 'REGISTER.USER_TYPE.CLUB.MODAL.WARNING_HIGHLIGHT_3' | translate }}</strong>.
+            {{ 'REGISTER.USER_TYPE.CLUB.MODAL.WARNING_MIDDLE' | translate }}
+            <strong>{{ 'REGISTER.USER_TYPE.CLUB.MODAL.WARNING_HIGHLIGHT_2' | translate }}</strong>.
+            {{ 'REGISTER.USER_TYPE.CLUB.MODAL.WARNING_SUFFIX' | translate }}
+          </span>
+        </div>
+      </div>
+
+      <div class="rg-modal-footer">
+        <button class="rg-btn rg-btn--ghost" (click)="cerrarModalCoach()">
+          {{ 'REGISTER.BUTTONS_MODALS.ACKNOWLEDGE' | translate }}
+        </button>
+        <button class="rg-btn rg-btn--primary" (click)="openConfirmCoach()">
+          <i class="bi bi-person-check me-2"></i>{{ 'REGISTER.BUTTONS_MODALS.I_AM_COACH' | translate }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

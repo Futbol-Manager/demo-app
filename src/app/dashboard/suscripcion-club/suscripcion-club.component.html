@@ -1,0 +1,143 @@
+<!-- Back button -->
+<div class="action-bar">
+  <button class="btn-back-clean" (click)="goBack()" [attr.aria-label]="'COMMON.BACK' | translate" data-tutorial="suc-volver">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
+</div>
+
+<!-- Carga inicial simple y moderna -->
+<div class="initial-loader" *ngIf="!datosCargados">
+  <div class="initial-loader__spinner"></div>
+  <p class="initial-loader__text">Cargando suscripción...</p>
+</div>
+
+<!-- Skeleton (oculto temporalmente para evitar flash visual al entrar) -->
+<!--
+<div class="skeleton-wrapper" *ngIf="loading">
+  <div class="skeleton-card" *ngFor="let i of [1,2,3]">
+    <div class="skeleton-line skeleton-icon"></div>
+    <div class="skeleton-line skeleton-title"></div>
+    <div class="skeleton-line skeleton-text"></div>
+    <div class="skeleton-line skeleton-text short"></div>
+    <div class="skeleton-line skeleton-btn"></div>
+  </div>
+</div>
+-->
+
+<!-- ═══════════ ACTIVE SUBSCRIPTION VIEW (no se muestra si el plan activo es gratuito; se muestra la selección de planes) ═══════════ -->
+<div class="subscription-active" *ngIf="datosCargados && subscription && subscription.planType !== 'gratuito'" data-tutorial="suc-activa">
+  <div class="subscription-row-card">
+    <div class="row-plan">
+      <div class="sub-plan-icon" [ngClass]="getPlanColorClass(subscription.planType)">
+        <i class="bi" [ngClass]="getPlanIcon(subscription.planType)"></i>
+      </div>
+      <div class="sub-details">
+        <h2>{{ 'CLUB_PLANS.PLAN_' + (subscription.planType === 'familia' ? 'FAMILIA' : subscription.planType === 'club' ? 'CLUB' : 'FREE') + '.NAME' | translate }}</h2>
+        <span class="status-badge" [ngClass]="getStatusBadgeClass(subscription.status)">
+          {{ 'CLUB_PLANS.STATUS.' + (subscription.status | uppercase) | translate }}
+        </span>
+      </div>
+    </div>
+
+    <div class="row-item" *ngIf="subscription.startDate">
+      <span class="meta-label">{{ 'CLUB_PLANS.ACTIVE_VIEW.START_DATE' | translate }}</span>
+      <span class="meta-value">{{ subscription.startDate }}</span>
+    </div>
+
+    <div class="row-item" *ngIf="subscription.period">
+      <span class="meta-label">{{ 'CLUB_PLANS.ACTIVE_VIEW.PERIOD' | translate }}</span>
+      <span class="meta-value">{{ 'CLUB_PLANS.PERIOD.' + (subscription.period | uppercase) | translate }}</span>
+    </div>
+
+    <div class="row-item" *ngIf="subscription.planType === 'club'">
+      <span class="meta-label">{{ 'CLUB_PLANS.ACTIVE_VIEW.PLAYER_COUNT' | translate }}</span>
+      <span class="meta-value">{{ subscription.playerCount || 0 }}</span>
+    </div>
+
+  </div>
+
+  <div class="active-plan-info-card" *ngIf="activePlanInfo as planInfo">
+    <div class="active-plan-info-header">
+      <h3>Qué incluye tu plan</h3>
+      <p>{{ planInfo.nameKey | translate }}</p>
+    </div>
+
+    <ul class="active-plan-features">
+      <li *ngFor="let feature of planInfo.features" [ngClass]="{ 'disabled': !feature.included }">
+        <i class="bi" [ngClass]="feature.included ? 'bi-check-circle-fill' : 'bi-x-circle'"></i>
+        {{ feature.key | translate }}
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════ PLAN SELECTION (si no hay suscripción o el plan activo es gratuito: mostrar grid sin plan Gratuito) ═══════════ -->
+<div class="plan-selection" *ngIf="datosCargados && (!subscription || (subscription && subscription.planType === 'gratuito'))" data-tutorial="suc-planes">
+  <div class="plans-header">
+    <h1>{{ 'CLUB_PLANS.SELECTION.TITLE' | translate }}</h1>
+    <p>{{ 'CLUB_PLANS.SELECTION.SUBTITLE' | translate }}</p>
+  </div>
+
+  <div class="plans-grid">
+    <div class="plan-card" *ngFor="let plan of plans"
+         [ngClass]="[getPlanColorClass(plan.id), plan.recommended ? 'recommended' : '', isPlanComingSoon(plan.id) ? 'coming-soon' : '']">
+
+      <div class="coming-soon-badge" *ngIf="isPlanComingSoon(plan.id)">
+        Próximamente
+      </div>
+      
+      <!-- Recommended badge -->
+      <div class="recommended-badge" *ngIf="plan.recommended && !isPlanComingSoon(plan.id)">
+        <i class="bi bi-star-fill"></i>
+        {{ 'CLUB_PLANS.SELECTION.RECOMMENDED' | translate }}
+      </div>
+
+      <!-- Plan icon -->
+      <div class="plan-icon-circle">
+        <i class="bi" [ngClass]="getPlanIcon(plan.id)"></i>
+      </div>
+
+      <!-- Plan name -->
+      <h2 class="plan-name">{{ plan.nameKey | translate }}</h2>
+      <p class="plan-description">{{ plan.descriptionKey | translate }}</p>
+
+      <!-- Pricing -->
+      <div class="plan-pricing">
+        <ng-container *ngIf="plan.id === 'familia'">
+          <div class="price-main">2,99€<span class="price-period">/{{ 'CLUB_PLANS.PRICING.MONTH' | translate }}</span></div>
+          <div class="price-alt">{{ 'CLUB_PLANS.PRICING.OR' | translate }} 29,99€/{{ 'CLUB_PLANS.PRICING.YEAR' | translate }}</div>
+          <div class="price-note">{{ 'CLUB_PLANS.PLAN_FAMILIA.PRICE_NOTE' | translate }}</div>
+        </ng-container>
+        <ng-container *ngIf="plan.id === 'club'">
+          <div class="price-main">5€<span class="price-period">/{{ 'CLUB_PLANS.PRICING.PLAYER_YEAR' | translate }}</span></div>
+          <div class="price-note">{{ 'CLUB_PLANS.PLAN_CLUB.PRICE_NOTE' | translate }}</div>
+        </ng-container>
+        <ng-container *ngIf="plan.id === 'gratuito'">
+          <div class="price-main free-price">{{ 'CLUB_PLANS.PRICING.FREE' | translate }}</div>
+          <div class="price-note">{{ 'CLUB_PLANS.PLAN_FREE.PRICE_NOTE' | translate }}</div>
+        </ng-container>
+      </div>
+
+      <!-- Features -->
+      <ul class="plan-features">
+        <li *ngFor="let feature of plan.features" [ngClass]="{'disabled': !feature.included}">
+          <i class="bi" [ngClass]="feature.included ? 'bi-check-circle-fill' : 'bi-x-circle'"></i>
+          {{ feature.key | translate }}
+        </li>
+      </ul>
+
+      <!-- CTA -->
+      <button class="btn plan-cta" [ngClass]="[getPlanColorClass(plan.id), (isPlanComingSoon(plan.id) || profileId !== 1) ? 'disabled' : '']" (click)="selectPlan(plan.id)" [disabled]="isPlanComingSoon(plan.id) || profileId !== 1">
+        <ng-container *ngIf="isPlanComingSoon(plan.id); else choosePlanText">
+          Próximamente
+          <i class="bi bi-clock"></i>
+        </ng-container>
+        <ng-template #choosePlanText>
+          {{ 'CLUB_PLANS.SELECTION.CHOOSE' | translate }}
+          <i class="bi bi-arrow-right"></i>
+        </ng-template>
+      </button>
+    </div>
+  </div>
+</div>

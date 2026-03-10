@@ -1,0 +1,114 @@
+﻿<!-- ── Floating canvas tagger window ─────────────────────────────────── -->
+<div class="canvas-tagger"
+     *ngIf="isVisible"
+     [style.left.px]="floatX"
+     [style.top.px]="floatY"
+     [style.width.px]="panelW">
+
+  <!-- Header / drag handle -->
+  <div class="ct-header" (mousedown)="onHeaderMouseDown($event)">
+    <span class="ct-title">
+      <i class="bi bi-grid-3x3-gap"></i>
+      {{ template?.name || 'Etiquetado' }}
+    </span>
+    <div class="ct-header-actions">
+      <span class="ct-feedback-badge" *ngIf="showFeedback">
+        <i class="bi bi-check-circle-fill"></i> {{ lastTaggedCategory }}
+        &middot; {{ ps.formatTime(lastTaggedTime) }}
+      </span>
+      <button class="ct-btn" (click)="openInNewWindow()" title="Abrir en ventana nueva (segundo monitor)">
+        <i class="bi bi-box-arrow-up-right"></i>
+      </button>
+      <button class="ct-btn" (click)="isVisible = false" title="Minimizar">
+        <i class="bi bi-dash-lg"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Canvas wrap: maintains 16:9 -->
+  <div class="ct-canvas-wrap">
+    <div class="ct-canvas" [style.background]="canvasBg">
+
+      <!-- Background image -->
+      <div *ngIf="template?.backgroundImage"
+           class="ct-bg-container"
+           [style.left.%]="template?.bgImgX ?? 0"
+           [style.top.%]="template?.bgImgY ?? 0"
+           [style.width.%]="template?.bgImgW ?? 100"
+           [style.height.%]="template?.bgImgH ?? 100">
+        <img [src]="template!.backgroundImage" class="ct-bg-img" draggable="false"
+             [style.opacity]="template?.backgroundOpacity ?? 0.8" />
+      </div>
+
+      <!-- Category buttons -->
+      <button *ngFor="let cat of categories"
+              class="ct-cat-btn"
+              [class.shape-circle]="cat.shape === 'CIRCLE'"
+              [class.shape-diamond]="cat.shape === 'DIAMOND'"
+              [class.shape-square]="cat.shape === 'SQUARE'"
+              [class.is-active]="activeCategory?.id === cat.id"
+              [style.left.%]="cat.posX"
+              [style.top.%]="cat.posY"
+              [style.width.%]="cat.sizeW"
+              [style.height.%]="cat.sizeH"
+              [style.background]="cat.color"
+              [style.color]="cat.textColor || '#fff'"
+              [style.borderRadius]="getShapeRadius(cat.shape)"
+              [style.clipPath]="getShapeClip(cat.shape)"
+              [title]="cat.shortcutKey ? 'Atajo: ' + cat.shortcutKey : cat.name"
+              (click)="onCategoryClick($event, cat)">
+        <span class="ct-cat-name" [style.fontSize.px]="cat.textSize || 13">{{ cat.name }}</span>
+        <span class="ct-cat-key" *ngIf="cat.shortcutKey">{{ cat.shortcutKey }}</span>
+      </button>
+
+      <!-- Descriptor popup (floats inside the canvas) -->
+      <div class="ct-popup"
+           *ngIf="showDescriptorPopup && activeCategory"
+           [style.left.%]="popupLeft"
+           [style.top.%]="popupTop"
+           (click)="$event.stopPropagation()">
+        <div class="ct-popup-header" [style.background]="activeCategory.color">
+          <span>{{ activeCategory.name }}</span>
+          <small>{{ ps.formatTime(pendingTimeMs) }}</small>
+        </div>
+        <div class="ct-popup-tags">
+          <button *ngFor="let tag of activeCategory.tags"
+                  class="ct-tag-chip"
+                  [class.selected]="isTagSelected(tag.id)"
+                  [style.borderColor]="isTagSelected(tag.id) ? activeCategory.color : 'transparent'"
+                  (click)="toggleTagId(tag.id)">
+            <span class="ct-tag-dot" [style.background]="tag.color || activeCategory.color"></span>
+            {{ tag.name }}
+          </button>
+          <p class="ct-no-tags" *ngIf="!activeCategory.tags || activeCategory.tags.length === 0">
+            Sin descriptores
+          </p>
+        </div>
+        <div class="ct-popup-actions">
+          <button class="ct-btn-cancel" (click)="cancelTag()">
+            <i class="bi bi-x-lg"></i> Cancelar
+          </button>
+          <button class="ct-btn-confirm" [style.background]="activeCategory.color" (click)="confirmTag()">
+            <i class="bi bi-tag-fill"></i>
+            Etiquetar{{ selectedTagIds.length > 0 ? ' (' + selectedTagIds.length + ')' : '' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div class="ct-empty" *ngIf="categories.length === 0">
+        <i class="bi bi-easel"></i>
+        <p>Sin categorías.</p>
+        <small>Asigna una plantilla al análisis para ver los botones.</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- SE resize handle -->
+  <div class="ct-resize" (mousedown)="onResizeStart($event)"></div>
+</div>
+
+<!-- Restore button (when minimized) -->
+<button class="ct-restore" *ngIf="!isVisible" (click)="isVisible = true" title="Mostrar canvas de etiquetado">
+  <i class="bi bi-grid-3x3-gap"></i> Etiquetado
+</button>

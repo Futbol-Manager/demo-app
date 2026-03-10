@@ -1,0 +1,80 @@
+<div class="modal-overlay" *ngIf="visible" (click)="close()" appModalBackdrop>
+  <div class="modal d-block" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title">{{ 'PAYMENTS.IMPUTE_MODAL.TITLE' | translate }}</h5>
+          <button type="button" class="btn-close" (click)="close()"></button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Player info -->
+          <div class="mb-3">
+            <label class="form-label fw-bold">{{ 'PAYMENTS.PLAYER' | translate }}</label>
+            <div>{{ player?.nombre }}</div>
+          </div>
+
+          <!-- Cuota selector -->
+          <div class="mb-3">
+            <label class="form-label">{{ 'PAYMENTS.IMPUTE_MODAL.CUOTA' | translate }} *</label>
+            <select class="form-select" [(ngModel)]="selectedPagoClubId" (ngModelChange)="onPagoClubChange()">
+              <option [ngValue]="null" disabled>{{ 'PAYMENTS.IMPUTE_MODAL.SELECT_CUOTA' | translate }}</option>
+              <option *ngFor="let pago of pagosClub" [ngValue]="pago.pagoClubId">
+                {{ pago.titulo }} — {{ pago.importe | number:'1.2-2' }}€
+              </option>
+            </select>
+          </div>
+
+          <!-- Amount -->
+          <div class="mb-3">
+            <label class="form-label">{{ 'PAYMENTS.IMPUTE_MODAL.AMOUNT' | translate }} *</label>
+            <div class="input-group">
+              <input type="number" class="form-control" [(ngModel)]="importe" min="0.01" step="0.01">
+              <span class="input-group-text">€</span>
+            </div>
+          </div>
+
+          <!-- Payment method -->
+          <div class="mb-3">
+            <label class="form-label">{{ 'PAYMENTS.IMPUTE_MODAL.METHOD' | translate }} *</label>
+            <select class="form-select" [(ngModel)]="metodo">
+              <option value="" disabled>{{ 'PAYMENTS.IMPUTE_MODAL.SELECT_METHOD' | translate }}</option>
+              <option *ngFor="let m of metodos" [value]="m">{{ m }}</option>
+            </select>
+          </div>
+
+          <!-- Custom method when "Otro" -->
+          <div class="mb-3" *ngIf="metodo === 'Otro'">
+            <label class="form-label">{{ 'PAYMENTS.IMPUTE_MODAL.METHOD_OTHER' | translate }}</label>
+            <input type="text" class="form-control" [(ngModel)]="metodoOtro"
+                   [placeholder]="'PAYMENTS.IMPUTE_MODAL.METHOD_OTHER_PLACEHOLDER' | translate">
+          </div>
+
+          <!-- Date -->
+          <div class="mb-3">
+            <label class="form-label">{{ 'PAYMENTS.IMPUTE_MODAL.DATE' | translate }}</label>
+            <input type="date" class="form-control" [(ngModel)]="fechaPago">
+          </div>
+
+          <!-- Comment -->
+          <div class="mb-3">
+            <label class="form-label">{{ 'PAYMENTS.IMPUTE_MODAL.COMMENT' | translate }}</label>
+            <textarea class="form-control" rows="2" [(ngModel)]="comentario"
+                      [placeholder]="'PAYMENTS.IMPUTE_MODAL.COMMENT_PLACEHOLDER' | translate"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="close()">
+            {{ 'ACTIONS.CANCEL' | translate }}
+          </button>
+          <button type="button" class="btn btn-success" (click)="save()">
+            <i class="fas fa-check me-1"></i>{{ 'ACTIONS.SAVE' | translate }}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

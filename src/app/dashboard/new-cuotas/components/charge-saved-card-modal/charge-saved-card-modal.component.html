@@ -1,0 +1,85 @@
+<div class="modal fade" [class.show]="visible" [style.display]="visible ? 'block' : 'none'" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">{{ 'PAYMENTS.CHARGE_MODAL.TITLE' | translate }}</h5>
+        <button type="button" class="btn-close" (click)="close()"></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Player name -->
+        <p class="mb-3">
+          <strong>{{ 'PAYMENTS.PLAYER' | translate }}:</strong> {{ player?.nombre }}
+        </p>
+
+        <!-- Loading -->
+        <div *ngIf="loading" class="text-center py-3">
+          <div class="spinner-border spinner-border-sm text-primary" role="status">
+            <span class="visually-hidden">{{ 'ACTIONS.LOADING' | translate }}</span>
+          </div>
+        </div>
+
+        <div *ngIf="!loading">
+          <!-- No saved cards -->
+          <div *ngIf="savedCards.length === 0" class="alert alert-info">
+            {{ 'PAYMENTS.CHARGE_MODAL.NO_CARDS' | translate }}
+          </div>
+
+          <!-- Saved cards list -->
+          <div *ngIf="savedCards.length > 0">
+            <label class="form-label">{{ 'PAYMENTS.CHARGE_MODAL.SELECT_CARD' | translate }}</label>
+            <div class="list-group mb-3">
+              <label *ngFor="let card of savedCards"
+                     class="list-group-item list-group-item-action d-flex align-items-center"
+                     [class.active]="selectedCardId === card.savedCardId">
+                <input type="radio" class="form-check-input me-2"
+                       name="savedCard"
+                       [value]="card.savedCardId"
+                       [(ngModel)]="selectedCardId">
+                <i [class]="getCardBrandIcon(card.brand)" class="me-2 fs-5"></i>
+                <span>•••• {{ card.last4 }}</span>
+                <span *ngIf="card.expMonth && card.expYear" class="ms-auto text-muted small">
+                  {{ card.expMonth }}/{{ card.expYear }}
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Select cuota -->
+          <div class="mb-3" *ngIf="savedCards.length > 0">
+            <label class="form-label">{{ 'PAYMENTS.CHARGE_MODAL.SELECT_CUOTA' | translate }}</label>
+            <select class="form-select" [(ngModel)]="selectedPagoClubId">
+              <option [ngValue]="null">-- {{ 'PAYMENTS.CHARGE_MODAL.SELECT_CUOTA' | translate }} --</option>
+              <option *ngFor="let pago of pagosClub" [ngValue]="pago.pagoClubId">
+                {{ pago.titulo }} — {{ pago.importe | number:'1.2-2' }}€
+              </option>
+            </select>
+          </div>
+
+          <!-- Amount display -->
+          <div class="mb-3" *ngIf="selectedPago">
+            <label class="form-label">{{ 'PAYMENTS.CHARGE_MODAL.AMOUNT' | translate }}</label>
+            <div class="form-control-plaintext fw-bold fs-5">
+              {{ selectedPago.importe | number:'1.2-2' }}€
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="close()">
+          {{ 'ACTIONS.CANCEL' | translate }}
+        </button>
+        <button type="button" class="btn btn-primary"
+                [disabled]="charging || !selectedCardId || !selectedPagoClubId || loading"
+                (click)="charge()">
+          <span *ngIf="charging" class="spinner-border spinner-border-sm me-1" role="status"></span>
+          {{ 'PAYMENTS.CHARGE_MODAL.CHARGE' | translate }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="visible" *ngIf="visible"></div>

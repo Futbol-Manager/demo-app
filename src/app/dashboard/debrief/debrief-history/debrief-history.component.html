@@ -1,0 +1,78 @@
+
+<div class="history-page">
+  <!-- Encabezado premium a ancho completo -->
+  <header class="page-header">
+    <div class="back-container" data-tutorial="dh-volver">
+      <button type="button" class="btn-back-clean" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+        <span>{{ 'DEBRIEF.BACK' | translate }}</span>
+      </button>
+    </div>
+
+    <div class="header-center">
+      <h2 class="table-title">
+        <i class="bi bi-clock-history table-title-icon"></i>
+        {{ 'DEBRIEF.HISTORY.TITLE' | translate }}
+      </h2>
+      <p class="header-subtitle">{{ 'DEBRIEF.HISTORY.SUBTITLE' | translate }}</p>
+    </div>
+  </header>
+
+  <main class="history-main">
+    <!-- Filters -->
+    <div class="filter-bar" data-tutorial="dh-filters">
+      <button class="filter-btn" [ngClass]="{ 'active': activeFilter === 'all' }" (click)="setFilter('all')">
+        {{ 'DEBRIEF.HISTORY.ALL' | translate }} ({{ historyItems.length }})
+      </button>
+      <button class="filter-btn" [ngClass]="{ 'active': activeFilter === 'training' }" (click)="setFilter('training')">
+        <i class="bi bi-clipboard-check"></i>
+        {{ 'DEBRIEF.HISTORY.TRAININGS' | translate }} ({{ trainingCount }})
+      </button>
+      <button class="filter-btn" [ngClass]="{ 'active': activeFilter === 'match' }" (click)="setFilter('match')">
+        <i class="bi bi-trophy"></i>
+        {{ 'DEBRIEF.HISTORY.MATCHES' | translate }} ({{ matchCount }})
+      </button>
+    </div>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner-border text-primary" role="status"></div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!isLoading && filteredItems.length === 0">
+    <div class="empty-card">
+      <i class="bi bi-journal-x"></i>
+      <h5>{{ 'DEBRIEF.HISTORY.EMPTY' | translate }}</h5>
+      <p>{{ 'DEBRIEF.HISTORY.EMPTY_DESC' | translate }}</p>
+    </div>
+  </div>
+
+  <!-- History List -->
+  <div class="history-list" *ngIf="!isLoading && filteredItems.length > 0" data-tutorial="dh-list">
+    <div class="history-item" *ngFor="let item of filteredItems" (click)="openReport(item)">
+      <div class="item-type-icon" [ngClass]="item.type">
+        <i class="bi" [ngClass]="getTypeIcon(item.type)"></i>
+      </div>
+      <div class="item-info">
+        <div class="item-top">
+          <span class="item-date">{{ item.date | date:'dd MMM yyyy' }}</span>
+          <span class="item-status" [ngClass]="getStatusClass(item.status)">
+            {{ 'DEBRIEF.HISTORY.STATUS_' + (item.status | uppercase) | translate }}
+          </span>
+        </div>
+        <div class="item-title">
+          <span *ngIf="item.type === 'training'">{{ 'DEBRIEF.HISTORY.TRAINING_SESSION' | translate }}</span>
+          <span *ngIf="item.type === 'match'">vs {{ item.rivalName || '—' }}</span>
+        </div>
+        <div class="item-team" *ngIf="item.teamName">{{ item.teamName }}</div>
+        <p class="item-summary" *ngIf="item.summary">{{ item.summary }}</p>
+      </div>
+      <div class="item-arrow" *ngIf="item.status === 'completed'">
+        <i class="bi bi-chevron-right"></i>
+      </div>
+    </div>
+  </div>
+
+  </main>
+</div>

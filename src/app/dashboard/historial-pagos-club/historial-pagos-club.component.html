@@ -1,0 +1,111 @@
+<!-- ================= HEADER PREMIUM ================= -->
+<div class="page-header">
+  <div class="back-container" data-tutorial="hpc-volver">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+  <div class="header-center">
+    <h2 class="table-title">{{ 'PAYMENTS.HISTORY' | translate }}</h2>
+    <p class="header-subtitle">{{ nCargos }} {{ 'PAYMENTS.TOTAL' | translate }}</p>
+  </div>
+  <div class="header-right"></div>
+</div>
+
+<!-- ================= TOOLBAR PREMIUM ================= -->
+<div class="hp-toolbar" data-tutorial="hpc-toolbar">
+  <div class="hp-toolbar-search">
+    <i class="bi bi-search"></i>
+    <input type="text" class="hp-search-input" [placeholder]="'PAYMENTS.FILTER_CLUB' | translate"
+      [(ngModel)]="filtro" (input)="filtrarClubes()" />
+  </div>
+  <button class="hp-btn-export" (click)="exportarExcel()" [disabled]="listaPagosFiltrados.length === 0">
+    <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+    {{ 'COMMON.EXPORT_EXCEL' | translate }}
+  </button>
+</div>
+
+<!-- ================= CONTENIDO ================= -->
+<div class="hp-content">
+  <div class="table-scroll" [class.no-scroll]="isLoading" data-tutorial="hpc-tabla">
+
+    <table class="modern-table" id="dataTable">
+
+      <thead *ngIf="!isLoading && listaPagosFiltrados.length > 0">
+        <tr>
+          <th>#</th>
+          <th (click)="ordenarPor('name')">
+            {{ 'PAYMENTS.NAME' | translate }}
+            <i class="bi bi-arrow-down-up"></i>
+          </th>
+          <th (click)="ordenarPor('descripcionPago')">
+            {{ 'PAYMENTS.DESCRIPTION' | translate }}
+            <i class="bi bi-arrow-down-up"></i>
+          </th>
+          <th (click)="ordenarPor('titulo')">
+            {{ 'PAYMENTS.TITLE_COL' | translate }}
+            <i class="bi bi-arrow-down-up"></i>
+          </th>
+          <th (click)="ordenarPor('importe')">
+            {{ 'PAYMENTS.AMOUNT' | translate }}
+            <i class="bi bi-arrow-down-up"></i>
+          </th>
+          <th (click)="ordenarPor('metodo')">
+            {{ 'PAYMENTS.METHOD' | translate }}
+            <i class="bi bi-arrow-down-up"></i>
+          </th>
+          <th (click)="ordenarPor('tipo')">
+            {{ 'PAYMENTS.TYPE' | translate }}
+            <i class="bi bi-arrow-down-up"></i>
+          </th>
+          <th (click)="ordenarPor('fechaFormateada')">
+            {{ 'COMMON.DATE' | translate }}
+            <i class="bi bi-arrow-down-up"></i>
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <ng-container *ngIf="isLoading">
+          <tr *ngFor="let i of [1,2,3,4,5,6]">
+            <td colspan="8">
+              <div class="table-skeleton-row">
+                <div class="sk sk-xs"></div>
+                <div class="sk sk-md"></div>
+                <div class="sk sk-lg"></div>
+                <div class="sk sk-md"></div>
+                <div class="sk sk-md"></div>
+                <div class="sk sk-md"></div>
+                <div class="sk sk-md"></div>
+                <div class="sk sk-md"></div>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+
+        <ng-container *ngIf="!isLoading && listaPagosFiltrados.length > 0">
+          <tr *ngFor="let pago of listaPagosFiltrados; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ pago.name }}</td>
+            <td [innerHTML]="descripcionConLink(pago.descripcionPago)" class="cell-desc"></td>
+            <td>{{ pago.titulo }}</td>
+            <td [ngClass]="isImporteNegativo(pago.importe) ? 'text-danger' : 'text-success'">
+              {{ pago.importe }}
+            </td>
+            <td>{{ pago.metodo }}</td>
+            <td>{{ pago.tipo }}</td>
+            <td>{{ pago.fechaFormateada }}</td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+
+    <!-- Estado vacío (sin carga y sin datos) -->
+    <div *ngIf="!isLoading && listaPagosFiltrados.length === 0" class="hp-empty">
+      <i class="bi bi-receipt-cutoff"></i>
+      <h3>{{ 'PAYMENTS.NO_DATA' | translate }}</h3>
+      <p>{{ nCargos === 0 && listaPagos.length === 0 ? ('PAYMENTS.NO_CHARGES' | translate) : ('PAYMENTS.NO_MATCH_FILTER' | translate) }}</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,371 @@
+<div class="ropa-catalogo-wrapper">
+
+  <!-- ═══════════════════════════════════════════════════
+       SECCIÓN: CATÁLOGO DE PRENDAS
+  ════════════════════════════════════════════════════ -->
+  <div class="catalogo-section">
+    <div class="section-header">
+      <div class="section-title">
+        <i class="fas fa-tshirt"></i>
+        <h3>Catálogo de Prendas</h3>
+        <span class="temporada-badge">{{ temporadaLabel }}</span>
+      </div>
+      <button class="btn-primary" (click)="abrirFormNuevaPrenda()">
+        <i class="fas fa-plus"></i> Nueva Prenda
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="cargandoPrendas" class="loading-state">
+      <i class="fas fa-spinner fa-spin"></i> Cargando prendas...
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="!cargandoPrendas && prendas.length === 0" class="empty-state">
+      <i class="fas fa-tshirt empty-icon"></i>
+      <p>No hay prendas en el catálogo de esta temporada.</p>
+      <button class="btn-primary" (click)="abrirFormNuevaPrenda()">
+        <i class="fas fa-plus"></i> Añadir primera prenda
+      </button>
+    </div>
+
+    <!-- Grid de prendas -->
+    <div class="prendas-grid" *ngIf="!cargandoPrendas && prendas.length > 0">
+      <div class="prenda-card" *ngFor="let prenda of prendas">
+        <div class="prenda-img-wrapper">
+          <img *ngIf="getPrendaImageUrl(prenda)" [src]="getPrendaImageUrl(prenda)" [alt]="prenda.nombre" class="prenda-img" />
+          <div *ngIf="!getPrendaImageUrl(prenda)" class="prenda-img-placeholder">
+            <i class="fas fa-image"></i>
+          </div>
+          <div class="prenda-actions-overlay">
+            <button class="btn-icon-sm" (click)="abrirFormEditarPrenda(prenda)" title="Editar">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-icon-sm btn-danger-sm" (click)="eliminarPrenda(prenda.prendaId)" title="Eliminar">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="prenda-info">
+          <h4 class="prenda-nombre">{{ prenda.nombre }}</h4>
+          <p class="prenda-descripcion" *ngIf="prenda.descripcion">{{ prenda.descripcion }}</p>
+          <span class="prenda-categoria" *ngIf="prenda.categoria">{{ prenda.categoria }}</span>
+
+          <!-- Tallas disponibles -->
+          <div class="tallas-container" *ngIf="prenda.tallas && prenda.tallas.length > 0">
+            <span class="talla-tag" *ngFor="let talla of prenda.tallas">{{ talla.nombreTalla }}</span>
+          </div>
+          <p class="sin-tallas" *ngIf="!prenda.tallas || prenda.tallas.length === 0">
+            Sin tallas configuradas
+          </p>
+
+          <!-- Respuestas de jugadores -->
+          <button class="btn-selecciones" (click)="abrirModalSelecciones(prenda)">
+            <i class="fas fa-users"></i>
+            <span>Ver respuestas de jugadores</span>
+            <span class="selecciones-count" *ngIf="seleccionesPorPrenda[prenda.prendaId]">
+              {{ seleccionesPorPrenda[prenda.prendaId].length }}
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECCIÓN: DOCUMENTOS GENERALES
+  ════════════════════════════════════════════════════ -->
+  <div class="documentos-section">
+    <div class="section-header">
+      <div class="section-title">
+        <i class="fas fa-folder-open"></i>
+        <h3>Documentos de Ropa</h3>
+      </div>
+      <button class="btn-secondary" (click)="mostrarFormDocumento = !mostrarFormDocumento">
+        <i class="fas fa-upload"></i> Subir Documento
+      </button>
+    </div>
+
+    <!-- Formulario subir documento -->
+    <div class="form-documento" *ngIf="mostrarFormDocumento">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre del documento *</label>
+          <input type="text" [(ngModel)]="docNombre" placeholder="Ej: Catálogo equipación 2025/26" />
+        </div>
+        <div class="form-group">
+          <label>Descripción (opcional)</label>
+          <input type="text" [(ngModel)]="docDescripcion" placeholder="Descripción breve" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Archivo (PDF, Word, imagen) *</label>
+          <input type="file" (change)="onArchivoSeleccionado($event)"
+            accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.webp" />
+          <span class="file-name" *ngIf="archivoSeleccionado">{{ archivoSeleccionado.name }}</span>
+        </div>
+      </div>
+      <div class="doc-error" *ngIf="errorDoc">
+        <i class="fas fa-exclamation-circle"></i> {{ errorDoc }}
+      </div>
+      <div class="form-actions">
+        <button class="btn-primary" (click)="subirDocumento()" [disabled]="guardando">
+          <i class="fas fa-spinner fa-spin" *ngIf="guardando"></i>
+          <i class="fas fa-upload" *ngIf="!guardando"></i>
+          {{ guardando ? 'Subiendo...' : 'Subir' }}
+        </button>
+        <button class="btn-outline" (click)="mostrarFormDocumento = false; errorDoc = ''" [disabled]="guardando">Cancelar</button>
+      </div>
+    </div>
+
+    <!-- Lista de documentos -->
+    <div *ngIf="cargandoDocumentos" class="loading-state">
+      <i class="fas fa-spinner fa-spin"></i> Cargando documentos...
+    </div>
+
+    <div *ngIf="!cargandoDocumentos && documentos.length === 0" class="empty-state-small">
+      <i class="fas fa-folder-open"></i>
+      <p>No hay documentos subidos para esta temporada.</p>
+    </div>
+
+    <div class="documentos-list" *ngIf="!cargandoDocumentos && documentos.length > 0">
+      <div class="documento-item" *ngFor="let doc of documentos">
+        <div class="documento-icon">
+          <i class="fas" [ngClass]="getDocumentoIcono(doc.tipoMime)"></i>
+        </div>
+        <div class="documento-info">
+          <span class="documento-nombre">{{ doc.nombre }}</span>
+          <span class="documento-desc" *ngIf="doc.descripcion">{{ doc.descripcion }}</span>
+          <span class="documento-fecha">{{ doc.createdAt | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="documento-actions">
+          <a [href]="doc.archivoUrl" target="_blank" class="btn-icon-sm" title="Abrir">
+            <i class="fas fa-external-link-alt"></i>
+          </a>
+          <button class="btn-icon-sm btn-danger-sm" (click)="eliminarDocumento(doc.documentoId)" title="Eliminar">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     MODAL: RESPUESTAS DE JUGADORES
+════════════════════════════════════════════════════ -->
+<div class="modal-overlay" *ngIf="modalSeleccionesAbierto" (click)="cerrarModalSelecciones()">
+  <div class="modal-card modal-selecciones-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-selecciones-title">
+        <img *ngIf="getPrendaImageUrl(prendaEnModal)" [src]="getPrendaImageUrl(prendaEnModal)" class="modal-prenda-thumb" [alt]="prendaEnModal!.nombre">
+        <i *ngIf="!getPrendaImageUrl(prendaEnModal)" class="fas fa-tshirt modal-prenda-icon"></i>
+        <div>
+          <h3>{{ prendaEnModal?.nombre }}</h3>
+          <span class="modal-selecciones-subtitle">Respuestas de jugadores</span>
+        </div>
+      </div>
+      <button class="btn-close" (click)="cerrarModalSelecciones()"><i class="fas fa-times"></i></button>
+    </div>
+
+    <div class="modal-body modal-selecciones-body">
+      <!-- Cargando -->
+      <div *ngIf="cargandoSeleccionesModal" class="loading-state">
+        <i class="fas fa-spinner fa-spin"></i> Cargando respuestas...
+      </div>
+
+      <!-- Sin respuestas -->
+      <div *ngIf="!cargandoSeleccionesModal && prendaEnModal && seleccionesPorPrenda[prendaEnModal.prendaId]?.length === 0"
+           class="sin-respuestas-modal">
+        <i class="fas fa-inbox"></i>
+        <p>Ningún jugador ha seleccionado talla aún</p>
+      </div>
+
+      <!-- Tabla de respuestas -->
+      <table *ngIf="!cargandoSeleccionesModal && prendaEnModal && (seleccionesPorPrenda[prendaEnModal.prendaId]?.length ?? 0) > 0"
+             class="selecciones-table-modal">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Jugador</th>
+            <th>Talla</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let sel of seleccionesPorPrenda[prendaEnModal!.prendaId]; let i = index">
+            <td class="idx-col">{{ i + 1 }}</td>
+            <td>{{ sel.nombreJugador || 'Jugador #' + sel.playerId }}</td>
+            <td>
+              <span class="talla-chip-sm" *ngIf="sel.nombreTalla">{{ sel.nombreTalla }}</span>
+              <span class="sin-talla" *ngIf="!sel.nombreTalla">—</span>
+            </td>
+            <td>
+              <span class="estado-badge" [ngClass]="'estado-' + (sel.estado || 'pendiente')">{{ sel.estado || 'pendiente' }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="modal-footer">
+      <span class="selecciones-resumen" *ngIf="prendaEnModal && seleccionesPorPrenda[prendaEnModal.prendaId]">
+        {{ seleccionesPorPrenda[prendaEnModal.prendaId].length }} respuesta(s)
+      </span>
+      <button class="btn-outline" (click)="cerrarModalSelecciones()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     MODAL: CREAR / EDITAR PRENDA (Premium)
+════════════════════════════════════════════════════ -->
+<div class="modal-overlay modal-prenda-overlay" *ngIf="mostrarFormPrenda" (click)="cerrarFormPrenda()">
+  <div class="modal-card modal-prenda-card" (click)="$event.stopPropagation()">
+    <div class="modal-prenda-header">
+      <div class="modal-prenda-header-icon">
+        <i class="fas fa-tshirt"></i>
+      </div>
+      <div class="modal-prenda-header-text">
+        <h3>{{ editandoPrenda?.prendaId ? 'Editar Prenda' : 'Nueva Prenda' }}</h3>
+        <p class="modal-prenda-subtitle">{{ editandoPrenda?.prendaId ? 'Actualiza los datos de la prenda' : 'Añade una prenda al catálogo de la temporada' }}</p>
+      </div>
+      <button type="button" class="modal-prenda-close" (click)="cerrarFormPrenda()" aria-label="Cerrar">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-prenda-body">
+      <!-- Bloque imagen -->
+      <div class="modal-prenda-section">
+        <div class="modal-prenda-section-title">
+          <i class="fas fa-image"></i>
+          <span>Imagen</span>
+        </div>
+        <div class="modal-prenda-upload" (click)="imagenInput.click()">
+          <img *ngIf="imagenPreview" [src]="imagenPreview" class="modal-prenda-preview" alt="Vista previa" />
+          <div *ngIf="!imagenPreview" class="modal-prenda-upload-placeholder">
+            <div class="modal-prenda-upload-icon">
+              <i class="fas fa-camera"></i>
+            </div>
+            <span class="modal-prenda-upload-text">Arrastra una imagen o haz clic</span>
+            <span class="modal-prenda-upload-hint">JPG, PNG o WebP. Recomendado 800×800 px</span>
+          </div>
+          <input #imagenInput type="file" accept=".jpg,.jpeg,.png,.webp"
+            (change)="onImagenSeleccionada($event)" style="display:none" />
+        </div>
+      </div>
+
+      <!-- Datos básicos -->
+      <div class="modal-prenda-section">
+        <div class="modal-prenda-section-title">
+          <i class="fas fa-info-circle"></i>
+          <span>Datos básicos</span>
+        </div>
+        <div class="modal-prenda-form">
+          <div class="modal-prenda-field modal-prenda-field--full">
+            <label class="modal-prenda-label">Nombre <span class="required">*</span></label>
+            <input type="text" class="modal-prenda-input" [(ngModel)]="editandoPrenda!.nombre"
+              placeholder="Ej: Camiseta titular 2025/26" />
+          </div>
+          <div class="modal-prenda-field modal-prenda-field--full">
+            <label class="modal-prenda-label">Descripción</label>
+            <textarea class="modal-prenda-textarea" rows="2" [(ngModel)]="editandoPrenda!.descripcion"
+              placeholder="Descripción opcional de la prenda"></textarea>
+          </div>
+          <div class="modal-prenda-row">
+            <div class="modal-prenda-field">
+              <label class="modal-prenda-label">Categoría</label>
+              <select class="modal-prenda-select" [(ngModel)]="editandoPrenda!.categoria">
+                <option value="">Sin categoría</option>
+                <option value="Juego">Juego</option>
+                <option value="Entreno">Entreno</option>
+                <option value="Chándal">Chándal</option>
+                <option value="Paseo">Paseo</option>
+                <option value="Accesorios">Accesorios</option>
+              </select>
+            </div>
+            <div class="modal-prenda-field">
+              <label class="modal-prenda-label">Visibilidad</label>
+              <select class="modal-prenda-select" [(ngModel)]="editandoPrenda!.teamId">
+                <option [ngValue]="null">Todo el club (global)</option>
+                <option *ngFor="let equipo of equipos" [ngValue]="equipo.value">
+                  {{ equipo.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tallas -->
+      <div class="modal-prenda-section">
+        <div class="modal-prenda-section-title">
+          <i class="fas fa-ruler-combined"></i>
+          <span>Tallas disponibles</span>
+        </div>
+        <div class="modal-prenda-tallas-row">
+          <input type="text" class="modal-prenda-input modal-prenda-talla-input"
+            [(ngModel)]="nuevaTalla" placeholder="Ej: S, M, L, XL, 42..."
+            (keyup.enter)="agregarTallaForm()" />
+          <button type="button" class="modal-prenda-btn-add" (click)="agregarTallaForm()">
+            <i class="fas fa-plus"></i>
+            <span>Añadir</span>
+          </button>
+        </div>
+        <div class="modal-prenda-chips" *ngIf="tallasForm.length > 0">
+          <span class="modal-prenda-chip" *ngFor="let t of tallasForm; let i = index">
+            {{ t.nombre }}
+            <button type="button" class="modal-prenda-chip-remove" (click)="eliminarTallaForm(i)" aria-label="Quitar talla">
+              <i class="fas fa-times"></i>
+            </button>
+          </span>
+        </div>
+        <p class="modal-prenda-hint" *ngIf="tallasForm.length === 0">
+          <i class="fas fa-info-circle"></i>
+          Añade al menos una talla para que los jugadores puedan seleccionar
+        </p>
+      </div>
+    </div>
+
+    <div class="modal-prenda-error" *ngIf="errorModal">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>{{ errorModal }}</span>
+    </div>
+
+    <div class="modal-prenda-footer">
+      <button type="button" class="modal-prenda-btn modal-prenda-btn--secondary" (click)="cerrarFormPrenda()" [disabled]="guardando">
+        Cancelar
+      </button>
+      <button type="button" class="modal-prenda-btn modal-prenda-btn--primary" (click)="guardarPrenda()" [disabled]="guardando">
+        <i class="fas fa-spinner fa-spin" *ngIf="guardando"></i>
+        <i class="fas fa-check" *ngIf="!guardando"></i>
+        <span>{{ guardando ? 'Guardando...' : 'Guardar' }}</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal confirmación eliminar (estilo Sphaira) -->
+<div class="modal-overlay modal-confirm-overlay" *ngIf="confirmacionAbierta" (click)="cerrarConfirmacion()">
+  <div class="modal-card modal-confirm-card" (click)="$event.stopPropagation()">
+    <div class="modal-confirm-header">
+      <i class="fas fa-exclamation-triangle"></i>
+      <h3>{{ confirmacionTitulo }}</h3>
+    </div>
+    <div class="modal-confirm-body">
+      <p>{{ confirmacionMensaje }}</p>
+    </div>
+    <div class="modal-confirm-footer">
+      <button type="button" class="btn-outline" (click)="cerrarConfirmacion()" [disabled]="confirmando">Cancelar</button>
+      <button type="button" class="btn-danger" (click)="confirmarEliminacion()" [disabled]="confirmando">
+        <i class="fas fa-spinner fa-spin" *ngIf="confirmando"></i>
+        <i class="fas fa-trash-alt" *ngIf="!confirmando"></i>
+        {{ confirmando ? 'Eliminando...' : 'Eliminar' }}
+      </button>
+    </div>
+  </div>
+</div>

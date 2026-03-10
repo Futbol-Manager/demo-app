@@ -1,0 +1,237 @@
+﻿<div class="event-list-panel">
+  <div class="panel-header" *ngIf="showHeader">
+    <h6><i class="bi bi-list-ul"></i> Eventos</h6>
+    <span class="event-total">{{ filteredEvents.length }}/{{ events.length }}</span>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-row">
+    <select class="filter-select" [(ngModel)]="filterCategoryId" (ngModelChange)="applyFilter()">
+      <option [ngValue]="null">Todas las categorías</option>
+      <option *ngFor="let cat of categories" [ngValue]="cat.id">{{ cat.name }}</option>
+    </select>
+    <button class="filter-clear" *ngIf="filterCategoryId || searchQuery" (click)="clearFilter()">
+      <i class="bi bi-x-circle"></i>
+    </button>
+  </div>
+
+  <!-- Search -->
+  <div class="search-row">
+    <input type="text" class="search-input" placeholder="Buscar eventos..."
+           [(ngModel)]="searchQuery" (input)="applyFilter()">
+  </div>
+
+  <!-- Event list -->
+  <div class="events-scroll">
+    <div class="empty-events" *ngIf="filteredEvents.length === 0">
+      <i class="bi bi-tag"></i>
+      <span>Sin eventos aún</span>
+    </div>
+
+    <div class="event-wrapper" *ngFor="let evt of filteredEvents">
+
+      <!-- Event card (always expanded inline) -->
+      <div class="event-item"
+           [class.selected]="selectedEventId === evt.id"
+           [class.quick-checked]="quickPlaylistId && isQuickChecked(evt.id)"
+           (click)="selectEvent(evt)">
+
+        <!-- Quick-add checkbox -->
+        <label class="quick-check-wrap" *ngIf="quickPlaylistId !== null"
+               (click)="$event.stopPropagation()"
+               [title]="isQuickChecked(evt.id) ? 'Quitar de playlist' : 'Añadir a playlist'">
+          <span *ngIf="quickAddingEventId === evt.id" class="quick-spinner"></span>
+          <input *ngIf="quickAddingEventId !== evt.id"
+                 type="checkbox"
+                 class="quick-checkbox"
+                 [checked]="isQuickChecked(evt.id)"
+                 (change)="onQuickCheckboxChange(evt, $any($event.target).checked, $event)">
+        </label>
+
+        <!-- Color bar -->
+        <div class="event-color-bar" [style.background-color]="evt.categoryColor"></div>
+
+        <!-- Main content -->
+        <div class="event-info">
+          <!-- Row 1: category + time -->
+          <div class="event-top-row">
+            <span class="event-category">{{ evt.categoryName }}</span>
+            <span class="event-time">{{ ps.formatTime(evt.startTimeMs) }}</span>
+          </div>
+
+          <!-- Row 2: duration + tag chips (always visible) -->
+          <div class="event-inline-row">
+            <span class="event-dur">{{ formatDurationMs(evt.endTimeMs - evt.startTimeMs) }}</span>
+            <div class="event-tag-chips" *ngIf="evt.tagIds && evt.tagIds.length > 0">
+              <span class="evt-tag-chip" *ngFor="let tid of evt.tagIds">{{ getTagName(tid) }}</span>
+            </div>
+          </div>
+
+          <!-- Row 3: player / notes (if present) -->
+          <div class="event-details" *ngIf="evt.playerName || evt.notes">
+            <span class="event-player" *ngIf="evt.playerName">
+              <i class="bi bi-person-fill"></i> {{ evt.playerName }}
+            </span>
+            <span class="event-note" *ngIf="evt.notes">{{ evt.notes }}</span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="event-actions">
+          <!-- Edit clip -->
+          <button class="ev-btn ev-btn-edit"
+                  title="Editar clip / añadir anotaciones"
+                  (click)="$event.stopPropagation(); onEditClip.emit(evt)">
+            <i class="bi bi-pencil-square"></i>
+          </button>
+
+          <!-- Download clip -->
+          <button class="ev-btn ev-btn-download"
+                  title="Descargar clip MP4"
+                  [disabled]="downloadingEventId !== null"
+                  (click)="downloadClip(evt, $event)">
+            <span *ngIf="downloadingEventId === evt.id" class="dl-progress-ring">
+              <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"
+                fill="none" stroke="#0d6efd" stroke-width="2"
+                [style.stroke-dasharray]="50.27"
+                [style.stroke-dashoffset]="50.27 - (downloadProgress / 100 * 50.27)"
+              /></svg>
+              <span class="dl-pct">{{ downloadProgress }}</span>
+            </span>
+            <i *ngIf="downloadingEventId !== evt.id" class="bi bi-download"></i>
+          </button>
+
+          <!-- Add to playlist -->
+          <div class="playlist-dropdown-anchor">
+            <button class="ev-btn ev-btn-playlist"
+                    [class.active]="playlistDropdownEventId === evt.id || addedFlashEventId === evt.id"
+                    [title]="addedFlashEventId === evt.id ? 'Añadido a playlist' : 'Añadir a playlist'"
+                    (click)="togglePlaylistDropdown(evt, $event)">
+              <i class="bi" [class.bi-check2]="addedFlashEventId === evt.id"
+                 [class.bi-collection-play]="addedFlashEventId !== evt.id"></i>
+            </button>
+
+            <!-- Dropdown -->
+            <div class="playlist-dropdown" *ngIf="playlistDropdownEventId === evt.id"
+                 (click)="$event.stopPropagation()">
+              <div class="pd-header">Añadir a playlist</div>
+              <div class="pd-loading" *ngIf="!playlistsLoaded">
+                <span class="spinner-border spinner-border-sm"></span>
+              </div>
+              <div class="pd-empty" *ngIf="playlistsLoaded && playlists.length === 0 && !showNewPlaylistForm">
+                No hay playlists. Crea una primera:
+              </div>
+              <div class="pd-list" *ngIf="playlistsLoaded && playlists.length > 0">
+                <button class="pd-item"
+                        *ngFor="let pl of playlists"
+                        [disabled]="addingToPlaylistId === pl.id"
+                        (click)="addToPlaylist(evt, pl)">
+                  <span class="pd-item-label">
+                    <i class="bi bi-collection me-1"></i>{{ pl.title }}
+                  </span>
+                  <span class="pd-item-count">{{ pl.itemCount || 0 }}</span>
+                  <span *ngIf="addingToPlaylistId === pl.id"
+                        class="spinner-border spinner-border-sm ms-1"></span>
+                </button>
+              </div>
+              <div class="pd-new" *ngIf="!showNewPlaylistForm">
+                <button class="pd-new-btn" (click)="showNewPlaylistForm = true">
+                  <i class="bi bi-plus-circle me-1"></i>Nueva playlist
+                </button>
+              </div>
+              <div class="pd-new-form" *ngIf="showNewPlaylistForm">
+                <input class="pd-new-input" [(ngModel)]="newPlaylistTitle"
+                       placeholder="Nombre de la playlist"
+                       (keydown.enter)="createAndAddToPlaylist(evt)"
+                       (click)="$event.stopPropagation()">
+                <div class="pd-new-actions">
+                  <button class="pd-create-btn"
+                          [disabled]="!newPlaylistTitle.trim() || isCreatingPlaylist"
+                          (click)="createAndAddToPlaylist(evt)">
+                    <span *ngIf="isCreatingPlaylist" class="spinner-border spinner-border-sm"></span>
+                    <i *ngIf="!isCreatingPlaylist" class="bi bi-check2"></i>
+                    Crear y añadir
+                  </button>
+                  <button class="pd-cancel-btn" (click)="showNewPlaylistForm = false">
+                    <i class="bi bi-x"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Delete -->
+          <button class="ev-btn ev-btn-danger"
+                  (click)="onDelete(evt, $event)" title="Eliminar">
+            <i class="bi bi-trash3"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Inline edit panel (opens when card is selected/clicked) ── -->
+      <div class="event-edit-panel" *ngIf="expandedEventId === evt.id"
+           (click)="$event.stopPropagation()">
+
+        <!-- Times -->
+        <div class="detail-times-row">
+          <div class="detail-field">
+            <label class="detail-label"><i class="bi bi-play-fill"></i> Inicio</label>
+            <div class="time-input-wrap">
+              <input class="time-input" [(ngModel)]="editStartHms" placeholder="hh:mm:ss"
+                     (click)="$event.stopPropagation()">
+              <button class="btn-seek" title="Ir al inicio" (click)="seekToStart(evt, $event)">
+                <i class="bi bi-play-circle"></i>
+              </button>
+            </div>
+          </div>
+          <div class="detail-field">
+            <label class="detail-label"><i class="bi bi-stop-fill"></i> Fin</label>
+            <input class="time-input" [(ngModel)]="editEndHms" placeholder="hh:mm:ss"
+                   (click)="$event.stopPropagation()">
+          </div>
+          <div class="detail-field detail-duration-field">
+            <label class="detail-label">Dur.</label>
+            <span class="duration-display">
+              {{ formatDurationMs(getCalcDurationMs(editStartHms, editEndHms)) }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="detail-field">
+          <label class="detail-label">Notas</label>
+          <textarea class="notes-input" rows="2" [(ngModel)]="editNotes"
+                    placeholder="Añade notas sobre esta jugada..."
+                    (click)="$event.stopPropagation()"></textarea>
+        </div>
+
+        <!-- Actions -->
+        <div class="detail-actions">
+          <span class="detail-saved-flash" *ngIf="detailSavedFlash">
+            <i class="bi bi-check-circle-fill"></i> Guardado
+          </span>
+          <button class="btn-save-detail" (click)="saveDetail(evt)"
+                  [disabled]="isSavingDetail">
+            <span *ngIf="isSavingDetail" class="spinner-border spinner-border-sm me-1"></span>
+            <i *ngIf="!isSavingDetail" class="bi bi-floppy me-1"></i>
+            Guardar
+          </button>
+          <button class="btn-download-detail"
+                  title="Descargar clip MP4"
+                  [disabled]="downloadingEventId !== null"
+                  (click)="downloadClip(evt, $event)">
+            <span *ngIf="downloadingEventId === evt.id">
+              <span class="spinner-border spinner-border-sm me-1"></span>
+              <span *ngIf="downloadStep">{{ downloadStep }}</span>
+              <span *ngIf="!downloadStep">{{ downloadProgress }}%</span>
+            </span>
+            <span *ngIf="downloadingEventId !== evt.id">
+              <i class="bi bi-download me-1"></i>Descargar MP4
+            </span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+<div id="dashboard1" [class.fullscreen-route]="isFullscreenRoute">
+    <app-sidebar *ngIf="!isFullscreenRoute"></app-sidebar>
+    <div class="dashboard-main"
+         [class.dashboard-main--collapsed]="!isFullscreenRoute && sidebarService.collapsed"
+         [class.dashboard-fullscreen]="isFullscreenRoute">
+        <app-header *ngIf="!isFullscreenRoute"></app-header>
+        <div class="dashboard-content" [class.dashboard-content--fullscreen]="isFullscreenRoute">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>
+<app-ai-fab *ngIf="!isFullscreenRoute"></app-ai-fab>

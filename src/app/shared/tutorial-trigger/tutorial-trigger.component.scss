@@ -1,0 +1,291 @@
+/* ─── Tutorial Trigger: botón circular \"Ver tutorial\" con pulso ───
+   - FAB circular principal con halo pulsante.
+   - Chip de texto lateral para contexto.
+   - Usa design tokens (--color-primary, --bg-card, etc.) para light/dark.
+──────────────────────────────────────────────────────────────── */
+
+.tutorial-trigger {
+  position: fixed;
+  z-index: 9998;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: grab;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  color: var(--text-on-primary, #fff);
+
+  &:focus-within {
+    outline: 2px solid rgba(var(--color-primary-rgb, 49, 178, 112), 0.9);
+    outline-offset: 4px;
+  }
+
+  &.tutorial-trigger--dragging {
+    cursor: grabbing;
+  }
+}
+
+/* Grip discreto a la izquierda */
+.tutorial-trigger__drag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 4px;
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.9rem;
+  pointer-events: none;
+
+  i {
+    display: block;
+  }
+}
+
+/* BOTÓN CIRCULAR PRINCIPAL (FAB) */
+.tutorial-trigger__cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  color: var(--text-on-primary, #ffffff);
+  background: radial-gradient(circle at 30% 20%, #ffffff33 0, transparent 45%),
+    linear-gradient(135deg, #31b270 0%, #1f8f8a 45%, #002c40 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.15),
+    0 10px 25px rgba(var(--color-primary-rgb, 49, 178, 112), 0.45);
+  transition:
+    transform 0.2s cubic-bezier(0.22, 0.61, 0.36, 1),
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+
+  i {
+    font-size: 1.6rem;
+  }
+
+  /* Halo estático */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: inherit;
+    border: 1px solid rgba(var(--color-primary-rgb, 49, 178, 112), 0.6);
+    opacity: 0.9;
+  }
+
+  /* Halo pulsante */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: inherit;
+    background: radial-gradient(circle, rgba(var(--color-primary-rgb, 49, 178, 112), 0.45) 0, transparent 60%);
+    opacity: 0.8;
+    transform: scale(1);
+    animation: tutorialPulse 1.9s ease-out infinite;
+  }
+
+  &:hover {
+    transform: translateY(-1px) scale(1.03);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.18),
+      0 14px 32px rgba(var(--color-primary-rgb, 49, 178, 112), 0.55);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.97);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.18),
+      0 8px 18px rgba(var(--color-primary-rgb, 49, 178, 112), 0.4);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+  }
+}
+
+/* Texto accesible oculto visualmente */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* PULSO: se expande y desvanece */
+@keyframes tutorialPulse {
+  0% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  70% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+/* Chip de texto lateral \"Ver tutorial\" */
+.tutorial-trigger__chip {
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.85);
+  color: #e5f4ec;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  .tutorial-trigger__chip-text {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 576px) {
+  .tutorial-trigger__chip {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tutorial-trigger__cta {
+    transition: none;
+  }
+
+  .tutorial-trigger__cta::after {
+    animation: none;
+    opacity: 0.4;
+  }
+}
+
+/* Dropdown minimal a la derecha (mantiene opciones avanzadas) */
+.tutorial-trigger__dropdown {
+  position: relative;
+  display: inline-flex;
+}
+
+.tutorial-trigger__dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-left: 2px;
+  padding: 0;
+  color: var(--text-secondary, #cbd5f5);
+  background: rgba(15, 23, 42, 0.85);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.18s ease, transform 0.18s ease;
+
+  i {
+    font-size: 0.9rem;
+    transition: transform 0.18s ease;
+  }
+
+  &:hover {
+    background: rgba(15, 23, 42, 1);
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.9);
+    outline-offset: 2px;
+  }
+
+  &[aria-expanded='true'] i {
+    transform: rotate(180deg);
+  }
+}
+
+.tutorial-trigger__menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 260px;
+  padding: 6px 0;
+  background: var(--bg-card);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+  z-index: 10002;
+  animation: tutorialMenuIn 0.2s ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes tutorialMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tutorial-trigger__menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease;
+  border-radius: 0;
+  margin: 0 4px;
+
+  i {
+    font-size: 1rem;
+    color: var(--color-primary);
+  }
+
+  &:hover {
+    background: var(--bg-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+  }
+}
+
+.tutorial-trigger__menu-item--muted {
+  color: var(--text-secondary);
+
+  i {
+    color: var(--text-secondary);
+  }
+}
+
+.tutorial-trigger__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  background: transparent;
+}

@@ -1,0 +1,141 @@
+<header class="page-header">
+  <div class="back-container" data-tutorial="de-volver">
+    <button type="button" class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+  <div class="header-center">
+    <h2 class="table-title">
+      <i class="bi bi-file-earmark-pdf table-title-icon"></i>
+      {{ 'DOCUMENTOS_ENTRENADOR.TITLE' | translate }}
+    </h2>
+    <p class="header-subtitle">{{ 'DOCUMENTOS_ENTRENADOR.SUBTITLE' | translate }}</p>
+  </div>
+</header>
+
+<main class="docs-page">
+  <!-- Loading -->
+  <div class="docs-loading" *ngIf="loading">
+    <div class="docs-spinner"></div>
+    <p class="docs-loading-text">{{ 'TITLES.LOAD' | translate }}</p>
+  </div>
+
+  <!-- Empty state -->
+  <div class="docs-empty" *ngIf="!loading && listaDocumentos.length === 0" data-tutorial="de-grid">
+    <div class="docs-empty-illustration">
+      <i class="bi bi-folder2-open"></i>
+    </div>
+    <h3 class="docs-empty-title">{{ 'DOCUMENTOS_ENTRENADOR.EMPTY_TITLE' | translate }}</h3>
+    <p class="docs-empty-msg">{{ 'DOCUMENTOS_ENTRENADOR.EMPTY_MSG' | translate }}</p>
+  </div>
+
+  <!-- Lista de documentos -->
+  <div class="docs-grid" *ngIf="!loading && listaDocumentos.length > 0" data-tutorial="de-grid">
+    <article class="doc-card" *ngFor="let doc of listaDocumentos">
+      <div class="doc-card-header">
+        <span class="doc-icon">
+          <i class="bi bi-file-earmark-pdf"></i>
+        </span>
+        <h3 class="doc-title">{{ doc.nombre }}</h3>
+        <span class="doc-status" [ngClass]="{
+          'doc-status--pending': getDocPending(doc),
+          'doc-status--done': getDocDone(doc)
+        }">
+          <i class="bi" [ngClass]="getDocStatusIcon(doc)"></i>
+          {{ getDocStatusLabel(doc) | translate }}
+        </span>
+      </div>
+      <p class="doc-desc" *ngIf="doc.requiere < 2 && doc.descripcion">{{ doc.descripcion }}</p>
+      <div class="doc-actions">
+        <button *ngIf="doc.requiere === 0 || doc.fileClub" type="button" class="doc-btn doc-btn--download"
+          [class.doc-btn--done]="doc.descargado === 1"
+          (click)="descargar(doc)"
+          [title]="'DOCUMENTOS_ENTRENADOR.ACTION_DOWNLOAD' | translate">
+          <i class="bi bi-download"></i>
+          <span>{{ 'DOCUMENTOS_ENTRENADOR.ACTION_DOWNLOAD' | translate }}</span>
+        </button>
+        <button *ngIf="doc.requiere === 1" type="button" class="doc-btn doc-btn--upload"
+          [class.doc-btn--done]="doc.subido === 1"
+          (click)="subir(doc)"
+          [title]="'DOCUMENTOS_ENTRENADOR.ACTION_UPLOAD' | translate">
+          <i class="bi bi-upload"></i>
+          <span>{{ 'DOCUMENTOS_ENTRENADOR.ACTION_UPLOAD' | translate }}</span>
+        </button>
+        <button *ngIf="doc.requiere === 2" type="button" class="doc-btn doc-btn--fill"
+          [class.doc-btn--done]="doc.subido === 1"
+          (click)="rellenarPersonalizado(doc)"
+          [title]="'DOCUMENTOS_ENTRENADOR.ACTION_FILL' | translate">
+          <i class="bi bi-pencil-square"></i>
+          <span>{{ 'DOCUMENTOS_ENTRENADOR.ACTION_FILL' | translate }}</span>
+        </button>
+      </div>
+    </article>
+  </div>
+</main>
+
+<!-- Modal subir documento -->
+<div class="docs-modal-backdrop" *ngIf="mostrarModalDocumento" (click)="cerrarModalDocumento()"></div>
+<div class="docs-modal docs-modal--show" *ngIf="mostrarModalDocumento">
+  <div class="docs-modal-dialog">
+    <div class="docs-modal-content">
+      <header class="docs-modal-header">
+        <h5 class="docs-modal-title">
+          <i class="bi bi-cloud-upload me-2"></i>
+          {{ 'DOCUMENTOS_ENTRENADOR.MODAL_UPLOAD_TITLE' | translate }}
+        </h5>
+        <button type="button" class="docs-modal-close" aria-label="Cerrar" (click)="cerrarModalDocumento()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </header>
+      <div class="docs-modal-body">
+        <p class="docs-modal-hint" *ngIf="docTemp?.subido === 1 && docTemp?.fileEntrenador">
+          {{ 'DOCUMENTOS_ENTRENADOR.MODAL_UPLOAD_PRIVACY' | translate }}
+        </p>
+        <p class="docs-modal-hint" *ngIf="!(docTemp?.subido === 1 && docTemp?.fileEntrenador)">
+          {{ 'DOCUMENTOS_ENTRENADOR.MODAL_UPLOAD_HINT' | translate }}
+        </p>
+        <label class="docs-file-label">{{ 'DOCUMENTOS_ENTRENADOR.SELECT_FILE' | translate }}</label>
+        <input type="file" class="docs-file-input" (change)="onFileSelected($event)"
+          accept=".pdf,.doc,.docx,.jpg,.png,.jpeg" />
+      </div>
+      <footer class="docs-modal-footer">
+        <button type="button" class="docs-btn docs-btn--secondary" (click)="cerrarModalDocumento()">
+          {{ 'DOCUMENTOS_ENTRENADOR.CANCEL' | translate }}
+        </button>
+        <button type="button" class="docs-btn docs-btn--primary" (click)="subirDocumento()">
+          <i class="bi bi-upload me-1"></i>
+          {{ 'DOCUMENTOS_ENTRENADOR.UPLOAD' | translate }}
+        </button>
+      </footer>
+    </div>
+  </div>
+</div>
+
+<!-- Modal formulario personalizado -->
+<div class="docs-modal-backdrop" *ngIf="mostrarModalEditarPersonalizado" (click)="cerrarModalEditarPersonalizado()"></div>
+<div class="docs-modal docs-modal--show" *ngIf="mostrarModalEditarPersonalizado">
+  <div class="docs-modal-dialog docs-modal-dialog--lg">
+    <div class="docs-modal-content" (click)="$event.stopPropagation()">
+      <header class="docs-modal-header">
+        <div class="docs-modal-header-inner">
+          <h5 class="docs-modal-title">{{ docEditando?.nombre }}</h5>
+          <span class="docs-modal-subtitle">Formulario personalizado</span>
+        </div>
+        <button type="button" class="docs-modal-close" aria-label="Cerrar" (click)="cerrarModalEditarPersonalizado()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </header>
+      <div class="docs-modal-body docs-modal-body--form" *ngIf="docEditando">
+        <app-form-renderer
+          [docClubesId]="docEditando.docClubesId"
+          [contexto]="'DOCUMENTO'"
+          [userId]="userId"
+          [playerId]="0"
+          (onSave)="onFormRendererSaved()"
+          (onClose)="onFormRendererClosed()">
+        </app-form-renderer>
+      </div>
+    </div>
+  </div>
+</div>

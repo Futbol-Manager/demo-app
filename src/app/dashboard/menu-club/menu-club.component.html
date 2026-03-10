@@ -1,0 +1,100 @@
+<div class="back-container">
+  <button class="btn-back-clean" (click)="goBack()" data-tutorial="mc-volver">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
+</div>
+
+
+<div class="container dashboard-container">
+  <div class="dashboard-grid">
+
+    <div class="dashboard-item" (click)="irAPantalla(2)" *ngIf="hasPermission('DASHBOARD_CALENDAR')" data-tutorial="mc-calendar">
+      <div class="dashboard-card bg-calendar">
+        <div class="dashboard-content">
+          <i class="bi bi-calendar4-week dashboard-icon"></i>
+          <span class="dashboard-title">
+            {{ 'MENU_CLUB.CALENDAR' | translate }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-item" (click)="irAPantalla(5)" *ngIf="hasPermission('DASHBOARD_PLAYERS')" data-tutorial="mc-players">
+      <div class="dashboard-card bg-players">
+        <div class="dashboard-content">
+          <i class="bi bi-people-fill dashboard-icon"></i>
+          <span class="dashboard-title">
+            {{ 'MENU_CLUB.PLAYERS' | translate }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-item" (click)="irAPantalla(4)" *ngIf="hasPermission('DASHBOARD_STATS_PLR')" data-tutorial="mc-stats-players">
+      <div class="dashboard-card bg-stats-player">
+        <div class="dashboard-content">
+          <i class="bi bi-graph-up dashboard-icon"></i>
+          <span class="dashboard-title">
+            {{ 'MENU_CLUB.STATS_PLAYERS' | translate }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-item" (click)="irAPantalla(3)" *ngIf="hasPermission('DASHBOARD_STATS_TEAM')" data-tutorial="mc-stats-team">
+      <div class="dashboard-card bg-stats-team">
+        <div class="dashboard-content">
+          <i class="bi bi-bar-chart dashboard-icon"></i>
+          <span class="dashboard-title">
+            {{ 'MENU_CLUB.STATS_TEAM' | translate }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-item" (click)="irAPantalla(8)" *ngIf="hasPermission('DASHBOARD_STATS_TEAM')" data-tutorial="mc-ranking">
+      <div class="dashboard-card bg-ranking">
+        <div class="dashboard-content">
+          <i class="bi bi-trophy dashboard-icon"></i>
+          <span class="dashboard-title">
+            {{ 'MENU_CLUB.RANKING_RESULTS' | translate }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-item" (click)="irAPantalla(7)" *ngIf="hasPermission('DASHBOARD_PLAYERS')" data-tutorial="mc-gallery">
+      <div class="dashboard-card bg-gallery">
+        <div class="dashboard-content">
+          <i class="bi bi-collection-play dashboard-icon"></i>
+          <span class="dashboard-title">
+            {{ 'MENU_CLUB.GALLERY' | translate }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-item" (click)="irAPantalla(6)" *ngIf="hasPermission('DASHBOARD_PLAYERS')" data-tutorial="mc-team-info">
+      <div class="dashboard-card bg-info">
+        <div class="dashboard-content">
+          <i class="bi bi-info-circle dashboard-icon"></i>
+          <span class="dashboard-title">
+            {{ 'MENU_CLUB.TEAM_INFO' | translate }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-item" (click)="irAPantalla(12)" *ngIf="hasPermission('DASHBOARD_INJURIES')" data-tutorial="mc-injuries">
+      <div class="dashboard-card bg-injuries">
+        <div class="dashboard-content">
+          <i class="bi bi-bandaid dashboard-icon"></i>
+          <span class="dashboard-title">{{ 'MENU_CLUB.INJURIES' | translate }}</span>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</div>

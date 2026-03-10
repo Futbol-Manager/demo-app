@@ -1,0 +1,95 @@
+/* ===== BOTÓN VOLVER ===== */
+.back-container { padding: 0; }
+.btn-back-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 16px;
+  margin-left: 24px;
+  background: transparent;
+  border: none;
+  background-color: rgba(15, 163, 232, 0.08);
+  color: #002c40;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+.btn-back-clean i { font-size: 1.1rem; }
+.btn-back-clean:hover { background-color: rgba(0, 44, 64, 0.08); transform: translateX(-2px); }
+.btn-back-clean:active { transform: translateX(0); }
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  border: 16px solid #f3f3f3;
+  /* Light grey */
+  border-top: 16px solid #3498db;
+  /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+  margin: auto;
+  display: block;
+}
+
+.text-success {
+  color: green;
+}
+
+.text-danger {
+  color: red;
+}
+
+/* Estilos generales */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 600px;
+  /* Asegura un ancho mínimo razonable */
+}
+
+.table th,
+.table td {
+  white-space: nowrap;
+  padding: 0.5em;
+}
+
+.table th {
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Estilos específicos para pantallas pequeñas */
+@media (max-width: 767px) {
+  .table {
+    font-size: 0.8em;
+    /* Reduce el tamaño de la fuente en móviles */
+  }
+
+  .table-responsive {
+    overflow-y: auto;
+    max-height: 30em;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.3em;
+    /* Reduce el relleno en móviles */
+  }
+}

@@ -1,0 +1,10 @@
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1050;
+}
+
+.team-select-box {
+  max-height: 220px;
+  overflow-y: auto;
+  background: #fafbfc;
+}

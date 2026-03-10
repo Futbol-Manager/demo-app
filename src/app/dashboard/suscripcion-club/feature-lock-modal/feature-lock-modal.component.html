@@ -1,0 +1,48 @@
+<!-- Feature Lock Modal Overlay -->
+<div class="lock-modal-overlay" *ngIf="visible" (click)="close()">
+  <div class="lock-modal" (click)="$event.stopPropagation()">
+
+    <!-- Lock icon -->
+    <div class="lock-icon-wrapper">
+      <i class="bi bi-lock-fill"></i>
+    </div>
+
+    <!-- Title -->
+    <h2>{{ 'CLUB_PLANS.LOCKED.MODAL_TITLE' | translate }}</h2>
+
+    <!-- Feature name -->
+    <p class="feature-name" *ngIf="feature">
+      <i [class]="feature.iconClass"></i>
+      {{ feature.nameKey | translate }}
+    </p>
+
+    <!-- Description -->
+    <p class="lock-description">
+      {{ 'CLUB_PLANS.LOCKED.MODAL_DESC' | translate }}
+    </p>
+
+    <!-- Required plans -->
+    <div class="required-plans" *ngIf="feature">
+      <span class="plan-badge familia" *ngIf="feature.requiredPlans.includes('familia')">
+        <i class="bi bi-people-fill"></i>
+        {{ 'CLUB_PLANS.PLAN_FAMILIA.NAME' | translate }}
+      </span>
+      <span class="plan-badge club" *ngIf="feature.requiredPlans.includes('club')">
+        <i class="bi bi-shield-fill"></i>
+        {{ 'CLUB_PLANS.PLAN_CLUB.NAME' | translate }}
+      </span>
+    </div>
+
+    <!-- Actions -->
+    <div class="lock-actions">
+      <button class="btn-upgrade" (click)="goToPlans()">
+        <i class="bi bi-arrow-up-circle-fill"></i>
+        {{ 'CLUB_PLANS.LOCKED.UPGRADE_BTN' | translate }}
+      </button>
+      <button class="btn-dismiss" (click)="close()">
+        {{ 'CLUB_PLANS.LOCKED.CLOSE_BTN' | translate }}
+      </button>
+    </div>
+
+  </div>
+</div>

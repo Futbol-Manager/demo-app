@@ -1,0 +1,82 @@
+﻿<!-- Toggle button (used inline in workspace toolbar) -->
+<button class="report-toggle" [class.active]="showPanel" (click)="togglePanel()">
+  <i class="bi bi-file-earmark-bar-graph"></i>
+  <span class="d-none d-md-inline">Informe IA</span>
+</button>
+
+<!-- Slide panel -->
+<div class="report-panel" *ngIf="showPanel">
+  <div class="report-panel-header">
+    <h6><i class="bi bi-stars"></i> Generar Informe con IA</h6>
+    <button class="btn-close-panel" (click)="showPanel = false">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div class="report-panel-body">
+    <!-- Stats preview -->
+    <div class="stats-preview">
+      <span class="stat-pill"><i class="bi bi-tag-fill"></i> {{ events.length }} eventos</span>
+      <span class="stat-pill"><i class="bi bi-geo-alt-fill"></i> con posición</span>
+    </div>
+
+    <!-- Options -->
+    <div class="report-options">
+      <label class="option-row">
+        <input type="checkbox" [(ngModel)]="reportOptions.includeStats"> Incluir estadísticas
+      </label>
+      <label class="option-row">
+        <input type="checkbox" [(ngModel)]="reportOptions.includeHeatmap"> Incluir mapa de calor
+      </label>
+      <label class="option-row">
+        <input type="checkbox" [(ngModel)]="reportOptions.includeTimeline"> Incluir análisis temporal
+      </label>
+      <div class="option-group">
+        <label>Idioma:</label>
+        <select [(ngModel)]="reportOptions.language" class="form-select form-select-sm">
+          <option value="es">Español</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+      <div class="option-group">
+        <label>Formato:</label>
+        <select [(ngModel)]="reportOptions.format" class="form-select form-select-sm">
+          <option value="detailed">Detallado</option>
+          <option value="summary">Resumen ejecutivo</option>
+          <option value="tactical">Análisis táctico</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div class="report-error" *ngIf="reportError">
+      <i class="bi bi-exclamation-triangle"></i> {{ reportError }}
+    </div>
+
+    <!-- Generate button -->
+    <button class="btn-generate" (click)="generateReport()" [disabled]="!canGenerate">
+      <span *ngIf="!isGenerating">
+        <i class="bi bi-stars"></i> Generar informe
+      </span>
+      <span *ngIf="isGenerating" class="generating">
+        <span class="spinner-border spinner-border-sm"></span> Generando...
+      </span>
+    </button>
+
+    <!-- Generated report preview -->
+    <div class="report-result" *ngIf="generatedReport">
+      <div class="report-result-header">
+        <div class="report-result-meta">
+          <h6>Informe generado</h6>
+          <span class="report-date">{{ generatedReport.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        <button class="btn-download-report" (click)="downloadPdf()" [disabled]="isExporting"
+          title="Descargar informe en PDF con branding Sphaira">
+          <span *ngIf="!isExporting"><i class="bi bi-file-earmark-pdf-fill"></i> PDF</span>
+          <span *ngIf="isExporting" class="spinner-border spinner-border-sm"></span>
+        </button>
+      </div>
+      <div #reportResult class="report-content" [innerHTML]="generatedReport.reportHtml || generatedReport.content"></div>
+    </div>
+  </div>
+</div>

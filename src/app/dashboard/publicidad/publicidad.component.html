@@ -1,0 +1,101 @@
+<div class="carousel-fullwidth"  *ngIf="profileId > 1">
+  <div class="carousel-container">
+    <div class="carousel-track">
+
+      <div class="carousel-content">
+        <ng-container *ngFor="let patrocinador of listPatrocinadores">
+          <img
+            *ngIf="patrocinador.imagen && patrocinador.oculto === 1"
+            [src]="getSponsorImageSrc(patrocinador)"
+            class="patrocinador-img"
+            [alt]="'Logo ' + (patrocinador.nombre || 'Patrocinador')"
+            title="Haz clic para ver patrocinador"
+            (click)="mostrarId(patrocinador)"
+          />
+        </ng-container>
+      </div>
+
+      <div class="carousel-content">
+        <ng-container *ngFor="let patrocinador of listPatrocinadores">
+          <img
+            *ngIf="patrocinador.imagen && patrocinador.oculto === 1"
+            [src]="getSponsorImageSrc(patrocinador)"
+            class="patrocinador-img"
+            [alt]="'Logo ' + (patrocinador.nombre || 'Patrocinador')"
+            title="Haz clic para ver patrocinador"
+            (click)="mostrarId(patrocinador)"
+          />
+        </ng-container>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal premium para ver el patrocinador -->
+<div class="vs-overlay" *ngIf="showModalVerPatrocinador" (click)="cerrarVerPatrocinador()" appModalBackdrop>
+  <div class="vs-panel" (click)="$event.stopPropagation()">
+
+    <!-- CLOSE -->
+    <button class="vs-close" (click)="cerrarVerPatrocinador()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+
+    <!-- HERO -->
+    <div class="vs-hero">
+      <ng-container *ngIf="patrocinadorUpdate.imagen; else noImg">
+        <img [src]="getSponsorImageSrc(patrocinadorUpdate)"
+          alt="Logo de {{ patrocinadorUpdate.nombre }}" class="vs-logo" />
+      </ng-container>
+      <ng-template #noImg>
+        <div class="vs-logo-placeholder">
+          <i class="bi bi-building"></i>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- NAME -->
+    <h2 class="vs-name">{{ patrocinadorUpdate.nombre }}</h2>
+
+    <!-- CONTACT PILLS -->
+    <div class="vs-contacts">
+      <a *ngIf="patrocinadorUpdate.web" [href]="patrocinadorUpdate.web" target="_blank" class="vs-pill vs-pill--web">
+        <i class="bi bi-globe2"></i>
+        <span>Sitio web</span>
+      </a>
+      <a *ngIf="patrocinadorUpdate.telefono" href="tel:{{ patrocinadorUpdate.telefono }}" class="vs-pill vs-pill--phone">
+        <i class="bi bi-telephone-fill"></i>
+        <span>{{ patrocinadorUpdate.telefono }}</span>
+      </a>
+      <a *ngIf="patrocinadorUpdate.mail" href="mailto:{{ patrocinadorUpdate.mail }}" class="vs-pill vs-pill--mail">
+        <i class="bi bi-envelope-fill"></i>
+        <span>{{ patrocinadorUpdate.mail }}</span>
+      </a>
+    </div>
+
+    <!-- DESCRIPTION -->
+    <div class="vs-section" *ngIf="patrocinadorUpdate.descripcion">
+      <div class="vs-section-header">
+        <i class="bi bi-info-circle"></i>
+        <h4>Sobre el patrocinador</h4>
+      </div>
+      <p class="vs-section-text">{{ patrocinadorUpdate.descripcion }}</p>
+    </div>
+
+    <!-- BENEFITS -->
+    <div class="vs-section vs-section--benefits" *ngIf="patrocinadorUpdate.beneficios">
+      <div class="vs-section-header">
+        <i class="bi bi-gift"></i>
+        <h4>Beneficios exclusivos</h4>
+      </div>
+      <p class="vs-section-text">{{ patrocinadorUpdate.beneficios }}</p>
+    </div>
+
+    <!-- WEB CTA -->
+    <a *ngIf="patrocinadorUpdate.web" [href]="patrocinadorUpdate.web" target="_blank" class="vs-cta">
+      <i class="bi bi-box-arrow-up-right"></i>
+      Visitar {{ patrocinadorUpdate.nombre }}
+    </a>
+
+  </div>
+</div>

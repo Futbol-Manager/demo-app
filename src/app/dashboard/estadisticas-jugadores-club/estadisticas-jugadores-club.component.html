@@ -1,0 +1,359 @@
+<!-- ===== PAGE HEADER ===== -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="irAPantalla(0)" data-tutorial="ej-volver">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h2 class="table-title">{{ 'PLAYERS.TITLE' | translate }}</h2>
+    <p class="header-subtitle">Métricas y análisis de rendimiento de los jugadores del club</p>
+  </div>
+
+  <button class="btn-ai-consult" (click)="toggleAiPanel()" data-tutorial="ej-consultar-ia">
+    <i class="bi bi-robot"></i>
+    <span>{{ 'AI_PANEL.CONSULT_BUTTON' | translate }}</span>
+  </button>
+</div>
+
+<!-- ===== SKELETON ===== -->
+<div *ngIf="!datosCargados" class="skeleton-wrap">
+  <div class="skeleton-header-row"></div>
+  <div class="skeleton-table-row" *ngFor="let i of [].constructor(8)">
+    <div class="skeleton-cell" *ngFor="let j of [].constructor(9)"></div>
+  </div>
+</div>
+
+<!-- ===== TABLE SECTION ===== -->
+<section class="main-section" *ngIf="datosCargados">
+  <div class="table-card" data-tutorial="ej-tabla">
+
+    <div class="table-scroll">
+      <table class="stats-table">
+
+        <thead>
+          <tr>
+
+            <th class="col-nombre sortable" (click)="sortBy('nombre')">
+              {{ 'PLAYERS.TABLE.NAME' | translate }}
+              <i class="bi sort-icon" [ngClass]="{
+                'bi-chevron-up':     sortColumn === 'nombre' && sortDirection === 'asc',
+                'bi-chevron-down':   sortColumn === 'nombre' && sortDirection === 'desc',
+                'bi-chevron-expand': sortColumn !== 'nombre'
+              }"></i>
+            </th>
+
+            <th class="sortable" (click)="sortBy('nameTeam')">
+              {{ 'PLAYERS.TABLE.TEAM' | translate }}
+              <i class="bi sort-icon" [ngClass]="{
+                'bi-chevron-up':     sortColumn === 'nameTeam' && sortDirection === 'asc',
+                'bi-chevron-down':   sortColumn === 'nameTeam' && sortDirection === 'desc',
+                'bi-chevron-expand': sortColumn !== 'nameTeam'
+              }"></i>
+            </th>
+
+            <th class="sortable" (click)="sortBy('posicion')">
+              {{ 'PLAYERS.TABLE.POSITION' | translate }}
+              <i class="bi sort-icon" [ngClass]="{
+                'bi-chevron-up':     sortColumn === 'posicion' && sortDirection === 'asc',
+                'bi-chevron-down':   sortColumn === 'posicion' && sortDirection === 'desc',
+                'bi-chevron-expand': sortColumn !== 'posicion'
+              }"></i>
+            </th>
+
+            <th class="sortable" (click)="sortBy('partidosJugados')">
+              {{ 'PLAYERS.TABLE.MATCHES' | translate }}
+              <i class="bi sort-icon" [ngClass]="{
+                'bi-chevron-up':     sortColumn === 'partidosJugados' && sortDirection === 'asc',
+                'bi-chevron-down':   sortColumn === 'partidosJugados' && sortDirection === 'desc',
+                'bi-chevron-expand': sortColumn !== 'partidosJugados'
+              }"></i>
+            </th>
+
+            <th class="sortable" (click)="sortBy('minTotales')">
+              {{ 'PLAYERS.TABLE.MINUTES' | translate }}
+              <i class="bi sort-icon" [ngClass]="{
+                'bi-chevron-up':     sortColumn === 'minTotales' && sortDirection === 'asc',
+                'bi-chevron-down':   sortColumn === 'minTotales' && sortDirection === 'desc',
+                'bi-chevron-expand': sortColumn !== 'minTotales'
+              }"></i>
+            </th>
+
+            <th class="sortable" (click)="sortBy('mediaMinPorPartido')">
+              {{ 'PLAYERS.TABLE.MEDIA_MINUTES_MATCH' | translate }}
+              <i class="bi sort-icon" [ngClass]="{
+                'bi-chevron-up':     sortColumn === 'mediaMinPorPartido' && sortDirection === 'asc',
+                'bi-chevron-down':   sortColumn === 'mediaMinPorPartido' && sortDirection === 'desc',
+                'bi-chevron-expand': sortColumn !== 'mediaMinPorPartido'
+              }"></i>
+            </th>
+
+            <th class="sortable col-highlight" (click)="sortBy('goles')">
+              {{ 'PLAYERS.TABLE.GOALS' | translate }}
+              <i class="bi sort-icon" [ngClass]="{
+                'bi-chevron-up':     sortColumn === 'goles' && sortDirection === 'asc',
+                'bi-chevron-down':   sortColumn === 'goles' && sortDirection === 'desc',
+                'bi-chevron-expand': sortColumn !== 'goles'
+              }"></i>
+            </th>
+
+            <th class="sortable" (click)="sortBy('mediaGolesPorPartido')">
+              {{ 'PLAYERS.TABLE.MEDIA_GOALS_MATCH' | translate }}
+              <i class="bi sort-icon" [ngClass]="{
+                'bi-chevron-up':     sortColumn === 'mediaGolesPorPartido' && sortDirection === 'asc',
+                'bi-chevron-down':   sortColumn === 'mediaGolesPorPartido' && sortDirection === 'desc',
+                'bi-chevron-expand': sortColumn !== 'mediaGolesPorPartido'
+              }"></i>
+            </th>
+
+            <th class="sortable col-highlight" (click)="sortBy('asistencias')">
+              {{ 'PLAYERS.TABLE.ASSISTS' | translate }}
+              <i class="bi sort-icon" [ngClass]="{
+                'bi-chevron-up':     sortColumn === 'asistencias' && sortDirection === 'asc',
+                'bi-chevron-down':   sortColumn === 'asistencias' && sortDirection === 'desc',
+                'bi-chevron-expand': sortColumn !== 'asistencias'
+              }"></i>
+            </th>
+
+            <th class="sortable" (click)="sortBy('golesAsistencias')">
+              {{ 'PLAYERS.TABLE.GOALS_ASSISTS' | translate }}
+              <i class="bi sort-icon" [ngClass]="{
+                'bi-chevron-up':     sortColumn === 'golesAsistencias' && sortDirection === 'asc',
+                'bi-chevron-down':   sortColumn === 'golesAsistencias' && sortDirection === 'desc',
+                'bi-chevron-expand': sortColumn !== 'golesAsistencias'
+              }"></i>
+            </th>
+
+            <th class="sortable" (click)="sortBy('mediaAsistenciasPorPartido')">
+              {{ 'PLAYERS.TABLE.MEDIA_ASSISTS_MATCH' | translate }}
+              <i class="bi sort-icon" [ngClass]="{
+                'bi-chevron-up':     sortColumn === 'mediaAsistenciasPorPartido' && sortDirection === 'asc',
+                'bi-chevron-down':   sortColumn === 'mediaAsistenciasPorPartido' && sortDirection === 'desc',
+                'bi-chevron-expand': sortColumn !== 'mediaAsistenciasPorPartido'
+              }"></i>
+            </th>
+
+            <th class="sortable" (click)="sortBy('mediaGolesAsistenciasPorPartido')">
+              {{ 'PLAYERS.TABLE.MEDIA_GOALS_ASSISTS_MATCH' | translate }}
+              <i class="bi sort-icon" [ngClass]="{
+                'bi-chevron-up':     sortColumn === 'mediaGolesAsistenciasPorPartido' && sortDirection === 'asc',
+                'bi-chevron-down':   sortColumn === 'mediaGolesAsistenciasPorPartido' && sortDirection === 'desc',
+                'bi-chevron-expand': sortColumn !== 'mediaGolesAsistenciasPorPartido'
+              }"></i>
+            </th>
+
+            <th class="sortable" (click)="sortBy('penaltisConvertidos')">
+              {{ 'PLAYERS.TABLE.GOALS_PENALTY' | translate }}
+              <i class="bi sort-icon" [ngClass]="{
+                'bi-chevron-up':     sortColumn === 'penaltisConvertidos' && sortDirection === 'asc',
+                'bi-chevron-down':   sortColumn === 'penaltisConvertidos' && sortDirection === 'desc',
+                'bi-chevron-expand': sortColumn !== 'penaltisConvertidos'
+              }"></i>
+            </th>
+
+            <th class="sortable" (click)="sortBy('tiroLibre')">
+              {{ 'PLAYERS.TABLE.GOALS_FREE_KICK' | translate }}
+              <i class="bi sort-icon" [ngClass]="{
+                'bi-chevron-up':     sortColumn === 'tiroLibre' && sortDirection === 'asc',
+                'bi-chevron-down':   sortColumn === 'tiroLibre' && sortDirection === 'desc',
+                'bi-chevron-expand': sortColumn !== 'tiroLibre'
+              }"></i>
+            </th>
+
+            <th class="sortable" (click)="sortBy('penaltisFallados')">
+              {{ 'PLAYERS.TABLE.PENALTIES_MISSED' | translate }}
+              <i class="bi sort-icon" [ngClass]="{
+                'bi-chevron-up':     sortColumn === 'penaltisFallados' && sortDirection === 'asc',
+                'bi-chevron-down':   sortColumn === 'penaltisFallados' && sortDirection === 'desc',
+                'bi-chevron-expand': sortColumn !== 'penaltisFallados'
+              }"></i>
+            </th>
+
+            <th>{{ 'PLAYERS.TABLE.CARDS' | translate }}</th>
+
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let player of playersPaged; trackBy: trackByPlayer">
+
+            <td class="td-nombre">{{ player.nombre }}</td>
+
+            <td>
+              <span class="badge-team">
+                {{ player.nameTeam || ('PLAYERS.NO_TEAM' | translate) }}
+              </span>
+            </td>
+
+            <td>
+              <span class="badge-pos">{{ player.posicion }}</span>
+            </td>
+
+            <td class="td-num">{{ player.partidosJugados }} / {{ player.totalMatchesPlayer }}</td>
+            <td class="td-num">{{ player.minTotales }}</td>
+            <td class="td-num">{{ player.mediaMinPorPartido }}</td>
+            <td class="td-num td-highlight">{{ player.goles }}</td>
+            <td class="td-num">{{ player.mediaGolesPorPartido }}</td>
+            <td class="td-num td-highlight">{{ player.asistencias }}</td>
+            <td class="td-num">{{ player.golesAsistencias }}</td>
+            <td class="td-num">{{ player.mediaAsistPorPartido }}</td>
+            <td class="td-num">{{ player.mediaGolesAsistenciasPorPartido }}</td>
+            <td class="td-num">{{ player.golesPenalti }}</td>
+            <td class="td-num">{{ player.golesFalta }}</td>
+            <td class="td-num">{{ player.penaltisFallados }}</td>
+
+            <td class="cards-cell">
+              <span class="badge-card badge-yellow">{{ player.tarAmarilla }}</span>
+              <span class="badge-card badge-red">{{ player.tarRojas }}</span>
+            </td>
+
+          </tr>
+        </tbody>
+
+        <!-- Empty state -->
+        <tbody *ngIf="datosCargados && playersPaged.length === 0">
+          <tr>
+            <td colspan="20">
+              <div class="empty-state">
+                <i class="bi bi-people-fill"></i>
+                <p>{{ 'STATS.NO_PLAYER_DATA' | translate }}</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+    </div>
+
+    <!-- ===== PAGINATION ===== -->
+    <div class="pagination-bar" data-tutorial="ej-paginacion">
+      <span class="pagination-info">{{ paginationInfo }}</span>
+
+      <select class="page-size-select" [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+        <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+      </select>
+
+      <div class="pagination-controls">
+        <button class="page-btn" (click)="prevPage()" [disabled]="page === 1">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <span class="page-indicator">{{ page }} / {{ totalPages }}</span>
+        <button class="page-btn" (click)="nextPage()" [disabled]="page === totalPages">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== AI SIDEBAR OVERLAY ===== -->
+<div class="ai-overlay" [class.active]="aiPanelOpen" (click)="toggleAiPanel()"></div>
+
+<!-- ===== AI SIDEBAR ===== -->
+<aside class="ai-sidebar" [class.active]="aiPanelOpen" data-tutorial="ej-panel-ia">
+
+  <div class="ai-sidebar-header">
+    <div class="ai-sidebar-title">
+      <i class="bi bi-robot"></i>
+      <span>{{ 'AI_PANEL.SIDEBAR_TITLE_PLAYERS' | translate }}</span>
+    </div>
+    <button class="ai-close-btn" (click)="toggleAiPanel()" aria-label="Cerrar panel IA">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div class="ai-sidebar-body">
+
+    <div class="ai-suggestions-section">
+      <p class="ai-intro">
+        <i class="bi bi-lightbulb-fill"></i>
+        {{ 'AI_PANEL.HELP_TEXT' | translate }}
+      </p>
+      <div class="suggestion-chips">
+        <button class="chip" (click)="useSuggestion('¿Quién es el goleador del equipo?')">
+          <i class="bi bi-trophy-fill"></i>
+          {{ 'AI_PANEL.SUGGESTION_TOP_SCORER' | translate }}
+        </button>
+        <button class="chip" (click)="useSuggestion('Muestra una gráfica de asistencias por jugador')">
+          <i class="bi bi-bar-chart-fill"></i>
+          {{ 'AI_PANEL.SUGGESTION_ASSISTS' | translate }}
+        </button>
+        <button class="chip" (click)="useSuggestion('Analiza el rendimiento de los jugadores')">
+          <i class="bi bi-graph-up-arrow"></i>
+          {{ 'AI_PANEL.SUGGESTION_PERFORMANCE' | translate }}
+        </button>
+        <button class="chip" (click)="useSuggestion('¿Qué jugadores tienen más tarjetas?')">
+          <i class="bi bi-square-fill chip-icon-yellow"></i>
+          {{ 'AI_PANEL.SUGGESTION_CARDS' | translate }}
+        </button>
+        <button class="chip" (click)="useSuggestion('Compara goles vs asistencias')">
+          <i class="bi bi-arrow-left-right"></i>
+          {{ 'AI_PANEL.SUGGESTION_COMPARISON' | translate }}
+        </button>
+        <button class="chip" (click)="useSuggestion('¿Cuál es la media de minutos jugados?')">
+          <i class="bi bi-stopwatch-fill"></i>
+          {{ 'AI_PANEL.SUGGESTION_AVG_MINUTES' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <div class="ai-chat-section">
+
+      <div class="ai-messages" #aiMessagesContainer>
+
+        <div *ngFor="let message of aiMessages" class="ai-message" [ngClass]="message.role">
+          <div class="message-bubble">
+            <span class="message-label">
+              <i class="bi" [ngClass]="message.role === 'assistant' ? 'bi-robot' : 'bi-person-fill'"></i>
+              <strong *ngIf="message.role === 'assistant'">IA</strong>
+              <strong *ngIf="message.role === 'user'">{{ 'AI_PANEL.USER_LABEL' | translate }}</strong>
+            </span>
+            <div [innerHTML]="message.content | markdownAi"></div>
+          </div>
+        </div>
+
+        <div *ngIf="aiLoading" class="ai-message assistant">
+          <div class="message-bubble">
+            <span class="message-label">
+              <i class="bi bi-robot"></i>
+              <strong>IA</strong>
+            </span>
+            <p class="typing-dots">
+              <span></span><span></span><span></span>
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="ai-input-area">
+        <textarea
+          [(ngModel)]="aiPrompt"
+          [placeholder]="'AI_PANEL.PLACEHOLDER' | translate"
+          rows="3"
+          (keydown)="onKeyDown($event)"
+          [disabled]="aiLoading"
+        ></textarea>
+        <div class="ai-input-actions">
+          <button *ngIf="isVoiceSupported && !aiLoading"
+            class="btn-mic"
+            [class.recording]="isRecording"
+            (click)="toggleVoiceRecognition()"
+            [title]="isRecording ? 'Detener grabación' : 'Usar micrófono'"
+            aria-label="Reconocimiento de voz">
+            <i class="bi" [ngClass]="isRecording ? 'bi-mic-fill' : 'bi-mic'"></i>
+          </button>
+          <button class="btn-send" (click)="sendAiMessage()" [disabled]="aiLoading || !aiPrompt.trim()">
+            <i class="bi bi-send-fill"></i>
+            {{ 'AI_PANEL.SEND' | translate }}
+          </button>
+        </div>
+        <small class="ai-hint">Shift+Enter para nueva línea · Enter para enviar</small>
+      </div>
+
+    </div>
+  </div>
+</aside>

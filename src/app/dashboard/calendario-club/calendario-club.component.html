@@ -1,0 +1,452 @@
+<!-- ═══════════════════════════════════════════════
+     CABECERA HERO — SphairaTech Premium
+═══════════════════════════════════════════════ -->
+<div class="page-header">
+  <button class="btn-back-clean" (click)="goBack()" data-tutorial="cal-volver">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
+
+  <div class="page-header-title">
+    <h2>
+      <i class="bi bi-calendar3 me-2"></i>
+      {{ 'CALENDAR_CLUB.TITLE' | translate }}
+    </h2>
+    <p class="page-subtitle">{{ 'CALENDAR_CLUB.SUBTITLE' | translate }}</p>
+  </div>
+
+  <div class="page-header-spacer"></div>
+</div>
+
+<div class="container-fluid calendario-club-page">
+
+  <!-- ═══════════════════════════════════════════════
+       FILTRO DE EQUIPOS — CHIPS
+  ═══════════════════════════════════════════════ -->
+  <div class="team-filter-section" data-tutorial="cal-filtro">
+    <div class="team-filter-header">
+      <span class="team-filter-label">
+        <i class="bi bi-funnel me-1"></i>
+        {{ 'CALENDAR_CLUB.FILTER.TITLE' | translate }}
+      </span>
+      <button class="team-select-all" (click)="selectAllTeams()">
+        <i class="bi" [ngClass]="teamsVisibles.size === teams.length ? 'bi-eye-slash' : 'bi-eye'"></i>
+        {{ teamsVisibles.size === teams.length
+            ? ('CALENDAR_CLUB.FILTER.HIDE_ALL' | translate)
+            : ('CALENDAR_CLUB.FILTER.SHOW_ALL' | translate) }}
+      </button>
+    </div>
+
+    <div class="team-chips" cdkDropList [cdkDropListOrientation]="'horizontal'"
+         (cdkDropListDropped)="dropTeam($event)">
+      <div *ngFor="let team of teams; trackBy: trackByTeamId"
+           cdkDrag class="team-chip-wrapper">
+        <div class="team-chip"
+             [class.team-chip-active]="isTeamVisible(team.teamId)"
+             [style.--team-color]="team.color">
+          <i class="bi bi-grip-vertical drag-handle"></i>
+          <span class="team-dot" [style.backgroundColor]="team.color"></span>
+          <span class="team-chip-name" (click)="onChipClick(team.teamId)">{{ team.name }}</span>
+          <i class="bi toggle-eye" (click)="onChipClick(team.teamId)"
+             [ngClass]="isTeamVisible(team.teamId) ? 'bi-eye-fill' : 'bi-eye-slash'"></i>
+        </div>
+        <div *cdkDragPlaceholder class="team-chip-placeholder"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       LOADING
+  ═══════════════════════════════════════════════ -->
+  <div class="calendar-skeleton" *ngIf="isLoading">
+    <div class="skeleton-header"></div>
+    <div class="skeleton-week-row">
+      <div class="skeleton-day-header" *ngFor="let d of [].constructor(7)"></div>
+    </div>
+    <div class="skeleton-week-row" *ngFor="let w of [].constructor(5)">
+      <div class="skeleton-day-cell" *ngFor="let d of [].constructor(7)"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       ERROR
+  ═══════════════════════════════════════════════ -->
+  <div class="error-state" *ngIf="errorMsg && !isLoading">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    {{ errorMsg }}
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       CALENDARIO MENSUAL
+  ═══════════════════════════════════════════════ -->
+  <div class="calendar-container" *ngIf="!isLoading && !errorMsg" data-tutorial="cal-grid">
+
+    <!-- NAVEGACIÓN MES -->
+    <div class="month-nav" data-tutorial="cal-nav">
+      <button class="month-btn" (click)="prevMonth()">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+
+      <div class="month-title">
+        <span class="month-name">{{ monthNames[currentMonth] }}</span>
+        <span class="month-year">{{ currentYear }}</span>
+      </div>
+
+      <button class="month-btn" (click)="nextMonth()">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+
+      <button class="btn-today" (click)="goToToday()">
+        {{ 'CALENDAR_CLUB.TODAY' | translate }}
+      </button>
+    </div>
+
+    <!-- GRID DEL CALENDARIO -->
+    <div class="calendar-grid">
+
+      <!-- CABECERA DÍAS -->
+      <div class="calendar-weekdays">
+        <div class="weekday" *ngFor="let d of weekDays">{{ d }}</div>
+      </div>
+
+      <!-- SEMANAS -->
+      <div class="calendar-weeks">
+        <div class="calendar-week" *ngFor="let week of calendarGrid; trackBy: trackByDate">
+          <div *ngFor="let day of week"
+               class="calendar-cell"
+               [class.other-month]="!day.isCurrentMonth"
+               [class.today]="day.isToday"
+               [class.has-events]="getVisibleDots(day).length > 0"
+               (click)="openDayPanel(day)">
+
+            <span class="day-number">{{ day.dayNumber }}</span>
+
+            <!-- ICONOS DE EVENTOS -->
+            <div class="event-dots">
+              <span *ngFor="let evt of getDotsToShow(day)"
+                    class="dot"
+                    [style.backgroundColor]="evt.teamColor"
+                    [class.dot-training]="evt.type === 'training'"
+                    [class.dot-match]="evt.type === 'match'"
+                    [title]="evt.teamName + (evt.type === 'match' ? ' (Partido)' : ' (Entrenamiento)')">
+              </span>
+              <span *ngIf="getExtraCount(day) > 0" class="dot-extra">
+                +{{ getExtraCount(day) }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEYENDA -->
+    <div class="calendar-legend">
+      <div class="legend-item">
+        <span class="legend-dot legend-dot-training"></span>
+        <span>{{ 'CALENDAR_CLUB.LEGEND.TRAINING' | translate }}</span>
+        <small class="legend-shape-hint">({{ 'CALENDAR_CLUB.LEGEND.DUMBBELL' | translate }})</small>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot legend-dot-match"></span>
+        <span>{{ 'CALENDAR_CLUB.LEGEND.MATCH' | translate }}</span>
+        <small class="legend-shape-hint">({{ 'CALENDAR_CLUB.LEGEND.BALL' | translate }})</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       PANEL LATERAL — DETALLE DEL DÍA
+  ═══════════════════════════════════════════════ -->
+  <!-- Fondo visual clicable para cerrar -->
+  <div class="day-panel-overlay" *ngIf="showDayPanel" (click)="closeDayPanel()" appModalBackdrop></div>
+
+  <div class="day-panel" [class.day-panel-open]="showDayPanel" data-tutorial="cal-panel-dia">
+    <div class="day-panel-header" *ngIf="selectedDay">
+      <div>
+        <h5>
+          <i class="bi bi-calendar-event me-2"></i>
+          {{ formatDateDisplay(selectedDay.date) }}
+        </h5>
+        <small class="day-panel-count">
+          {{ selectedDay.events.length }}
+          {{ (selectedDay.events.length === 1 ? 'CALENDAR_CLUB.PANEL.EVENT' : 'CALENDAR_CLUB.PANEL.EVENTS') | translate }}
+        </small>
+      </div>
+      <button class="day-panel-close" (click)="closeDayPanel()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="day-panel-body" *ngIf="selectedDay">
+
+      <!-- SIN EVENTOS -->
+      <div class="day-panel-empty" *ngIf="selectedDay.events.length === 0">
+        <i class="bi bi-calendar-x"></i>
+        <p>{{ 'CALENDAR_CLUB.PANEL.EMPTY' | translate }}</p>
+      </div>
+
+      <!-- EVENTOS AGRUPADOS POR EQUIPO -->
+      <div *ngFor="let group of groupByTeam(selectedDay.events)" class="team-group">
+
+        <!-- CABECERA DEL EQUIPO -->
+        <div class="team-group-header">
+          <span class="team-group-dot" [style.backgroundColor]="group.team.color"></span>
+          <span class="team-group-name">{{ group.team.name }}</span>
+          <button type="button" class="team-group-link" (click)="navigateToTeamCalendar(group.team.teamId)"
+                  [title]="'CALENDAR_CLUB.PANEL.GO_TO_CALENDAR' | translate">
+            <i class="bi bi-box-arrow-up-right"></i>
+          </button>
+        </div>
+
+        <!-- ENTRENAMIENTOS -->
+        <button type="button" *ngFor="let t of group.trainings"
+                class="event-card event-training event-card-btn"
+                (click)="onEventCardClick($event, t)"
+                (mousedown)="onEventCardClick($event, t)"
+                (touchstart)="onEventCardClick($event, t)">
+          <div class="event-icon">
+            <svg viewBox="0 0 24 14" fill="currentColor" width="18" height="12">
+              <rect x="0" y="3.5" width="3.5" height="7" rx="1"/>
+              <rect x="20.5" y="3.5" width="3.5" height="7" rx="1"/>
+              <rect x="3.5" y="1" width="3" height="12" rx="1"/>
+              <rect x="17.5" y="1" width="3" height="12" rx="1"/>
+              <rect x="6.5" y="5" width="11" height="4" rx="1"/>
+            </svg>
+          </div>
+          <div class="event-info">
+            <span class="event-type">{{ 'CALENDAR_CLUB.PANEL.TRAINING' | translate }}</span>
+            <span class="event-detail" *ngIf="t.time">
+              <i class="bi bi-geo-alt me-1"></i>{{ t.time }}
+            </span>
+          </div>
+          <span class="event-action">
+            <i class="bi bi-chevron-right"></i>
+          </span>
+        </button>
+
+        <!-- PARTIDOS -->
+        <button type="button" *ngFor="let m of group.matches"
+                class="event-card event-match event-card-btn"
+                (click)="onEventCardClick($event, m)"
+                (mousedown)="onEventCardClick($event, m)"
+                (touchstart)="onEventCardClick($event, m)">
+          <div class="event-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+              <circle cx="12" cy="12" r="11"/>
+              <path d="M12 1.5a10.5 10.5 0 1 0 0 21 10.5 10.5 0 0 0 0-21zm0 1.5a9 9 0 0 1 5.2 1.65L14.5 7.5l-5 0-2.7-2.85A9 9 0 0 1 12 3zm-7.8 5.1L7 7l3 3-1.2 4H4.3a9 9 0 0 1-.1-5.9zm2.1 7.4l1.5-1H11l1.8 3.3A9 9 0 0 1 6.3 15.5zm9.4 2.3L13.5 14l1.2-4 3.8-1.3a9 9 0 0 1-.8 9.1z" fill="rgba(255,255,255,0.3)"/>
+            </svg>
+          </div>
+          <div class="event-info">
+            <span class="event-type">
+              {{ 'CALENDAR_CLUB.PANEL.MATCH' | translate }}
+              <span class="match-terreno" *ngIf="m.terreno">
+                ({{ getTerrenoLabel(m.terreno) }})
+              </span>
+            </span>
+            <span class="event-rival" *ngIf="m.rivalName">
+              {{ 'CALENDAR_CLUB.PANEL.VS' | translate }} {{ m.rivalName }}
+            </span>
+            <span class="event-detail" *ngIf="m.time">
+              <i class="bi bi-clock me-1"></i>{{ m.time }}
+            </span>
+          </div>
+          <span class="event-action">
+            <i class="bi bi-chevron-right"></i>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     MODAL PREMIUM — DETALLE DE EVENTO (fuera del container)
+═══════════════════════════════════════════════ -->
+<div class="evm-backdrop" *ngIf="showEventModal && selectedEvent"
+     (click)="closeEventModal()"></div>
+
+<div class="evm-container" *ngIf="showEventModal && selectedEvent"
+     role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+
+    <!-- Tira de color superior -->
+    <div class="evm-color-bar"
+         [style.background]="selectedEvent?.type === 'training' ? '#2f9e44' : '#e8590c'">
+    </div>
+
+    <!-- Botón cerrar -->
+    <button class="evm-close" (click)="closeEventModal()" aria-label="Cerrar">
+      <i class="bi bi-x-lg"></i>
+    </button>
+
+    <!-- Icono principal -->
+    <div class="evm-icon-wrap"
+         [class.evm-icon-training]="selectedEvent?.type === 'training'"
+         [class.evm-icon-match]="selectedEvent?.type === 'match'">
+      <ng-container *ngIf="selectedEvent?.type === 'training'">
+        <svg viewBox="0 0 24 14" fill="currentColor" width="28" height="18">
+          <rect x="0" y="3.5" width="3.5" height="7" rx="1"/>
+          <rect x="20.5" y="3.5" width="3.5" height="7" rx="1"/>
+          <rect x="3.5" y="1" width="3" height="12" rx="1"/>
+          <rect x="17.5" y="1" width="3" height="12" rx="1"/>
+          <rect x="6.5" y="5" width="11" height="4" rx="1"/>
+        </svg>
+      </ng-container>
+      <ng-container *ngIf="selectedEvent?.type === 'match'">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28">
+          <circle cx="12" cy="12" r="11"/>
+          <path d="M12 1.5a10.5 10.5 0 1 0 0 21 10.5 10.5 0 0 0 0-21zm0 1.5a9 9 0 0 1 5.2 1.65L14.5 7.5l-5 0-2.7-2.85A9 9 0 0 1 12 3zm-7.8 5.1L7 7l3 3-1.2 4H4.3a9 9 0 0 1-.1-5.9zm2.1 7.4l1.5-1H11l1.8 3.3A9 9 0 0 1 6.3 15.5zm9.4 2.3L13.5 14l1.2-4 3.8-1.3a9 9 0 0 1-.8 9.1z" fill="rgba(255,255,255,0.25)"/>
+        </svg>
+      </ng-container>
+    </div>
+
+    <!-- Título del modal -->
+    <div class="evm-header">
+      <div class="evm-team-badge" [style.background]="selectedEvent?.teamColor + '22'"
+           [style.borderColor]="selectedEvent?.teamColor">
+        <span class="evm-team-dot" [style.background]="selectedEvent?.teamColor"></span>
+        <span class="evm-team-name">{{ selectedEvent?.teamName }}</span>
+      </div>
+      <h3 class="evm-title"
+          [class.evm-title-training]="selectedEvent?.type === 'training'"
+          [class.evm-title-match]="selectedEvent?.type === 'match'">
+        {{ selectedEvent?.type === 'training'
+            ? ('CALENDAR_CLUB.PANEL.TRAINING' | translate)
+            : ('CALENDAR_CLUB.PANEL.MATCH' | translate) }}
+      </h3>
+    </div>
+
+    <!-- Filas de información -->
+    <div class="evm-body">
+
+      <!-- Fecha -->
+      <div class="evm-info-row">
+        <div class="evm-info-icon">
+          <i class="bi bi-calendar3"></i>
+        </div>
+        <div class="evm-info-content">
+          <span class="evm-info-label">{{ 'CALENDAR_CLUB.MODAL.DATE' | translate }}</span>
+          <span class="evm-info-value">{{ formatDateDisplay(selectedEvent?.date || '') }}</span>
+        </div>
+      </div>
+
+      <!-- ENTRENAMIENTO: Lugar -->
+      <ng-container *ngIf="selectedEvent?.type === 'training'">
+        <div class="evm-info-row" *ngIf="selectedEvent?.startTime || selectedEvent?.endTime">
+          <div class="evm-info-icon">
+            <i class="bi bi-clock-history"></i>
+          </div>
+          <div class="evm-info-content">
+            <span class="evm-info-label">{{ 'CALENDAR_CLUB.MODAL.SCHEDULE' | translate }}</span>
+            <span class="evm-info-value">
+              {{ selectedEvent?.startTime || '--:--' }}<span *ngIf="selectedEvent?.endTime"> - {{ selectedEvent?.endTime }}</span>
+            </span>
+          </div>
+        </div>
+        <div class="evm-info-row" *ngIf="selectedEvent?.time">
+          <div class="evm-info-icon">
+            <i class="bi bi-geo-alt-fill"></i>
+          </div>
+          <div class="evm-info-content">
+            <span class="evm-info-label">{{ 'CALENDAR_CLUB.MODAL.LOCATION' | translate }}</span>
+            <span class="evm-info-value">{{ selectedEvent?.time }}</span>
+          </div>
+        </div>
+        <div class="evm-info-row" *ngIf="selectedEvent?.objective">
+          <div class="evm-info-icon">
+            <i class="bi bi-bullseye"></i>
+          </div>
+          <div class="evm-info-content">
+            <span class="evm-info-label">{{ 'CALENDAR_CLUB.MODAL.OBJECTIVE' | translate }}</span>
+            <span class="evm-info-value evm-info-value--multiline">{{ selectedEvent?.objective }}</span>
+          </div>
+        </div>
+        <div class="evm-info-row" *ngIf="selectedEvent?.warmUp">
+          <div class="evm-info-icon">
+            <i class="bi bi-fire"></i>
+          </div>
+          <div class="evm-info-content">
+            <span class="evm-info-label">{{ 'CALENDAR_CLUB.MODAL.WARMUP' | translate }}</span>
+            <span class="evm-info-value evm-info-value--multiline">{{ selectedEvent?.warmUp }}</span>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- PARTIDO: Rival, Terreno, Hora -->
+      <ng-container *ngIf="selectedEvent?.type === 'match'">
+        <div class="evm-info-row" *ngIf="selectedEvent?.rivalName">
+          <div class="evm-info-icon">
+            <i class="bi bi-shield-halved"></i>
+          </div>
+          <div class="evm-info-content">
+            <span class="evm-info-label">{{ 'CALENDAR_CLUB.MODAL.RIVAL' | translate }}</span>
+            <span class="evm-info-value">{{ selectedEvent?.rivalName }}</span>
+          </div>
+        </div>
+        <div class="evm-info-row" *ngIf="selectedEvent?.matchType">
+          <div class="evm-info-icon">
+            <i class="bi bi-trophy-fill"></i>
+          </div>
+          <div class="evm-info-content">
+            <span class="evm-info-label">{{ 'CALENDAR_CLUB.MODAL.MATCH_TYPE' | translate }}</span>
+            <span class="evm-info-value">{{ selectedEvent?.matchType }}</span>
+          </div>
+        </div>
+        <div class="evm-info-row" *ngIf="selectedEvent?.terreno">
+          <div class="evm-info-icon">
+            <i class="bi bi-geo-alt-fill"></i>
+          </div>
+          <div class="evm-info-content">
+            <span class="evm-info-label">{{ 'CALENDAR_CLUB.MODAL.VENUE' | translate }}</span>
+            <span class="evm-info-value evm-terreno-badge"
+                  [class.evm-local]="selectedEvent?.terreno === 'Local'"
+                  [class.evm-visitante]="selectedEvent?.terreno !== 'Local'">
+              {{ getTerrenoLabel(selectedEvent?.terreno) }}
+            </span>
+          </div>
+        </div>
+        <div class="evm-info-row" *ngIf="selectedEvent?.stadium">
+          <div class="evm-info-icon">
+            <i class="bi bi-pin-map-fill"></i>
+          </div>
+          <div class="evm-info-content">
+            <span class="evm-info-label">{{ 'CALENDAR_CLUB.MODAL.STADIUM' | translate }}</span>
+            <span class="evm-info-value">{{ selectedEvent?.stadium }}</span>
+          </div>
+        </div>
+        <div class="evm-info-row" *ngIf="selectedEvent?.time">
+          <div class="evm-info-icon">
+            <i class="bi bi-clock-fill"></i>
+          </div>
+          <div class="evm-info-content">
+            <span class="evm-info-label">{{ 'CALENDAR_CLUB.MODAL.TIME' | translate }}</span>
+            <span class="evm-info-value">{{ selectedEvent?.time }}</span>
+          </div>
+        </div>
+        <div class="evm-info-row" *ngIf="selectedEvent?.meetTime">
+          <div class="evm-info-icon">
+            <i class="bi bi-alarm-fill"></i>
+          </div>
+          <div class="evm-info-content">
+            <span class="evm-info-label">{{ 'CALENDAR_CLUB.MODAL.MEET_TIME' | translate }}</span>
+            <span class="evm-info-value">{{ selectedEvent?.meetTime }}</span>
+          </div>
+        </div>
+      </ng-container>
+
+    </div>
+
+    <!-- Acciones -->
+    <div class="evm-footer">
+      <button class="evm-btn-goto"
+              [class.evm-btn-training]="selectedEvent?.type === 'training'"
+              [class.evm-btn-match]="selectedEvent?.type === 'match'"
+              (click)="goToEventInCalendar(selectedEvent!)">
+        <i class="bi bi-box-arrow-up-right me-2"></i>
+        {{ 'CALENDAR_CLUB.MODAL.GO_TO_DETAIL' | translate }}
+      </button>
+    </div>
+
+  </div>

@@ -1,0 +1,10 @@
+{
+  "/proxy-images": {
+    "target": "https://appsphairatech.com",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/proxy-images": "/images"
+    }
+  }
+}

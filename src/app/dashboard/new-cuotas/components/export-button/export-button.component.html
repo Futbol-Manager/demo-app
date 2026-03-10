@@ -1,0 +1,23 @@
+<div class="btn-group" role="group">
+  <button type="button" class="btn btn-outline-secondary dropdown-toggle"
+          data-bs-toggle="dropdown" aria-expanded="false"
+          [disabled]="exporting">
+    <span *ngIf="exporting" class="spinner-border spinner-border-sm me-1" role="status"></span>
+    <i *ngIf="!exporting" class="fas fa-download me-1"></i>
+    {{ 'PAYMENTS.EXPORT.TITLE' | translate }}
+  </button>
+  <ul class="dropdown-menu">
+    <li>
+      <a class="dropdown-item" href="javascript:void(0)" (click)="exportExcel()">
+        <i class="fas fa-file-excel me-2 text-success"></i>
+        Excel
+      </a>
+    </li>
+    <li>
+      <a class="dropdown-item" href="javascript:void(0)" (click)="exportPdf()">
+        <i class="fas fa-file-pdf me-2 text-danger"></i>
+        PDF
+      </a>
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,324 @@
+
+<!-- ===== PAGE HEADER ===== -->
+<div class="page-header">
+  <div class="back-container" data-tutorial="cr-volver">
+    <button class="btn-back-clean" type="button" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h2 class="table-title">
+      <i class="bi bi-trophy me-2"></i>Clasificación y resultados
+    </h2>
+    <p class="header-subtitle">Seguimiento de la liga y resultados del equipo</p>
+  </div>
+
+  <div class="page-header-right"></div>
+</div>
+
+<!-- Overlay spinner Sphaira durante el refresh (sin borrar la tabla) -->
+<div *ngIf="refreshing" class="refresh-overlay">
+  <div class="refresh-overlay-card">
+    <div class="sphaira-spinner-container">
+      <div class="sphaira-spinner-ring"></div>
+      <img src="assets/images/Logo_SphairaTech1.svg" alt="Sphaira" class="sphaira-spinner-logo" />
+    </div>
+    <h5 class="wizard-title mt-3">Actualizando clasificación...</h5>
+    <p class="wizard-message">La IA está analizando la página de tu federación.<br>Esto puede tardar entre 20 y 40 segundos.</p>
+  </div>
+</div>
+
+<!-- Loading con spinner Sphaira + mensaje IA -->
+<div *ngIf="loading" class="wizard-wrapper">
+  <div class="wizard-card wizard-loading">
+    <div class="sphaira-spinner-container">
+      <div class="sphaira-spinner-ring"></div>
+      <img src="assets/images/Logo_SphairaTech1.svg" alt="Sphaira" class="sphaira-spinner-logo" />
+    </div>
+    <h5 class="wizard-title mt-4">Cargando clasificación...</h5>
+    <p class="wizard-message">La IA está analizando la página de tu federación.<br>Esto puede tardar entre 20 y 40 segundos.</p>
+    <div class="wizard-steps-indicator mt-3">
+      <span class="step-dot active"></span>
+      <span class="step-dot active"></span>
+      <span class="step-dot"></span>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!loading">
+
+  <!-- ══════════ WIZARD (sin URL configurada) ══════════ -->
+  <div *ngIf="datosNulos" class="wizard-wrapper">
+
+    <!-- Paso 1: URL -->
+    <div *ngIf="wizardStep === 'url'" class="wizard-card">
+      <div class="wizard-icon">🔗</div>
+      <h5 class="wizard-title">Configura tu clasificación</h5>
+      <p class="wizard-desc">
+        Introduce la URL de la página de clasificación de tu federación o liga.<br>
+        Sphaira extraerá los datos automáticamente.
+      </p>
+      <div class="wizard-form">
+        <label class="wizard-label">URL de clasificación</label>
+        <input
+          type="url"
+          class="wizard-input"
+          [(ngModel)]="urlInput"
+          placeholder="https://www.tufederacion.es/clasificacion?grupo=XXXXX"
+          (keyup.enter)="startWizard()"
+          autofocus
+        />
+        <button class="wizard-btn" (click)="startWizard()" [disabled]="!urlInput.trim()">
+          <i class="bi bi-search me-2"></i>Analizar y cargar
+        </button>
+      </div>
+      <div class="wizard-hint">
+        Introduce la URL exacta de la página de clasificación de tu federación o liga.
+      </div>
+    </div>
+
+    <!-- Paso 2: Cargando -->
+    <div *ngIf="wizardStep === 'loading'" class="wizard-card wizard-loading">
+      <div class="sphaira-spinner-container">
+        <div class="sphaira-spinner-ring"></div>
+        <img src="assets/images/Logo_SphairaTech1.svg" alt="Sphaira" class="sphaira-spinner-logo" />
+      </div>
+      <h5 class="wizard-title mt-4">Procesando...</h5>
+      <p class="wizard-message">{{ wizardMessage }}</p>
+      <div class="wizard-steps-indicator mt-3">
+        <span class="step-dot active"></span>
+        <span class="step-dot active"></span>
+        <span class="step-dot"></span>
+      </div>
+    </div>
+
+    <!-- Paso 3: Éxito -->
+    <div *ngIf="wizardStep === 'success'" class="wizard-card wizard-success">
+      <div class="wizard-success-icon">✅</div>
+      <h5 class="wizard-title">¡Datos cargados!</h5>
+      <p class="wizard-desc">
+        La clasificación y los resultados se han importado correctamente.<br>
+        Pulsa el botón para verlos.
+      </p>
+      <button class="wizard-btn" (click)="finishWizard()">
+        <i class="bi bi-table me-2"></i>Ver clasificación
+      </button>
+      <div class="wizard-steps-indicator mt-4">
+        <span class="step-dot done"></span>
+        <span class="step-dot done"></span>
+        <span class="step-dot done"></span>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="wizardStep === 'error'" class="wizard-card wizard-error">
+      <div class="wizard-error-icon">⚠️</div>
+      <h5 class="wizard-title">No se pudieron cargar los datos</h5>
+      <p class="wizard-message">{{ wizardMessage }}</p>
+      <button class="wizard-btn btn-outline mt-3" (click)="retryWizard()">
+        <i class="bi bi-arrow-counterclockwise me-2"></i>Intentar con otra URL
+      </button>
+    </div>
+
+  </div>
+  <!-- /WIZARD -->
+
+  <!-- ══════════ DATOS CARGADOS ══════════ -->
+  <div *ngIf="datosCargados" class="container mt-3">
+
+    <!-- Cabecera -->
+    <div class="sph-section-header">
+      <h5>
+        <i class="bi bi-bar-chart-steps me-1"></i>
+        {{ 'CAL.TEXT_362' | translate }}
+        <span class="sph-badge-ai" *ngIf="!jornadaNavegable">IA</span>
+      </h5>
+    </div>
+
+    <!-- Toolbar: tabs + jornada + refresh -->
+    <div class="sph-toolbar">
+      <div class="sph-tab-btns" data-tutorial="cr-toolbar">
+        <button class="btn-sph-tab" [class.active]="!contenidoActivo" (click)="mostrarContenido(false)">
+          <i class="bi bi-list-ol me-1"></i>{{ 'TITLES.STANDINGS' | translate }}
+        </button>
+        <button class="btn-sph-tab" [class.active]="contenidoActivo" (click)="mostrarContenido(true)">
+          <i class="bi bi-calendar2-check me-1"></i>{{ 'TITLES.RESULTS' | translate }}
+        </button>
+      </div>
+
+      <div class="sph-controls" data-tutorial="cr-jornada">
+        <ng-container *ngIf="jornadaNavegable; else jornadaFija">
+          <select class="sph-select" [(ngModel)]="jornadaSeleccionada" (change)="cambiarJornada()">
+            <option *ngFor="let j of jornadas" [value]="j">{{ 'TITLES.ROUND' | translate }} {{ j }}</option>
+          </select>
+        </ng-container>
+        <ng-template #jornadaFija>
+          <span class="badge-jornada-fija" title="Esta fuente muestra siempre la jornada actual">
+            <i class="bi bi-calendar-event"></i> Jornada actual
+          </span>
+        </ng-template>
+        <button class="btn-refresh" (click)="refresh()" title="Actualizar datos">
+          <i class="bi bi-arrow-clockwise"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Aviso temporada sin iniciar -->
+    <div *ngIf="temporadaSinIniciar" class="container px-0">
+      <div class="sph-info-banner mt-2">
+        <i class="bi bi-info-circle-fill"></i>
+        <span>La fase actual aún no ha comenzado — todos los equipos tienen 0 puntos. Los datos se actualizarán cuando empiecen los partidos. Pulsa <strong>actualizar</strong> cuando quieras.</span>
+      </div>
+    </div>
+
+    <!-- TABLA CLASIFICACIÓN -->
+    <div *ngIf="!contenidoActivo" class="sph-table-wrapper" data-tutorial="cr-tabla">
+      <div class="table-responsive">
+        <table class="sph-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th style="text-align:left">Equipo</th>
+              <th>Pts</th>
+              <th>J</th>
+              <th>G</th>
+              <th>E</th>
+              <th>P</th>
+              <th *ngIf="tieneGoles">GF — GC</th>
+              <th *ngIf="tieneForma" title="Últimos resultados">Forma</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let equipo of equipos; let i = index"
+                [class.row-promotion]="i < 2"
+                [class.row-playoff]="i >= 2 && i < 4"
+                [class.row-relegation]="i >= equipos.length - 3">
+              <td><span class="pos-badge">{{ equipo.posicion }}</span></td>
+              <td class="team-name-cell">{{ equipo.nombre }}</td>
+              <td class="pts-cell">{{ equipo.puntos }}</td>
+              <td>{{ equipo.jugados }}</td>
+              <td>{{ equipo.ganados }}</td>
+              <td>{{ equipo.empatados }}</td>
+              <td>{{ equipo.perdidos }}</td>
+              <td *ngIf="tieneGoles">{{ equipo.golesAFavor }} — {{ equipo.golesEnContra }}</td>
+              <td *ngIf="tieneForma" class="forma-cell">
+                <span *ngFor="let r of (equipo.forma || '').split(' ')" class="forma-badge"
+                      [class.forma-w]="r==='G'||r==='W'||r==='V'"
+                      [class.forma-d]="r==='E'||r==='D'||r==='U'||r==='N'"
+                      [class.forma-l]="r==='P'||r==='L'||r==='D'">{{ r }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RESULTADOS -->
+    <div *ngIf="contenidoActivo" class="resultados-grid" data-tutorial="cr-resultados">
+      <div class="resultado-card" *ngFor="let resultado of resultados">
+        <div class="resultado-equipos">
+          <div class="equipo-nombre text-end">{{ resultado.nombreEquipoLocal }}</div>
+          <div class="marcador-box">
+            {{ resultado.golesLocal !== null ? resultado.golesLocal : '–' }}
+            &nbsp;:&nbsp;
+            {{ resultado.golesVisitante !== null ? resultado.golesVisitante : '–' }}
+          </div>
+          <div class="equipo-nombre text-start">{{ resultado.nombreEquipoVisitante }}</div>
+        </div>
+        <div class="resultado-meta">
+          <span><i class="bi bi-calendar3 me-1"></i>{{ resultado.fecha }} {{ resultado.hora }}</span>
+          <span><i class="bi bi-geo-alt me-1"></i>{{ resultado.campoJuego }}</span>
+        </div>
+        <button class="btn-acta" (click)="abrirActaEnPestanaNueva(resultado.codActa)">
+          <i class="bi bi-file-earmark-text me-1"></i>{{ 'CAL.TEXT_358' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Cambiar URL -->
+    <div class="url-reconfig-section mt-0" data-tutorial="cr-reconfig">
+      <span class="url-reconfig-label"><i class="bi bi-link-45deg me-1"></i>¿Cambiar fuente?</span>
+      <input
+        type="url"
+        class="url-reconfig-input"
+        [(ngModel)]="urlReconfigInput"
+        placeholder="https://www.nueva-federacion.es/clasificacion?..."
+        [disabled]="savingReconfig"
+      />
+      <button class="btn-reconfig" (click)="saveReconfigUrl()" [disabled]="savingReconfig || !urlReconfigInput.trim()">
+        <span *ngIf="savingReconfig" class="spinner-border spinner-border-sm me-1"></span>
+        <i *ngIf="!savingReconfig" class="bi bi-cloud-arrow-up me-1"></i>
+        {{ savingReconfig ? 'Guardando...' : 'Actualizar URL' }}
+      </button>
+      <div *ngIf="reconfigFeedback" class="reconfig-feedback"
+           [ngClass]="{'text-success': !reconfigFeedbackError, 'text-danger': reconfigFeedbackError}">
+        {{ reconfigFeedback }}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- MODAL ACTA PROFESIONAL -->
+<div class="modal fade show" tabindex="-1" role="dialog" [ngClass]="{ 'd-block': showModalActa }"
+    style="background: rgba(0,0,0,0.6);" *ngIf="actaSeleccionada">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content shadow-lg border-0">
+      <div class="modal-header" style="background: var(--sph-night); color:#fff;">
+        <h5 class="modal-title">
+          📝 {{ 'CAL.TEXT_360' | translate }} — {{ actaSeleccionada.fecha }} {{ actaSeleccionada.hora }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cerrarModalActa()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center mb-4">
+          <h4 class="fw-bold">
+            {{ actaSeleccionada.equipo_local }} {{ actaSeleccionada.goles_local }} -
+            {{ actaSeleccionada.goles_visitante }} {{ actaSeleccionada.equipo_visitante }}
+          </h4>
+          <small class="text-muted">{{ actaSeleccionada.nombre_competicion }} / {{ actaSeleccionada.nombre_grupo }} - {{ 'TITLES.ROUND' | translate }} {{ actaSeleccionada.jornada }}</small>
+        </div>
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <h6 style="color:var(--sph-night)">⚽ {{ 'CAL.TEXT_167' | translate }} — {{ actaSeleccionada.equipo_local }}</h6>
+            <ul class="list-group list-group-flush">
+              <li *ngFor="let gol of actaSeleccionada.goles_equipo_local" class="list-group-item">
+                {{ gol.minuto }}' — {{ gol.nombre_jugador }}
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h6 style="color:#ef4444">⚽ {{ 'CAL.TEXT_167' | translate }} — {{ actaSeleccionada.equipo_visitante }}</h6>
+            <ul class="list-group list-group-flush">
+              <li *ngFor="let gol of actaSeleccionada.goles_equipo_visitante" class="list-group-item">
+                {{ gol.minuto }}' — {{ gol.nombre_jugador }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer bg-light">
+        <button class="btn btn-secondary" (click)="cerrarModalActa()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Ver Acta iframe -->
+<div *ngIf="showModalActa2" class="modal fade show d-block" tabindex="-1" role="dialog"
+    style="background: rgba(0,0,0,0.6);">
+  <div class="modal-dialog modal-xl modal-dialog-centered" style="max-width: 95%;">
+    <div class="modal-content">
+      <div class="modal-header" style="background: var(--sph-night); color:#fff;">
+        <h5 class="modal-title">📄 Acta del partido</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cerrarModalActa2()"></button>
+      </div>
+      <div class="modal-body p-0" style="height: 90vh;">
+        <iframe [src]="urlActa" width="100%" height="100%" frameborder="0"></iframe>
+      </div>
+    </div>
+  </div>
+</div>

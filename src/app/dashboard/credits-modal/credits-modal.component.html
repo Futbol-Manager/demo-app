@@ -1,0 +1,115 @@
+<!-- MODAL FLOTANTE DE CRÉDITOS -->
+<div class="credits-modal-overlay" (click)="close()" appModalBackdrop></div>
+
+<div class="credits-modal"
+     [style.left.px]="modalX"
+     [style.top.px]="modalY"
+     [style.width.px]="modalWidth"
+     [style.height.px]="modalHeight"
+     [class.dragging]="isDragging"
+     [class.resizing]="isResizing">
+
+  <!-- RESIZE HANDLES -->
+  <div class="modal-resize-handle handle-n" (mousedown)="startResize($event, 'n')"></div>
+  <div class="modal-resize-handle handle-s" (mousedown)="startResize($event, 's')"></div>
+  <div class="modal-resize-handle handle-e" (mousedown)="startResize($event, 'e')"></div>
+  <div class="modal-resize-handle handle-w" (mousedown)="startResize($event, 'w')"></div>
+  <div class="modal-resize-handle handle-ne" (mousedown)="startResize($event, 'ne')"></div>
+  <div class="modal-resize-handle handle-nw" (mousedown)="startResize($event, 'nw')"></div>
+  <div class="modal-resize-handle handle-se" (mousedown)="startResize($event, 'se')"></div>
+  <div class="modal-resize-handle handle-sw" (mousedown)="startResize($event, 'sw')"></div>
+
+  <!-- HEADER (draggable) -->
+  <div class="credits-header" (mousedown)="startDrag($event)">
+    <div class="credits-header-left">
+      <div class="credits-icon">
+        <i class="bi bi-coin"></i>
+      </div>
+      <div>
+        <span class="credits-header-title">Créditos de IA</span>
+        <span class="credits-header-sub">Gestiona tus créditos</span>
+      </div>
+    </div>
+    <button class="credits-close-btn" (click)="close()" (mousedown)="$event.stopPropagation()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <!-- BODY -->
+  <div class="credits-body">
+    <!-- LOADING -->
+    <div *ngIf="loading" class="credits-loading">
+      <div class="spinner"></div>
+      <span>Cargando créditos...</span>
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <!-- RESUMEN DE CRÉDITOS -->
+      <div class="credits-summary">
+        <div class="credits-big-number">
+          <span class="big-num">{{ creditsInfo.creditsAvailable }}</span>
+          <span class="big-label">créditos disponibles</span>
+        </div>
+        <div class="credits-detail-grid">
+          <div class="credit-detail">
+            <i class="bi bi-gift"></i>
+            <span class="detail-value">{{ creditsInfo.creditsFree }}</span>
+            <span class="detail-label">Gratuitos</span>
+          </div>
+          <div class="credit-detail">
+            <i class="bi bi-cart-check"></i>
+            <span class="detail-value">{{ creditsInfo.creditsPurchased }}</span>
+            <span class="detail-label">Comprados</span>
+          </div>
+          <div class="credit-detail">
+            <i class="bi bi-lightning"></i>
+            <span class="detail-value">{{ creditsInfo.creditsUsed }}</span>
+            <span class="detail-label">Usados</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEPARADOR -->
+      <div class="credits-divider">
+        <span>Comprar créditos</span>
+      </div>
+
+      <!-- SUCCESS MESSAGE -->
+      <div *ngIf="purchaseSuccess" class="purchase-success">
+        <i class="bi bi-check-circle-fill"></i>
+        Créditos añadidos correctamente
+      </div>
+
+      <!-- ERROR MESSAGE -->
+      <div *ngIf="purchaseError" class="purchase-error">
+        <i class="bi bi-exclamation-circle-fill"></i>
+        {{ purchaseError }}
+      </div>
+
+      <!-- PACKS DE CRÉDITOS -->
+      <div class="credits-packs">
+        <div *ngFor="let pack of creditPacks"
+             class="credit-pack"
+             [class.popular]="pack.popular"
+             [class.disabled]="purchasing"
+             (click)="!purchasing && purchasePack(pack)">
+          <div class="pack-badge" *ngIf="pack.popular">Popular</div>
+          <div class="pack-savings" *ngIf="pack.savings">{{ pack.savings }}</div>
+          <div class="pack-label">{{ pack.label }}</div>
+          <div class="pack-credits">
+            <i class="bi bi-coin"></i>
+            <span>{{ pack.credits }}</span>
+          </div>
+          <div class="pack-price">{{ pack.price }} &euro;</div>
+          <div class="pack-per-credit">{{ getPerCreditPrice(pack) }} &euro;/crédito</div>
+        </div>
+      </div>
+
+      <!-- INFO -->
+      <div class="credits-info">
+        <i class="bi bi-info-circle"></i>
+        <span>Cada consulta consume entre 1 y 4 créditos según el volumen de la conversación. Los créditos no caducan.</span>
+      </div>
+    </ng-container>
+  </div>
+</div>

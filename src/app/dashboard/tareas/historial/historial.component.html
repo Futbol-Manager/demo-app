@@ -1,0 +1,167 @@
+
+
+<!-- Encabezado premium (mismo estilo y altura que info-jugadores) -->
+<header class="page-header">
+  <div class="back-container" data-tutorial="th-volver">
+    <button type="button" class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h2 class="table-title">
+      <i class="bi bi-clock-history table-title-icon"></i>
+      {{ 'TAREAS_HIST.TITLE' | translate }}
+    </h2>
+    <p class="header-subtitle">{{ 'TAREAS_HIST.SUBTITLE' | translate }}</p>
+  </div>
+</header>
+
+<div class="historial-page">
+
+  <!-- LISTA VACÍA -->
+  <div class="empty-state" *ngIf="historial.length === 0">
+    <i class="bi bi-clock empty-icon"></i>
+    <p>{{ 'TAREAS_HIST.EMPTY' | translate }}</p>
+  </div>
+
+  <!-- GRID DE TARJETAS -->
+  <div class="task-grid" *ngIf="historial.length > 0" data-tutorial="th-grid">
+    <div
+      class="task-card"
+      *ngFor="let tarea of pagedHistorial"
+      [class.active]="selectedTask?.localId === tarea.localId"
+      (click)="openDetail(tarea)">
+
+      <div class="task-image">
+        <img [src]="getImage(tarea)" alt="" (error)="onTaskImageError($event, tarea)" />
+      </div>
+
+      <div class="task-body">
+        <div class="task-body-top">
+          <span class="origin-badge" [ngClass]="tarea.origin">
+            {{ 'TAREAS_FAV.ORIGIN_' + tarea.origin.toUpperCase() | translate }}
+          </span>
+          <div class="task-body-actions">
+            <span class="usage-count" *ngIf="tarea.usageCount">
+              <i class="bi bi-arrow-repeat"></i> {{ tarea.usageCount }}
+            </span>
+            <button
+              class="btn-fav-sm"
+              [class.is-fav]="isFav(tarea)"
+              (click)="toggleFav($event, tarea)"
+              [attr.aria-label]="'TASKS.TOGGLE_FAV' | translate">
+              <i class="bi" [ngClass]="isFav(tarea) ? 'bi-star-fill' : 'bi-star'"></i>
+            </button>
+          </div>
+        </div>
+        <h4 class="task-title">{{ tarea.slogans || ('TAREAS_FAV.NO_TITLE' | translate) }}</h4>
+        <div class="task-tags" *ngIf="tarea.estrategia || tarea.intencion">
+          <span class="badge badge-secondary" *ngIf="tarea.estrategia">{{ tarea.estrategia }}</span>
+          <span class="badge badge-primary" *ngIf="tarea.intencion">{{ tarea.intencion }}</span>
+        </div>
+        <p class="task-desc">{{ tarea.description | slice:0:80 }}{{ tarea.description.length > 80 ? '...' : '' }}</p>
+        <div class="task-used-date" *ngIf="tarea.lastUsedAt">
+          <i class="bi bi-calendar-check"></i>
+          {{ formatDate(tarea.lastUsedAt) }}
+          <span *ngIf="(tarea.usageCount || 0) > 1"> · {{ tarea.usageCount }} veces</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGINACIÓN -->
+  <div class="pagination-bar" *ngIf="totalPages > 1" data-tutorial="th-paginacion">
+    <button class="btn-page" [disabled]="currentPage === 0" (click)="prevPage()">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>
+    <button class="btn-page" [disabled]="currentPage >= totalPages - 1" (click)="nextPage()">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+
+  <!-- PANEL DETALLE -->
+  <div class="detail-backdrop" *ngIf="selectedTask" (click)="closeDetail()" appModalBackdrop></div>
+  <div class="detail-panel" *ngIf="selectedTask">
+    <div class="detail-panel-inner" (click)="$event.stopPropagation()">
+      <div class="detail-header">
+        <h2>{{ selectedTask.slogans || ('TAREAS_FAV.NO_TITLE' | translate) }}</h2>
+        <button class="detail-close" (click)="closeDetail()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="detail-body">
+        <img class="detail-img" [src]="getImage(selectedTask)" alt="" (error)="onTaskImageError($event, selectedTask)" />
+
+        <div class="detail-meta">
+          <span class="origin-badge" [ngClass]="selectedTask.origin">
+            {{ 'TAREAS_FAV.ORIGIN_' + selectedTask.origin.toUpperCase() | translate }}
+          </span>
+          <span class="usage-badge" *ngIf="selectedTask.usageCount">
+            <i class="bi bi-arrow-repeat"></i>
+            {{ 'TAREAS_HIST.USED_TIMES' | translate:{ count: selectedTask.usageCount } }}
+          </span>
+        </div>
+
+        <div class="detail-section" *ngIf="selectedTask.estrategia || selectedTask.intencion">
+          <div class="task-tags">
+            <span class="badge badge-secondary" *ngIf="selectedTask.estrategia">{{ selectedTask.estrategia }}</span>
+            <span class="badge badge-primary" *ngIf="selectedTask.intencion">{{ selectedTask.intencion }}</span>
+          </div>
+        </div>
+
+        <div class="detail-section" *ngIf="selectedTask.description">
+          <label>{{ 'TAREAS_FAV.DESCRIPTION' | translate }}</label>
+          <p>{{ selectedTask.description }}</p>
+        </div>
+
+        <div class="detail-section" *ngIf="selectedTask.rules">
+          <label>{{ 'TAREAS_FAV.RULES' | translate }}</label>
+          <p>{{ selectedTask.rules }}</p>
+        </div>
+
+        <div class="detail-section" *ngIf="selectedTask.variants">
+          <label>{{ 'TAREAS_FAV.VARIANTS' | translate }}</label>
+          <p>{{ selectedTask.variants }}</p>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-section" *ngIf="selectedTask.worktime">
+            <label>{{ 'TAREAS_FAV.WORKTIME' | translate }}</label>
+            <p>{{ selectedTask.worktime }}</p>
+          </div>
+          <div class="detail-section" *ngIf="selectedTask.space">
+            <label>{{ 'TAREAS_FAV.SPACE' | translate }}</label>
+            <p>{{ selectedTask.space }}</p>
+          </div>
+          <div class="detail-section" *ngIf="selectedTask.material">
+            <label>{{ 'TAREAS_FAV.MATERIAL' | translate }}</label>
+            <p>{{ selectedTask.material }}</p>
+          </div>
+        </div>
+
+        <div class="detail-section" *ngIf="selectedTask.video">
+          <label>{{ 'TAREAS_FAV.VIDEO' | translate }}</label>
+          <a [href]="selectedTask.video" target="_blank" class="video-link">
+            <i class="bi bi-play-circle"></i> {{ selectedTask.video }}
+          </a>
+        </div>
+      </div>
+
+      <div class="detail-footer">
+        <button
+          class="btn btn-sm"
+          [class.btn-outline-warning]="!isFav(selectedTask)"
+          [class.btn-warning]="isFav(selectedTask)"
+          (click)="toggleFav($event, selectedTask)">
+          <i class="bi" [ngClass]="isFav(selectedTask) ? 'bi-star-fill' : 'bi-star'"></i>
+          {{ isFav(selectedTask) ? ('TAREAS_HIST.UNFAV' | translate) : ('TAREAS_HIST.FAV' | translate) }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

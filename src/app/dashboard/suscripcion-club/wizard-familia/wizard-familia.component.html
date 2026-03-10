@@ -1,0 +1,217 @@
+<!-- Back button -->
+<div class="action-bar">
+  <button class="btn-back-clean" (click)="goBack()" [attr.aria-label]="'COMMON.BACK' | translate" data-tutorial="scw-volver">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
+</div>
+
+<!-- Title -->
+<div class="wizard-header">
+  <div class="wizard-icon plan-familia">
+    <i class="bi bi-people-fill"></i>
+  </div>
+  <h1>{{ 'CLUB_PLANS.PLAN_FAMILIA.NAME' | translate }}</h1>
+  <p>{{ 'CLUB_PLANS.WIZARD_FAMILIA.SUBTITLE' | translate }}</p>
+</div>
+
+<!-- ═══════════ Stepper ═══════════ -->
+<div class="stepper" data-tutorial="scw-stepper">
+  <div class="stepper-track">
+    <div class="stepper-item" *ngFor="let step of steps; let i = index"
+         [ngClass]="{'active': currentStep === step, 'completed': isStepCompleted(step)}"
+         (click)="goToStep(step)">
+      <div class="step-circle">
+        <span *ngIf="!isStepCompleted(step)">{{ i + 1 }}</span>
+        <i *ngIf="isStepCompleted(step)" class="bi bi-check-lg"></i>
+      </div>
+      <span class="step-label">{{ 'CLUB_PLANS.WIZARD_FAMILIA.STEP_' + (i + 1) | translate }}</span>
+    </div>
+    <div class="stepper-line" [style.width.%]="(getStepIndex() / (steps.length - 1)) * 100"></div>
+  </div>
+</div>
+
+<!-- ═══════════ STEP 1: Pricing & Revenue Estimation ═══════════ -->
+<div class="wizard-step" *ngIf="currentStep === 'pricing'" data-tutorial="scw-content">
+  <div class="step-card">
+    <div class="step-card-header">
+      <i class="bi bi-calculator-fill"></i>
+      <h2>{{ 'CLUB_PLANS.WIZARD_FAMILIA.PRICING_TITLE' | translate }}</h2>
+    </div>
+    <p class="step-description">{{ 'CLUB_PLANS.WIZARD_FAMILIA.PRICING_DESC' | translate }}</p>
+
+    <!-- Free for club notice -->
+    <div class="free-notice">
+      <i class="bi bi-gift-fill"></i>
+      <div>
+        <strong>{{ 'CLUB_PLANS.WIZARD_FAMILIA.FREE_NOTICE_TITLE' | translate }}</strong>
+        <p>{{ 'CLUB_PLANS.WIZARD_FAMILIA.FREE_NOTICE_DESC' | translate }}</p>
+      </div>
+    </div>
+
+    <!-- Period selection -->
+    <h3 class="section-subtitle">{{ 'CLUB_PLANS.WIZARD_FAMILIA.CHOOSE_PERIOD' | translate }}</h3>
+    <div class="period-cards">
+      <div class="period-card" [ngClass]="{'selected': selectedPeriod === 'monthly'}"
+           (click)="selectPeriod('monthly')">
+        <div class="period-radio">
+          <div class="radio-dot" *ngIf="selectedPeriod === 'monthly'"></div>
+        </div>
+        <div class="period-details">
+          <h3>{{ 'CLUB_PLANS.PRICING.MONTHLY' | translate }}</h3>
+          <div class="period-price">
+            <span class="amount">{{ monthlyPrice | number:'1.2-2' }}€</span>
+            <span class="per">/{{ 'CLUB_PLANS.PRICING.MONTH' | translate }}</span>
+          </div>
+          <span class="club-share-info">
+            <i class="bi bi-arrow-right-short"></i>
+            {{ 'CLUB_PLANS.WIZARD_FAMILIA.CLUB_EARNS' | translate }} {{ clubShareMonthly | number:'1.2-2' }}€/{{ 'CLUB_PLANS.WIZARD_FAMILIA.PER_PLAYER' | translate }}
+          </span>
+        </div>
+      </div>
+
+      <div class="period-card recommended" [ngClass]="{'selected': selectedPeriod === 'annual'}"
+           (click)="selectPeriod('annual')">
+        <div class="save-badge">{{ 'CLUB_PLANS.PRICING.SAVE' | translate }} {{ annualSaving }}€</div>
+        <div class="period-radio">
+          <div class="radio-dot" *ngIf="selectedPeriod === 'annual'"></div>
+        </div>
+        <div class="period-details">
+          <h3>{{ 'CLUB_PLANS.PRICING.ANNUAL' | translate }}</h3>
+          <div class="period-price">
+            <span class="amount">{{ annualPrice | number:'1.2-2' }}€</span>
+            <span class="per">/{{ 'CLUB_PLANS.PRICING.YEAR' | translate }}</span>
+          </div>
+          <span class="club-share-info">
+            <i class="bi bi-arrow-right-short"></i>
+            {{ 'CLUB_PLANS.WIZARD_FAMILIA.CLUB_EARNS' | translate }} {{ clubShareAnnual | number:'1.2-2' }}€/{{ 'CLUB_PLANS.WIZARD_FAMILIA.PER_PLAYER' | translate }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Revenue estimation -->
+    <h3 class="section-subtitle">{{ 'CLUB_PLANS.WIZARD_FAMILIA.ESTIMATE_TITLE' | translate }}</h3>
+    <p class="estimate-description">{{ 'CLUB_PLANS.WIZARD_FAMILIA.ESTIMATE_DESC' | translate }}</p>
+
+    <div class="player-counter">
+      <label>{{ 'CLUB_PLANS.WIZARD_FAMILIA.ESTIMATED_PLAYERS' | translate }}</label>
+      <div class="counter-control">
+        <button class="btn-counter" (click)="decrementPlayers()" [disabled]="estimatedPlayers <= 0">
+          <i class="bi bi-dash-lg"></i>
+        </button>
+        <input type="number" [value]="estimatedPlayers" (input)="onPlayerCountInput($event)"
+               min="0" class="counter-input">
+        <button class="btn-counter" (click)="incrementPlayers()">
+          <i class="bi bi-plus-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Revenue projection -->
+    <div class="revenue-projection" *ngIf="estimatedPlayers > 0">
+      <div class="projection-card">
+        <div class="projection-header">
+          <i class="bi bi-graph-up-arrow"></i>
+          <h4>{{ 'CLUB_PLANS.WIZARD_FAMILIA.REVENUE_PROJECTION' | translate }}</h4>
+        </div>
+        <div class="projection-row">
+          <span>{{ estimatedPlayers }} {{ 'CLUB_PLANS.WIZARD_FAMILIA.PLAYERS_LABEL' | translate }} × {{ selectedPeriod === 'monthly' ? (clubShareMonthly | number:'1.2-2') : (clubShareAnnual | number:'1.2-2') }}€</span>
+          <span class="projection-amount">{{ estimatedClubRevenue | number:'1.2-2' }}€<span class="projection-period">/{{ (selectedPeriod === 'monthly' ? 'CLUB_PLANS.PRICING.MONTH' : 'CLUB_PLANS.PRICING.YEAR') | translate }}</span></span>
+        </div>
+        <div class="projection-row yearly-total" *ngIf="selectedPeriod === 'monthly'">
+          <span>{{ 'CLUB_PLANS.WIZARD_FAMILIA.ANNUAL_TOTAL' | translate }}</span>
+          <span class="projection-amount highlight">{{ estimatedClubRevenueYearly | number:'1.2-2' }}€/{{ 'CLUB_PLANS.PRICING.YEAR' | translate }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Revenue split info -->
+    <div class="revenue-split-card">
+      <h4>{{ 'CLUB_PLANS.WIZARD_FAMILIA.REVENUE_SPLIT' | translate }}</h4>
+      <div class="split-visual">
+        <div class="split-bar">
+          <div class="split-segment club" style="width: 33%;">
+            <span>33%</span>
+          </div>
+          <div class="split-segment sphaira" style="width: 67%;">
+            <span>67%</span>
+          </div>
+        </div>
+        <div class="split-labels">
+          <span><i class="bi bi-building"></i> {{ 'CLUB_PLANS.WIZARD_FAMILIA.CLUB_SHARE' | translate }}</span>
+          <span><i class="bi bi-star-fill"></i> Sphaira Tech</span>
+        </div>
+      </div>
+      <p class="split-note">{{ 'CLUB_PLANS.WIZARD_FAMILIA.SPLIT_NOTE' | translate }}</p>
+    </div>
+  </div>
+
+  <div class="step-footer">
+    <button class="btn btn-secondary btn-prev" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      {{ 'CLUB_PLANS.WIZARD.PREVIOUS' | translate }}
+    </button>
+    <button class="btn btn-primary btn-next" (click)="nextStep()">
+      {{ 'CLUB_PLANS.WIZARD.NEXT' | translate }}
+      <i class="bi bi-arrow-right"></i>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════ STEP 2: Share Registration URL ═══════════ -->
+<div class="wizard-step" *ngIf="currentStep === 'share'" data-tutorial="scw-content">
+  <div class="step-card">
+    <div class="step-card-header">
+      <i class="bi bi-share-fill"></i>
+      <h2>{{ 'CLUB_PLANS.WIZARD_FAMILIA.SHARE_TITLE' | translate }}</h2>
+    </div>
+    <p class="step-description">{{ 'CLUB_PLANS.WIZARD_FAMILIA.SHARE_DESC' | translate }}</p>
+
+    <!-- URL Copy Box -->
+    <div class="url-section">
+      <label>{{ 'CLUB_PLANS.WIZARD_FAMILIA.REGISTRATION_LINK' | translate }}</label>
+      <div class="url-copy-box">
+        <input type="text" [value]="registrationUrl" readonly class="form-control">
+        <button class="btn btn-copy" (click)="copyUrl()">
+          <i class="bi" [ngClass]="urlCopied ? 'bi-check-lg' : 'bi-clipboard'"></i>
+          {{ (urlCopied ? 'CLUB_PLANS.ACTIVE_VIEW.COPIED' : 'CLUB_PLANS.ACTIVE_VIEW.COPY_URL') | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Share buttons -->
+    <div class="share-buttons">
+      <button class="btn btn-share whatsapp" (click)="shareViaWhatsApp()">
+        <i class="bi bi-whatsapp"></i>
+        WhatsApp
+      </button>
+      <button class="btn btn-share email" (click)="shareViaEmail()">
+        <i class="bi bi-envelope-fill"></i>
+        Email
+      </button>
+    </div>
+
+    <div class="step-info-box">
+      <i class="bi bi-info-circle"></i>
+      <p>{{ 'CLUB_PLANS.WIZARD_FAMILIA.SHARE_INFO' | translate }}</p>
+    </div>
+  </div>
+
+  <div class="step-footer">
+    <button class="btn btn-secondary btn-prev" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      {{ 'CLUB_PLANS.WIZARD.PREVIOUS' | translate }}
+    </button>
+    <button class="btn btn-familia btn-activate" (click)="activatePlan()" [disabled]="activating">
+      <span *ngIf="!activating">
+        <i class="bi bi-check-circle-fill"></i>
+        {{ 'CLUB_PLANS.WIZARD_FAMILIA.ACTIVATE_BTN' | translate }}
+      </span>
+      <span *ngIf="activating">
+        <div class="spinner-border spinner-border-sm" role="status"></div>
+        {{ 'CLUB_PLANS.WIZARD.PROCESSING' | translate }}
+      </span>
+    </button>
+  </div>
+</div>

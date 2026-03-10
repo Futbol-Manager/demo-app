@@ -1,0 +1,788 @@
+<!-- ================= PAGE HEADER ================= -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()" data-tutorial="docs-volver">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h2 class="table-title">Documentos</h2>
+    <p class="header-subtitle">Almacena y organiza todos los documentos del club</p>
+  </div>
+
+  <div class="header-spacer"></div>
+</div>
+
+<!-- ================= PESTAÑAS ================= -->
+<div class="container mt-4">
+  <div class="doc-tabs-bar" data-tutorial="docs-tabs">
+    <button class="doc-tab-btn" [class.active]="activeDocTab === 'jugadores'" (click)="setDocTab('jugadores')">
+      <i class="bi bi-people-fill"></i> {{ 'DOCUMENTS_CLUB.TAB_PLAYERS' | translate }}
+    </button>
+    <button class="doc-tab-btn" [class.active]="activeDocTab === 'entrenadores'" (click)="setDocTab('entrenadores')">
+      <i class="bi bi-person-workspace"></i> {{ 'DOCUMENTS_CLUB.TAB_COACHES' | translate }}
+    </button>
+  </div>
+
+  <div class="row g-4 mb-4 action-cards" data-tutorial="docs-acciones">
+
+    <div class="col-12 col-md-4" *ngFor="let action of [
+    { title: 'UPLOAD_NEW', button: 'UPLOAD_DOC', icon: 'bi-upload', click: 'upload', variant: 'green' },
+    { title: 'REQUIRE_DOC_TITLE', button: 'REQUIRE_DOC', icon: 'bi-file-earmark-text', click: 'require', variant: 'blue' },
+    { title: 'CUSTOM_INFO_TITLE', button: 'CREATE_FORM', icon: 'bi-card-text', click: 'custom', variant: 'beige' }
+  ]">
+
+      <div class="action-card" [ngClass]="'variant-' + action.variant">
+
+        <div class="action-card-icon">
+          <i class="bi" [ngClass]="action.icon"></i>
+        </div>
+
+        <h6 class="action-card-title">
+          {{ ('DOCS_EQUIPO.DOCS.' + action.title) | translate }}
+        </h6>
+
+        <button class="action-card-btn" (click)="
+          action.click === 'upload'
+            ? openModalSubirDoc()
+            : action.click === 'require'
+            ? openModalSubirSinDoc()
+            : openModalSubirPersonalizado()
+        ">
+          {{ ('DOCS_EQUIPO.DOCS.' + action.button) | translate }}
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ================= BARRA BÚSQUEDA + FILTRO (premium) ================= -->
+  <div class="docs-toolbar-premium" data-tutorial="docs-busqueda">
+    <div class="docs-toolbar-inner">
+      <div class="docs-toolbar-search-wrap">
+        <span class="docs-toolbar-search-icon"><i class="bi bi-search"></i></span>
+        <input type="text" class="docs-search-input" placeholder="Buscar por nombre o descripción..."
+          [(ngModel)]="searchText" (ngModelChange)="onFilterChange()" />
+      </div>
+      <div class="docs-toolbar-divider"></div>
+      <div class="docs-toolbar-filter-wrap">
+        <span class="docs-toolbar-filter-icon"><i class="bi bi-shield-fill"></i></span>
+        <label class="docs-filter-label">Equipo</label>
+        <select class="docs-filter-select" [ngModel]="filterTeamId" (ngModelChange)="filterTeamId = $event; onFilterChange()">
+          <option [ngValue]="null">Todos los equipos</option>
+          <option *ngFor="let t of equiposClub" [ngValue]="t.value">{{ t.name }}</option>
+        </select>
+      </div>
+      <div class="docs-toolbar-count-wrap" *ngIf="documentosFiltrados.length >= 0">
+        <span class="docs-toolbar-count-badge">
+          <i class="bi bi-file-earmark-text"></i>
+          <span>{{ documentosFiltrados.length }} documento{{ documentosFiltrados.length !== 1 ? 's' : '' }}</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TABLA DOCUMENTOS ================= -->
+  <div class="table-responsive table-container" data-tutorial="docs-tabla">
+
+    <!-- ===== SKELETON ===== -->
+    <table *ngIf="loadingData" class="table modern-table">
+      <tbody>
+        <tr *ngFor="let i of [1,2,3,4,5,6]">
+          <td *ngFor="let c of [1,2,3,4,5,6]">
+            <span class="placeholder-glow d-block">
+              <span class="placeholder col-12 skeleton-cell"></span>
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ===== TABLA REAL ===== -->
+    <table *ngIf="!loadingData" class="table modern-table align-middle mb-0">
+
+      <thead class="table-dark">
+        <tr>
+          <th class="col-completed">{{ 'DOCS_EQUIPO.DOCS.COMPLETED' | translate }}</th>
+          <th class="col-teams">Equipos</th>
+          <th class="col-name" (click)="ordenarPor('nombre')">
+            {{ 'DOCS_EQUIPO.DOCS.NAME' | translate }}
+            <i class="bi ms-1" [ngClass]="{
+                'bi-arrow-up': columnaActual === 'nombre' && ordenAscendente,
+                'bi-arrow-down': columnaActual === 'nombre' && !ordenAscendente,
+                'bi-arrow-down-up': columnaActual !== 'nombre'
+              }">
+            </i>
+          </th>
+          <th class="col-description" (click)="ordenarPor('descripcion')">
+            {{ 'DOCS_EQUIPO.DOCS.DESCRIPTION' | translate }}
+            <i class="bi ms-1" [ngClass]="{
+                'bi-arrow-up': columnaActual === 'descripcion' && ordenAscendente,
+                'bi-arrow-down': columnaActual === 'descripcion' && !ordenAscendente,
+                'bi-arrow-down-up': columnaActual !== 'descripcion'
+              }">
+            </i>
+          </th>
+          <th class="col-date" (click)="ordenarPor('fecCreate')">
+            {{ 'DOCS_EQUIPO.DOCS.DATE' | translate }}
+            <i class="bi ms-1" [ngClass]="{
+                'bi-arrow-up': columnaActual === 'fecCreate' && ordenAscendente,
+                'bi-arrow-down': columnaActual === 'fecCreate' && !ordenAscendente,
+                'bi-arrow-down-up': columnaActual !== 'fecCreate'
+              }">
+            </i>
+          </th>
+          <th class="col-actions">{{ 'DOCS_EQUIPO.COMMON.ACTIONS' | translate }}</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let doc of documentosPaginados; let i = index">
+          <!-- COMPLETADO -->
+          <td class="completed-cell">
+            <div class="ring-wrap"
+                 (click)="openCompletionDetail(doc)"
+                 title="Ver detalle de completados"
+                 [class.ring--complete]="doc.totalPadres > 0 && doc.totalSubidos >= doc.totalPadres"
+                 [class.ring--partial]="doc.totalSubidos > 0 && doc.totalSubidos < doc.totalPadres"
+                 [class.ring--empty]="!doc.totalSubidos || doc.totalSubidos === 0">
+              <svg viewBox="0 0 48 48" class="ring-svg">
+                <circle cx="24" cy="24" r="18" class="ring-track"/>
+                <circle cx="24" cy="24" r="18" class="ring-fill"
+                  [style.stroke-dashoffset]="(doc.totalPadres > 0 ? (1 - doc.totalSubidos / doc.totalPadres) : 1) * 113.1"/>
+              </svg>
+              <div class="ring-label">
+                <span class="ring-num">{{ doc.totalSubidos }}</span>
+                <span class="ring-sep">/</span>
+                <span class="ring-den">{{ doc.totalPadres }}</span>
+              </div>
+            </div>
+          </td>
+
+          <!-- EQUIPOS -->
+          <td class="teams-cell">
+            <div *ngIf="doc.teamIds?.length > 0" class="team-badges">
+              <span class="badge badge-sphaira-team me-1 mb-1" *ngFor="let tid of doc.teamIds">
+                {{ getTeamNames([tid]) }}
+              </span>
+            </div>
+            <span *ngIf="!doc.teamIds || doc.teamIds.length === 0" class="badge badge-sphaira-all">Todos</span>
+          </td>
+
+          <!-- NOMBRE -->
+          <td class="doc-name-cell">{{ doc.nombre }}</td>
+
+          <!-- DESCRIPCIÓN -->
+          <td *ngIf="doc.requiere < 2" class="doc-description"
+              [title]="doc.descripcion">
+            {{ doc.descripcion }}
+          </td>
+
+          <td *ngIf="doc.requiere == 2">
+            <span class="badge badge-custom">
+              {{ 'DOCS_EQUIPO.DOCS.CUSTOM' | translate }}
+            </span>
+          </td>
+
+          <td>{{ doc.fecCreate | date:'dd/MM/yyyy' }}</td>
+
+          <!-- ACCIONES -->
+          <td>
+            <div class="actions-group">
+
+              <button class="btn btn-action" title="{{ 'DOCS_EQUIPO.DOCS.VISIBILITY' | translate }}"
+                (click)="visible(doc, doc.docClubesId, doc.visible)">
+                <i [ngClass]="doc.visible === 0 ? 'bi bi-eye' : 'bi bi-eye-slash'"></i>
+              </button>
+
+              <button *ngIf="doc.requiere < 2" class="btn btn-action"
+                title="{{ 'DOCS_EQUIPO.DOCS.REQUIRE_UPLOAD' | translate }}"
+                (click)="requiere(doc, doc.docClubesId, doc.requiere)">
+                <i [ngClass]="doc.requiere === 1 ? 'bi bi-file-earmark-arrow-up' : 'bi bi-slash-lg'"></i>
+              </button>
+
+              <button *ngIf="doc.requiere == 2" class="btn btn-action"
+                title="{{ 'DOCS_EQUIPO.COMMON.EDIT' | translate }}" (click)="editarPersonalizado(doc)">
+                <i class="bi bi-pencil"></i>
+              </button>
+
+              <button *ngIf="doc.requiere == 2" class="btn btn-action"
+                title="Ver registros" (click)="openRegistros(doc)">
+                <i class="bi bi-journal-text"></i>
+              </button>
+
+              <button *ngIf="doc.file" class="btn btn-action" title="{{ 'DOCS_EQUIPO.DOCS.OPEN' | translate }}"
+                (click)="abrirPdf(doc.file)">
+                <i class="bi bi-box-arrow-up-right"></i>
+              </button>
+
+              <button *ngIf="doc.file" class="btn btn-action" title="{{ 'DOCS_EQUIPO.COMMON.COPY' | translate }}"
+                (click)="copyLink(doc.file)">
+                <i class="bi bi-copy"></i>
+              </button>
+
+              <button class="btn-action danger" title="{{ 'DOCS_EQUIPO.COMMON.DELETE' | translate }}"
+                (click)="confirmarEliminarDoc(getDocIndex(doc), doc.docClubesId, doc.nombre)">
+                <i class="bi bi-trash"></i>
+              </button>
+
+
+            </div>
+          </td>
+
+        </tr>
+      </tbody>
+
+    </table>
+
+    <!-- Paginación (estilo ropa: centrada, card blanca, 1/3) -->
+    <div class="pagination-wrapper" *ngIf="!loadingData && documentosFiltrados.length > 0">
+      <div class="pagination-content">
+        <span class="pagination-info">Mostrando {{ paginationFrom }}–{{ paginationTo }} de {{ documentosFiltrados.length }}</span>
+        <select class="pagination-select" [ngModel]="pageSize" (ngModelChange)="setPageSize($event)">
+          <option *ngFor="let opt of pageSizeOptions" [ngValue]="opt">{{ opt }}</option>
+        </select>
+        <div class="pagination-controls">
+          <button type="button" class="page-btn prev" aria-label="Página anterior"
+            [disabled]="currentPage <= 1" (click)="prevPage()">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <span class="page-indicator">{{ currentPage }}/{{ totalPaginas }}</span>
+          <button type="button" class="page-btn next" aria-label="Página siguiente"
+            [disabled]="currentPage >= totalPaginas" (click)="nextPage()">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ================= MODAL SUBIR DOCUMENTO ================= -->
+<div class="modal fade" [ngClass]="{ 'show': mostrarModalDocumento }"
+  [style.display]="mostrarModalDocumento ? 'block' : 'none'">
+
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          {{ 'DOCS_EQUIPO.MODAL.UPLOAD_TITLE' | translate }}
+        </h5>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalDocumento()"></button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="formDocumento" [class.form-disabled]="loadingUpload">
+
+          <!-- ===== UPLOAD OVERLAY ===== -->
+          <div class="upload-overlay" *ngIf="loadingUpload">
+
+            <div class="upload-animation">
+              <div class="upload-icon">
+                <i class="bi bi-file-earmark-text"></i>
+                <i class="bi bi-cloud-arrow-up-fill upload-arrow"></i>
+              </div>
+
+              <p class="upload-text">
+                {{ 'DOCS_EQUIPO.MODAL.UPLOADING' | translate }}
+              </p>
+
+              <div class="progress upload-progress">
+                <div class="progress-bar bg-success progress-bar-striped progress-bar-animated"
+                  [style.width.%]="uploadProgress">
+                </div>
+              </div>
+
+              <small class="text-muted mt-2">
+                {{ uploadProgress }}%
+              </small>
+            </div>
+
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              {{ 'DOCS_EQUIPO.MODAL.NAME' | translate }}
+            </label>
+            <input type="text" class="form-control" formControlName="nombre">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              {{ 'DOCS_EQUIPO.MODAL.DESCRIPTION' | translate }}
+            </label>
+            <textarea rows="2" class="form-control" formControlName="descripcion"></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              {{ 'DOCS_EQUIPO.MODAL.TYPE' | translate }}
+            </label>
+            <input type="text" class="form-control" formControlName="tipo">
+          </div>
+
+          <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="visibleSwitch" formControlName="visible">
+            <label class="form-check-label" for="visibleSwitch">
+              {{ 'DOCS_EQUIPO.MODAL.VISIBLE' | translate }}
+            </label>
+          </div>
+
+          <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="requiereSwitch" formControlName="requiereD">
+            <label class="form-check-label" for="requiereSwitch">
+              {{ 'DOCS_EQUIPO.MODAL.REQUIRE_UPLOAD_HELP' | translate }}
+            </label>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              {{ 'DOCS_EQUIPO.MODAL.FILE' | translate }}
+            </label>
+            <input type="file" class="form-control" accept=".pdf,.doc,.docx" (change)="onFileSelected($event)">
+          </div>
+
+          <!-- Team filter -->
+          <div class="mb-3" *ngIf="equiposClub.length > 0">
+            <label class="form-label">Equipos <span class="text-danger">*</span></label>
+            <div class="team-chips">
+              <span *ngFor="let team of equiposClub"
+                class="badge me-1 mb-1"
+                [class.bg-success]="isTeamSelected(team.value)"
+                [class.text-white]="isTeamSelected(team.value)"
+                [class.bg-light]="!isTeamSelected(team.value)"
+                [class.text-dark]="!isTeamSelected(team.value)"
+                style="cursor: pointer;"
+                (click)="toggleTeamId(team.value)">
+                {{ team.name }}
+              </span>
+            </div>
+            <small *ngIf="equiposClub.length > 0 && selectedTeamIds.length === 0" class="text-danger">Selecciona al menos un equipo</small>
+          </div>
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cerrarModalDocumento()">
+          {{ 'DOCS_EQUIPO.COMMON.CANCEL' | translate }}
+        </button>
+
+        <button class="btn btn-success" [disabled]="!formDocumento.valid || loadingUpload || !archivoSeleccionado || (equiposClub.length > 0 && selectedTeamIds.length === 0)" (click)="subirDocumento()">
+
+          <ng-container *ngIf="!loadingUpload">
+            <i class="bi bi-cloud-arrow-up me-1"></i>
+            {{ 'DOCS_EQUIPO.COMMON.SAVE' | translate }}
+          </ng-container>
+
+          <ng-container *ngIf="loadingUpload">
+            <i class="bi bi-cloud-arrow-up-fill me-1 upload-btn-icon"></i>
+            {{ 'DOCS_EQUIPO.MODAL.UPLOADING' | translate }}
+          </ng-container>
+
+        </button>
+
+
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- ================= MODAL DOCUMENTO SIN SUBIR ================= -->
+<div class="modal fade" [ngClass]="{ 'show': mostrarModalSinDocumento }"
+  [style.display]="mostrarModalSinDocumento ? 'block' : 'none'">
+
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          {{ 'DOCS_EQUIPO.MODAL.REQUIRE_TITLE' | translate }}
+        </h5>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalSinDocumento()"></button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="documentoSinSubir">
+
+          <div class="mb-3">
+            <label class="form-label">
+              {{ 'DOCS_EQUIPO.MODAL.NAME' | translate }}
+            </label>
+            <input type="text" class="form-control" formControlName="nombreSin">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              {{ 'DOCS_EQUIPO.MODAL.DESCRIPTION' | translate }}
+            </label>
+            <textarea rows="2" class="form-control" formControlName="descripcionSin"></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              {{ 'DOCS_EQUIPO.MODAL.TYPE' | translate }}
+            </label>
+            <input type="text" class="form-control" formControlName="tipoSin">
+          </div>
+
+          <!-- Team filter -->
+          <div class="mb-3" *ngIf="equiposClub.length > 0">
+            <label class="form-label">Equipos <span class="text-danger">*</span></label>
+            <div class="team-chips">
+              <span *ngFor="let team of equiposClub"
+                class="badge me-1 mb-1"
+                [class.bg-success]="isTeamSelected(team.value)"
+                [class.text-white]="isTeamSelected(team.value)"
+                [class.bg-light]="!isTeamSelected(team.value)"
+                [class.text-dark]="!isTeamSelected(team.value)"
+                style="cursor: pointer;"
+                (click)="toggleTeamId(team.value)">
+                {{ team.name }}
+              </span>
+            </div>
+            <small *ngIf="equiposClub.length > 0 && selectedTeamIds.length === 0" class="text-danger">Selecciona al menos un equipo</small>
+          </div>
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cerrarModalSinDocumento()">
+          {{ 'DOCS_EQUIPO.COMMON.CANCEL' | translate }}
+        </button>
+
+        <button class="btn btn-success" [disabled]="!documentoSinSubir.valid || (equiposClub.length > 0 && selectedTeamIds.length === 0)" (click)="subirSinDocumento()">
+          {{ 'DOCS_EQUIPO.COMMON.SAVE' | translate }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- ================= MODAL PERSONALIZADO (3 pasos) ================= -->
+<div class="modal fade" [ngClass]="{ 'show': mostrarModalPersonalizado }"
+  [style.display]="mostrarModalPersonalizado ? 'block' : 'none'">
+
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          {{ 'DOCS_EQUIPO.MODAL.CUSTOM_TITLE' | translate }}
+          <small class="d-block text-muted fw-normal" style="font-size: 0.75rem;">
+            Paso {{ customDocStep }} de 3
+          </small>
+        </h5>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalPersonalizado()"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <!-- PASO 1: Título del documento + equipo -->
+        <div *ngIf="customDocStep === 1">
+          <div class="mb-3">
+            <label class="form-label">
+              {{ 'DOCS_EQUIPO.MODAL.CUSTOM_TITLE_LABEL' | translate }}
+            </label>
+            <input type="text" class="form-control" [(ngModel)]="tituloPersonalizado"
+              [placeholder]="'DOCS_EQUIPO.MODAL.CUSTOM_TITLE_PLACEHOLDER' | translate">
+          </div>
+
+          <!-- Team filter -->
+          <div class="mb-3" *ngIf="equiposClub.length > 0">
+            <label class="form-label">Equipos <span class="text-danger">*</span></label>
+            <div class="team-chips">
+              <span *ngFor="let team of equiposClub"
+                class="badge me-1 mb-1"
+                [class.bg-success]="isTeamSelected(team.value)"
+                [class.text-white]="isTeamSelected(team.value)"
+                [class.bg-light]="!isTeamSelected(team.value)"
+                [class.text-dark]="!isTeamSelected(team.value)"
+                style="cursor: pointer;"
+                (click)="toggleTeamId(team.value)">
+                {{ team.name }}
+              </span>
+            </div>
+            <small *ngIf="equiposClub.length > 0 && selectedTeamIds.length === 0" class="text-danger">Selecciona al menos un equipo</small>
+          </div>
+        </div>
+
+        <!-- PASO 2: Constructor de formulario -->
+        <div *ngIf="customDocStep === 2 && createdDocClubesId">
+          <app-form-builder
+            [docClubesId]="createdDocClubesId"
+            [contexto]="'DOCUMENTO'"
+            (onSave)="onFormBuilderSaved($event)"
+            (onClose)="onFormBuilderClosed()">
+          </app-form-builder>
+        </div>
+
+        <!-- PASO 3: Texto de autorización -->
+        <div *ngIf="customDocStep === 3">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">
+              {{ 'DOCS_EQUIPO.MODAL.AUTH_TEXT_LABEL' | translate }}
+            </label>
+            <p class="text-muted" style="font-size: 0.85rem;">
+              {{ 'DOCS_EQUIPO.MODAL.AUTH_TEXT_HINT' | translate }}
+            </p>
+            <textarea class="form-control" rows="4" [(ngModel)]="textoAutorizacion"
+              placeholder="Ej: Autorizo al club a utilizar los datos proporcionados para los fines indicados..."></textarea>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer" *ngIf="customDocStep === 1">
+        <button class="btn btn-secondary" (click)="cerrarModalPersonalizado()">
+          {{ 'DOCS_EQUIPO.COMMON.CANCEL' | translate }}
+        </button>
+        <button class="btn btn-success" [disabled]="!tituloPersonalizado.trim() || (equiposClub.length > 0 && selectedTeamIds.length === 0)" (click)="crearDocYAbrirBuilder()">
+          Siguiente <i class="bi bi-arrow-right"></i>
+        </button>
+      </div>
+
+      <div class="modal-footer" *ngIf="customDocStep === 3">
+        <button class="btn btn-secondary" (click)="customDocStep = 2">
+          <i class="bi bi-arrow-left"></i> Volver al formulario
+        </button>
+        <button class="btn btn-success" (click)="finalizarFormularioPersonalizado()">
+          <i class="bi bi-check-lg"></i> Finalizar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL EDITAR PERSONALIZADO (form-builder) ================= -->
+<div class="modal fade" [ngClass]="{ 'show': mostrarModalEditarPersonalizado }"
+  [style.display]="mostrarModalEditarPersonalizado ? 'block' : 'none'">
+
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-pencil-square me-2"></i>Editar formulario: {{ docEditando?.nombre }}
+        </h5>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalEditarPersonalizado()"></button>
+      </div>
+
+      <div class="modal-body" *ngIf="docEditando">
+        <app-form-builder
+          [docClubesId]="docEditando.docClubesId"
+          [contexto]="'DOCUMENTO'"
+          (onSave)="onEditFormBuilderSaved($event)"
+          (onClose)="onEditFormBuilderClosed()">
+        </app-form-builder>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL CONFIRMAR ELIMINAR ================= -->
+<div class="modal fade" [ngClass]="{ 'show': mostrarModalEliminar }"
+  [style.display]="mostrarModalEliminar ? 'block' : 'none'">
+
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">
+          <i class="bi bi-exclamation-triangle me-2"></i>
+          {{ 'DOCS_EQUIPO.COMMON.DELETE' | translate }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" aria-label="Cerrar" (click)="cerrarModalEliminar()"></button>
+      </div>
+
+      <div class="modal-body text-center">
+        <p class="mb-2">
+          ¿Estás seguro de que deseas eliminar el documento?
+        </p>
+
+        <strong class="text-danger">
+          {{ docEliminarNombre }}
+        </strong>
+
+        <p class="text-muted mt-2">
+          Esta acción no se puede deshacer.
+        </p>
+      </div>
+
+      <div class="modal-footer justify-content-center">
+
+        <button class="btn btn-secondary" (click)="cerrarModalEliminar()" [disabled]="loadingEliminar">
+          {{ 'DOCS_EQUIPO.COMMON.CANCEL' | translate }}
+        </button>
+
+        <button class="btn btn-danger" (click)="confirmarEliminarDefinitivo()" [disabled]="loadingEliminar">
+
+          <ng-container *ngIf="!loadingEliminar; else spinnerEliminar">
+            {{ 'DOCS_EQUIPO.COMMON.DELETE' | translate }}
+          </ng-container>
+
+        </button>
+
+        <ng-template #spinnerEliminar>
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          Eliminando...
+        </ng-template>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: REGISTROS INMUTABLES ============ -->
+<div class="modal-backdrop" *ngIf="mostrarModalRegistros" (click)="cerrarModalRegistros()" appModalBackdrop>
+  <div class="modal-dialog modal-lg modal-dialog-centered" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-journal-text me-2"></i> Registros de formularios firmados
+        </h5>
+        <button type="button" class="btn-close" (click)="cerrarModalRegistros()"></button>
+      </div>
+
+      <div class="modal-body">
+        <div *ngIf="loadingRegistros" class="text-center p-4">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+
+        <div *ngIf="!loadingRegistros && registros.length === 0" class="text-center text-muted p-4">
+          No hay registros para este documento.
+        </div>
+
+        <div class="table-responsive">
+        <table *ngIf="!loadingRegistros && registros.length > 0" class="table table-hover">
+          <thead>
+            <tr>
+              <th>Firmante</th>
+              <th>Fecha</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let reg of registros">
+              <td>{{ reg.nombreFirmante || 'Usuario #' + reg.userId }}</td>
+              <td>{{ reg.fecCreate | date:'dd/MM/yyyy' }}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary" (click)="openRegistroDetalle(reg)">
+                  <i class="bi bi-eye"></i> Ver detalle
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: DETALLE REGISTRO ============ -->
+<div class="modal-backdrop" *ngIf="mostrarModalRegistroDetalle" (click)="cerrarModalRegistroDetalle()" appModalBackdrop>
+  <div class="modal-dialog modal-lg modal-dialog-centered" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-file-earmark-lock me-2"></i> Detalle del registro
+        </h5>
+        <button type="button" class="btn-close" (click)="cerrarModalRegistroDetalle()"></button>
+      </div>
+
+      <div class="modal-body">
+        <div *ngIf="!registroDetalle" class="text-center p-4">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+
+        <div *ngIf="registroDetalle">
+          <p><strong>Firmante:</strong> {{ registroDetalle.nombreFirmante || 'Usuario #' + registroDetalle.userId }}</p>
+          <p><strong>Fecha:</strong> {{ registroDetalle.fecCreate | date:'dd/MM/yyyy HH:mm' }}</p>
+
+          <h6 class="mt-3 mb-2">Datos del formulario:</h6>
+          <div class="table-responsive">
+          <table class="table table-sm table-bordered" *ngIf="registroDetalle.datosParseados?.length > 0">
+            <thead>
+              <tr>
+                <th>Campo ID</th>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of registroDetalle.datosParseados">
+                <td>{{ item.campoId }}</td>
+                <td>{{ item.valor }}</td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+
+          <div *ngIf="registroDetalle.firmaFile" class="mt-3">
+            <h6>Firma:</h6>
+            <img [src]="getFileUrl(registroDetalle.firmaFile)" alt="Firma" class="img-fluid border rounded"
+              style="max-width: 100%;" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: DETALLE COMPLETADOS ============ -->
+<div class="modal fade" [ngClass]="{ 'show': mostrarModalCompletionDetail }"
+  [style.display]="mostrarModalCompletionDetail ? 'block' : 'none'">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-people me-2"></i> Detalle de completados
+        </h5>
+        <button type="button" class="btn-close" (click)="cerrarModalCompletionDetail()"></button>
+      </div>
+
+      <div class="modal-body">
+        <div *ngIf="loadingCompletionDetail" class="text-center p-4">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+
+        <div *ngIf="!loadingCompletionDetail && completionDetailList.length === 0" class="text-center text-muted p-4">
+          No se encontraron usuarios.
+        </div>
+
+        <div class="table-responsive">
+        <table *ngIf="!loadingCompletionDetail && completionDetailList.length > 0" class="table table-hover">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Estado</th>
+              <th>Fecha de subida</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of completionDetailList">
+              <td>{{ item.nombre }} {{ item.apellido }}</td>
+              <td>
+                <i *ngIf="item.completado" class="bi bi-check-circle-fill text-success" style="font-size: 1.2em;"></i>
+                <i *ngIf="!item.completado" class="bi bi-x-circle-fill text-danger" style="font-size: 1.2em;"></i>
+              </td>
+              <td>{{ item.completado ? (item.fechaSubida | date:'dd/MM/yyyy') : '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

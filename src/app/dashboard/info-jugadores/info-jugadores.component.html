@@ -1,0 +1,821 @@
+<!-- ================= SUBMENU ================= -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()" data-tutorial="ij-volver">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h2 class="table-title">{{ 'PLAYERS.TITLE' | translate }}</h2>
+    <p class="header-subtitle">Consulta y gestiona el perfil de cada jugador del club</p>
+  </div>
+
+  <button class="btn-ai-consult" (click)="toggleAiPanel()" data-tutorial="ij-consultar-ia">
+    <i class="bi bi-robot"></i>
+    <span>{{ 'AI_PANEL.CONSULT_BUTTON' | translate }}</span>
+  </button>
+</div>
+
+<div class="container">
+  <!-- BARRA DE CONTROLES -->
+  <div class="table-toolbar justify-content-center" data-tutorial="ij-toolbar">
+    <!-- BUSCADOR -->
+    <div class="filter-group search-group">
+      <label for="playerSearch" class="filter-label">
+        {{ 'PLAYERS.SEARCH_LABEL' | translate }}
+      </label>
+      <div class="search-input">
+        <i class="bi bi-search"></i>
+        <input id="playerSearch" type="text" class="form-control" [(ngModel)]="playerSearch" (input)="applyFilter()"
+          [placeholder]="'PLAYERS.SEARCH_PLACEHOLDER' | translate" />
+      </div>
+    </div>
+
+    <!-- SELECT EQUIPO -->
+    <div class="filter-group">
+      <label for="teamSelected" class="filter-label">
+        {{ 'PLAYERS.TEAM_LABEL' | translate }}
+      </label>
+      <select id="teamSelected" class="form-select" [(ngModel)]="teamSelected" (change)="loadPlayersOfTeam()">
+        <option value="-1">
+          {{ 'PLAYERS.ALL_TEAMS' | translate }}
+        </option>
+        <option *ngFor="let team of teams; let i = index" [value]="i">
+          {{ team.nameTeam }}
+        </option>
+      </select>
+    </div>
+
+    <!-- DESCARGAR EXCEL -->
+    <div class="filter-group">
+      <label class="filter-label invisible-label">Excel</label>
+      <button class="btn btn-excel" (click)="exportTableToExcel()">
+        <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+        {{ 'COMMON.EXPORT_EXCEL' | translate }}
+      </button>
+    </div>
+
+    <!-- PERSONALIZAR CAMPOS -->
+    <div class="filter-group">
+      <label class="filter-label invisible-label">Campos</label>
+      <button class="btn btn-custom-fields" (click)="abrirModalCustomFields()">
+        <i class="bi bi-sliders"></i>
+        {{ 'PLAYERS.CUSTOM_FIELDS_BTN' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="table-wrapper" data-tutorial="ij-tabla">
+    <table id="dataTable" class="modern-table">
+      <thead>
+        <tr>
+          <th class="sticky-col sticky-img">{{ 'PLAYERS.TABLE.IMAGE' | translate }}</th>
+          <th class="sticky-col sticky-name">{{ 'PLAYERS.TABLE.NAME' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.TEAM' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.BIRTHDATE' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.PHONE' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.DNI' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.DNI_IMG' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.DOC' | translate }}</th>
+          <th class="col-father">{{ 'PLAYERS.TABLE.FATHER' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.DNI' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.PHONE' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.EMAIL' | translate }}</th>
+          <th class="col-mother">{{ 'PLAYERS.TABLE.MOTHER' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.DNI' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.PHONE' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.EMAIL' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.IBAN' | translate }}</th>
+          <!-- CAMPOS PERSONALIZADOS DINÁMICOS -->
+          <th *ngFor="let campo of customFields" class="custom-field-th">
+            {{ campo.etiqueta }}
+          </th>
+        </tr>
+      </thead>
+      <tbody *ngIf="loading">
+        <tr *ngFor="let _ of [].constructor(7)">
+          <td *ngFor="let __ of [].constructor(17 + customFields.length)">
+            <div class="skeleton skeleton-cell"></div>
+          </td>
+        </tr>
+      </tbody>
+      <tbody *ngIf="!loading && datosCargados">
+        <tr *ngFor="let player of filteredPlayers; let i = index">
+          <!-- IMAGEN -->
+          <td class="image-cell">
+            <div class="image-wrapper">
+              <img *ngIf="player.picturePlayer" [src]="imageBaseUrlUser + player.picturePlayer" alt="player" />
+
+              <i *ngIf="!player.picturePlayer" class="bi bi-person"></i>
+            </div>
+          </td>
+
+          <!-- NOMBRE (clickeable: abre modal de información) -->
+          <td class="fw-semibold">
+            <button type="button" class="btn-link-name" (click)="abrirModalInfoJugador(player)">
+              {{ player.nombre }} {{ player.apellido }}
+            </button>
+          </td>
+
+          <!-- EQUIPO -->
+          <td>
+            <div class="team-cell">
+              <a>{{ player.nameTeam }}</a>
+              <div class="d-flex gap-1 justify-content-center">
+                <button class="btn btn-warning btn-sm btn-icon btn-warning-custom"
+                  title="{{'PLAYERS.BUTTONS.MOVE_PLAYER' | translate}}"
+                  (click)="openShowModalMover(player.playerId, player)">
+                  <i class="bi bi-arrow-repeat"></i>
+                </button>
+
+                <button *ngIf="+temporadaStoredValue < +temporada" class="btn btn-info btn-sm btn-icon btn-info-custom"
+                  title="{{'PLAYERS.BUTTONS.CHANGE_TEMP' | translate}}" (click)="updateTemporada(player)">
+                  <i class="bi bi-calendar-range"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+
+          <!-- FECHA -->
+          <td>{{ formatFechaEspana(player.fechaDeNacimiento) }}</td>
+
+          <!-- TEL -->
+          <td>{{ player.telefono }}</td>
+
+          <!-- DNI -->
+          <td>{{ player.dni }}</td>
+
+          <!-- IMG DNI -->
+          <td>
+            <button class="btn btn-sm btn-icon" [ngClass]="{
+      'btn-success-custom': player.imgDniUno && player.imgDniDos,
+      'btn-primary-custom': !player.imgDniUno || !player.imgDniDos
+    }" (click)="abrirModalDniJugador(player, i)" title="{{'PLAYERS.BUTTONS.ID' | translate}}">
+              <i class="bi bi-person-vcard"></i>
+            </button>
+          </td>
+
+          <!-- DOC -->
+          <td>
+            <button class="btn btn-primary btn-sm btn-icon btn-primary-custom" (click)="abrirModalDocJugador(player, i)"
+              title="{{'PLAYERS.BUTTONS.UPLOAD_DOC' | translate}}">
+              <i class="bi bi-cloud-upload"></i>
+            </button>
+          </td>
+
+          <!-- PADRE -->
+          <td class="col-father">{{ player.nombrePadre }}</td>
+          <td>{{ player.dniPadre }}</td>
+          <td>{{ player.telefonoPadre }}</td>
+          <td>{{ player.emailPadre }}</td>
+
+          <!-- MADRE -->
+          <td class="col-mother">{{ player.nombreMadre }}</td>
+          <td>{{ player.dniMadre }}</td>
+          <td>{{ player.telefonoMadre }}</td>
+          <td>{{ player.emailMadre }}</td>
+
+          <!-- IBAN -->
+          <td class="fw-semibold">{{ player.iban }}</td>
+
+          <!-- CAMPOS PERSONALIZADOS DINÁMICOS -->
+          <td *ngFor="let campo of customFields" class="custom-field-cell">
+            <ng-container *ngIf="!isSignatureOrFile(campo)">
+              {{ getCustomFieldValue(player, campo.formularioCampoId) }}
+            </ng-container>
+            <ng-container *ngIf="isSignatureOrFile(campo)">
+              <button *ngIf="hasSignatureOrFile(player, campo.formularioCampoId, campo.tipoCampo)"
+                class="btn btn-sm btn-icon btn-view-sig" (click)="abrirModalFirma(player, campo.formularioCampoId)"
+                [title]="campo.tipoCampo === 'SIGNATURE' ? 'Ver firma' : 'Ver archivo'">
+                <i class="bi" [ngClass]="campo.tipoCampo === 'SIGNATURE' ? 'bi-pen' : 'bi-file-earmark'"></i>
+              </button>
+              <span *ngIf="!hasSignatureOrFile(player, campo.formularioCampoId, campo.tipoCampo)" class="text-muted">—</span>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal para subir el DNI -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalDniJugador" (click)="cerrarModalDniJugador()" appModalBackdrop>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{'show': mostrarModalDniJugador}"
+  [style.display]="mostrarModalDniJugador ? 'block' : 'none'">
+
+  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content modern-modal">
+
+      <!-- HEADER -->
+      <div class="modal-header modern-modal-header">
+        <div>
+          <h5 class="modal-title">
+            {{ 'PLAYERS.DNI_MODAL.TITLE' | translate }}
+          </h5>
+          <small class="modal-subtitle">
+            {{ 'PLAYERS.DNI_MODAL.SUBTITLE' | translate }}
+          </small>
+        </div>
+
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalDniJugador()">
+        </button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body modern-modal-body">
+
+        <!-- ================= JUGADOR ================= -->
+        <section class="dni-section">
+          <h6 class="section-title">
+            {{ 'PLAYERS.DNI_MODAL.PLAYER.TITLE' | translate }}
+          </h6>
+
+          <p class="section-help">
+            {{ 'PLAYERS.DNI_MODAL.HELP' | translate }}
+          </p>
+
+          <div class="row g-4">
+            <!-- Cara 1 -->
+            <div class="col-md-6">
+              <div class="dni-card">
+                <span class="dni-label">
+                  {{ 'PLAYERS.DNI_MODAL.FRONT' | translate }}
+                </span>
+
+                <div class="dni-preview" *ngIf="selectedPlayer?.imgDniUno || dniCara1">
+                  <img [src]="dniCara1 ? dniCara1 : imageBaseUrlPlayerDni + selectedPlayer?.imgDniUno">
+                </div>
+
+                <input type="file" class="form-control" (change)="onFileChange($event, 'cara1')" accept="image/*">
+
+                <button *ngIf="selectedPlayer?.imgDniUno" class="btn btn-outline-primary btn-sm mt-2"
+                  (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.imgDniUno, 'dni_cara1.jpg')">
+                  <i class="bi bi-download"></i>
+                  {{ 'COMMON.DOWNLOAD' | translate }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Cara 2 -->
+            <div class="col-md-6">
+              <div class="dni-card">
+                <span class="dni-label">
+                  {{ 'PLAYERS.DNI_MODAL.BACK' | translate }}
+                </span>
+
+                <div class="dni-preview" *ngIf="selectedPlayer?.imgDniDos || dniCara2">
+                  <img [src]="dniCara2 ? dniCara2 : imageBaseUrlPlayerDni + selectedPlayer?.imgDniDos">
+                </div>
+
+                <input type="file" class="form-control" (change)="onFileChange($event, 'cara2')" accept="image/*">
+
+                <button *ngIf="selectedPlayer?.imgDniDos" class="btn btn-outline-primary btn-sm mt-2"
+                  (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.imgDniDos, 'dni_cara2.jpg')">
+                  <i class="bi bi-download"></i>
+                  {{ 'COMMON.DOWNLOAD' | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= PADRE / TUTOR 1 ================= -->
+        <section class="dni-section">
+          <h6 class="section-title">
+            {{ 'PLAYERS.DNI_MODAL.FATHER.TITLE' | translate }}
+          </h6>
+
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="dni-card">
+                <span class="dni-label">
+                  {{ 'PLAYERS.DNI_MODAL.FRONT' | translate }}
+                </span>
+
+                <div class="dni-preview" *ngIf="selectedPlayer?.dniPadre1 || dniCara3">
+                  <img [src]="dniCara3 ? dniCara3 : imageBaseUrlPlayerDni + selectedPlayer?.dniPadre1">
+                </div>
+
+                <input type="file" class="form-control" (change)="onFileChange($event, 'cara3')" accept="image/*">
+
+                <button *ngIf="selectedPlayer?.dniPadre1" class="btn btn-outline-primary btn-sm mt-2"
+                  (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.dniPadre1, 'dni_padre_1.jpg')">
+                  <i class="bi bi-download"></i>
+                  {{ 'COMMON.DOWNLOAD' | translate }}
+                </button>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="dni-card">
+                <span class="dni-label">
+                  {{ 'PLAYERS.DNI_MODAL.BACK' | translate }}
+                </span>
+
+                <div class="dni-preview" *ngIf="selectedPlayer?.dniPadre2 || dniCara4">
+                  <img [src]="dniCara4 ? dniCara4 : imageBaseUrlPlayerDni + selectedPlayer?.dniPadre2">
+                </div>
+
+                <input type="file" class="form-control" (change)="onFileChange($event, 'cara4')" accept="image/*">
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= MADRE / TUTOR 2 ================= -->
+        <section class="dni-section">
+          <h6 class="section-title">
+            {{ 'PLAYERS.DNI_MODAL.MOTHER.TITLE' | translate }}
+          </h6>
+
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="dni-card">
+                <span class="dni-label">
+                  {{ 'PLAYERS.DNI_MODAL.FRONT' | translate }}
+                </span>
+
+                <div class="dni-preview" *ngIf="selectedPlayer?.dniMadre1 || dniCara5">
+                  <img [src]="dniCara5 ? dniCara5 : imageBaseUrlPlayerDni + selectedPlayer?.dniMadre1">
+                </div>
+
+                <input type="file" class="form-control" (change)="onFileChange($event, 'cara5')" accept="image/*">
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="dni-card">
+                <span class="dni-label">
+                  {{ 'PLAYERS.DNI_MODAL.BACK' | translate }}
+                </span>
+
+                <div class="dni-preview" *ngIf="selectedPlayer?.dniMadre2 || dniCara6">
+                  <img [src]="dniCara6 ? dniCara6 : imageBaseUrlPlayerDni + selectedPlayer?.dniMadre2">
+                </div>
+
+                <input type="file" class="form-control" (change)="onFileChange($event, 'cara6')" accept="image/*">
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal para ver documentación del jugador -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalDocJugador" (click)="cerrarModalDocJugador()" appModalBackdrop>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{'show': mostrarModalDocJugador}"
+  [style.display]="mostrarModalDocJugador ? 'block' : 'none'">
+
+  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content modern-modal">
+
+      <!-- HEADER -->
+      <div class="modal-header modern-modal-header">
+        <div>
+          <h5 class="modal-title">
+            {{ 'PLAYERS.DOC_MODAL.TITLE' | translate }}
+          </h5>
+          <small class="modal-subtitle">
+            {{ 'PLAYERS.DOC_MODAL.SUBTITLE' | translate }}
+          </small>
+        </div>
+
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalDocJugador()">
+        </button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body modern-modal-body">
+
+        <div class="row g-3">
+          <div *ngFor="let doc of listaDocumentos" class="col-12">
+
+            <div class="doc-card">
+
+              <!-- INFO -->
+              <div class="doc-info">
+                <h6 class="doc-title">
+                  {{ doc.nombre }}
+                </h6>
+
+                <p class="doc-desc" *ngIf="doc.requiere < 2">
+                  {{ doc.descripcion }}
+                </p>
+              </div>
+
+              <!-- ACTIONS -->
+              <div class="doc-actions">
+
+                <!-- DESCARGAR -->
+                <button *ngIf="doc.requiere === 0 || doc.fileClub" class="btn-icon" [ngClass]="{
+                    'success': doc.descargado === 1,
+                    'secondary': doc.descargado === 0
+                  }" (click)="descargar(doc)" title="{{ 'PLAYERS.DOC_MODAL.DOWNLOAD' | translate }}">
+                  <i class="bi bi-arrow-down-circle"></i>
+                </button>
+
+                <!-- SUBIR -->
+                <button *ngIf="doc.requiere === 1" class="btn-icon" [ngClass]="{
+                    'success': doc.subido === 1,
+                    'secondary': doc.subido === 0
+                  }" (click)="subir(doc)" title="{{ 'PLAYERS.DOC_MODAL.UPLOAD' | translate }}">
+                  <i class="bi bi-arrow-up-circle"></i>
+                </button>
+
+                <!-- VER -->
+                <button *ngIf="doc.requiere === 1 && doc.subido === 1" class="btn-icon info" (click)="verDocSubido(doc)"
+                  title="{{ 'PLAYERS.DOC_MODAL.VIEW' | translate }}">
+                  <i class="bi bi-eye"></i>
+                </button>
+
+                <!-- PERSONALIZADO -->
+                <button *ngIf="doc.requiere === 2" class="btn-icon warning" (click)="rellenarPersonalizado(doc)"
+                  title="{{ 'PLAYERS.DOC_MODAL.FILL' | translate }}">
+                  <i class="bi bi-card-text"></i>
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para subir documento del club -->
+<!-- BACKDROP -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalDocumento" (click)="cerrarModalDocumento()" appModalBackdrop>
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{ 'show': mostrarModalDocumento }"
+  [style.display]="mostrarModalDocumento ? 'block' : 'none'">
+
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content modal-base">
+
+      <!-- HEADER -->
+      <div class="modal-base__header">
+        <h5 class="modal-title">
+          {{ 'PLAYERS.PLAYERS.MODAL_UPLOAD_DOC.TITLE' | translate }}
+        </h5>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalDocumento()"></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-base__body">
+
+        <p class="mb-3">
+          {{ 'PLAYERS.PLAYERS.MODAL_UPLOAD_DOC.DESCRIPTION' | translate }}
+        </p>
+
+        <div class="modal-card">
+          <label class="modal-label">
+            {{ 'PLAYERS.PLAYERS.MODAL_UPLOAD_DOC.FILE_LABEL' | translate }}
+          </label>
+
+          <input type="file" class="form-control" (change)="onFileSelected($event)"
+            accept=".pdf,.doc,.docx,.jpg,.png,.jpeg" />
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-base__footer">
+        <button class="btn btn-secondary" (click)="cerrarModalDocumento()">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button class="btn btn-primary" (click)="subirDocumento()">
+          {{ 'COMMON.UPLOAD' | translate }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal texto personalizado -->
+<!-- BACKDROP -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalEditarPersonalizado" (click)="cerrarModalEditarPersonalizado()" appModalBackdrop>
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" tabindex="-1" [ngClass]="{ 'show': mostrarModalEditarPersonalizado }"
+  [style.display]="mostrarModalEditarPersonalizado ? 'block' : 'none'">
+
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content modal-base">
+
+      <!-- HEADER -->
+      <div class="modal-base__header">
+        <h5 class="modal-title">
+          {{ 'MODAL_CUSTOM.TITLE' | translate }}
+        </h5>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalEditarPersonalizado()"></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-base__body">
+
+        <div *ngIf="showDate" class="mb-3">
+          <strong>
+            {{ 'MODAL_CUSTOM.LAST_UPDATE' | translate:{ date: fechaEditando } }}
+          </strong>
+          <hr />
+        </div>
+
+        <label class="modal-label">
+          {{ 'MODAL_CUSTOM.CONTENT_LABEL' | translate }}
+        </label>
+
+        <div id="editorPersonalizado" class="form-control" contenteditable="true" [innerHTML]="contenidoEditando">
+        </div>
+
+        <div class="form-check mt-3">
+          <input type="checkbox" class="form-check-input" id="checkboxReq" [(ngModel)]="requiereRespuesta" />
+
+          <label for="checkboxReq" class="form-check-label">
+            {{ tituloEditando }}
+          </label>
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-base__footer">
+        <button class="btn btn-secondary" (click)="cerrarModalEditarPersonalizado()">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button class="btn btn-success" (click)="guardarEdicionPersonalizado()">
+          {{ 'COMMON.SAVE_CHANGES' | translate }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal para subir documento del club -->
+<!-- BACKDROP -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalDocumentoOjo" (click)="cerrarModalDocumentoOjo()" appModalBackdrop>
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{ 'show': mostrarModalDocumentoOjo }"
+  [style.display]="mostrarModalDocumentoOjo ? 'block' : 'none'">
+
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content modal-base">
+
+      <!-- HEADER -->
+      <div class="modal-base__header">
+        <h5 class="modal-title">
+          {{ 'MODAL_VIEW_DOC.TITLE' | translate }}
+        </h5>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalDocumentoOjo()"></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-base__body text-center">
+
+        <ng-container *ngIf="docPadreTemp?.subido === 1 && docPadreTemp?.filePadre">
+
+          <ng-container *ngIf="esImagen(docPadreTemp.filePadre); else fileLink">
+
+            <p class="mb-2">
+              {{ 'MODAL_VIEW_DOC.ALREADY_UPLOADED' | translate }}
+            </p>
+
+            <img [src]="'https://appsphairatech.com/images/docs-padres/' + docPadreTemp.filePadre"
+              class="img-fluid rounded shadow-sm" style="max-height: 350px; object-fit: contain;" />
+
+          </ng-container>
+
+          <ng-template #fileLink>
+            <p class="mb-2">
+              {{ 'MODAL_VIEW_DOC.FILE_NAME' | translate }}:
+              {{ docPadreTemp.filePadre }}
+            </p>
+
+            <a class="btn btn-primary" target="_blank" rel="noopener"
+              [href]="'https://appsphairatech.com/images/docs-padres/' + docPadreTemp.filePadre">
+              {{ 'MODAL_VIEW_DOC.OPEN_FILE' | translate }}
+              <i class="bi bi-box-arrow-up-right ms-1"></i>
+            </a>
+          </ng-template>
+
+        </ng-container>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-base__footer">
+        <button class="btn btn-secondary" (click)="cerrarModalDocumentoOjo()">
+          {{ 'COMMON.CLOSE' | translate }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+<!-- BACKDROP -->
+<div class="modal-backdrop-custom" *ngIf="showModalMover" (click)="cerrarModalMover()" appModalBackdrop>
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{ 'show': showModalMover }"
+  [style.display]="showModalMover ? 'block' : 'none'">
+
+  <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-content modal-base">
+
+      <!-- HEADER -->
+      <div class="modal-base__header">
+        <h5 class="modal-title">
+          {{ 'PLAYERS.MODAL_MOVE_PLAYER.TITLE' | translate:{ name: nombreJugador } }}
+        </h5>
+        <button class="btn-close" aria-label="Cerrar" (click)="cerrarModalMover()"></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-base__body">
+
+        <p>
+          {{ 'PLAYERS.MODAL_MOVE_PLAYER.DESCRIPTION' | translate }}
+        </p>
+
+        <form (ngSubmit)="moverJugador()">
+
+          <label class="modal-label">
+            {{ 'PLAYERS.MODAL_MOVE_PLAYER.SELECT_TEAM' | translate }}
+          </label>
+
+          <select class="form-select" [(ngModel)]="teamDestino" name="teamDestino">
+            <option [value]="0">
+              {{ 'PLAYERS.MODAL_MOVE_PLAYER.SELECT_TEAM' | translate }}
+            </option>
+
+            <ng-container *ngFor="let team of listTeamsForCombo">
+              <option *ngIf="team.value !== teamId" [value]="team.value">
+                {{ team.name }}
+              </option>
+            </ng-container>
+          </select>
+
+          <div class="form-check mt-3">
+            <input type="checkbox" class="form-check-input" id="addPlayerMoved" [(ngModel)]="addPlayerMoved"
+              name="addPlayerMoved" />
+
+            <label class="form-check-label text-danger" for="addPlayerMoved">
+              {{ 'PLAYERS.MODAL_MOVE_PLAYER.KEEP_BOTH' | translate }}
+            </label>
+          </div>
+
+        </form>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-base__footer">
+        <button class="btn btn-success-custom" (click)="moverJugador()">
+          {{ 'COMMON.ACCEPT' | translate }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL CAMPOS PERSONALIZADOS ================= -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalCustomFields" (click)="cerrarModalCustomFields()" appModalBackdrop></div>
+<div class="modal fade" [ngClass]="{ 'show': mostrarModalCustomFields }"
+  [style.display]="mostrarModalCustomFields ? 'block' : 'none'">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-sliders me-2"></i>{{ 'PLAYERS.CUSTOM_FIELDS_TITLE' | translate }}
+        </h5>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalCustomFields()"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted mb-3">{{ 'PLAYERS.CUSTOM_FIELDS_DESC' | translate }}</p>
+        <app-form-builder
+          [clubId]="clubId"
+          [contexto]="'PERFIL_JUGADOR'"
+          (onSave)="onCustomFieldsSaved($event)"
+          (onClose)="cerrarModalCustomFields()">
+        </app-form-builder>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: VER FIRMA / ARCHIVO                                   -->
+<!-- ============================================================ -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalFirma" (click)="cerrarModalFirma()" appModalBackdrop></div>
+<div class="modal fade" tabindex="-1" [ngClass]="{'show': mostrarModalFirma}"
+  [style.display]="mostrarModalFirma ? 'block' : 'none'">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content modern-modal">
+      <div class="modal-header modern-modal-header">
+        <div>
+          <h5 class="modal-title">Firma / Archivo</h5>
+        </div>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalFirma()"></button>
+      </div>
+      <div class="modal-body modern-modal-body text-center p-4">
+        <img *ngIf="firmaUrl" [src]="firmaUrl" class="img-fluid rounded shadow-sm" style="max-height: 550px; object-fit: contain; background: #fff; padding: 16px;" />
+        <div *ngIf="firmaUrl" class="mt-3">
+          <a [href]="firmaUrl" target="_blank" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-download me-1"></i> Descargar
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL LATERAL DE IA -->
+<div class="ai-sidebar-overlay" [class.active]="aiPanelOpen" (click)="toggleAiPanel()"></div>
+<div class="ai-sidebar" [class.active]="aiPanelOpen" data-tutorial="ij-panel-ia">
+  <div class="ai-sidebar-header">
+    <h3>
+      <i class="bi bi-robot"></i>
+      Asistente IA — Jugadores
+    </h3>
+    <button class="btn-close-ai" (click)="toggleAiPanel()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div class="ai-sidebar-body">
+    <div class="ai-suggestions-section">
+      <p class="ai-intro"><i class="bi bi-lightbulb me-1"></i> Pregúntame sobre el listado de jugadores (datos anonimizados)</p>
+      <div class="suggestion-chips">
+        <button class="suggestion-chip" (click)="useSuggestion('¿Cuántos jugadores hay por posición?')">
+          <i class="bi bi-person-lines-fill me-1"></i> Distribución por posición
+        </button>
+        <button class="suggestion-chip" (click)="useSuggestion('¿Cuántos jugadores hay por equipo?')">
+          <i class="bi bi-shield me-1"></i> Jugadores por equipo
+        </button>
+        <button class="suggestion-chip" (click)="useSuggestion('¿Qué posiciones tienen menos jugadores en el club?')">
+          <i class="bi bi-bar-chart me-1"></i> Posiciones con déficit
+        </button>
+        <button class="suggestion-chip" (click)="useSuggestion('¿Hay jugadores sin dorsal asignado?')">
+          <i class="bi bi-hash me-1"></i> Sin dorsal asignado
+        </button>
+      </div>
+    </div>
+
+    <div class="ai-chat-section">
+      <div class="ai-messages" #aiMessagesContainer>
+        <div *ngFor="let message of aiMessages" class="ai-message" [ngClass]="message.role">
+          <div class="message-content">
+            <strong *ngIf="message.role === 'assistant'"><i class="bi bi-robot me-1"></i> IA:</strong>
+            <strong *ngIf="message.role === 'user'">Tú:</strong>
+            <div [innerHTML]="message.content | markdownAi"></div>
+          </div>
+        </div>
+          <div *ngIf="aiLoading" class="ai-message assistant">
+          <div class="message-content">
+            <strong><i class="bi bi-robot me-1"></i> IA:</strong>
+            <p class="typing-indicator"><span></span><span></span><span></span></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-input-section">
+        <textarea
+          [(ngModel)]="aiPrompt"
+          placeholder="Escribe tu consulta..."
+          rows="3"
+          (keydown)="onKeyDown($event)"
+          [disabled]="aiLoading"
+        ></textarea>
+        <div class="ai-input-buttons">
+          <button class="btn-send-ai" (click)="sendAiMessage()" [disabled]="aiLoading || !aiPrompt.trim()">
+            <i class="bi bi-send-fill"></i>
+            Enviar
+          </button>
+        </div>
+        <small class="ai-hint">Shift+Enter para nueva línea · Enter para enviar</small>
+      </div>
+    </div>
+  </div>
+</div>

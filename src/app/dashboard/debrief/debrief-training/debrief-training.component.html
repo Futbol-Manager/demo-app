@@ -1,0 +1,295 @@
+
+<!-- BOTÓN VOLVER -->
+<div class="back-container" data-tutorial="dbt-volver">
+  <button class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
+</div>
+
+<div class="debrief-container">
+
+  <!-- ═══ HEADER ═══ -->
+  <div class="debrief-header">
+    <div class="header-icon">
+      <i class="bi bi-clipboard-pulse"></i>
+    </div>
+    <div class="header-info">
+      <h4>{{ 'DEBRIEF.TRAINING_TITLE' | translate }}</h4>
+      <span class="header-meta">
+        <i class="bi bi-calendar3"></i> {{ trainingDate }}
+      </span>
+    </div>
+    <div class="header-actions">
+      <button class="btn-settings" (click)="openCustomModal()" title="{{ 'DEBRIEF.CUSTOMIZE_QUESTIONS' | translate }}">
+        <i class="bi bi-gear"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══ BARRA DE PROGRESO ═══ -->
+  <div class="progress-section" data-tutorial="dbt-progress">
+    <div class="progress-bar-wrapper">
+      <div class="progress-fill" [style.width.%]="progress"></div>
+    </div>
+    <span class="progress-label">{{ currentStep + 1 }} / {{ totalSteps }}</span>
+  </div>
+
+  <!-- ═══ STEP INDICATORS ═══ -->
+  <div class="step-indicators" data-tutorial="dbt-progress">
+    <button
+      *ngFor="let q of questions; let i = index"
+      class="step-dot"
+      [class.active]="i === currentStep"
+      [class.answered]="answers.get(q.id) && isAnswered(answers.get(q.id)!)"
+      [class.skipped]="answers.get(q.id)?.skipped"
+      (click)="goToStep(i)">
+      <i [class]="getStepIcon(q)"></i>
+    </button>
+  </div>
+
+  <!-- ═══ TARJETA DE ASISTENCIA (contexto) ═══ -->
+  <div class="attendance-card" *ngIf="attendanceContext">
+    <div class="attendance-header">
+      <i class="bi bi-people-fill"></i>
+      <span>{{ 'DEBRIEF.ATTENDANCE_CONTEXT' | translate }}</span>
+      <span class="attendance-week">{{ attendanceContext.weekScope }}</span>
+    </div>
+    <div class="attendance-body" *ngIf="!attendanceContext.noRecordsAvailable">
+      <div class="attendance-stat">
+        <span class="stat-value">{{ attendanceContext.attendanceRate }}%</span>
+        <span class="stat-label">{{ 'DEBRIEF.ATTENDANCE_RATE' | translate }}</span>
+      </div>
+      <div class="attendance-stat">
+        <span class="stat-value present">{{ attendanceContext.present }}</span>
+        <span class="stat-label">{{ 'DEBRIEF.PRESENT' | translate }}</span>
+      </div>
+      <div class="attendance-stat">
+        <span class="stat-value absent">{{ attendanceContext.absent }}</span>
+        <span class="stat-label">{{ 'DEBRIEF.ABSENT' | translate }}</span>
+      </div>
+      <div class="attendance-stat">
+        <span class="stat-value late">{{ attendanceContext.late }}</span>
+        <span class="stat-label">{{ 'DEBRIEF.LATE' | translate }}</span>
+      </div>
+    </div>
+    <div class="attendance-empty" *ngIf="attendanceContext.noRecordsAvailable">
+      <i class="bi bi-info-circle"></i>
+      <span>{{ 'DEBRIEF.NO_ATTENDANCE_RECORDS' | translate }}</span>
+    </div>
+  </div>
+
+  <!-- ═══ PREGUNTA ACTUAL ═══ -->
+  <div class="question-card" *ngIf="currentQuestion" data-tutorial="dbt-questions">
+
+    <!-- Categoría -->
+    <div class="question-category">
+      <i [class]="getStepIcon(currentQuestion)"></i>
+      <span>{{ 'DEBRIEF.CATEGORIES.' + (currentQuestion.category || 'general') | uppercase | translate }}</span>
+      <!-- Botón quitar pregunta (no para required defaults) -->
+      <button
+        class="btn-remove-question"
+        *ngIf="!currentQuestion.isDefault || !currentQuestion.required"
+        (click)="removeQuestion(currentQuestion.id)"
+        title="{{ 'DEBRIEF.REMOVE_QUESTION' | translate }}">
+        <i class="bi bi-x-circle"></i>
+      </button>
+    </div>
+
+    <!-- Texto de la pregunta -->
+    <h5 class="question-text">{{ currentQuestion.textKey | translate }}</h5>
+
+    <!-- ═══ TIPO: RATING (estrellas) ═══ -->
+    <div class="answer-section" *ngIf="currentQuestion.type === 'rating'">
+      <div class="rating-stars">
+        <button
+          *ngFor="let star of getRatingArray()"
+          class="star-btn"
+          [class.active]="currentAnswer && currentAnswer.quickValue !== undefined && star <= +currentAnswer.quickValue"
+          (click)="setRating(currentQuestion.id, star)">
+          <i class="bi" [class.bi-star-fill]="currentAnswer && currentAnswer.quickValue !== undefined && star <= +currentAnswer.quickValue"
+             [class.bi-star]="!(currentAnswer && currentAnswer.quickValue !== undefined && star <= +currentAnswer.quickValue)"></i>
+        </button>
+      </div>
+      <span class="rating-label" *ngIf="currentAnswer?.quickValue">
+        {{ currentAnswer!.quickValue }} / 5
+      </span>
+    </div>
+
+    <!-- ═══ TIPO: SCALE (numérica) ═══ -->
+    <div class="answer-section" *ngIf="currentQuestion.type === 'scale'">
+      <div class="scale-selector">
+        <button
+          *ngFor="let num of getScaleArray(currentQuestion.min || 1, currentQuestion.max || 10)"
+          class="scale-btn"
+          [class.active]="currentAnswer?.quickValue === num"
+          (click)="setScale(currentQuestion.id, num)">
+          {{ num }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ TIPO: SELECT (chips) ═══ -->
+    <div class="answer-section" *ngIf="currentQuestion.type === 'select'">
+      <div class="chips-row">
+        <button
+          *ngFor="let opt of currentQuestion.options"
+          class="chip-btn"
+          [class.active]="currentAnswer?.quickValue === opt"
+          (click)="selectOption(currentQuestion.id, opt)">
+          {{ opt | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ TIPO: TEXT (texto libre + audio) ═══ -->
+    <div class="answer-section" *ngIf="currentQuestion.type === 'text'">
+      <div class="text-input-wrapper">
+        <textarea
+          class="debrief-textarea"
+          [value]="currentAnswer?.textValue || ''"
+          (input)="setTextValue(currentQuestion.id, $any($event.target).value)"
+          [placeholder]="'DEBRIEF.TEXT_PLACEHOLDER' | translate"
+          rows="4">
+        </textarea>
+        <!-- Transcripción intermedia -->
+        <div class="interim-text" *ngIf="isListening && activeAudioQuestionId === currentQuestion.id && interimText">
+          <i class="bi bi-soundwave"></i> {{ interimText }}
+        </div>
+      </div>
+      <!-- Botón de audio -->
+      <button
+        class="btn-audio"
+        *ngIf="speechAvailable"
+        [class.recording]="isListening && activeAudioQuestionId === currentQuestion.id"
+        (click)="toggleAudio(currentQuestion.id)">
+        <ng-container *ngIf="!(isListening && activeAudioQuestionId === currentQuestion.id)">
+          <i class="bi bi-mic"></i>
+          <span>{{ 'DEBRIEF.DICTATE' | translate }}</span>
+        </ng-container>
+        <ng-container *ngIf="isListening && activeAudioQuestionId === currentQuestion.id">
+          <i class="bi bi-stop-circle-fill recording-pulse"></i>
+          <span>{{ 'DEBRIEF.STOP_LISTENING' | translate }}</span>
+        </ng-container>
+      </button>
+    </div>
+
+    <!-- ═══ TIPO: PLAYERS (selector de jugadores) ═══ -->
+    <div class="answer-section" *ngIf="currentQuestion.type === 'players'">
+      <div class="players-grid" *ngIf="!loadingPlayers && players.length > 0">
+        <button
+          *ngFor="let player of players"
+          class="player-chip"
+          [class.selected]="isPlayerSelected(currentQuestion.id, player.playerId)"
+          (click)="togglePlayer(currentQuestion.id, player.playerId)">
+          <i class="bi bi-person-fill"></i>
+          <span>{{ player.nombre }} {{ player.apellido }}</span>
+        </button>
+      </div>
+      <div class="loading-players" *ngIf="loadingPlayers">
+        <app-logo-spinner></app-logo-spinner>
+      </div>
+      <p class="no-players-msg" *ngIf="!loadingPlayers && players.length === 0">
+        <i class="bi bi-info-circle"></i> No hay jugadores disponibles para este equipo.
+      </p>
+      <p class="players-hint" *ngIf="players.length > 0">{{ 'DEBRIEF.PLAYERS_HINT' | translate }}</p>
+    </div>
+
+  </div>
+
+  <!-- ═══ NAVEGACIÓN ═══ -->
+  <div class="navigation-bar">
+    <button
+      class="btn-nav btn-prev"
+      [disabled]="currentStep === 0"
+      (click)="prevStep()">
+      <i class="bi bi-chevron-left"></i>
+      {{ 'DEBRIEF.PREVIOUS' | translate }}
+    </button>
+
+    <button
+      class="btn-nav btn-skip"
+      *ngIf="currentQuestion && !currentQuestion.required"
+      (click)="skipQuestion()">
+      {{ 'DEBRIEF.SKIP' | translate }}
+    </button>
+
+    <!-- Botón Siguiente (no último paso) -->
+    <button
+      class="btn-nav btn-next"
+      *ngIf="currentStep < totalSteps - 1"
+      [disabled]="!canGoNext"
+      (click)="nextStep()">
+      {{ 'DEBRIEF.NEXT' | translate }}
+      <i class="bi bi-chevron-right"></i>
+    </button>
+
+    <!-- Botón Completar (último paso) -->
+    <button
+      class="btn-nav btn-complete"
+      *ngIf="currentStep === totalSteps - 1"
+      [disabled]="isSaving"
+      (click)="completeDebrief()">
+      <i class="bi bi-check-circle" *ngIf="!isSaving"></i>
+      <i class="bi bi-arrow-repeat spin" *ngIf="isSaving"></i>
+      {{ 'DEBRIEF.GENERATE_REPORT' | translate }}
+    </button>
+  </div>
+
+  <!-- ═══ BOTÓN GUARDAR BORRADOR ═══ -->
+  <div class="draft-bar">
+    <button class="btn-draft" (click)="saveDraft()">
+      <i class="bi bi-save"></i>
+      {{ 'DEBRIEF.SAVE_DRAFT' | translate }}
+    </button>
+  </div>
+
+</div>
+
+<!-- ═══ MODAL: PREGUNTAS PERSONALIZADAS ═══ -->
+<div class="modal-overlay" *ngIf="showCustomModal" (click)="closeCustomModal()">
+  <div class="custom-modal" (click)="$event.stopPropagation()">
+    <div class="custom-modal-header">
+      <h5>{{ 'DEBRIEF.ADD_CUSTOM_QUESTION' | translate }}</h5>
+      <button class="btn-close-modal" (click)="closeCustomModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="custom-modal-body">
+      <div class="form-group">
+        <label>{{ 'DEBRIEF.CUSTOM_MODAL.QUESTION_TEXT' | translate }}</label>
+        <input
+          type="text"
+          class="form-control custom-input"
+          [(ngModel)]="newCustomQuestion.textKey"
+          [placeholder]="'DEBRIEF.CUSTOM_MODAL.QUESTION_PLACEHOLDER' | translate">
+      </div>
+      <div class="form-group">
+        <label>{{ 'DEBRIEF.CUSTOM_MODAL.QUESTION_TYPE' | translate }}</label>
+        <select class="form-control custom-input" [(ngModel)]="newCustomQuestion.type">
+          <option value="text">{{ 'DEBRIEF.CUSTOM_MODAL.TYPE_TEXT' | translate }}</option>
+          <option value="rating">{{ 'DEBRIEF.CUSTOM_MODAL.TYPE_RATING' | translate }}</option>
+          <option value="scale">{{ 'DEBRIEF.CUSTOM_MODAL.TYPE_SCALE' | translate }}</option>
+          <option value="select">{{ 'DEBRIEF.CUSTOM_MODAL.TYPE_SELECT' | translate }}</option>
+          <option value="players">{{ 'DEBRIEF.SELECT_PLAYERS' | translate }}</option>
+        </select>
+      </div>
+      <div class="form-check mt-3">
+        <input type="checkbox" class="form-check-input" id="requiredCheck"
+               [(ngModel)]="newCustomQuestion.required">
+        <label class="form-check-label" for="requiredCheck">
+          {{ 'DEBRIEF.CUSTOM_MODAL.REQUIRED' | translate }}
+        </label>
+      </div>
+    </div>
+    <div class="custom-modal-footer">
+      <button class="btn-cancel" (click)="closeCustomModal()">
+        {{ 'COMMON.CANCEL' | translate }}
+      </button>
+      <button class="btn-add" (click)="addCustomQuestion()" [disabled]="!newCustomQuestion.textKey">
+        <i class="bi bi-plus-circle"></i>
+        {{ 'DEBRIEF.CUSTOM_MODAL.ADD' | translate }}
+      </button>
+    </div>
+  </div>
+</div>

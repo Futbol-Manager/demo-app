@@ -1,0 +1,531 @@
+:host {
+  --fifa-green: #00c853;
+  --fifa-night: #002c40;
+  --fifa-card-bg: #ffffff;
+  --fifa-border: rgba(0, 44, 64, 0.12);
+  --fifa-green-dim: rgba(0, 200, 83, 0.12);
+  --fav-gold: #f5a623;
+}
+
+// ─── Premium header (misma altura que info-jugadores) ─────────────────────────
+$sp-navy:        #002c40;
+$sp-navy-mid:    #0a4a6e;
+$sp-green:       #31b270;
+$sp-green-dark:  #1f8f5a;
+$g-brand:        linear-gradient(135deg, #{$sp-navy} 0%, #{$sp-navy-mid} 50%, #{$sp-green} 100%);
+
+.page-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  min-height: 80px;
+  padding: 1.35rem 2rem;
+  margin-top: 0;
+  margin-bottom: 1.75rem;
+  border-radius: 20px;
+  background: $g-brand;
+  box-shadow:
+    0 14px 40px rgba($sp-navy, 0.32),
+    0 4px 12px rgba($sp-navy-mid, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -4%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba($sp-green, 0.32) 0%, transparent 60%);
+    pointer-events: none;
+    border-radius: 50%;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -50%;
+    left: 5%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba($sp-green, 0.18) 0%, transparent 65%);
+    pointer-events: none;
+    border-radius: 50%;
+  }
+}
+
+.back-container {
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.btn-back-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  background: rgba(255, 255, 255, 0.13);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  color: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 600;
+  padding: 0.45rem 0.9rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+  backdrop-filter: blur(4px);
+
+  i { font-size: 1rem; }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.22);
+    transform: translateX(-2px);
+  }
+
+  &:active { transform: translateX(0) scale(0.98); }
+}
+
+.header-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.table-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+  letter-spacing: -0.025em;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
+
+  .table-title-icon { font-size: 1.2rem; opacity: 0.95; }
+}
+
+.header-subtitle {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.72);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ─── PAGE ─── */
+.historial-page {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 1rem 0 3rem;
+}
+
+/* ─── EMPTY STATE ─── */
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: rgba(0, 44, 64, 0.45);
+}
+
+.empty-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
+
+/* ─── GRID ─── */
+.task-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+.task-card {
+  background: var(--fifa-card-bg);
+  border: 2px solid var(--fifa-border);
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  box-shadow: 0 4px 18px rgba(0, 44, 64, 0.07);
+}
+
+.task-card:hover, .task-card.active {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 32px rgba(0, 200, 83, 0.18);
+  border-color: var(--fifa-green);
+}
+
+.task-image {
+  aspect-ratio: 1050 / 680;
+  max-height: 160px;
+  overflow: hidden;
+}
+.task-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.task-body {
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.task-body-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+
+.task-body-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.usage-count {
+  font-size: 0.78rem;
+  color: rgba(0, 44, 64, 0.55);
+  font-weight: 600;
+}
+
+.btn-fav-sm {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: #9aa6ac;
+  padding: 2px 3px;
+  transition: color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-fav-sm:hover { color: var(--fav-gold); transform: scale(1.2); }
+.btn-fav-sm.is-fav { color: var(--fav-gold); }
+
+.origin-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.origin-badge.cloud { background: #e3f2fd; color: #1565c0; }
+.origin-badge.training { background: var(--fifa-green-dim); color: #00802b; }
+.origin-badge.own { background: #fff3e0; color: #e65100; }
+
+.task-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--fifa-night);
+  margin: 0 0 0.3rem 0;
+}
+
+.task-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 0.4rem;
+}
+
+.badge {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.badge-secondary { background: #e8edf0; color: #455a64; }
+.badge-primary { background: #e3f2fd; color: #1565c0; }
+
+.task-desc {
+  font-size: 0.82rem;
+  color: rgba(0, 44, 64, 0.6);
+  margin: 0 0 0.5rem;
+  line-height: 1.45;
+  flex: 1;
+}
+
+.task-used-date {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--fifa-green);
+  margin-top: auto;
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--fifa-border);
+}
+
+/* ─── PAGINACIÓN ─── */
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 1rem 0;
+}
+
+.btn-page {
+  background: var(--fifa-card-bg);
+  border: 1px solid var(--fifa-border);
+  border-radius: 8px;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--fifa-night);
+  transition: border-color 0.2s;
+  &:disabled { opacity: 0.35; cursor: not-allowed; }
+  &:not(:disabled):hover { border-color: var(--fifa-green); color: var(--fifa-green); }
+}
+
+.page-info {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--fifa-night);
+}
+
+/* ─── DETAIL PANEL ─── */
+.detail-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 44, 64, 0.45);
+  backdrop-filter: blur(3px);
+  z-index: 1040;
+}
+
+.detail-panel {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1041;
+  padding: 1rem;
+}
+
+.detail-panel-inner {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(0, 44, 64, 0.22);
+  width: 100%;
+  max-width: 640px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, var(--fifa-night) 0%, #0a3d52 100%);
+  color: #fff;
+}
+
+.detail-header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.detail-close {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.detail-close:hover { background: rgba(255, 255, 255, 0.3); }
+
+.detail-body {
+  padding: 1.25rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.detail-img {
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+.detail-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.usage-badge {
+  font-size: 0.8rem;
+  color: rgba(0, 44, 64, 0.6);
+  font-weight: 600;
+}
+
+.detail-section {
+  margin-bottom: 0.85rem;
+}
+
+.detail-section label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--fifa-green);
+  margin-bottom: 0.2rem;
+}
+
+.detail-section p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--fifa-night);
+  line-height: 1.5;
+}
+
+.detail-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.video-link {
+  color: #1565c0;
+  text-decoration: none;
+  font-size: 0.88rem;
+  word-break: break-all;
+}
+
+.video-link:hover { text-decoration: underline; }
+
+.detail-footer {
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid var(--fifa-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 1100px) {
+  .task-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-wrap: wrap;
+    padding: 0.875rem 1rem;
+    min-height: 60px;
+  }
+
+  .header-center {
+    position: static;
+    transform: none;
+    order: -1;
+    width: 100%;
+    text-align: center;
+  }
+
+  .header-center .table-title { font-size: 1.1rem; white-space: normal; }
+
+  .task-grid { grid-template-columns: 1fr 1fr; gap: 0.85rem; }
+  .detail-panel-inner { max-width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .task-grid { grid-template-columns: 1fr; }
+}
+
+/* ===== DARK MODE ===== */
+:host-context(body.dark) {
+  --fifa-green: #3fc982;
+  --fifa-night: #e2e8f0;
+  --fifa-card-bg: var(--bg-card);
+  --fifa-border: var(--border-color);
+  --fifa-green-dim: rgba(63, 201, 130, 0.15);
+
+  .page-header {
+    background: linear-gradient(135deg, #001f2e 0%, #003050 55%, #1d6940 100%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(49, 178, 112, 0.1);
+  }
+
+  .btn-back-clean {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.9);
+    &:hover { background: rgba(255, 255, 255, 0.18); }
+  }
+
+  .empty-state { color: var(--text-muted); }
+
+  .task-card {
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+    &:hover, &.active {
+      box-shadow: 0 10px 32px rgba(63, 201, 130, 0.15);
+    }
+  }
+
+  .usage-count { color: var(--text-muted); }
+
+  .btn-fav-sm { color: var(--text-muted); }
+
+  .origin-badge.cloud { background: rgba(21, 101, 192, 0.15); color: #60a5fa; }
+  .origin-badge.training { background: rgba(63, 201, 130, 0.15); color: #4ade80; }
+  .origin-badge.own { background: rgba(230, 81, 0, 0.15); color: #fb923c; }
+
+  .task-desc { color: var(--text-muted); }
+
+  .badge-secondary { background: var(--bg-surface); color: var(--text-secondary); }
+  .badge-primary { background: rgba(21, 101, 192, 0.15); color: #60a5fa; }
+
+  .usage-badge { color: var(--text-muted); }
+
+  .detail-backdrop { background: rgba(0, 0, 0, 0.6); }
+
+  .detail-panel-inner {
+    background: var(--bg-card);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+
+  .detail-header {
+    background: linear-gradient(135deg, #0a2a3c 0%, #071e2b 100%);
+  }
+
+  .detail-body { color: var(--text-primary); }
+
+  .detail-section p { color: var(--text-primary); }
+
+  .video-link { color: #60a5fa; }
+
+  .detail-footer { border-color: var(--border-color); }
+}

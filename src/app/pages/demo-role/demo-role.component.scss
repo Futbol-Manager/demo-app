@@ -1,0 +1,296 @@
+/* =====================================================
+   DEMO ROLE – Identidad Sphaira, UX/UI premium
+   Colores: navy #002c40, primary #31b270, beige #efdcb6
+===================================================== */
+
+$sphaira-navy: #002c40;
+$sphaira-navy-dark: #001a28;
+$sphaira-primary: #31b270;
+$sphaira-primary-light: #3fc982;
+$sphaira-beige: #efdcb6;
+$sphaira-teal: #1f8f8a;
+
+.demo-role-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Fondo con identidad Sphaira */
+.demo-role-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.demo-role-bg-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, $sphaira-navy 0%, $sphaira-navy-dark 40%, #0a2535 100%);
+}
+
+.demo-role-bg-pattern {
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.demo-role-container {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Header con logo y badge */
+.demo-role-header {
+  margin-bottom: 3rem;
+  animation: demoRoleHeaderIn 0.6s ease-out backwards;
+}
+
+@keyframes demoRoleHeaderIn {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.demo-role-badge {
+  display: inline-block;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $sphaira-navy;
+  background: $sphaira-primary;
+  border-radius: 100px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 12px rgba($sphaira-primary, 0.4);
+}
+
+.demo-role-logo {
+  display: block;
+  margin: 0 auto 1.5rem;
+  height: 48px;
+  width: auto;
+  max-width: 200px;
+  object-fit: contain;
+  opacity: 0.98;
+}
+
+.demo-role-title {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 0.75rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.demo-role-subtitle {
+  font-size: 1rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.82);
+  margin: 0;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.demo-role-tutorial-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $sphaira-navy;
+  background: rgba($sphaira-beige, 0.95);
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.demo-role-tutorial-btn:hover {
+  background: $sphaira-beige;
+  transform: translateY(-1px);
+}
+
+.demo-role-tutorial-btn:focus-visible {
+  outline: 2px solid $sphaira-primary;
+  outline-offset: 2px;
+}
+
+/* Grid de tarjetas */
+.demo-role-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  justify-items: center;
+  align-items: stretch;
+}
+
+@media (max-width: 900px) {
+  .demo-role-cards {
+    grid-template-columns: 1fr;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+}
+
+/* Tarjeta premium */
+.demo-role-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 300px;
+  padding: 2rem 1.5rem;
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  cursor: pointer;
+  text-align: center;
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+  color: $sphaira-navy;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  animation: demoRoleCardIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.28), 0 0 0 2px rgba($sphaira-primary, 0.4);
+    border-color: rgba($sphaira-primary, 0.5);
+
+    .demo-role-card-accent {
+      opacity: 1;
+      height: 4px;
+    }
+
+    .demo-role-icon {
+      background: linear-gradient(145deg, $sphaira-primary, $sphaira-primary-light);
+      color: #fff;
+      transform: scale(1.05);
+    }
+
+    .demo-role-card-cta {
+      opacity: 1;
+    }
+  }
+
+  &:active {
+    transform: translateY(-3px);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3), 0 0 0 6px rgba($sphaira-primary, 0.5);
+  }
+}
+
+.demo-role-card-1 { animation-delay: 0.05s; }
+.demo-role-card-2 { animation-delay: 0.15s; }
+.demo-role-card-3 { animation-delay: 0.25s; }
+
+@keyframes demoRoleCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Barra superior verde al hover */
+.demo-role-card-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0;
+  background: linear-gradient(90deg, $sphaira-primary, $sphaira-teal);
+  opacity: 0;
+  transition: height 0.25s ease, opacity 0.25s ease;
+}
+
+.demo-role-icon {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba($sphaira-navy, 0.06);
+  color: $sphaira-primary;
+  border-radius: 18px;
+  margin-bottom: 1.25rem;
+  font-size: 1.9rem;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+
+.demo-role-card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: $sphaira-navy;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.demo-role-card-desc {
+  font-size: 0.9rem;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0 0 1rem;
+  flex: 1;
+}
+
+.demo-role-card-cta {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $sphaira-primary;
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+}
+
+@media (max-width: 600px) {
+  .demo-role-page {
+    padding: 1.5rem 1rem;
+  }
+
+  .demo-role-header {
+    margin-bottom: 2rem;
+  }
+
+  .demo-role-logo {
+    height: 40px;
+  }
+
+  .demo-role-card {
+    padding: 1.75rem 1.25rem;
+    max-width: none;
+  }
+
+  .demo-role-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 1.65rem;
+  }
+}

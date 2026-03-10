@@ -1,0 +1,231 @@
+/* ===============================
+   TASK SHOP PANEL
+================================ */
+
+.task-shop-panel {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 44, 64, 0.08);
+}
+
+/* ===============================
+   HEADER
+================================ */
+
+.task-shop-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.task-shop-header h2 {
+  font-weight: 500;
+  color: #002c40;
+}
+
+/* ===============================
+   FILTERS
+================================ */
+
+.task-filters {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr auto auto;
+  gap: 14px;
+  margin-bottom: 28px;
+  align-items: center;
+}
+
+@media (max-width: 992px) {
+  .task-filters {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===============================
+   INPUTS
+================================ */
+
+.saas-input {
+  border-radius: 12px;
+  border: 1.5px solid #31b270;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+}
+
+.saas-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(49, 178, 112, 0.25);
+}
+
+/* ===============================
+   BUTTONS
+================================ */
+
+.btn-primary-saas {
+  background: #002c40;
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-weight: 600;
+  border: none;
+}
+
+.btn-primary-saas:hover {
+  background: #001f2d;
+}
+
+.btn-outline-saas {
+  background: #ffffff;
+  color: #002c40;
+  border: 1.5px solid #002c40;
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-weight: 600;
+}
+
+.btn-outline-saas:hover {
+  background: #002c40;
+  color: #ffffff;
+}
+
+.btn-success-saas {
+  background: #31b270;
+  color: #ffffff;
+  border-radius: 10px;
+  border: none;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* ===============================
+   TASK GRID
+================================ */
+
+.task-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 22px;
+}
+
+/* ===============================
+   TASK CARD
+================================ */
+
+.task-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 44, 64, 0.08);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.task-card:hover {
+  transform: translateY(-4px);
+}
+
+.task-card.selected {
+  outline: 3px solid #31b270;
+}
+
+/* ===============================
+   IMAGE
+================================ */
+
+.task-image img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+/* ===============================
+   CONTENT
+================================ */
+
+.task-content {
+  padding: 16px;
+}
+
+.task-id {
+  font-size: 0.75rem;
+  color: #9aa6ac;
+}
+
+.task-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #002c40;
+  margin: 6px 0;
+}
+
+.task-tags {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.task-content-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-fav {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.25rem;
+  color: #9aa6ac;
+  padding: 2px 4px;
+  transition: color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-fav:hover {
+  color: #f5a623;
+  transform: scale(1.2);
+}
+
+.btn-fav.is-fav {
+  color: #f5a623;
+}
+
+.task-desc {
+  font-size: 0.85rem;
+  color: #7a8a93;
+  min-height: 42px;
+}
+
+.task-loading {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 48px 24px;
+  color: #7a8a93;
+  font-size: 0.95rem;
+}
+
+.task-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 24px;
+  gap: 12px;
+  color: #9aa6ac;
+  text-align: center;
+
+  i {
+    font-size: 2.5rem;
+    opacity: 0.5;
+  }
+
+  p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+}

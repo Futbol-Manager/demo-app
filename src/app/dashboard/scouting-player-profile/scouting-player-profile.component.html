@@ -1,0 +1,473 @@
+<div class="scouting-profile-page">
+
+  <!-- LOADING -->
+  <div *ngIf="loading" class="sp-loading">
+    <div class="sp-spinner"></div>
+    <p>Cargando tu perfil...</p>
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <form [formGroup]="form" (ngSubmit)="save()">
+
+      <!-- ══════════════════════════════════
+           HERO — foto + nombre + visibilidad
+           ══════════════════════════════════ -->
+      <div class="sp-hero" data-tutorial="spp-hero">
+        <div class="sp-hero-bg"></div>
+        <div class="sp-hero-content">
+
+          <!-- Foto de perfil -->
+          <div class="sp-avatar-wrap">
+            <div class="sp-avatar" (click)="triggerPhotoUpload()">
+              <img *ngIf="photoPreview" [src]="photoPreview" alt="Foto de perfil" class="sp-avatar-img">
+              <div *ngIf="!photoPreview" class="sp-avatar-placeholder">
+                <i class="bi bi-person-fill"></i>
+              </div>
+              <div class="sp-avatar-overlay">
+                <i class="bi bi-camera-fill" *ngIf="!photoUploading"></i>
+                <div class="sp-mini-spinner" *ngIf="photoUploading"></div>
+              </div>
+            </div>
+            <input #photoInput type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="onPhotoSelected($event)">
+          </div>
+
+          <!-- Nombre y estado -->
+          <div class="sp-hero-info">
+            <input formControlName="nombre" class="sp-hero-name-input" placeholder="Tu nombre completo" />
+            <div class="sp-hero-meta">
+              <span *ngIf="form.get('posicionPrincipal')?.value" class="sp-badge sp-badge--pos">
+                <i class="bi bi-person-fill-gear"></i>
+                {{ form.get('posicionPrincipal')?.value?.split(',')[0] }}
+              </span>
+              <span *ngIf="form.get('disponibilidad')?.value" class="sp-badge sp-badge--avail">
+                <i [class]="'bi ' + getDisponibilidadIcon(form.get('disponibilidad')?.value)"></i>
+                {{ getDisponibilidadLabel(form.get('disponibilidad')?.value) }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Toggle visibilidad pública -->
+          <div class="sp-visibility-toggle">
+            <div class="sp-toggle-card" [class.sp-toggle-card--active]="form.get('esPublico')?.value">
+              <div class="sp-toggle-icon">
+                <i [class]="form.get('esPublico')?.value ? 'bi bi-eye-fill' : 'bi bi-eye-slash-fill'"></i>
+              </div>
+              <div class="sp-toggle-text">
+                <span class="sp-toggle-label">
+                  {{ form.get('esPublico')?.value ? 'Perfil visible para clubs' : 'Perfil privado' }}
+                </span>
+                <span class="sp-toggle-sub">
+                  {{ form.get('esPublico')?.value ? 'Los clubes pueden encontrarte' : 'Solo tú puedes verlo' }}
+                </span>
+              </div>
+              <label class="sp-switch">
+                <input type="checkbox" formControlName="esPublico" (change)="onTogglePublic($event)">
+                <span class="sp-slider"></span>
+              </label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Mensajes -->
+      <div *ngIf="successMsg" class="sp-alert sp-alert--success">
+        <i class="bi bi-check-circle-fill"></i> {{ successMsg }}
+      </div>
+      <div *ngIf="errorMsg" class="sp-alert sp-alert--error">
+        <i class="bi bi-exclamation-circle-fill"></i> {{ errorMsg }}
+      </div>
+
+      <div class="sp-sections">
+
+        <!-- ══ 1. IDENTIDAD ══ -->
+        <div class="sp-card" data-tutorial="spp-identidad">
+          <div class="sp-card-header">
+            <div class="sp-card-header-icon"><i class="bi bi-person-vcard-fill"></i></div>
+            <h3>Identidad</h3>
+          </div>
+          <div class="sp-card-body">
+            <div class="sp-grid-2">
+              <div class="sp-field">
+                <label>Fecha de nacimiento</label>
+                <input formControlName="fechaDeNacimiento" type="date" class="sp-input">
+              </div>
+              <div class="sp-field">
+                <label>Nacionalidad</label>
+                <input formControlName="nacionalidad" class="sp-input" placeholder="Ej. Española">
+              </div>
+              <div class="sp-field">
+                <label>País de residencia</label>
+                <input formControlName="paisResidencia" class="sp-input" placeholder="Ej. España">
+              </div>
+              <div class="sp-field">
+                <label>Provincia / Ciudad</label>
+                <input formControlName="provinciaResidencia" class="sp-input" placeholder="Ej. Madrid">
+              </div>
+              <div class="sp-field">
+                <label>Altura (cm)</label>
+                <input formControlName="altura" type="number" class="sp-input" placeholder="Ej. 182">
+              </div>
+              <div class="sp-field">
+                <label>Peso (kg)</label>
+                <input formControlName="peso" type="number" class="sp-input" placeholder="Ej. 76">
+              </div>
+              <div class="sp-field">
+                <label>Pierna natural</label>
+                <div class="sp-radio-group">
+                  <label *ngFor="let p of PIES" class="sp-radio-chip" [class.sp-radio-chip--active]="form.get('piernaNatural')?.value === p">
+                    <input type="radio" formControlName="piernaNatural" [value]="p" hidden>
+                    {{ p }}
+                  </label>
+                </div>
+              </div>
+              <div class="sp-field">
+                <label>Email de contacto</label>
+                <input formControlName="mailContacto" type="email" class="sp-input" placeholder="email@ejemplo.com">
+              </div>
+              <div class="sp-field">
+                <label>Teléfono de contacto</label>
+                <input formControlName="telefonoContacto" class="sp-input" placeholder="+34 600 000 000">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ 2. EN EL CAMPO ══ -->
+        <div class="sp-card" data-tutorial="spp-posiciones">
+          <div class="sp-card-header">
+            <div class="sp-card-header-icon"><i class="bi bi-person-fill-gear"></i></div>
+            <h3>En el campo</h3>
+          </div>
+          <div class="sp-card-body">
+            <label class="sp-field-label">Posición(es) <span class="sp-hint">Pulsa para seleccionar</span></label>
+            <div class="sp-positions-grid">
+              <button type="button" *ngFor="let pos of POSITIONS"
+                class="sp-pos-chip"
+                [class.sp-pos-chip--active]="isPositionSelected(pos)"
+                (click)="togglePosition(pos)">
+                {{ pos }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ 3. SITUACIÓN ACTUAL ══ -->
+        <div class="sp-card" data-tutorial="spp-situacion">
+          <div class="sp-card-header">
+            <div class="sp-card-header-icon"><i class="bi bi-briefcase-fill"></i></div>
+            <h3>Situación actual</h3>
+          </div>
+          <div class="sp-card-body">
+            <div class="sp-grid-2">
+              <div class="sp-field">
+                <label>Equipo actual</label>
+                <input formControlName="equipoActual" class="sp-input" placeholder="Nombre del club">
+              </div>
+              <div class="sp-field">
+                <label>Liga / Competición</label>
+                <input formControlName="ligaActual" class="sp-input" placeholder="Ej. Primera RFEF">
+              </div>
+            </div>
+            <div class="sp-field" style="margin-top:16px">
+              <label>Disponibilidad</label>
+              <div class="sp-avail-grid">
+                <label *ngFor="let d of DISPONIBILIDADES"
+                  class="sp-avail-chip"
+                  [class.sp-avail-chip--active]="form.get('disponibilidad')?.value === d.value">
+                  <input type="radio" formControlName="disponibilidad" [value]="d.value" hidden>
+                  <i [class]="'bi ' + d.icon"></i>
+                  {{ d.label }}
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ 4. CARRERA DEPORTIVA ══ -->
+        <div class="sp-card" data-tutorial="spp-carrera">
+          <div class="sp-card-header">
+            <div class="sp-card-header-icon"><i class="bi bi-trophy-fill"></i></div>
+            <h3>Carrera deportiva</h3>
+          </div>
+          <div class="sp-card-body">
+            <div class="sp-stats-row">
+              <div class="sp-stat-box">
+                <label>Goles</label>
+                <input formControlName="goles" type="number" class="sp-input sp-input--stat" placeholder="0">
+              </div>
+              <div class="sp-stat-box">
+                <label>Asistencias</label>
+                <input formControlName="asistencias" type="number" class="sp-input sp-input--stat" placeholder="0">
+              </div>
+            </div>
+            <div class="sp-field" style="margin-top:16px">
+              <label>Clubes anteriores</label>
+              <textarea formControlName="clubesAnteriores" class="sp-textarea" rows="3"
+                placeholder="Ej. Real Madrid Juvenil (2019-2021), CD Leganés B (2021-2023)..."></textarea>
+            </div>
+            <div class="sp-grid-2">
+              <div class="sp-field">
+                <label>Torneos importantes</label>
+                <input formControlName="torneosImportantes" class="sp-input" placeholder="Copa del Rey, UEFA Youth...">
+              </div>
+              <div class="sp-field">
+                <label>Premios individuales</label>
+                <input formControlName="premiosIndividuales" class="sp-input" placeholder="MVP torneo, Bota de Oro...">
+              </div>
+              <div class="sp-field sp-field--full">
+                <label>Convocatorias a selecciones</label>
+                <input formControlName="convocatoriasSelecciones" class="sp-input" placeholder="Sub-17 España, Sub-19 España...">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ 5. CV FUTBOLÍSTICO ══ -->
+        <div class="sp-card" data-tutorial="spp-cv">
+          <div class="sp-card-header">
+            <div class="sp-card-header-icon"><i class="bi bi-file-earmark-person-fill"></i></div>
+            <h3>CV Futbolístico</h3>
+          </div>
+          <div class="sp-card-body">
+            <p class="sp-field-desc">Sube tu CV en formato PDF o Word. Los clubes podrán descargarlo al ver tu perfil.</p>
+
+            <ng-container *ngIf="!cvUrl; else cvPreviewTpl">
+              <div class="sp-cv-dropzone" (click)="triggerCvUpload()">
+                <div class="sp-cv-dropzone-icon">
+                  <i class="bi bi-file-earmark-arrow-up-fill" *ngIf="!cvUploading"></i>
+                  <div class="sp-mini-spinner" *ngIf="cvUploading"></div>
+                </div>
+                <p class="sp-cv-dropzone-title">{{ cvUploading ? 'Subiendo...' : 'Subir CV' }}</p>
+                <p class="sp-cv-dropzone-sub">PDF o Word · Máx. 10 MB</p>
+                <input #cvInput type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  hidden (change)="onCvSelected($event)">
+              </div>
+            </ng-container>
+
+            <ng-template #cvPreviewTpl>
+              <div class="sp-cv-preview">
+                <div class="sp-cv-preview-icon">
+                  <i [class]="isCvPdf() ? 'bi bi-file-earmark-pdf-fill' : 'bi bi-file-earmark-word-fill'"></i>
+                </div>
+                <div class="sp-cv-preview-info">
+                  <span class="sp-cv-preview-name">{{ cvFileName }}</span>
+                  <span class="sp-cv-preview-type">{{ isCvPdf() ? 'PDF' : 'Word' }} · Subido</span>
+                </div>
+                <div class="sp-cv-preview-actions">
+                  <a [href]="cvUrl" target="_blank" class="sp-btn-icon sp-btn-icon--green" title="Ver CV">
+                    <i class="bi bi-eye-fill"></i>
+                  </a>
+                  <button type="button" class="sp-btn-icon sp-btn-icon--red" (click)="triggerCvUpload()" title="Reemplazar CV">
+                    <i class="bi bi-arrow-repeat"></i>
+                  </button>
+                </div>
+                <input #cvInput type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  hidden (change)="onCvSelected($event)">
+              </div>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- ══ 6. SOBRE MÍ ══ -->
+        <div class="sp-card" data-tutorial="spp-sobremi">
+          <div class="sp-card-header">
+            <div class="sp-card-header-icon"><i class="bi bi-chat-quote-fill"></i></div>
+            <h3>Sobre mí</h3>
+          </div>
+          <div class="sp-card-body">
+            <div class="sp-grid-2">
+              <div class="sp-field">
+                <label>Mis fortalezas</label>
+                <textarea formControlName="fortalezas" class="sp-textarea" rows="3"
+                  placeholder="¿En qué destacas? Velocidad, liderazgo, visión de juego..."></textarea>
+              </div>
+              <div class="sp-field">
+                <label>Áreas de mejora</label>
+                <textarea formControlName="areasMejora" class="sp-textarea" rows="3"
+                  placeholder="¿En qué estás trabajando? Pie izquierdo, juego aéreo..."></textarea>
+              </div>
+              <div class="sp-field sp-field--full">
+                <label>Descripción libre</label>
+                <textarea formControlName="descripcion" class="sp-textarea" rows="4"
+                  placeholder="Cuéntale a los clubs quién eres, tu mentalidad y tus objetivos profesionales..."></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ 7. VÍDEOS Y REDES ══ -->
+        <div class="sp-card" data-tutorial="spp-videos">
+          <div class="sp-card-header">
+            <div class="sp-card-header-icon"><i class="bi bi-play-btn-fill"></i></div>
+            <h3>Vídeos y redes</h3>
+          </div>
+          <div class="sp-card-body">
+
+            <!-- Lista de vídeos -->
+            <div class="sp-video-list" *ngIf="videos.length > 0">
+              <div class="sp-video-item" *ngFor="let v of videos">
+                <div class="sp-video-platform-icon">
+                  <i [class]="'bi ' + getPlatformIcon(v.plataforma)"></i>
+                </div>
+                <div class="sp-video-info">
+                  <span class="sp-video-title">{{ v.titulo || v.url }}</span>
+                  <span class="sp-video-platform">{{ getPlatformLabel(v.plataforma) }}</span>
+                </div>
+                <div class="sp-video-actions">
+                  <a [href]="v.url" target="_blank" class="sp-btn-icon sp-btn-icon--green">
+                    <i class="bi bi-box-arrow-up-right"></i>
+                  </a>
+                  <button type="button" class="sp-btn-icon sp-btn-icon--red" (click)="deleteVideo(v.playerVideoId)">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Añadir enlace de vídeo por URL -->
+            <div *ngIf="!showAddVideo" class="sp-add-video-btn" (click)="showAddVideo = true">
+              <i class="bi bi-plus-circle-fill"></i> Añadir enlace de vídeo
+            </div>
+
+            <div *ngIf="showAddVideo" class="sp-add-video-form">
+              <div class="sp-platform-tabs">
+                <button type="button" *ngFor="let p of PLATFORMS"
+                  class="sp-platform-tab"
+                  [class.sp-platform-tab--active]="newVideoPlataforma === p.value"
+                  (click)="newVideoPlataforma = p.value">
+                  <i [class]="'bi ' + p.icon"></i> {{ p.label }}
+                </button>
+              </div>
+              <input [(ngModel)]="newVideoTitulo" [ngModelOptions]="{standalone: true}"
+                class="sp-input" placeholder="Título (opcional)" style="margin-bottom:8px">
+              <input [(ngModel)]="newVideoUrl" [ngModelOptions]="{standalone: true}"
+                class="sp-input" placeholder="URL del vídeo">
+              <div class="sp-add-video-actions">
+                <button type="button" class="sp-btn sp-btn--primary" (click)="addVideo()">
+                  <i class="bi bi-plus-lg"></i> Guardar enlace
+                </button>
+                <button type="button" class="sp-btn sp-btn--ghost" (click)="showAddVideo = false">
+                  Cancelar
+                </button>
+              </div>
+            </div>
+
+            <!-- Separador -->
+            <div class="sp-video-divider"></div>
+
+            <!-- Subir vídeo desde dispositivo (requiere suscripción) -->
+            <ng-container *ngIf="!videoSubscriptionLoading">
+
+              <!-- Con suscripción activa -->
+              <div *ngIf="videoSubscription" class="sp-video-upload-zone" (click)="triggerVideoFileUpload()">
+                <i class="bi bi-cloud-upload-fill" *ngIf="!videoUploading"></i>
+                <div class="sp-mini-spinner" *ngIf="videoUploading"></div>
+                <p>{{ videoUploading ? 'Subiendo vídeo...' : 'Subir vídeo desde dispositivo' }}</p>
+                <span>MP4, MOV, WebM · Máx. 500 MB</span>
+                <input #videoFileInput type="file" accept="video/mp4,video/quicktime,video/webm" hidden
+                  (change)="onVideoFileSelected($event)">
+              </div>
+
+              <!-- Sin suscripción — paywall -->
+              <div *ngIf="!videoSubscription" class="sp-video-paywall">
+                <div class="sp-paywall-icon">
+                  <i class="bi bi-camera-video-fill"></i>
+                </div>
+                <div class="sp-paywall-content">
+                  <h4>Sube vídeos directamente</h4>
+                  <p>Con el plan de vídeo de Sphaira podrás subir tus mejores jugadas y highlights directamente desde tu dispositivo, sin depender de YouTube u otras plataformas.</p>
+                  <ul class="sp-paywall-perks">
+                    <li><i class="bi bi-check2-circle"></i> Almacenamiento en la nube seguro</li>
+                    <li><i class="bi bi-check2-circle"></i> Vídeos visibles para los clubs</li>
+                    <li><i class="bi bi-check2-circle"></i> Reproducción integrada en tu perfil</li>
+                  </ul>
+                </div>
+                <div class="sp-paywall-cta">
+                  <span class="sp-paywall-price">Desde <strong>2,99 €</strong>/mes</span>
+                  <a href="/dashboard/planes" class="sp-btn sp-btn--upgrade">
+                    <i class="bi bi-lightning-charge-fill"></i> Ver planes
+                  </a>
+                </div>
+              </div>
+
+            </ng-container>
+
+          </div>
+        </div>
+
+      </div><!-- /sp-sections -->
+
+      <!-- ══ BOTÓN GUARDAR ══ -->
+      <div class="sp-save-bar" data-tutorial="spp-guardar">
+        <button type="submit" class="sp-btn sp-btn--save" [disabled]="saving">
+          <span *ngIf="!saving"><i class="bi bi-cloud-check-fill"></i> Guardar perfil</span>
+          <span *ngIf="saving"><i class="bi bi-arrow-repeat sp-spin"></i> Guardando...</span>
+        </button>
+      </div>
+
+    </form>
+  </ng-container>
+
+</div><!-- /scouting-profile-page -->
+
+
+<!-- ════════════════════════════════════════
+     MODAL DE CONSENTIMIENTO LEGAL
+     ════════════════════════════════════════ -->
+<div *ngIf="showConsentModal" class="sp-modal-overlay" (click)="showConsentModal = false" appModalBackdrop>
+  <div class="sp-modal sp-modal--consent" (click)="$event.stopPropagation()">
+
+    <button class="sp-modal-close" (click)="showConsentModal = false">
+      <i class="bi bi-x-lg"></i>
+    </button>
+
+    <div class="sp-modal-header">
+      <div class="sp-modal-icon-ring">
+        <i class="bi bi-shield-lock-fill"></i>
+      </div>
+      <h2>Consentimiento para compartir tu perfil</h2>
+      <p>Antes de hacer tu perfil visible, necesitamos tu consentimiento explícito</p>
+    </div>
+
+    <div class="sp-modal-body">
+      <div class="sp-consent-text">
+        <p>
+          Al activar la visibilidad pública de tu perfil en <strong>Sphaira Tech</strong>,
+          declaras haber leído y aceptado los <a href="/terminos" target="_blank">Términos de Uso</a>
+          y consientes expresamente que tus datos personales, historial deportivo y materiales adjuntos
+          —incluyendo fotografías, vídeos y currículum vitae— sean accesibles a clubes y entidades
+          deportivas registradas en la plataforma con fines exclusivos de captación y representación
+          deportiva profesional.
+        </p>
+        <p>
+          <strong>Sphaira Tech, S.L.</strong> actúa como encargada del tratamiento de tus datos
+          conforme al <strong>Reglamento General de Protección de Datos (RGPD/GDPR)</strong> y la
+          <strong>Ley Orgánica 3/2018 (LOPDGDD)</strong>. Tus datos no serán cedidos a terceros
+          ajenos a la plataforma ni utilizados para finalidades distintas a las indicadas.
+        </p>
+        <p>
+          Puedes retirar este consentimiento en cualquier momento desactivando la visibilidad pública
+          de tu perfil desde esta misma pantalla. La retirada del consentimiento no afectará a la
+          licitud del tratamiento basado en el consentimiento previo a su retirada.
+        </p>
+      </div>
+
+      <label class="sp-consent-check">
+        <input type="checkbox" [(ngModel)]="consentChecked">
+        <span>He leído y acepto los términos anteriores. Consiento expresamente que mis datos
+          sean compartidos con clubes registrados en Sphaira Tech para fines deportivos.</span>
+      </label>
+    </div>
+
+    <div class="sp-modal-footer">
+      <button class="sp-btn sp-btn--primary" [disabled]="!consentChecked" (click)="acceptConsent()">
+        <i class="bi bi-check-lg"></i> Aceptar y hacer perfil visible
+      </button>
+      <button class="sp-btn sp-btn--ghost" (click)="showConsentModal = false">
+        Cancelar
+      </button>
+    </div>
+
+  </div>
+</div>

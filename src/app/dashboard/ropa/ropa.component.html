@@ -1,0 +1,592 @@
+<!-- ================= PAGE HEADER ================= -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()" data-tutorial="ropa-volver">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h2 class="page-title">Gestión de Ropa</h2>
+    <p class="header-subtitle">Gestiona los pedidos y el catálogo de ropa deportiva</p>
+  </div>
+
+  <div class="header-spacer"></div>
+</div>
+
+<!-- Selector de temporada (como en Equipos) -->
+<div class="ropa-season-bar" data-tutorial="ropa-temporada">
+  <label class="ropa-season-label">
+    <i class="bi bi-calendar-event"></i>
+    <span>{{ 'TITLES.SEASON' | translate }}</span>
+  </label>
+  <select class="ropa-season-select" [(ngModel)]="temporadaStoredValue" (change)="onTemporadaChangeRopa()">
+    <option *ngFor="let s of seasons" [value]="s.value">{{ s.label }}</option>
+  </select>
+</div>
+
+<!-- ═══════════════════ PESTAÑAS ═══════════════════ -->
+<div class="ropa-tabs" data-tutorial="ropa-tabs">
+  <button class="ropa-tab" [class.active]="activeRopaTab === 'tablaTallas'" (click)="activeRopaTab = 'tablaTallas'">
+    <i class="fas fa-table"></i> Tallas catálogo
+  </button>
+  <button class="ropa-tab" [class.active]="activeRopaTab === 'catalogo'" (click)="activeRopaTab = 'catalogo'" data-tutorial="ropa-tab-catalogo">
+    <i class="fas fa-tshirt"></i> Catálogo de prendas
+  </button>
+  <button class="ropa-tab ropa-tab-legacy" [class.active]="activeRopaTab === 'tallas'" (click)="activeRopaTab = 'tallas'">
+    <i class="fas fa-ruler-horizontal"></i> Tallas jugadores
+    <span class="legacy-badge">Antiguo</span>
+  </button>
+</div>
+
+<!-- ═══════════════════ CONTENIDO PESTAÑA: TABLA TALLAS CATÁLOGO ══════ -->
+<div *ngIf="activeRopaTab === 'tablaTallas'" class="catalogo-tab-content" data-tutorial="ropa-contenido">
+  <app-ropa-tabla-catalogo [clubId]="clubId" [temporada]="temporadaStoredValue"></app-ropa-tabla-catalogo>
+</div>
+
+<!-- ═══════════════════ CONTENIDO PESTAÑA: CATÁLOGO ═══════════════════ -->
+<div *ngIf="activeRopaTab === 'catalogo'" class="catalogo-tab-content" data-tutorial="ropa-contenido">
+  <app-ropa-catalogo [clubId]="clubId" [temporada]="temporadaStoredValue"></app-ropa-catalogo>
+</div>
+
+<!-- ═══════════════════ CONTENIDO PESTAÑA: TALLAS ═══════════════════ -->
+<div *ngIf="activeRopaTab === 'tallas'" data-tutorial="ropa-contenido">
+
+<div class="legacy-warning-banner">
+  <i class="fas fa-exclamation-triangle"></i>
+  <div>
+    <strong>Esta sección desaparecerá el 01/05/2026.</strong>
+    Descarga los datos que necesites antes de esa fecha para no perderlos.
+    El nuevo sistema de tallas está disponible en la pestaña <strong>Tallas catálogo</strong>.
+  </div>
+  <button class="action-btn excel legacy-export-btn" (click)="exportTableToExcel()">
+    <i class="bi bi-file-earmark-spreadsheet-fill"></i> Descargar datos
+  </button>
+</div>
+
+<div class="table-actions-row">
+  <!-- IZQUIERDA -->
+  <div class="table-actions-left">
+    <!-- Buscador DataTable -->
+    <div id="dt-search"></div>
+  </div>
+
+  <!-- DERECHA -->
+  <div class="table-actions-right position-relative">
+
+  <button class="action-btn excel" (click)="exportTableToExcel()">
+    <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+    <span class="d-none d-md-inline">{{ 'COMMON.EXPORT_EXCEL' | translate }}</span>
+  </button>
+
+  <button class="action-btn custom" (click)="toggleDropdown()">
+    <i class="bi bi-sliders"></i>
+    <span class="d-none d-md-inline">{{ 'COMMON.CUSTOM' | translate }}</span>
+  </button>
+
+  <!-- DROPDOWN PREMIUM -->
+  <div class="custom-dropdown premium-dropdown" *ngIf="showDropdown">
+    <div class="dropdown-header">
+      <div class="dropdown-header-left">
+        <i class="bi bi-palette2"></i>
+        <span>{{ 'CLOTHES.TITLE' | translate }}</span>
+      </div>
+      <button class="btn-close btn-close-white" aria-label="Cerrar" (click)="closeDropdown()"></button>
+    </div>
+
+    <div class="dropdown-body">
+      <p class="dropdown-description">
+        <i class="bi bi-info-circle"></i>
+        {{ 'CLOTHES.DESCRIPTION' | translate }}
+      </p>
+
+      <div *ngFor="let group of prendasGroups" class="prenda-group">
+        <div class="group-header">
+          <i class="bi" [ngClass]="group.icon"></i>
+          <span>{{ group.label | translate }}</span>
+        </div>
+
+        <div *ngFor="let prenda of getPrendasByGroup(group.key)" class="prenda-row">
+          <!-- Label / Inline edit -->
+          <div class="prenda-label-area">
+            <ng-container *ngIf="editingLabelProperty !== prenda.property">
+              <span class="prenda-name" [class.custom-label]="userLabelPrefs[prenda.property]">
+                {{ getPrendaLabel(prenda.property) }}
+              </span>
+              <button class="btn-edit-label" (click)="startEditLabel(prenda.property, $event)"
+                [attr.aria-label]="'Editar nombre'">
+                <i class="bi bi-pencil"></i>
+              </button>
+            </ng-container>
+            <ng-container *ngIf="editingLabelProperty === prenda.property">
+              <input class="inline-label-input" type="text"
+                [(ngModel)]="editingLabelValue"
+                (blur)="saveEditLabel()"
+                (keydown)="onLabelKeydown($event)" />
+            </ng-container>
+          </div>
+
+          <!-- Toggle -->
+          <div class="form-check form-switch prenda-toggle">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [checked]="isColumnVisible(prenda.property)"
+              (change)="togglePrendaOkDesactivar(prenda.property)">
+          </div>
+        </div>
+      </div>
+
+      <div class="dropdown-footer">
+        <button class="btn-reset" (click)="resetColumnPrefs()">
+          <i class="bi bi-arrow-counterclockwise"></i>
+          {{ 'CLOTHES.RESET_DEFAULTS' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</div>
+
+<!-- ========== DESKTOP VIEW (hidden on mobile) ========== -->
+<div class="desktop-view">
+
+<!-- SKELETON -->
+<div *ngIf="!datosCargados" class="table-skeleton">
+  <div class="skeleton-header"></div>
+
+  <div class="skeleton-row" *ngFor="let i of [].constructor(8)">
+    <div class="skeleton-cell" *ngFor="let j of [].constructor(10)"></div>
+  </div>
+</div>
+
+<div class="modern-table-wrapper" *ngIf="datosCargados">
+  <div class="table-scroll">
+    <table id="dataTable" class="modern-table">
+      <thead class="table-custom">
+        <tr>
+          <th class="col-id">{{ 'CLOTHES.TABLE.ID' | translate }}</th>
+          <th class="sticky-col col-nombre">{{ 'CLOTHES.TABLE.NAME' | translate }}</th>
+          <th class="col-team">{{ 'CLOTHES.TABLE.TEAM' | translate }}</th>
+          <th class="col-shirt">{{ 'CLOTHES.TABLE.SHIRT_NAME' | translate }}</th>
+          <th class="col-num">{{ 'CLOTHES.TABLE.NUMBER' | translate }}</th>
+
+          <th>{{ getPrendaLabel('camisetaJuego') }}</th>
+          <th>{{ getPrendaLabel('pantalonJuego') }}</th>
+          <th>{{ getPrendaLabel('medias') }}</th>
+
+          <th>{{ getPrendaLabel('camisetaJuegoDos') }}</th>
+          <th>{{ getPrendaLabel('pantalonJuegoDos') }}</th>
+          <th>{{ getPrendaLabel('mediasDos') }}</th>
+
+          <th>{{ getPrendaLabel('camisetaEntreno') }}</th>
+          <th>{{ getPrendaLabel('pantalonEntreno') }}</th>
+          <th>{{ getPrendaLabel('mediasTres') }}</th>
+          <th>{{ getPrendaLabel('sudaderaEntreno') }}</th>
+
+          <th>{{ getPrendaLabel('chaquetaChandal') }}</th>
+          <th>{{ getPrendaLabel('pantalonChandal') }}</th>
+
+          <th>{{ getPrendaLabel('poloPaseo') }}</th>
+          <th>{{ getPrendaLabel('pantalonPaseo') }}</th>
+
+          <th>{{ getPrendaLabel('abrigo') }}</th>
+          <th>{{ getPrendaLabel('chubasquero') }}</th>
+          <th>{{ getPrendaLabel('mochila') }}</th>
+
+          <th>{{ 'CLOTHES.TABLE.STATUS' | translate }}</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let ropa of ropaPlayers; let i = index">
+          <td class="col-id">{{ ropa.player.playerId }}</td>
+          <td class="col-nombre sticky-col">
+            <button type="button" class="btn-link-name" (click)="abrirModalInfoJugador(ropa)">
+              {{ ropa.player.nombre }} {{ ropa.player.apellido }}
+            </button>
+          </td>
+          <td class="col-team">{{ ropa.team.category }} {{ ropa.team.name }} {{ ropa.team.levelLeague }}</td>
+          <td class="col-shirt">
+            <input type="text" class="form-control" [(ngModel)]="ropa.nick" (ngModelChange)="onAbrigoChange(ropa)">
+          </td>
+          <td class="col-num">
+            <input type="number" class="form-control" [(ngModel)]="ropa.numero" (ngModelChange)="onAbrigoChange(ropa)">
+          </td>
+
+          <!-- Camiseta Juego -->
+          <td>
+            <div class="clothing-cell">
+              <select class="size-select" [(ngModel)]="ropa.camisetaJuego" (change)="updateRopaJugador(ropa)">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size || '—' }}</option>
+              </select>
+              <button class="delivery-chip" [class.delivered]="ropa.camisetaJuegoOk === 1" [class.pending]="ropa.camisetaJuegoOk === 0" (click)="togglePrendaOk(ropa, 2)">
+                <i class="bi" [ngClass]="ropa.camisetaJuegoOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
+                <span>{{ ropa.camisetaJuegoOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+              </button>
+            </div>
+          </td>
+
+          <!-- Pantalón Juego -->
+          <td>
+            <div class="clothing-cell">
+              <select class="size-select" [(ngModel)]="ropa.pantalonJuego" (change)="updateRopaJugador(ropa)">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size || '—' }}</option>
+              </select>
+              <button class="delivery-chip" [class.delivered]="ropa.pantalonJuegoOk === 1" [class.pending]="ropa.pantalonJuegoOk === 0" (click)="togglePrendaOk(ropa, 3)">
+                <i class="bi" [ngClass]="ropa.pantalonJuegoOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
+                <span>{{ ropa.pantalonJuegoOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+              </button>
+            </div>
+          </td>
+
+          <!-- Medias -->
+          <td>
+            <div class="clothing-cell">
+              <select class="size-select" [(ngModel)]="ropa.medias" (change)="updateRopaJugador(ropa)">
+                <option *ngFor="let size of abrigoSizesMedias" [value]="size">{{ size || '—' }}</option>
+              </select>
+              <button class="delivery-chip" [class.delivered]="ropa.mediasOk === 1" [class.pending]="ropa.mediasOk === 0" (click)="togglePrendaOk(ropa, 11)">
+                <i class="bi" [ngClass]="ropa.mediasOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
+                <span>{{ ropa.mediasOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+              </button>
+            </div>
+          </td>
+
+          <!-- Camiseta Juego 2 -->
+          <td>
+            <div class="clothing-cell">
+              <select class="size-select" [(ngModel)]="ropa.camisetaJuegoDos" (change)="updateRopaJugador(ropa)">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size || '—' }}</option>
+              </select>
+              <button class="delivery-chip" [class.delivered]="ropa.camisetaJuegoDosOk === 1" [class.pending]="ropa.camisetaJuegoDosOk === 0" (click)="togglePrendaOk(ropa, 14)">
+                <i class="bi" [ngClass]="ropa.camisetaJuegoDosOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
+                <span>{{ ropa.camisetaJuegoDosOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+              </button>
+            </div>
+          </td>
+
+          <!-- Pantalón Juego 2 -->
+          <td>
+            <div class="clothing-cell">
+              <select class="size-select" [(ngModel)]="ropa.pantalonJuegoDos" (change)="updateRopaJugador(ropa)">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size || '—' }}</option>
+              </select>
+              <button class="delivery-chip" [class.delivered]="ropa.pantalonJuegoDosOk === 1" [class.pending]="ropa.pantalonJuegoDosOk === 0" (click)="togglePrendaOk(ropa, 15)">
+                <i class="bi" [ngClass]="ropa.pantalonJuegoDosOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
+                <span>{{ ropa.pantalonJuegoDosOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+              </button>
+            </div>
+          </td>
+
+          <!-- Medias 2 -->
+          <td>
+            <div class="clothing-cell">
+              <select class="size-select" [(ngModel)]="ropa.mediasDos" (change)="updateRopaJugador(ropa)">
+                <option *ngFor="let size of abrigoSizesMedias" [value]="size">{{ size || '—' }}</option>
+              </select>
+              <button class="delivery-chip" [class.delivered]="ropa.mediasDosOk === 1" [class.pending]="ropa.mediasDosOk === 0" (click)="togglePrendaOk(ropa, 16)">
+                <i class="bi" [ngClass]="ropa.mediasDosOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
+                <span>{{ ropa.mediasDosOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+              </button>
+            </div>
+          </td>
+
+          <!-- Camiseta Entreno -->
+          <td>
+            <div class="clothing-cell">
+              <select class="size-select" [(ngModel)]="ropa.camisetaEntreno" (change)="updateRopaJugador(ropa)">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size || '—' }}</option>
+              </select>
+              <button class="delivery-chip" [class.delivered]="ropa.camisetaEntrenoOk === 1" [class.pending]="ropa.camisetaEntrenoOk === 0" (click)="togglePrendaOk(ropa, 4)">
+                <i class="bi" [ngClass]="ropa.camisetaEntrenoOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
+                <span>{{ ropa.camisetaEntrenoOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+              </button>
+            </div>
+          </td>
+
+          <!-- Pantalón Entreno -->
+          <td>
+            <div class="clothing-cell">
+              <select class="size-select" [(ngModel)]="ropa.pantalonEntreno" (change)="updateRopaJugador(ropa)">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size || '—' }}</option>
+              </select>
+              <button class="delivery-chip" [class.delivered]="ropa.pantalonEntrenoOk === 1" [class.pending]="ropa.pantalonEntrenoOk === 0" (click)="togglePrendaOk(ropa, 5)">
+                <i class="bi" [ngClass]="ropa.pantalonEntrenoOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
+                <span>{{ ropa.pantalonEntrenoOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+              </button>
+            </div>
+          </td>
+
+          <!-- Medias Entreno -->
+          <td>
+            <div class="clothing-cell">
+              <select class="size-select" [(ngModel)]="ropa.mediasTres" (change)="updateRopaJugador(ropa)">
+                <option *ngFor="let size of abrigoSizesMedias" [value]="size">{{ size || '—' }}</option>
+              </select>
+              <button class="delivery-chip" [class.delivered]="ropa.mediasTresOk === 1" [class.pending]="ropa.mediasTresOk === 0" (click)="togglePrendaOk(ropa, 17)">
+                <i class="bi" [ngClass]="ropa.mediasTresOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
+                <span>{{ ropa.mediasTresOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+              </button>
+            </div>
+          </td>
+
+          <!-- Sudadera Entreno -->
+          <td>
+            <div class="clothing-cell">
+              <select class="size-select" [(ngModel)]="ropa.sudaderaEntreno" (change)="updateRopaJugador(ropa)">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size || '—' }}</option>
+              </select>
+              <button class="delivery-chip" [class.delivered]="ropa.sudaderaEntrenoOk === 1" [class.pending]="ropa.sudaderaEntrenoOk === 0" (click)="togglePrendaOk(ropa, 6)">
+                <i class="bi" [ngClass]="ropa.sudaderaEntrenoOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
+                <span>{{ ropa.sudaderaEntrenoOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+              </button>
+            </div>
+          </td>
+
+          <!-- Chaqueta Chándal -->
+          <td>
+            <div class="clothing-cell">
+              <select class="size-select" [(ngModel)]="ropa.chaquetaChandal" (change)="updateRopaJugador(ropa)">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size || '—' }}</option>
+              </select>
+              <button class="delivery-chip" [class.delivered]="ropa.chaquetaChandalOk === 1" [class.pending]="ropa.chaquetaChandalOk === 0" (click)="togglePrendaOk(ropa, 7)">
+                <i class="bi" [ngClass]="ropa.chaquetaChandalOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
+                <span>{{ ropa.chaquetaChandalOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+              </button>
+            </div>
+          </td>
+
+          <!-- Pantalón Chándal -->
+          <td>
+            <div class="clothing-cell">
+              <select class="size-select" [(ngModel)]="ropa.pantalonChandal" (change)="updateRopaJugador(ropa)">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size || '—' }}</option>
+              </select>
+              <button class="delivery-chip" [class.delivered]="ropa.pantalonChandalOk === 1" [class.pending]="ropa.pantalonChandalOk === 0" (click)="togglePrendaOk(ropa, 8)">
+                <i class="bi" [ngClass]="ropa.pantalonChandalOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
+                <span>{{ ropa.pantalonChandalOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+              </button>
+            </div>
+          </td>
+
+          <!-- Polo Paseo -->
+          <td>
+            <div class="clothing-cell">
+              <select class="size-select" [(ngModel)]="ropa.poloPaseo" (change)="updateRopaJugador(ropa)">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size || '—' }}</option>
+              </select>
+              <button class="delivery-chip" [class.delivered]="ropa.poloPaseoOk === 1" [class.pending]="ropa.poloPaseoOk === 0" (click)="togglePrendaOk(ropa, 9)">
+                <i class="bi" [ngClass]="ropa.poloPaseoOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
+                <span>{{ ropa.poloPaseoOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+              </button>
+            </div>
+          </td>
+
+          <!-- Pantalón Paseo -->
+          <td>
+            <div class="clothing-cell">
+              <select class="size-select" [(ngModel)]="ropa.pantalonPaseo" (change)="updateRopaJugador(ropa)">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size || '—' }}</option>
+              </select>
+              <button class="delivery-chip" [class.delivered]="ropa.pantalonPaseoOk === 1" [class.pending]="ropa.pantalonPaseoOk === 0" (click)="togglePrendaOk(ropa, 10)">
+                <i class="bi" [ngClass]="ropa.pantalonPaseoOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
+                <span>{{ ropa.pantalonPaseoOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+              </button>
+            </div>
+          </td>
+
+          <!-- Abrigo -->
+          <td>
+            <div class="clothing-cell">
+              <select class="size-select" [(ngModel)]="ropa.abrigo" (change)="updateRopaJugador(ropa)">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size || '—' }}</option>
+              </select>
+              <button class="delivery-chip" [class.delivered]="ropa.abrigoOk === 1" [class.pending]="ropa.abrigoOk === 0" (click)="togglePrendaOk(ropa, 1)">
+                <i class="bi" [ngClass]="ropa.abrigoOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
+                <span>{{ ropa.abrigoOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+              </button>
+            </div>
+          </td>
+
+          <!-- Chubasquero -->
+          <td>
+            <div class="clothing-cell">
+              <select class="size-select" [(ngModel)]="ropa.chubasquero" (change)="updateRopaJugador(ropa)">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size || '—' }}</option>
+              </select>
+              <button class="delivery-chip" [class.delivered]="ropa.chubasqueroOk === 1" [class.pending]="ropa.chubasqueroOk === 0" (click)="togglePrendaOk(ropa, 12)">
+                <i class="bi" [ngClass]="ropa.chubasqueroOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
+                <span>{{ ropa.chubasqueroOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+              </button>
+            </div>
+          </td>
+
+          <!-- Mochila (solo entrega, sin talla) -->
+          <td>
+            <div class="clothing-cell clothing-cell--only-delivery">
+              <button class="delivery-chip" [class.delivered]="ropa.mochilaOk === 1" [class.pending]="ropa.mochilaOk === 0" (click)="togglePrendaOk(ropa, 13)">
+                <i class="bi" [ngClass]="ropa.mochilaOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
+                <span>{{ ropa.mochilaOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+              </button>
+            </div>
+          </td>
+
+          <!-- Estado -->
+          <td>
+            <span class="status-badge" [ngClass]="ropa.estado === 'OK' ? 'status-ok' : 'status-pending'">
+              {{ ropa.estado }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="pagination-wrapper">
+    <div class="pagination-content">
+
+      <span class="pagination-info"></span>
+
+      <select class="pagination-select">
+        <option>10</option>
+        <option selected>50</option>
+        <option>100</option>
+      </select>
+
+      <div class="pagination-controls">
+        <button class="page-btn prev" aria-label="Página anterior">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+
+        <span class="page-indicator"></span>
+
+        <button class="page-btn next" aria-label="Página siguiente">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</div><!-- /desktop-view -->
+
+<!-- ========== MOBILE CARD VIEW (shown on mobile only) ========== -->
+<div class="mobile-view" *ngIf="datosCargados">
+  <div class="mobile-skeleton" *ngIf="!datosCargados">
+    <div class="skeleton-card" *ngFor="let s of [1,2,3,4]"></div>
+  </div>
+
+  <div class="player-card" *ngFor="let ropa of ropaPlayers; let i = index">
+    <!-- Card Header -->
+    <div class="card-header-ropa">
+      <div class="player-name" (click)="abrirModalInfoJugador(ropa)">
+        {{ ropa.player.nombre }} {{ ropa.player.apellido }}
+      </div>
+      <div class="player-team">{{ ropa.team.category }} {{ ropa.team.name }} {{ ropa.team.levelLeague }}</div>
+      <span class="badge-status" [ngClass]="ropa.estado === 'OK' ? 'status-ok' : 'status-pending'">
+        {{ ropa.estado === 'OK' ? '✅ OK' : '⏳' }}
+      </span>
+    </div>
+
+    <!-- Shirt Info -->
+    <div class="card-shirt-info">
+      <div class="shirt-field">
+        <label>{{ 'CLOTHES.TABLE.SHIRT_NAME' | translate }}</label>
+        <input type="text" class="form-control form-control-sm" [(ngModel)]="ropa.nick"
+          (ngModelChange)="onAbrigoChange(ropa)">
+      </div>
+      <div class="shirt-field">
+        <label>{{ 'CLOTHES.TABLE.NUMBER' | translate }}</label>
+        <input type="number" class="form-control form-control-sm" [(ngModel)]="ropa.numero"
+          (ngModelChange)="onAbrigoChange(ropa)">
+      </div>
+    </div>
+
+    <!-- Clothing Grid -->
+    <div class="card-clothing-grid">
+      <ng-container *ngFor="let item of clothingItemsMobile">
+        <div class="clothing-item" *ngIf="isColumnVisible(item.clubProp)">
+          <span class="clothing-label">{{ getPrendaLabel(item.clubProp) }}</span>
+          <div class="clothing-controls">
+            <select *ngIf="item.sizeKey" class="form-select form-select-sm"
+              [(ngModel)]="ropa[item.sizeKey]"
+              (change)="updateRopaJugador(ropa)">
+              <option *ngFor="let t of (item.sizes === 'abrigoSizesMedias' ? abrigoSizesMedias : abrigoSizes)" [value]="t">{{ t || '-' }}</option>
+            </select>
+            <button class="btn-toggle-sm"
+              [ngClass]="ropa[item.okKey] === 1 ? 'delivered' : 'not-delivered'"
+              (click)="togglePrendaOk(ropa, item.toggleKey)">
+              {{ ropa[item.okKey] === 1 ? '✅' : '❌' }}
+            </button>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+
+</div><!-- /tallas tab -->
+
+<!-- tabla para imprimir en excel -->
+<div style="display: none;">
+  <table id="tablaExcel" class="table table-bordered table-striped text-center" #table1>
+    <thead class="table-custom">
+      <tr>
+        <th>NOMBRE</th>
+        <th>APELLIDO</th>
+        <th>NOMBRE CAMISETA</th>
+        <th>NUMERO</th>
+        <th>EQUIPO</th>
+        <th>CATEGORIA</th>
+        <th>{{ getPrendaLabel('abrigo') }}</th>
+        <th>{{ getPrendaLabel('camisetaJuego') }}</th>
+        <th>{{ getPrendaLabel('camisetaJuegoDos') }}</th>
+        <th>{{ getPrendaLabel('pantalonJuego') }}</th>
+        <th>{{ getPrendaLabel('pantalonJuegoDos') }}</th>
+        <th>{{ getPrendaLabel('medias') }}</th>
+        <th>{{ getPrendaLabel('mediasDos') }}</th>
+        <th>{{ getPrendaLabel('camisetaEntreno') }}</th>
+        <th>{{ getPrendaLabel('pantalonEntreno') }}</th>
+        <th>{{ getPrendaLabel('sudaderaEntreno') }}</th>
+        <th>{{ getPrendaLabel('chaquetaChandal') }}</th>
+        <th>{{ getPrendaLabel('pantalonChandal') }}</th>
+        <th>{{ getPrendaLabel('poloPaseo') }}</th>
+        <th>{{ getPrendaLabel('pantalonPaseo') }}</th>
+        <th>{{ getPrendaLabel('chubasquero') }}</th>
+        <th>ESTADO</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let ropa of ropaPlayers; let i = index">
+        <td>{{ ropa.player.nombre }}</td>
+        <td>{{ ropa.player.apellido }}</td>
+        <td>{{ ropa.nick }}</td>
+        <td>{{ ropa.numero }}</td>
+        <td>{{ ropa.team.category }} {{ ropa.team.name }}</td>
+        <td>{{ ropa.team.levelLeague }}</td>
+        <td>{{ ropa.abrigo }}</td>
+        <td>{{ ropa.camisetaJuego }}</td>
+        <td>{{ ropa.camisetaJuegoDos }}</td>
+        <td>{{ ropa.pantalonJuego }}</td>
+        <td>{{ ropa.pantalonJuegoDos }}</td>
+        <td>{{ ropa.medias }}</td>
+        <td>{{ ropa.mediasDos }}</td>
+        <td>{{ ropa.camisetaEntreno }}</td>
+        <td>{{ ropa.pantalonEntreno }}</td>
+        <td>{{ ropa.sudaderaEntreno }}</td>
+        <td>{{ ropa.chaquetaChandal }}</td>
+        <td>{{ ropa.pantalonChandal }}</td>
+        <td>{{ ropa.poloPaseo }}</td>
+        <td>{{ ropa.pantalonPaseo }}</td>
+        <td>{{ ropa.chubasquero }}</td>
+        <td>{{ ropa.estado }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+

@@ -1,0 +1,154 @@
+<div class="modal d-block modal-overlay" *ngIf="visible" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content modern-modal">
+
+      <!-- HEADER -->
+      <div class="modal-header modern-header">
+        <h5 class="modal-title">
+          <i class="bi bi-wallet2 me-2"></i>
+          {{ isEdit ? ('PAYMENTS.EDIT_TITLE' | translate) : ('PAYMENTS.NEW_TITLE' | translate) }}
+        </h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body modern-body">
+        <form (ngSubmit)="save()">
+
+          <!-- TITULO -->
+          <div class="mb-3">
+            <label class="modern-label">{{ 'PAYMENTS.FIELD_TITLE' | translate }}</label>
+            <input type="text" class="form-control modern-input"
+                   [(ngModel)]="titulo" name="titulo" required>
+          </div>
+
+          <!-- DESCRIPCION -->
+          <div class="mb-3">
+            <label class="modern-label">{{ 'PAYMENTS.FIELD_DESCRIPTION' | translate }}</label>
+            <textarea class="form-control modern-input" rows="3"
+                      [(ngModel)]="descripcion" name="descripcion"></textarea>
+          </div>
+
+          <!-- IMPORTE + FECHA LIMITE -->
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="modern-label">{{ 'PAYMENTS.FIELD_AMOUNT' | translate }}</label>
+              <input type="number" class="form-control modern-input" step="0.01"
+                     [(ngModel)]="importe" name="importe" required>
+            </div>
+            <div class="col-md-6">
+              <label class="modern-label">{{ 'PAYMENTS.FIELD_DEADLINE' | translate }}</label>
+              <input type="date" class="form-control modern-input"
+                     [(ngModel)]="fechaLimite" name="fechaLimite" required>
+            </div>
+          </div>
+
+          <!-- OBLIGATORIO -->
+          <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox"
+                   [(ngModel)]="obligatorio" name="obligatorio" id="obligatorioSwitch">
+            <label class="form-check-label" for="obligatorioSwitch">
+              {{ 'PAYMENTS.FIELD_MANDATORY' | translate }}
+            </label>
+          </div>
+
+          <!-- TIPO DE COBRO -->
+          <div class="mb-3">
+            <label class="modern-label">{{ 'PAYMENTS.FIELD_CHARGE_TYPE' | translate }}</label>
+            <select class="form-select modern-input" [(ngModel)]="tipoCobro" name="tipoCobro">
+              <option [ngValue]="0">{{ 'PAYMENTS.CHARGE_MANUAL' | translate }}</option>
+              <option [ngValue]="1">{{ 'PAYMENTS.CHARGE_STRIPE_ONE_TIME' | translate }}</option>
+              <option [ngValue]="2">{{ 'PAYMENTS.CHARGE_STRIPE_SUBSCRIPTION' | translate }}</option>
+              <option [ngValue]="3">{{ 'PAYMENTS.CHARGE_SAVED_CARD' | translate }}</option>
+            </select>
+          </div>
+
+          <!-- SECCION SUSCRIPCION (tipoCobro === 2) -->
+          <div *ngIf="isSuscripcion" class="border rounded-3 p-4 bg-white mb-3">
+            <h6 class="fw-semibold mb-3">
+              <i class="bi bi-arrow-repeat me-1 text-primary"></i>
+              {{ 'PAYMENTS.SUBSCRIPTION_CONFIG' | translate }}
+            </h6>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="modern-label">{{ 'PAYMENTS.FIELD_INTERVAL' | translate }}</label>
+                <select class="form-select modern-input" [(ngModel)]="intervalo" name="intervalo">
+                  <option *ngFor="let p of periodos" [ngValue]="p.value">
+                    {{ p.labelKey | translate }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="modern-label">{{ 'PAYMENTS.FIELD_INTERVAL_COUNT' | translate }}</label>
+                <input type="number" class="form-control modern-input" min="1"
+                       [(ngModel)]="intervaloCuenta" name="intervaloCuenta">
+              </div>
+
+              <div class="col-md-6">
+                <label class="modern-label">{{ 'PAYMENTS.FIELD_START_DATE' | translate }}</label>
+                <input type="date" class="form-control modern-input"
+                       [(ngModel)]="fechaInicio" name="fechaInicio">
+              </div>
+
+              <div class="col-md-6">
+                <label class="modern-label">{{ 'PAYMENTS.FIELD_END_DATE' | translate }}</label>
+                <input type="date" class="form-control modern-input"
+                       [(ngModel)]="fechaFin" name="fechaFin">
+              </div>
+            </div>
+          </div>
+
+          <!-- SELECCION DE EQUIPOS -->
+          <div class="mb-3">
+            <label class="modern-label">{{ 'PAYMENTS.FIELD_TEAMS' | translate }}</label>
+
+            <div class="team-select-box border rounded-3 p-3">
+              <!-- Select all -->
+              <div class="form-check mb-2 border-bottom pb-2">
+                <input class="form-check-input" type="checkbox" id="selectAllTeams"
+                       [checked]="allTeamsSelected" (change)="toggleSelectAll()">
+                <label class="form-check-label fw-semibold" for="selectAllTeams">
+                  {{ 'PAYMENTS.SELECT_ALL_TEAMS' | translate }}
+                </label>
+              </div>
+
+              <!-- Individual teams -->
+              <div *ngFor="let team of teams" class="form-check mb-1">
+                <input class="form-check-input" type="checkbox"
+                       [id]="'team_modal_' + team.value"
+                       [checked]="isTeamSelected(team.value)"
+                       (change)="toggleTeam(team.value)">
+                <label class="form-check-label" [for]="'team_modal_' + team.value">
+                  {{ team.name }}
+                </label>
+              </div>
+
+              <div *ngIf="teams.length === 0" class="text-muted small">
+                {{ 'PAYMENTS.NO_TEAMS_AVAILABLE' | translate }}
+              </div>
+            </div>
+
+            <small class="text-muted mt-1 d-block">
+              {{ selectedTeamIds.length }} {{ 'PAYMENTS.TEAMS_SELECTED' | translate }}
+            </small>
+          </div>
+
+          <!-- FOOTER -->
+          <div class="modal-footer modern-footer">
+            <button type="button" class="btn btn-secondary" (click)="close()">
+              {{ 'PAYMENTS.BTN_CANCEL' | translate }}
+            </button>
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-check-circle me-1"></i>
+              {{ isEdit ? ('PAYMENTS.BTN_UPDATE' | translate) : ('PAYMENTS.BTN_SAVE' | translate) }}
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>

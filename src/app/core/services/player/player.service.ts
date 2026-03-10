@@ -1,0 +1,667 @@
+// player.service.ts
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, throwError, of, EMPTY } from 'rxjs';
+import { environment } from 'src/environments/environment';
+import { Response } from 'src/app/core/services/models/response.model';
+import { DemoDataService } from '../demo/demo-data.service';
+import { isDemoMode } from '../demo/demo-mode';
+import { NotificatePlayerUI, PagocuotasPlayerResponse, Player, ScoutingPlayer } from './player.model';
+import { PlayerPostPartido } from '../models/match.model';
+import { HttpEvent, HttpEventType } from '@angular/common/http';
+
+
+@Injectable({
+    providedIn: 'root'
+})
+export class PlayerService {
+
+    constructor(private http: HttpClient) { }
+
+    getPlayers(teamId: string): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response({
+                players: DemoDataService.getDemoPlayersByTeamForCoach(teamId),
+                clubId: 9001
+            }) as Response);
+        }
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `player/playerlistbyteam/${teamId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.get<Response>(url, { headers });
+        } else {
+            // Sin token: emitir respuesta vacía para que el componente pueda mostrar la UI
+            return of({ data: { players: [] }, status: 401, error: {} } as any);
+        }
+    }
+
+    getListPlayersEstadisticsByTeam(teamId: number, tipoPartido: string): Observable<Response> {
+        if (isDemoMode()) {
+            console.log('getListPlayersEstadisticsByTeam: isDemoMode');
+            const data = DemoDataService.getDemoListPlayersStadistics(teamId, tipoPartido);
+            return of(DemoDataService.response(data) as Response);
+        }
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `player/getlistestadisticasjugadores/${teamId}/${tipoPartido}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.get<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    getDatosPlayer(teamId: number, playerId: number): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoDatosPlayer()) as Response);
+        }
+        const token: string | null = localStorage.getItem('token');
+        if (token) {
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+            const url: string = environment.apiUrl + `match/getdatosplayer/${teamId}/${playerId}`;
+            return this.http.get<Response>(url, { headers });
+        } else {
+            return of({ data: null, status: 401, error: {} } as any);
+        }
+    }
+
+    getPagocuotasPlayer(teamId: number, playerId: number): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoHistoryCuotasPlayer(teamId, playerId)) as Response);
+        }
+        const token: string | null = localStorage.getItem('token');
+        if (token) {
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+            const url: string = environment.apiUrl + `player/getpagocuotasplayer/${teamId}/${playerId}`;
+            return this.http.get<Response>(url, { headers });
+        }
+        return of({ data: null, status: 401, error: {} } as any);
+    }
+
+    // Método para crear o actualizar un jugador
+    createUpdatePlayer(teamId: string, player: Player): Observable<Response> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `player/createupdateplayer/${teamId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.post<Response>(url, player, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    deletePlayer(playerId: number, teamId: number, temporada: string, option: number): Observable<Response> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `player/deleteplayer/${playerId}/${teamId}/${temporada}/${option}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.delete<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    getPlayersPostPartido(teamId: string, postPartidoId: string): Observable<Response> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `match/getlistplayersbyteam/${teamId}/${postPartidoId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.get<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    createUpdateInfoPlayerPostPartido(player: PlayerPostPartido): Observable<Response> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `match/createupdateinfoplayerpostpartido`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.post<Response>(url, player, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    getListPostPartidoByTeam(teamId: number, tipoPartido: string): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoListPostPartidoByTeam(teamId, tipoPartido)) as Response);
+        }
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `match/getlistpostpartidobyteam/${teamId}/${tipoPartido}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.get<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    getListPlayersByTeamForGalery(teamId: number): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoPostPartidosForGalery()) as Response);
+        }
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `match/getlistpostpartidobyteam-forgalery/${teamId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.get<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    getListProximosPartidos(teamId: number): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoProximosPartidos()) as Response);
+        }
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `match/getlistproximospartidos/${teamId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.get<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    getDeleteGaleriaPartidos(galeriaPartidoId: number): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response([]) as Response);
+        }
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `match/getdeletegaleriapartidos/${galeriaPartidoId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.delete<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    setVideoYouTubeGaleria(postpartidoId: number, teamId: number, playerId: number, link: string): Observable<Response> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `match/getvideoyoutubegaleria/${postpartidoId}/${teamId}/${playerId}/${link}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.get<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    uploadImgGaleria(file: File, postpartidoId: number, teamId: number, playerId: number): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response({ galeriaPartidoId: 999, tipo: 0, url: 'demo-upload.jpg' }) as Response);
+        }
+        // Verifica si el archivo está presente
+        if (file) {
+            // Obtén el token almacenado en localStorage
+            const token: string | null = localStorage.getItem('token');
+            // Verifica si el token está presente
+            if (token) {
+                // Configura las cabeceras con el token para la solicitud HTTP
+                const headers = new HttpHeaders({
+                    'Authorization': `Bearer ${token}`
+                });
+
+                // Construye el cuerpo de la solicitud FormData
+                const formData: FormData = new FormData();
+                formData.append('files', file, file.name);
+
+                // Construye la URL para la solicitud
+                const url: string = environment.apiUrl + `match/uploadimggaleria/${postpartidoId}/${teamId}/${playerId}`;
+
+                // Realiza la solicitud HTTP con las cabeceras y el cuerpo configurados
+                return this.http.post<Response>(url, formData, { headers });
+            } else {
+                // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+                return throwError('Token no disponible');
+            }
+        } else {
+            // Manejo de error si no se proporciona un archivo (puedes personalizar según tus necesidades)
+            return throwError('Archivo no proporcionado');
+        }
+    }
+
+    getListGaleriaPartidos(postpartidoId: number): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response(DemoDataService.getDemoGaleriaPartidos(postpartidoId)) as Response);
+        }
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `match/getlistgaleriapartidos/${postpartidoId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.get<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    createUpdateImgDniPlayer(playerId: number, cara: number, file: File): Observable<Response> {
+        // Verifica si el archivo está presente
+        if (file) {
+            // Obtén el token almacenado en localStorage
+            const token: string | null = localStorage.getItem('token');
+            // Verifica si el token está presente
+            if (token) {
+                // Configura las cabeceras con el token para la solicitud HTTP
+                const headers = new HttpHeaders({
+                    'Authorization': `Bearer ${token}`
+                });
+
+                // Construye el cuerpo de la solicitud FormData
+                const formData: FormData = new FormData();
+                formData.append('files', file, file.name);
+
+                // Construye la URL para la solicitud
+                const url: string = environment.apiUrl + `player/subirDniPlayer/${playerId}/${cara}`;
+
+                // Realiza la solicitud HTTP con las cabeceras y el cuerpo configurados
+                return this.http.post<Response>(url, formData, { headers });
+            } else {
+                // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+                return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+            }
+        } else {
+            // Manejo de error si no se proporciona un archivo (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    updateConvocatoria(convocatoria: string, matchPreparationId: number): Observable<Response> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `match/updateconvocatoria/${matchPreparationId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.post<Response>(url, convocatoria, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    notificateMatchPlayer(ui: NotificatePlayerUI, teamId: number): Observable<Response> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `player/notificatematchplayer/${teamId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.post<Response>(url, ui, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    notificarNoAsistencia(dto: any): Observable<Response> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `player/notificarnoasistencia`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.post<Response>(url, dto, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    solicitarConsentimientoIA(playerId: number): Observable<Response> {
+        const token: string | null = localStorage.getItem('token');
+        if (token) {
+            const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+            const url: string = environment.apiUrl + `player/solicitarconsentimientoia/${playerId}`;
+            return this.http.post<Response>(url, {}, { headers });
+        } else {
+            return EMPTY;
+        }
+    }
+
+    getscoutingplayerbyplayerid(playerId: number, userId: number): Observable<Response> {
+        if (isDemoMode()) {
+            const data = DemoDataService.getDemoScoutingPlayer(playerId);
+            return of(DemoDataService.response(data) as Response);
+        }
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `player/getscoutingplayerbyplayerid/${playerId}/${userId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.get<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    createUpdateScoutingPlayer(scoutingPlayer: ScoutingPlayer): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response({ ...scoutingPlayer, scoutingPlayerId: 1 }) as Response);
+        }
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `player/createupdatescoutingplayer`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.post<Response>(url, scoutingPlayer, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    setPublicoPrivadoScoutingPlayerByPlayerId(playerId: number, value: number, userId: number): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response({ ok: true }) as Response);
+        }
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `player/setpublicooprivadoscoutingplayer/${playerId}/${value}/${userId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.get<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    createUpdateImgPerfilPlayer(file: File, playerId: number, imgOld: string): Observable<Response> {
+        // Verifica si el archivo está presente
+        if (file) {
+            // Obtén el token almacenado en localStorage
+            const token: string | null = localStorage.getItem('token');
+            // Verifica si el token está presente
+            if (token) {
+                // Configura las cabeceras con el token para la solicitud HTTP
+                const headers = new HttpHeaders({
+                    'Authorization': `Bearer ${token}`
+                });
+
+                // Construye el cuerpo de la solicitud FormData
+                const formData: FormData = new FormData();
+                formData.append('files', file, file.name);
+
+                // Construye la URL para la solicitud
+                const url: string = environment.apiUrl + `player/subirimgperfil/${playerId}/${imgOld}`;
+
+                // Realiza la solicitud HTTP con las cabeceras y el cuerpo configurados
+                return this.http.post<Response>(url, formData, { headers });
+            } else {
+                // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+                return throwError('Token no disponible');
+            }
+        } else {
+            // Manejo de error si no se proporciona un archivo (puedes personalizar según tus necesidades)
+            return throwError('Archivo no proporcionado');
+        }
+    }
+
+    updatePlayerInfo(dto: any): Observable<Response> {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const headers = new HttpHeaders({
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            });
+
+            const url = environment.apiUrl + 'player/update-playerinfo';
+            return this.http.post<Response>(url, dto, { headers });
+        } else {
+            return EMPTY;
+        }
+    }
+
+    getPlayerInfo(playerId: number): Observable<Response> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `player/getplayerinfo/${playerId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.get<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    /** @deprecated Use getPagocuotasPlayer instead */
+    getPagoCuotasPlayer(teamId: number, playerId: number): Observable<Response> {
+        return this.getPagocuotasPlayer(teamId, playerId);
+    }
+
+    getAsistenciaPartido(matchPreparationId: number, playerId: number): Observable<Response> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `player/getasistenciapartido/${matchPreparationId}/${playerId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.get<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    setAsistenciaPartido(matchPreparationId: number, playerId: number, valueConfirmacion: number): Observable<Response> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `player/setasistenciapartido/${matchPreparationId}/${playerId}/${valueConfirmacion}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.get<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+}

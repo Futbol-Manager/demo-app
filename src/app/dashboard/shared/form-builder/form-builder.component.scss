@@ -1,0 +1,371 @@
+.form-builder {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.builder-header {
+  margin-bottom: 16px;
+
+  h4 {
+    margin: 0 0 4px;
+    font-weight: 600;
+    font-size: 16px;
+    color: #333;
+
+    i {
+      margin-right: 6px;
+    }
+  }
+
+  .builder-hint {
+    font-size: 13px;
+    color: #888;
+    margin: 0;
+  }
+}
+
+.builder-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field-row {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  background: #fafbfc;
+  overflow: hidden;
+}
+
+.field-row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f0f2f5;
+  border-bottom: 1px solid #e0e0e0;
+
+  .field-number {
+    font-weight: 700;
+    color: #555;
+    font-size: 14px;
+  }
+}
+
+.field-row-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.btn-sm-icon {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #666;
+  font-size: 14px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #e0e0e0;
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+}
+
+.btn-danger-icon {
+  color: #d33;
+
+  &:hover {
+    background: #fdd;
+  }
+}
+
+.field-row-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+  }
+
+  input,
+  select {
+    padding: 8px 10px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus {
+      border-color: #0fa3e8;
+    }
+  }
+}
+
+.field-group-inline {
+  label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+
+    input[type='checkbox'] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+  }
+}
+
+.field-options {
+  background: #f5f6fa;
+  border-radius: 8px;
+  padding: 10px;
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: block;
+  }
+}
+
+.option-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.option-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fff;
+  border: 1px solid #d0d0d0;
+  border-radius: 16px;
+  padding: 2px 8px 2px 10px;
+  font-size: 13px;
+
+  span {
+    color: #333;
+  }
+}
+
+.option-add {
+  display: flex;
+  gap: 6px;
+
+  input {
+    flex: 1;
+    padding: 6px 8px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+
+    &:focus {
+      border-color: #0fa3e8;
+    }
+  }
+}
+
+.btn-sm-add {
+  border: none;
+  background: #0fa3e8;
+  color: #fff;
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 14px;
+
+  &:hover {
+    background: #0d8ecb;
+  }
+}
+
+.btn-add-field {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 12px;
+  border: 2px dashed #c0c0c0;
+  border-radius: 10px;
+  background: transparent;
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #0fa3e8;
+    color: #0fa3e8;
+    background: #f8f9ff;
+  }
+}
+
+.builder-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+
+  .btn {
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-secondary {
+    background: #e9ecef;
+    color: #333;
+
+    &:hover {
+      background: #dde0e3;
+    }
+  }
+
+  .btn-success {
+    background: #28a745;
+    color: #fff;
+
+    &:hover {
+      background: #218838;
+    }
+
+    &:disabled {
+      background: #a0d4ae;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// ── Template mode ────────────────────────────────────────────────────────────
+.template-nombre-row {
+  margin-bottom: 16px;
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 4px;
+  }
+
+  .required-star {
+    color: #e53935;
+    margin-left: 2px;
+  }
+
+  input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+
+    &:focus {
+      outline: none;
+      border-color: #4CAF50;
+      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);
+    }
+
+    &.input-error {
+      border-color: #e53935;
+      box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.15);
+    }
+  }
+
+  .error-hint {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: #e53935;
+    font-weight: 500;
+  }
+}
+
+// ── CDK Drag & Drop ──────────────────────────────────────────────────────────
+.fields-drop-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.field-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #f9fafb;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  padding: 12px;
+  cursor: default;
+
+  &.cdk-drag-preview {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    opacity: 0.95;
+  }
+
+  &.cdk-drag-placeholder {
+    opacity: 0.3;
+  }
+}
+
+.field-drag-handle {
+  flex-shrink: 0;
+  color: #bbb;
+  cursor: grab;
+  padding: 4px 2px;
+  font-size: 18px;
+  line-height: 1;
+
+  &:active { cursor: grabbing; }
+}
+
+.field-row-inner {
+  flex: 1;
+  min-width: 0;
+}
+
+// ── Field preview hints ───────────────────────────────────────────────────────
+.field-preview-hint {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-wrap: wrap;
+}

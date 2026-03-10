@@ -1,0 +1,113 @@
+<div class="vu-background">
+
+  <!-- Orbes decorativos de fondo -->
+  <div class="vu-orb vu-orb--1"></div>
+  <div class="vu-orb vu-orb--2"></div>
+  <div class="vu-orb vu-orb--3"></div>
+
+  <div class="vu-overlay">
+    <div class="vu-container">
+
+      <div class="vu-card" [class.vu-card--success]="status === 'success'" [class.vu-card--error]="status === 'error'">
+
+        <!-- HEADER -->
+        <div class="vu-header">
+          <div class="vu-header__shimmer"></div>
+          <img
+            src="assets/images/Logo_SphairaTech1.svg"
+            alt="Sphaira Tech"
+            class="vu-logo"
+          />
+          <div class="vu-header__badge">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+        </div>
+
+        <!-- ===== ESTADO: IDLE ===== -->
+        <div class="vu-body" *ngIf="status === 'idle'">
+
+          <div class="vu-icon-wrap vu-icon-wrap--primary">
+            <i class="fas fa-user-check vu-icon-main"></i>
+          </div>
+
+          <h2 class="vu-title">{{ 'VALIDATION.TITLE' | translate }}</h2>
+          <p class="vu-text">{{ 'VALIDATION.DESCRIPTION' | translate }}</p>
+
+          <button class="vu-btn" (click)="validarUsuario()">
+            <i class="fas fa-check-circle me-2"></i>
+            {{ 'VALIDATION.BUTTON' | translate }}
+          </button>
+
+        </div>
+
+        <!-- ===== ESTADO: LOADING ===== -->
+        <div class="vu-body vu-body--loading" *ngIf="status === 'loading'">
+
+          <div class="vu-spinner-wrap">
+            <div class="vu-spinner">
+              <div class="vu-spinner__ring"></div>
+              <div class="vu-spinner__ring vu-spinner__ring--2"></div>
+              <i class="fas fa-shield-alt vu-spinner__icon"></i>
+            </div>
+          </div>
+
+          <h2 class="vu-title">Validando cuenta…</h2>
+          <p class="vu-text vu-text--muted">Por favor espera un momento</p>
+
+          <div class="vu-progress">
+            <div class="vu-progress__bar"></div>
+          </div>
+
+        </div>
+
+        <!-- ===== ESTADO: SUCCESS ===== -->
+        <div class="vu-body vu-body--success" *ngIf="status === 'success'">
+
+          <div class="vu-icon-wrap vu-icon-wrap--success">
+            <i class="fas fa-check vu-icon-main"></i>
+            <div class="vu-icon-pulse"></div>
+          </div>
+
+          <h2 class="vu-title vu-title--success">¡Cuenta validada!</h2>
+          <p class="vu-text">Tu usuario ha sido verificado correctamente. Ya puedes iniciar sesión y disfrutar de todos los servicios.</p>
+
+          <div class="vu-success-tags">
+            <span class="vu-tag"><i class="fas fa-lock-open me-1"></i>Acceso desbloqueado</span>
+            <span class="vu-tag"><i class="fas fa-star me-1"></i>Cuenta activa</span>
+          </div>
+
+          <button class="vu-btn vu-btn--success" (click)="goHome()">
+            <i class="fas fa-arrow-right me-2"></i>
+            Ir al inicio
+          </button>
+
+        </div>
+
+        <!-- ===== ESTADO: ERROR ===== -->
+        <div class="vu-body vu-body--error" *ngIf="status === 'error'">
+
+          <div class="vu-icon-wrap vu-icon-wrap--error">
+            <i class="fas fa-times vu-icon-main"></i>
+          </div>
+
+          <h2 class="vu-title vu-title--error">No se pudo validar</h2>
+          <p class="vu-text">{{ errorMessage }}</p>
+
+          <button class="vu-btn vu-btn--outline" (click)="reset()">
+            <i class="fas fa-redo me-2"></i>
+            Intentar de nuevo
+          </button>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="vu-footer">
+          <p class="vu-footer__text">{{ 'VALIDATION.FOOTER' | translate }}</p>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>

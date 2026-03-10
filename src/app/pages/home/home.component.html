@@ -1,0 +1,85 @@
+<div class="background">
+  <img [attr.alt]="'APP.ALT.BACKGROUND' | translate" class="video-background" src="assets/images/fondoLoginV1.png">
+
+  <!-- Asistente de tutorial: fijo en pantalla, arrastrable, fuera del contenedor (solo en login) -->
+  <div *ngIf="screen == 1" class="tutorial-assistant-fixed" [style.left.px]="assistantPosition.left" [style.top.px]="assistantPosition.top"
+    (mousedown)="onAssistantMouseDown($event)" (touchstart)="onAssistantTouchStart($event)" (click)="onAssistantClick()"
+    role="button" tabindex="0" (keydown.enter)="openLoginTutorial()" (keydown.space)="openLoginTutorial(); $event.preventDefault()"
+    title="Ver guía paso a paso (arrastra para mover)" [class.dragging]="isDragging">
+    <div class="tutorial-assistant-icon">
+      <i class="fas fa-route"></i>
+      <span class="tutorial-assistant-pulse"></span>
+    </div>
+    <div class="tutorial-assistant-text">
+      <span class="tutorial-assistant-label">Guía paso a paso</span>
+      <span class="tutorial-assistant-hint">Te señalo cada elemento</span>
+    </div>
+    <span class="tutorial-assistant-drag-hint" aria-hidden="true"><i class="fas fa-grip-vertical"></i></span>
+  </div>
+
+  <!-- LOGIN -->
+  <div *ngIf="screen == 1" class="container">
+    <div class="row justify-content-center" style="padding-top: 2%;">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header logo-header-wrapper">
+            <img [src]="loginLogoSrc" alt="Logo" class="logo-header" />
+          </div>
+
+          <div class="card-body textoCentrado">
+            <app-login [returnUrl]="returnUrl"></app-login>
+          </div>
+        </div> <!-- /card -->
+      </div>
+    </div>
+  </div>
+
+  <!-- RECORDAR CONTRASEÑA -->
+  <div *ngIf="screen == 3" class="container">
+    <div class="row justify-content-center" style="padding-top: 2%;">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header textoCentrado">
+            <img [attr.alt]="'APP.ALT.LOGO' | translate" [src]="loginLogoSrc" class="logo-header">
+          </div>
+          <div class="card-body textoCentrado">
+            <form #thisForm="ngForm" (ngSubmit)="sendMail()" [formGroup]="rememberForm" class="form-login">
+              <div class="mb-3">
+                <label class="form-label" for="mail">
+                  {{ 'AUTH.REMEMBER_TITLE' | translate }}
+                </label>
+
+                <input [attr.placeholder]="'AUTH.EMAIL_PLACEHOLDER' | translate"
+                  [class.is-invalid]="mailControl?.invalid && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)"
+                  class="form-control input-login" formControlName="mail" id="mail" type="email">
+
+                <div
+                  *ngIf="mailControl?.hasError('email') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)"
+                  class="invalid-feedback">
+                  {{ 'AUTH.EMAIL_INVALID' | translate }}
+                </div>
+              </div>
+
+              <button class="btn btn-primary btn-block textoCentrado" type="submit">
+                {{ 'AUTH.SEND_MAIL' | translate }}
+              </button>
+            </form>
+          </div>
+
+          <div class="card-footer textoCentrado" style="flex-direction: column; background: #002c40;">
+            <div class="row">
+              <div class="col-md-12 col-sm-12 textoCentrado">
+                <p>
+                  {{ 'AUTH.REMEMBER_PASSWORD' | translate }}
+                  <a (click)="toLogin($event)" href="#">
+                    {{ 'AUTH.LOGIN_HERE' | translate }}
+                  </a>
+                </p>
+              </div>
+            </div>
+          </div> <!-- /card-footer -->
+        </div> <!-- /card -->
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,176 @@
+/* CONTENEDOR */
+.back-container {
+  padding: 0.75rem 1.25rem;
+}
+
+/* BOTÓN VOLVER */
+.btn-back-clean {
+  margin-left: 26px;
+  margin-top: 15px;
+  padding: 0.35rem 0.6rem;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  background-color: rgba(var(--color-primary-rgb), 0.08);
+  border: none;
+  border-radius: 8px;
+
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* ICONO */
+.btn-back-clean i {
+  font-size: 1.1rem;
+}
+
+/* HOVER */
+.btn-back-clean:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.15);
+  transform: translateX(-2px);
+}
+
+/* ACTIVE */
+.btn-back-clean:active {
+  transform: translateX(0);
+}
+
+/* CONTENEDOR */
+.dashboard-container {
+  margin-top: 3rem;
+}
+
+/* GRID */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+/* CARD BASE */
+.dashboard-card {
+  position: relative;
+  height: 180px;
+  border-radius: 18px;
+  overflow: hidden;
+  cursor: pointer;
+  color: #fff;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.35);
+}
+
+/* OVERLAY OSCURO */
+.dashboard-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.65),
+    rgba(0, 0, 0, 0.25)
+  );
+  z-index: 1;
+}
+
+/* BLOQUE ICONO + TEXTO */
+.dashboard-content {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  z-index: 2;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ICONO */
+.dashboard-icon {
+  font-size: 1.4rem;
+  opacity: 0.95;
+}
+
+/* TITULO */
+.dashboard-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+/* RESPONSIVE */
+@media (max-width: 576px) {
+  .dashboard-card {
+    height: 155px;
+  }
+}
+
+/* ======================
+   FONDOS (usa assets)
+   ====================== */
+
+.bg-calendar {
+  background: url("/assets/images/calendario.jpg") center / cover no-repeat;
+}
+
+.bg-stats-team {
+  background: url("/assets/images/estadisticas1.jpg") center / cover no-repeat;
+}
+
+.bg-stats-player {
+  background: url("/assets/images/estadisticas2.jpg") center / cover no-repeat;
+}
+
+.bg-players {
+  background: url("/assets/images/jugadores.jpg") center / cover no-repeat;
+}
+
+.bg-info {
+  background: url("/assets/images/infoequipo.jpg") center / cover no-repeat;
+}
+
+.bg-gallery {
+  background: url("/assets/images/galeria.jpg") center / cover no-repeat;
+}
+
+.bg-ranking {
+  background: url("/assets/images/clasificaciones.jpg") center / cover no-repeat;
+}
+
+.bg-video-analysis {
+  background: url("/assets/images/video-analysis.jpg") center / cover no-repeat;
+}
+
+.bg-erp {
+  background: url("/assets/images/erp-management.jpg") center / cover no-repeat;
+}
+
+.bg-staff {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+
+.bg-injuries {
+  background: url("/assets/images/lesiones.jpg") center / cover no-repeat;
+}
+
+.bg-coaches {
+  background: url("/assets/images/jugadores.jpg") center / cover no-repeat;
+}
+
+/* RESPONSIVE */
+@media (max-width: 576px) {
+  .dashboard-card {
+    height: 160px;
+  }
+}
+

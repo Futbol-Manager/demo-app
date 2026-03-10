@@ -1,0 +1,112 @@
+<div class="suscripcion-coach-page">
+
+  <!-- ══════════════════════════════════════════
+       HERO + FEATURES (todo integrado)
+  ══════════════════════════════════════════ -->
+  <div class="hero-section" data-tutorial="sco-hero">
+
+    <!-- Texto principal -->
+    <div class="hero-text">
+      <div class="hero-badge">
+        <i class="bi bi-shield-fill-check"></i> Sphaira Coach Pro
+      </div>
+      <h1 class="hero-title">Tu equipo, bajo control.</h1>
+      <p class="hero-subtitle" *ngIf="userName">Hola, <strong>{{ userName }}</strong> — elige el plan que se adapta a ti.</p>
+      <p class="hero-subtitle" *ngIf="!userName">Elige el plan que mejor se adapta a tus necesidades.</p>
+    </div>
+
+    <!-- Features en grid dentro del hero -->
+    <div class="features-grid">
+      <div class="feature-card">
+        <i class="bi bi-people-fill"></i>
+        <span>Gestión de equipo</span>
+      </div>
+      <div class="feature-card">
+        <i class="bi bi-robot"></i>
+        <span>Asistente de IA</span>
+      </div>
+      <div class="feature-card">
+        <i class="bi bi-graph-up-arrow"></i>
+        <span>Estadísticas</span>
+      </div>
+      <div class="feature-card">
+        <i class="bi bi-bandaid-fill"></i>
+        <span>Lesiones</span>
+      </div>
+      <div class="feature-card">
+        <i class="bi bi-calendar-check-fill"></i>
+        <span>Calendario</span>
+      </div>
+      <div class="feature-card">
+        <i class="bi bi-file-earmark-pdf-fill"></i>
+        <span>Informes PDF</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PLANES — directamente bajo el hero
+  ══════════════════════════════════════════ -->
+  <div class="plans-wrapper" data-tutorial="sco-planes">
+
+    <div class="plans-grid">
+      <div
+        class="plan-card"
+        *ngFor="let plan of plans"
+        [class.popular]="plan.popular"
+      >
+        <div class="popular-badge" *ngIf="plan.popular">
+          <i class="bi bi-star-fill me-1"></i>Más popular
+        </div>
+
+        <div class="plan-header">
+          <div class="plan-icon-box" [class.popular-icon]="plan.popular">
+            <i class="bi" [ngClass]="plan.icon"></i>
+          </div>
+          <div class="plan-label">{{ plan.label }}</div>
+        </div>
+
+        <div class="plan-price-block">
+          <div class="plan-price">
+            <span class="price-currency">€</span>
+            <span class="price-amount">{{ plan.price }}</span>
+          </div>
+          <span class="price-suffix">{{ plan.priceSuffix }}</span>
+        </div>
+
+        <p class="plan-note">{{ plan.priceNote }}</p>
+
+        <div class="savings-tag" *ngIf="plan.savings">
+          <i class="bi bi-lightning-fill"></i>{{ plan.savings }}
+        </div>
+
+        <button
+          class="btn-select-plan"
+          [class.btn-popular]="plan.popular"
+          [class.loading]="loadingPlan === plan.type"
+          (click)="selectPlan(plan.type)"
+          [disabled]="loadingPlan !== null"
+        >
+          <span *ngIf="loadingPlan !== plan.type">
+            Empezar {{ plan.popular ? 'ahora' : 'con ' + plan.label }}
+          </span>
+          <span *ngIf="loadingPlan === plan.type" class="btn-loading-inner">
+            <i class="bi bi-arrow-repeat spin"></i> Redirigiendo...
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Pie de seguridad -->
+    <div class="security-strip">
+      <span><i class="bi bi-lock-fill"></i> Pago seguro con Stripe</span>
+      <span class="dot"></span>
+      <span><i class="bi bi-arrow-repeat"></i> Cancela cuando quieras</span>
+      <span class="dot"></span>
+      <span><i class="bi bi-headset"></i> Soporte incluido</span>
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,13 @@
+<div class="empty-state" [ngClass]="'empty-state--' + variant">
+  <div class="empty-state__illustration">
+    <div class="empty-state__circle">
+      <i class="bi" [ngClass]="icon"></i>
+    </div>
+  </div>
+  <h4 class="empty-state__title" *ngIf="title">{{ title }}</h4>
+  <p class="empty-state__message" *ngIf="message">{{ message }}</p>
+  <button *ngIf="ctaText" class="btn empty-state__cta" (click)="onCtaClick()">
+    <i *ngIf="ctaIcon" class="bi" [ngClass]="ctaIcon"></i>
+    {{ ctaText }}
+  </button>
+</div>

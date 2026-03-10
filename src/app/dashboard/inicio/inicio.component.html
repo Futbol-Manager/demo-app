@@ -1,0 +1,539 @@
+
+<!-- DASHBOARD -->
+<div class="dashboard-layout">
+
+  <main *ngIf="profileId === 1" class="dashboard-main">
+    <div class="container">
+      <div class="row g-3">
+
+        <!-- CUADRO DE MANDO -->
+        <div class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(3)" class="dashboard-card" data-tutorial="inicio-cuadro" role="button" tabindex="0">
+            <img src="assets/images/estadisticas2.jpg" alt="Cuadro de mando">
+            <div class="overlay">
+              <i class="bi bi-clipboard2-data"></i>
+              <span>{{ 'NAV.CUADRO' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- EQUIPOS -->
+        <div class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(9)" class="dashboard-card" data-tutorial="inicio-equipos" role="button" tabindex="0">
+            <img src="assets/images/infoequipo.jpg" alt="Equipos">
+            <div class="overlay">
+              <i class="bi bi-people"></i>
+              <span>{{ 'NAV.TEAMS' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- DOCUMENTOS -->
+        <div class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(6)" class="dashboard-card" data-tutorial="inicio-documentos" role="button" tabindex="0">
+            <img src="assets/images/documentacion.jpg" alt="Documentos">
+            <div class="overlay">
+              <i class="bi bi-file-earmark-pdf"></i>
+              <span>{{ 'NAV.DOCUMENTS' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- COUTA -->
+        <div class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(7)" class="dashboard-card" data-tutorial="inicio-pagos" role="button" tabindex="0">
+            <img src="assets/images/pagarcuota.jpg" alt="Cuotas">
+            <div class="overlay">
+              <i class="bi bi-bank2"></i>
+              <span>{{ 'NAV.NEWPAYS' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SKELETON MIENTRAS CARGA -->
+        <div *ngIf="clubLoading" class="col-6 col-md-4">
+          <div class="dashboard-card skeleton"></div>
+        </div>
+
+        <div *ngIf="clubLoading" class="col-6 col-md-4">
+          <div class="dashboard-card skeleton"></div>
+        </div>
+
+        <!-- ROPA -->
+        <div *ngIf="showPremiumCards" class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(2)" class="dashboard-card" data-tutorial="inicio-ropa" role="button" tabindex="0">
+            <img src="assets/images/jugadores.jpg" alt="Ropa">
+            <div class="overlay">
+              <i class="bi bi-backpack3"></i>
+              <span>{{ 'NAV.CLOTHES' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PATROCINADORES -->
+        <div *ngIf="showPremiumCards" class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(4)" class="dashboard-card" data-tutorial="inicio-patrocinadores" role="button" tabindex="0">
+            <img src="assets/images/patrocinadores.jpg" alt="Patrocinadores">
+            <div class="overlay">
+              <i class="bi bi-collection"></i>
+              <span>{{ 'NAV.SPONSORS' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1. NOTIFICACIONES -->
+        <div *ngIf="showPremiumCards" class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(8)" class="dashboard-card" data-tutorial="inicio-notificaciones" role="button" tabindex="0">
+            <img src="assets/images/notificaciones.jpg" alt="Notificaciones">
+            <div class="overlay">
+              <i class="bi bi-bell-fill"></i>
+              <span>{{ 'NAV.NOTIFICATIONS' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. GESTIÓN DE STAFF -->
+        <div class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(16)" class="dashboard-card" data-tutorial="inicio-staff" role="button" tabindex="0">
+            <img src="assets/images/staff-club.jpg" alt="Gestión de Staff">
+            <div class="overlay">
+              <i class="bi bi-person-badge"></i>
+              <span>Gestión de Staff</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. SCOUTING -->
+        <div *ngIf="showPremiumCards" class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(12)" class="dashboard-card" data-tutorial="inicio-scouting" role="button" tabindex="0">
+            <img src="assets/images/scouting.jpg" alt="Scouting">
+            <div class="overlay">
+              <i class="bi bi-binoculars"></i>
+              <span>{{ 'NAV.SCOUTING' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. BIBLIOTECA DE VÍDEOS -->
+        <div *ngIf="showPremiumCards" class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(13)" class="dashboard-card" data-tutorial="inicio-biblioteca-videos" role="button" tabindex="0">
+            <img src="assets/images/video-biblioteca.jpg" alt="Biblioteca de Vídeos">
+            <div class="overlay">
+              <i class="bi bi-play-btn-fill"></i>
+              <span>{{ 'NAV.VIDEO_LIBRARY' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. ANÁLISIS DE VÍDEO -->
+        <div class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(14)" class="dashboard-card" data-tutorial="inicio-video-analysis" role="button" tabindex="0">
+            <img src="assets/images/video-analysis.jpg" alt="Análisis de vídeo">
+            <div class="overlay">
+              <i class="bi bi-camera-reels"></i>
+              <span>{{ 'NAV.VIDEO_ANALYSIS' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. ASISTENTE DE IA -->
+        <div class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(11)" class="dashboard-card ai-assistant-card" data-tutorial="inicio-asistente-ia" role="button" tabindex="0">
+            <img src="assets/images/asistente-ia.jpg" alt="Asistente de IA">
+            <div class="overlay">
+              <i class="bi bi-robot"></i>
+              <span>{{ 'NAV.AI_ASSISTANT' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- GESTIÓN / ERP — En construcción -->
+        <div class="col-6 col-md-4">
+          <div class="dashboard-card erp-card wip-card">
+            <div class="overlay">
+              <i class="bi bi-building-gear"></i>
+              <span>{{ 'NAV.ERP' | translate }}</span>
+            </div>
+            <div class="overlay-wip-center">
+              <i class="bi bi-hammer"></i>
+              <span>En construcción</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+  <main *ngIf="profileId === 2 || profileId === 6 || profileId === 7" class="dashboard-main coach-view">
+    <div class="container dashboard-mobile">
+
+      <!-- HEADER CENTRADO -->
+      <div class="row justify-content-center text-center mb-5">
+        <div class="col-12 col-md-6">
+
+          <h2 class="page-title">
+            {{ 'COACH.MY_TEAMS.TITLE' | translate }}
+          </h2>
+
+          <p class="page-subtitle">
+            {{ 'COACH.MY_TEAMS.SUBTITLE' | translate }}
+          </p>
+
+          <!-- TEMPORADA -->
+          <div class="season-wrapper mt-4" data-tutorial="inicio-coach-temporada">
+            <label class="season-label">
+              <i class="bi bi-calendar-event"></i>
+              {{ 'TITLES.SEASON' | translate }}
+            </label>
+
+            <select class="form-control season-select mx-auto" [(ngModel)]="temporada"
+              (change)="cargarListadoEquipos()">
+              <option *ngFor="let s of seasons" [value]="s.value">{{ s.label }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <!-- EQUIPOS -->
+      <div class="row teams-grid" *ngIf="listTeam.length > 0; else noTeams" data-tutorial="inicio-coach-grid">
+        <div class="col" *ngFor="let team of listTeam" (click)="navegarEquipoEntrenador(team)">
+          <article class="team-card">
+            <!-- HEADER -->
+            <div class="team-header">
+              <div class="team-logo">
+                <img *ngIf="team.imgClub" [src]="imageBaseUrlUser + team.imgClub" [alt]="team.name" />
+                <span *ngIf="!team.imgClub" class="bi bi-people-fill"></span>
+              </div>
+
+              <div class="team-title">
+                <h5>{{ team.category }} {{ team.name }}</h5>
+                <span class="team-league">{{ team.levelLeague }}</span>
+              </div>
+            </div>
+
+            <!-- BODY -->
+            <div class="team-body">
+
+              <!-- HORARIOS -->
+              <div class="team-section">
+                <i class="bi bi-clock-history"></i>
+                <div>
+                  <strong>{{ 'COACH.MY_TEAMS.TRAINING_SCHEDULE' | translate }}</strong>
+                  <p>
+                    {{ team.trainingDays || ('COACH.MY_TEAMS.NO_SCHEDULE' | translate) }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- JUGADORES -->
+              <div class="team-section">
+                <i class="bi bi-people"></i>
+                <div>
+                  <strong>{{ 'COACH.MY_TEAMS.PLAYERS_COUNT' | translate }}</strong>
+                  <p>
+                    {{ team.jugadoresPorEquipo ?? 0 }}
+                    {{ 'COACH.MY_TEAMS.PLAYERS' | translate }}
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- MENSAJE SIN EQUIPOS — CTA PARA CREAR -->
+      <ng-template #noTeams>
+        <div class="text-center py-5 no-teams-cta" data-tutorial="inicio-coach-empty">
+          <i class="bi bi-people-fill no-teams-icon"></i>
+          <h4 class="mt-3 no-teams-title">
+            {{ 'COACH.MY_TEAMS.NO_TEAMS_FOR_SEASON' | translate }}
+          </h4>
+          <p class="no-teams-subtitle">
+            {{ 'COACH.MY_TEAMS.NO_TEAMS_HINT' | translate }}
+          </p>
+          <button class="btn btn-create-team" (click)="irACrearEquipo()">
+            <i class="bi bi-plus-circle me-2"></i>
+            {{ 'NAV.CREATETEAM' | translate }}
+          </button>
+        </div>
+      </ng-template>
+
+    </div>
+  </main>
+
+
+
+  <!-- DASHBOARD PADRE -->
+  <main *ngIf="profileId === 3" class="dashboard-main players-dashboard">
+    <div class="container dashboard-mobile">
+
+      <!-- TEMPORADA -->
+      <div class="row justify-content-center mb-4" data-tutorial="inicio-player-temporada">
+        <div class="col-12 col-md-4 d-flex flex-column align-items-center">
+
+          <label class="season-label text-center mb-2">
+            <i class="bi bi-calendar-event"></i>
+            {{ 'TITLES.SEASON' | translate }}
+          </label>
+
+          <select class="form-select season-select text-center" [(ngModel)]="temporada" (change)="cargarJugadores()">
+            <option *ngFor="let s of seasons" [value]="s.value">{{ s.label }}</option>
+          </select>
+
+        </div>
+      </div>
+
+      <!-- LISTADO -->
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4" data-tutorial="inicio-player-list">
+
+        <div class="col" *ngFor="let hijo of listHijos" (click)="navegarAOpcionesJugador(hijo.teamId, hijo.playerId)">
+
+          <div class="player-card">
+
+            <!-- HEADER: avatar izquierda + info derecha -->
+            <div class="player-header">
+
+              <div class="avatar-wrapper">
+                <img *ngIf="hijo.picturePlayer" [src]="imageBaseUrlUser + hijo.picturePlayer"
+                  alt="{{ hijo.nombre }} {{ hijo.apellido }}" />
+                <i *ngIf="!hijo.picturePlayer" class="bi bi-person-fill avatar-placeholder"></i>
+              </div>
+
+              <div class="player-main-info">
+                <h5 class="player-name">
+                  {{ hijo.nombre }} {{ hijo.apellido }}
+                </h5>
+
+                <p class="league-badge" [class.no-team]="hijo.teamNameComplete === 'Sin equipo'">
+                  {{ hijo.teamNameComplete }}
+                </p>
+              </div>
+
+            </div>
+            <div class="info-row training">
+              <i class="bi bi-clock-history info-icon training-icon"></i>
+
+              <div class="info-content">
+                <span class="info-title">
+                  {{ 'COACH.MY_TEAMS.TRAINING_SCHEDULE' | translate }}
+                </span>
+
+                <ng-container *ngIf="parseTrainingDays(hijo.trainingDays)?.length; else sinHorario">
+                  <div class="training-grid">
+                    <div *ngFor="let d of parseTrainingDays(hijo.trainingDays)" class="info-text">
+                      <strong>{{ d.dayLabel | translate }}:</strong> {{ d.hours }}
+                    </div>
+                  </div>
+                </ng-container>
+
+
+                <ng-template #sinHorario>
+                  <span class="info-text muted">
+                    {{ 'COACH.MY_TEAMS.NO_SCHEDULE' | translate }}
+                  </span>
+                </ng-template>
+              </div>
+            </div>
+
+            <div class="info-row next-match">
+              <i class="fa-solid fa-futbol info-icon match-icon"></i>
+
+              <div class="info-content">
+                <span class="info-title">Próximo partido</span>
+
+                <ng-container *ngIf="hijo.nextMatch; else sinPartido">
+                  <span class="info-text">
+                    {{ hijo.nextMatch.name }}
+                  </span>
+                </ng-container>
+
+                <ng-template #sinPartido>
+                  <span class="info-text muted">
+                    Sin partidos programados
+                  </span>
+                </ng-template>
+              </div>
+            </div>
+
+            <button class="btn view-btn">
+              <i class="bi bi-eye-fill"></i>
+              {{ 'COMMON.VIEWPLAYER' | translate }}
+            </button>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- VACÍO -->
+      <div *ngIf="listHijos.length === 0" data-tutorial="inicio-player-empty">
+        <app-empty-state
+          icon="bi-person-plus"
+          [title]="'EMPTY_STATES.PARENT_HOME.TITLE' | translate"
+          [message]="'PHRASES.INICIO1' | translate">
+        </app-empty-state>
+      </div>
+
+    </div>
+  </main>
+
+
+  <!-- Padres / tutores (profileId 5) -->
+  <main *ngIf="profileId === 5" class="dashboard-main">
+    <div class="container dashboard-mobile">
+      <div class="row g-3">
+
+        <div class="col-6 col-md-4">
+          <div class="dashboard-card">
+            <img src="assets/images/jugadores.jpg" alt="Perfil">
+            <div class="overlay">
+              <i class="bi bi-person-circle"></i>
+              <span>Mi perfil</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(5)" class="dashboard-card" role="button" tabindex="0">
+            <img src="assets/images/notificaciones.jpg" alt="Notificaciones">
+            <div class="overlay">
+              <i class="bi bi-bell-fill"></i>
+              <span>Notificaciones</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Staff de club (profileId 4) — cards basadas en permisos -->
+  <main *ngIf="profileId === 4" class="dashboard-main">
+    <div class="container dashboard-mobile">
+      <div class="row g-3">
+
+        <div class="col-6 col-md-4" *ngIf="hasStaffDashboard">
+          <div class="dashboard-card" (click)="navegarStaff('/dashboard/cuadro-de-mandos', true)" role="button" tabindex="0">
+            <img src="assets/images/estadisticas2.jpg" alt="Cuadro de mando">
+            <div class="overlay">
+              <i class="bi bi-grid-1x2-fill"></i>
+              <span>Cuadro de mando</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4" *ngIf="staffPermissions.includes('TEAMS')">
+          <div class="dashboard-card" (click)="navegarStaff('/dashboard/equipos')" role="button" tabindex="0">
+            <img src="assets/images/infoequipo.jpg" alt="Equipos">
+            <div class="overlay">
+              <i class="bi bi-people-fill"></i>
+              <span>Equipos</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4" *ngIf="staffPermissions.includes('PAYMENTS')">
+          <div class="dashboard-card" (click)="navegarStaff('/dashboard/new-cuotas', true)" role="button" tabindex="0">
+            <img src="assets/images/pagarcuota.jpg" alt="Pagos">
+            <div class="overlay">
+              <i class="bi bi-bank2"></i>
+              <span>Pagos</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4" *ngIf="staffPermissions.includes('DOCUMENTS')">
+          <div class="dashboard-card" (click)="navegarStaff('/dashboard/documentos-club', true)" role="button" tabindex="0">
+            <img src="assets/images/documentacion.jpg" alt="Documentos">
+            <div class="overlay">
+              <i class="bi bi-file-earmark-pdf"></i>
+              <span>Documentos</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4" *ngIf="staffPermissions.includes('CLOTHING')">
+          <div class="dashboard-card" (click)="navegarStaff('/dashboard/ropa', true)" role="button" tabindex="0">
+            <img src="assets/images/jugadores.jpg" alt="Ropa">
+            <div class="overlay">
+              <i class="bi bi-backpack3"></i>
+              <span>Ropa</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4" *ngIf="staffPermissions.includes('SPONSORS')">
+          <div class="dashboard-card" (click)="navegarStaff('/dashboard/patrocinadores', true)" role="button" tabindex="0">
+            <img src="assets/images/patrocinadores.jpg" alt="Patrocinadores">
+            <div class="overlay">
+              <i class="bi bi-collection"></i>
+              <span>Patrocinadores</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4" *ngIf="staffPermissions.includes('NOTIFICATIONS')">
+          <div class="dashboard-card" (click)="navegarStaff('/dashboard/notificaciones', true)" role="button" tabindex="0">
+            <img src="assets/images/notificaciones.jpg" alt="Notificaciones">
+            <div class="overlay">
+              <i class="bi bi-bell-fill"></i>
+              <span>Notificaciones</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4" *ngIf="staffPermissions.includes('SCOUTING')">
+          <div class="dashboard-card" (click)="navegarStaff('/dashboard/scouting-club', true)" role="button" tabindex="0">
+            <img src="assets/images/scouting.jpg" alt="Scouting">
+            <div class="overlay">
+              <i class="bi bi-binoculars-fill"></i>
+              <span>Scouting</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4" *ngIf="staffPermissions.includes('VIDEO_LIBRARY')">
+          <div class="dashboard-card" (click)="navegarStaff('/dashboard/club-videos', true)" role="button" tabindex="0">
+            <img src="assets/images/video-biblioteca.jpg" alt="Biblioteca de Vídeos">
+            <div class="overlay">
+              <i class="bi bi-collection-play"></i>
+              <span>Biblioteca de Vídeos</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4" *ngIf="staffPermissions.includes('AI_ASSISTANT')">
+          <div class="dashboard-card" (click)="navegarStaff('/dashboard/asistente-ia')" role="button" tabindex="0">
+            <img src="assets/images/asistente-ia.jpg" alt="Asistente de IA">
+            <div class="overlay">
+              <i class="bi bi-robot"></i>
+              <span>Asistente de IA</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4" *ngIf="staffPermissions.includes('VIDEO_ANALYSIS')">
+          <div class="dashboard-card" (click)="navegarStaff('/dashboard/video-analysis')" role="button" tabindex="0">
+            <img src="assets/images/video-analysis.jpg" alt="Análisis de vídeo">
+            <div class="overlay">
+              <i class="bi bi-camera-reels"></i>
+              <span>Análisis de vídeo</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4" *ngIf="staffPermissions.includes('ERP')">
+          <div class="dashboard-card" (click)="navegarStaff('/dashboard/erp')" role="button" tabindex="0">
+            <img src="assets/images/pagarcuota.jpg" alt="Gestión ERP">
+            <div class="overlay">
+              <i class="bi bi-gear-fill"></i>
+              <span>Gestión / ERP</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <app-footer></app-footer>
+</div>

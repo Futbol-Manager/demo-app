@@ -1,0 +1,278 @@
+<!-- ===== HEADER PREMIUM ===== -->
+<header class="staff-page-header">
+  <div class="staff-header-back">
+    <button type="button" class="staff-btn-back" (click)="goBack()" data-tutorial="staff-volver">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+  <div class="staff-header-center">
+    <h1 class="staff-header-title">Gestión de Staff</h1>
+    <p class="staff-header-subtitle">Crea usuarios con acceso personalizado a los módulos del club.</p>
+  </div>
+  <div class="staff-header-spacer"></div>
+</header>
+
+<div class="staff-page-content">
+  <!-- Toolbar -->
+  <div class="staff-toolbar" data-tutorial="staff-toolbar">
+    <p class="staff-toolbar-count" *ngIf="!loading && staffList.length > 0">
+      <i class="bi bi-people-fill"></i>
+      <span>{{ staffList.length }} usuario{{ staffList.length !== 1 ? 's' : '' }}</span>
+    </p>
+    <button type="button" class="staff-btn-primary" (click)="openCreateModal()">
+      <i class="bi bi-plus-lg"></i>
+      Nuevo Staff
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div class="staff-loading" *ngIf="loading">
+    <app-logo-spinner></app-logo-spinner>
+    <p>Cargando staff…</p>
+  </div>
+
+  <!-- Empty state -->
+  <div class="staff-empty" *ngIf="!loading && staffList.length === 0">
+    <div class="staff-empty-icon">
+      <i class="bi bi-person-badge"></i>
+    </div>
+    <h3>Sin usuarios Staff</h3>
+    <p>Todavía no hay usuarios. Crea el primero para dar acceso a los módulos del club.</p>
+    <button type="button" class="staff-btn-primary" (click)="openCreateModal()">
+      <i class="bi bi-plus-lg"></i>
+      Nuevo Staff
+    </button>
+  </div>
+
+  <!-- Grid de tarjetas -->
+  <div class="staff-grid" *ngIf="!loading && staffList.length > 0" data-tutorial="staff-grid">
+    <article class="staff-card" [class.staff-card--disabled]="!user.enabled" *ngFor="let user of staffList" data-tutorial="staff-tarjeta">
+      <div class="staff-card-inner">
+        <!-- Identidad + acciones en una fila clara -->
+        <div class="staff-card-head">
+          <div class="staff-card-identity">
+            <div class="staff-avatar" [class.staff-avatar--inactive]="!user.enabled">
+              {{ (user.firstName || '?').charAt(0).toUpperCase() }}{{ (user.secondName || '').charAt(0).toUpperCase() }}
+            </div>
+            <div class="staff-card-info">
+              <h3 class="staff-name">{{ user.firstName }} {{ user.secondName }}</h3>
+              <p class="staff-email">
+                <i class="bi bi-envelope"></i>
+                <span>{{ user.mail }}</span>
+              </p>
+              <span class="staff-badge" [class.staff-badge--active]="user.enabled" [class.staff-badge--inactive]="!user.enabled">
+                {{ user.enabled ? 'Activo' : 'Inhabilitado' }}
+              </span>
+            </div>
+          </div>
+          <div class="staff-card-actions">
+            <div class="staff-action-group" title="Habilitar o deshabilitar acceso">
+              <span class="staff-action-label">Acceso</span>
+              <label class="staff-toggle-wrap">
+                <input
+                  type="checkbox"
+                  [checked]="user.enabled"
+                  [disabled]="togglingId === user.userId"
+                  (click)="$event.preventDefault(); toggleEnabled(user)"
+                />
+                <span class="staff-toggle-slider"></span>
+              </label>
+            </div>
+            <div class="staff-action-btns">
+              <button type="button" class="staff-btn-icon staff-btn-edit" title="Editar permisos" (click)="openEditModal(user)">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button type="button" class="staff-btn-icon staff-btn-delete" title="Eliminar usuario" (click)="deleteStaff(user)">
+                <i class="bi bi-trash3"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Sección permisos con título -->
+        <div class="staff-card-perms-wrap">
+          <p class="staff-perms-title">
+            <i class="bi bi-shield-lock"></i>
+            Permisos
+          </p>
+          <div class="staff-card-perms">
+            <span class="staff-perm-chip" *ngFor="let perm of user.permissions">
+              {{ permissionLabel(perm) }}
+            </span>
+            <span class="staff-perm-chip staff-perm-chip--none" *ngIf="user.permissions.length === 0">
+              Sin permisos
+            </span>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</div>
+
+<!-- ===== MODAL CREAR / EDITAR ===== -->
+<div class="staff-modal-backdrop" *ngIf="showModal" (click)="closeModal()">
+  <div class="staff-modal" (click)="$event.stopPropagation()">
+    <div class="staff-modal-header">
+      <h2 class="staff-modal-title">
+        <i class="bi" [ngClass]="editingUser ? 'bi-pencil-square' : 'bi-person-plus-fill'"></i>
+        {{ editingUser ? 'Editar permisos' : 'Nuevo usuario Staff' }}
+      </h2>
+      <button type="button" class="staff-modal-close" (click)="closeModal()" aria-label="Cerrar">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="staff-modal-body">
+      <ng-container *ngIf="!editingUser">
+        <section class="staff-form-section">
+          <h4 class="staff-form-section-title">Datos del usuario</h4>
+          <div class="staff-form-grid">
+            <div class="staff-field">
+              <label>Nombre</label>
+              <input type="text" [(ngModel)]="form.firstName" placeholder="Nombre" class="staff-input" />
+            </div>
+            <div class="staff-field">
+              <label>Apellidos</label>
+              <input type="text" [(ngModel)]="form.secondName" placeholder="Apellidos" class="staff-input" />
+            </div>
+            <div class="staff-field staff-field--full">
+              <label>Email <span class="required">*</span></label>
+              <input type="email" [(ngModel)]="form.mail" placeholder="email@ejemplo.com" class="staff-input" />
+            </div>
+            <div class="staff-field staff-field--full">
+              <label>Contraseña <span class="required">*</span></label>
+              <div class="staff-input-wrap-pw">
+                <input
+                  [type]="showPassword ? 'text' : 'password'"
+                  [(ngModel)]="form.password"
+                  placeholder="Contraseña de acceso"
+                  class="staff-input"
+                />
+                <button type="button" class="staff-btn-pw-toggle" (click)="showPassword = !showPassword" tabindex="-1">
+                  <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </ng-container>
+
+      <section class="staff-form-section staff-form-section--perms">
+        <h4 class="staff-form-section-title">
+          <i class="bi bi-shield-lock"></i>
+          Módulos con acceso
+        </h4>
+
+        <div class="staff-perm-group" *ngFor="let group of PERMISSION_GROUPS">
+          <div class="staff-perm-group-head">
+            <span class="staff-perm-group-label">
+              <i class="bi {{ group.groupIcon }}"></i>
+              {{ group.groupLabel }}
+            </span>
+            <label class="staff-toggle-wrap staff-toggle-wrap--sm" [title]="isGroupAllChecked(group) ? 'Quitar todos' : 'Seleccionar todos'">
+              <input
+                type="checkbox"
+                [checked]="isGroupAllChecked(group)"
+                [indeterminate]="isGroupPartiallyChecked(group)"
+                (change)="toggleGroup(group)"
+              />
+              <span class="staff-toggle-slider"></span>
+            </label>
+          </div>
+          <div class="staff-perm-group-body">
+            <div class="staff-perm-row" *ngFor="let item of group.children">
+              <label class="staff-perm-row-label">
+                <i class="bi {{ item.icon }}"></i>
+                {{ item.label }}
+              </label>
+              <label class="staff-toggle-wrap staff-toggle-wrap--sm">
+                <input type="checkbox" [(ngModel)]="form.permissionsMap![item.key]" />
+                <span class="staff-toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="staff-perm-standalone" *ngFor="let item of PERMISSION_STANDALONE">
+          <label class="staff-perm-row-label">
+            <i class="bi {{ item.icon }}"></i>
+            {{ item.label }}
+          </label>
+          <label class="staff-toggle-wrap staff-toggle-wrap--sm">
+            <input type="checkbox" [(ngModel)]="form.permissionsMap![item.key]" />
+            <span class="staff-toggle-slider"></span>
+          </label>
+        </div>
+      </section>
+
+      <div class="staff-msg staff-msg--error" *ngIf="errorMsg">
+        <i class="bi bi-exclamation-circle-fill"></i>
+        {{ errorMsg }}
+      </div>
+      <div class="staff-msg staff-msg--success" *ngIf="successMsg">
+        <i class="bi bi-check-circle-fill"></i>
+        {{ successMsg }}
+      </div>
+    </div>
+
+    <div class="staff-modal-footer">
+      <button type="button" class="staff-btn-secondary" (click)="closeModal()" [disabled]="saving">
+        Cancelar
+      </button>
+      <button type="button" class="staff-btn-primary" (click)="saveStaff()" [disabled]="saving">
+        <i class="bi bi-check-lg" *ngIf="!saving"></i>
+        <span *ngIf="!saving">{{ editingUser ? 'Guardar permisos' : 'Crear usuario' }}</span>
+        <span *ngIf="saving" class="staff-spinner-text">Guardando…</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL CONFIRMAR ELIMINAR ===== -->
+<div class="staff-modal-backdrop staff-modal-backdrop--confirm" *ngIf="showDeleteConfirm" (click)="closeDeleteConfirm()">
+  <div class="staff-confirm-box" (click)="$event.stopPropagation()">
+    <div class="staff-confirm-icon staff-confirm-icon--danger">
+      <i class="bi bi-trash3"></i>
+    </div>
+    <h3 class="staff-confirm-title">¿Eliminar usuario?</h3>
+    <p class="staff-confirm-text" *ngIf="userToDelete">
+      Se eliminará a <strong>{{ getFullName(userToDelete) }}</strong>. Esta acción no se puede deshacer.
+    </p>
+    <div class="staff-confirm-actions">
+      <button type="button" class="staff-btn-secondary" (click)="closeDeleteConfirm()" [disabled]="deleting">
+        Cancelar
+      </button>
+      <button type="button" class="staff-btn-danger" (click)="confirmDelete()" [disabled]="deleting">
+        <i class="bi bi-trash3" *ngIf="!deleting"></i>
+        <span *ngIf="!deleting">Eliminar</span>
+        <span *ngIf="deleting" class="staff-spinner-text">Eliminando…</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL CONFIRMAR HABILITAR/DESHABILITAR ===== -->
+<div class="staff-modal-backdrop staff-modal-backdrop--confirm" *ngIf="showToggleConfirm" (click)="closeToggleConfirm()">
+  <div class="staff-confirm-box" (click)="$event.stopPropagation()">
+    <div class="staff-confirm-icon" [class.staff-confirm-icon--success]="pendingEnableState === true" [class.staff-confirm-icon--warning]="pendingEnableState === false">
+      <i class="bi" [ngClass]="pendingEnableState ? 'bi-person-check' : 'bi-person-x'"></i>
+    </div>
+    <h3 class="staff-confirm-title">
+      {{ pendingEnableState ? '¿Habilitar acceso?' : '¿Deshabilitar acceso?' }}
+    </h3>
+    <p class="staff-confirm-text" *ngIf="userToToggle">
+      {{ pendingEnableState ? 'Se habilitará el acceso al panel para' : 'Se revocará el acceso al panel de' }}
+      <strong>{{ getFullName(userToToggle) }}</strong>.
+    </p>
+    <div class="staff-confirm-actions">
+      <button type="button" class="staff-btn-secondary" (click)="closeToggleConfirm()" [disabled]="togglingConfirm">
+        Cancelar
+      </button>
+      <button type="button" class="staff-btn-primary" (click)="confirmToggle()" [disabled]="togglingConfirm">
+        <i class="bi bi-check-lg" *ngIf="!togglingConfirm"></i>
+        <span *ngIf="!togglingConfirm">{{ pendingEnableState ? 'Habilitar' : 'Deshabilitar' }}</span>
+        <span *ngIf="togglingConfirm" class="staff-spinner-text">Guardando…</span>
+      </button>
+    </div>
+  </div>
+</div>

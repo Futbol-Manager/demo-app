@@ -1,0 +1,121 @@
+<!-- <div class="loading-container" [ngStyle]="{ display: datosCargando ? 'flex' : 'none' }">
+    <div class="spinner-border text-primary" role="status"></div>
+    <div class="loading-text">
+        <i class="mdi mdi-loading mdi-spin me-2"></i> Cargando datos y leyendo suscripción...
+    </div>
+</div>-->
+
+<!-- Botón para abrir el modal de creación de equipo -->
+<div class="container" data-tutorial="id-grid">
+    <div class="row">
+        <div class="col text-center">
+            <h2 class="text-dark mt-3">Deportes de Sphaira</h2>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
+        <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(1)">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body text-center">
+                    <div class="row mb-2">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <ng-container>
+                                <img style="width: 10em;" src="/assets/iconos/balon-de-futbol.svg"
+                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
+                            </ng-container>
+                        </div>
+                    </div>
+                    <h5 class="card-title"
+                        style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Fútbol</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col mb-3" style="cursor: not-allowed;" (click)="irAPantalla(2)">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body text-center">
+                    <div class="row mb-2">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <ng-container>
+                                <img style="width: 10em;" src="/assets/iconos/baloncesto.svg"
+                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
+                            </ng-container>
+                        </div>
+                    </div>
+                    <h5 class="card-title"
+                        style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Baloncesto</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col mb-3" style="cursor: not-allowed;">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body text-center">
+                    <div class="row mb-2">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <ng-container>
+                                <img style="width: 10em;" src="/assets/iconos/balonmano.svg"
+                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
+                            </ng-container>
+                        </div>
+                    </div>
+                    <h5 class="card-title"
+                        style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Balonmano</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
+        <div class="col mb-3" style="cursor: not-allowed;">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body text-center">
+                    <div class="row mb-2">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <ng-container>
+                                <img style="width: 10em;" src="/assets/iconos/voleibol.svg"
+                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
+                            </ng-container>
+                        </div>
+                    </div>
+                    <h5 class="card-title"
+                        style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Voleibol</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col mb-3" style="cursor: not-allowed;">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body text-center">
+                    <div class="row mb-2">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <ng-container>
+                                <img style="width: 10em;" src="/assets/iconos/tenis-de-mesa.svg"
+                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
+                            </ng-container>
+                        </div>
+                    </div>
+                    <h5 class="card-title"
+                        style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Tenis de mesa</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col mb-3" style="cursor: not-allowed;">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body text-center">
+                    <div class="row mb-2">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <ng-container>
+                                <img style="width: 10em;" src="/assets/iconos/atletismo.svg"
+                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
+                            </ng-container>
+                        </div>
+                    </div>
+                    <h5 class="card-title"
+                        style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Atletismo</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

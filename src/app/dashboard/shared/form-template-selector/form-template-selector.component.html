@@ -1,0 +1,95 @@
+<div *ngIf="show" class="fts-backdrop" (click)="onBackdropClick($event)" appModalBackdrop>
+  <div class="fts-modal">
+
+    <!-- Header -->
+    <div class="fts-header">
+      <div class="fts-header__left">
+        <i class="bi bi-journal-text"></i>
+        <div>
+          <h5>Seleccionar formulario para jugadores</h5>
+          <span class="fts-tipo-badge">{{ tipoLabel }}</span>
+        </div>
+      </div>
+      <button class="fts-close" (click)="close()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Builder inline (crear / editar template) -->
+    <div *ngIf="showBuilder" class="fts-builder-wrap">
+      <app-form-builder
+        [templateMode]="true"
+        [tipoFormulario]="tipo"
+        [templateNombre]="editingTemplate?.nombre || ''"
+        [initialCampos]="getInitialCampos()"
+        (templateSaved)="onBuilderSaved($event)"
+        (onClose)="onBuilderClose()">
+      </app-form-builder>
+    </div>
+
+    <!-- Lista de templates -->
+    <div *ngIf="!showBuilder" class="fts-body">
+
+      <!-- Loading -->
+      <div *ngIf="loading" class="fts-loading">
+        <div class="spinner-border spinner-border-sm text-primary"></div>
+        <span>Cargando formularios...</span>
+      </div>
+
+      <ng-container *ngIf="!loading">
+
+        <!-- Aviso de contexto -->
+        <div class="fts-context-hint">
+          <i class="bi bi-info-circle"></i>
+          El formulario seleccionado se enviará a los jugadores del equipo para ese entrenamiento/partido.
+        </div>
+
+        <!-- Templates personalizados del club -->
+        <div *ngFor="let t of templates" class="fts-item" (click)="selectTemplate(t)">
+          <div class="fts-item__icon fts-item__icon--custom">
+            <i class="bi bi-file-earmark-text"></i>
+          </div>
+          <div class="fts-item__info">
+            <span class="fts-item__name">{{ t.nombre }}</span>
+            <span class="fts-item__desc">Formulario personalizado</span>
+          </div>
+          <div class="fts-item__actions" (click)="$event.stopPropagation()">
+            <button class="fts-btn-icon" title="Editar" (click)="openEdit(t, $event)">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button class="fts-btn-icon fts-btn-icon--danger" title="Eliminar" (click)="confirmDelete(t, $event)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+          <i class="bi bi-chevron-right fts-item__arrow"></i>
+        </div>
+
+        <!-- Sin templates personalizados -->
+        <div *ngIf="templates.length === 0" class="fts-empty">
+          <i class="bi bi-inbox"></i>
+          <p>Aún no tienes formularios personalizados para <strong>{{ tipoLabel }}</strong>.<br>
+             Crea el primero con el botón de abajo.</p>
+        </div>
+
+        <!-- Botón crear nuevo -->
+        <button class="fts-create-btn" (click)="openCreate()">
+          <i class="bi bi-plus-circle"></i> Crear nuevo formulario
+        </button>
+
+      </ng-container>
+    </div>
+
+    <!-- Confirm delete -->
+    <div *ngIf="templateToDelete" class="fts-confirm-overlay">
+      <div class="fts-confirm">
+        <p><strong>¿Eliminar "{{ templateToDelete.nombre }}"?</strong><br>
+           Esta acción no se puede deshacer.</p>
+        <div class="fts-confirm__actions">
+          <button class="btn btn-secondary btn-sm" (click)="cancelDelete()">Cancelar</button>
+          <button class="btn btn-danger btn-sm" (click)="doDelete()">Eliminar</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

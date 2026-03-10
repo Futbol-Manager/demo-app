@@ -1,0 +1,379 @@
+/* =====================================================
+   SUSCRIPCIÓN COACH — Sphaira Design System v2
+   Layout: Hero oscuro con features + plans inmediatos
+   ===================================================== */
+:host {
+  --night:   #002c40;
+  --night2:  #004060;
+  --green:   #31b270;
+  --green-d: #1a7a46;
+  --border:  #dde3ea;
+  --muted:   #64748b;
+  --ivory:   #f4f7fa;
+}
+
+/* ── Wrapper ─────────────────────────────────────── */
+.suscripcion-coach-page {
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  flex-direction: column;
+  background: var(--ivory);
+}
+
+/* ══════════════════════════════════════════════════
+   HERO — compacto, con features integradas
+══════════════════════════════════════════════════ */
+.hero-section {
+  background: linear-gradient(140deg, var(--night) 0%, #004d72 55%, #006090 100%);
+  padding: 2rem 2rem 2.5rem;
+  position: relative;
+  overflow: hidden;
+
+  /* Luz verde desde abajo */
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 80px;
+    background: radial-gradient(ellipse, rgba(49,178,112,0.22) 0%, transparent 70%);
+    pointer-events: none;
+  }
+}
+
+/* Badge superior */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(49,178,112,0.18);
+  border: 1px solid rgba(49,178,112,0.35);
+  color: var(--green);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 0.85rem;
+  position: relative;
+  z-index: 1;
+
+  i { font-size: 0.8rem; }
+}
+
+.hero-text {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 1.75rem;
+}
+
+.hero-title {
+  font-family: 'Archivo', sans-serif;
+  font-size: 1.9rem;
+  font-weight: 900;
+  color: #fff;
+  margin: 0 0 0.4rem;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+
+.hero-subtitle {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.65);
+  margin: 0;
+  line-height: 1.5;
+
+  strong { color: rgba(255,255,255,0.9); }
+}
+
+/* ── Features grid ───────────────────────────────── */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.6rem;
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  margin: 0 auto;
+
+  @media (max-width: 700px) { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 400px) { grid-template-columns: repeat(2, 1fr); }
+}
+
+.feature-card {
+  background: rgba(255,255,255,0.09);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 12px;
+  padding: 0.7rem 0.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  backdrop-filter: blur(6px);
+  transition: background 0.15s;
+
+  &:hover { background: rgba(255,255,255,0.15); }
+
+  i {
+    font-size: 1.2rem;
+    color: var(--green);
+  }
+
+  span {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.82);
+    line-height: 1.2;
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   PLANES — justo debajo del hero
+══════════════════════════════════════════════════ */
+.plans-wrapper {
+  padding: 2rem 1.5rem 2.5rem;
+  max-width: 680px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Plan card ───────────────────────────────────── */
+.plan-card {
+  position: relative;
+  background: #fff;
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  padding: 1.5rem 1.5rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.18s;
+  box-shadow: 0 2px 10px rgba(0,44,64,0.07);
+
+  &.popular {
+    border-color: var(--night);
+    box-shadow: 0 6px 30px rgba(0,44,64,0.15);
+    background: linear-gradient(160deg, #f8fbff, #fff);
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(0,44,64,0.12);
+  }
+}
+
+.popular-badge {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, var(--night), var(--night2));
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  box-shadow: 0 3px 10px rgba(0,44,64,0.28);
+}
+
+/* Plan header: icon + label en fila */
+.plan-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.1rem;
+}
+
+.plan-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(0,44,64,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  color: var(--night);
+  flex-shrink: 0;
+
+  &.popular-icon {
+    background: rgba(0,44,64,0.1);
+    color: var(--night);
+  }
+}
+
+.plan-label {
+  font-family: 'Archivo', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--night);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+/* Precio */
+.plan-price-block {
+  display: flex;
+  align-items: baseline;
+  gap: 0.2rem;
+  margin-bottom: 0.2rem;
+}
+
+.plan-price {
+  display: flex;
+  align-items: baseline;
+  line-height: 1;
+}
+
+.price-currency {
+  font-family: 'Archivo', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--night);
+  margin-right: 1px;
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.price-amount {
+  font-family: 'Archivo', sans-serif;
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: var(--night);
+  letter-spacing: -1.5px;
+  line-height: 1;
+}
+
+.price-suffix {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-left: 4px;
+  align-self: flex-end;
+  margin-bottom: 4px;
+}
+
+.plan-note {
+  font-size: 0.77rem;
+  color: var(--muted);
+  margin: 0.25rem 0 0.6rem;
+  line-height: 1.4;
+}
+
+.savings-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(49,178,112,0.1);
+  color: var(--green-d);
+  font-size: 0.73rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(49,178,112,0.22);
+  width: fit-content;
+
+  i { font-size: 0.75rem; }
+}
+
+/* Botón — crece para llenar */
+.btn-select-plan {
+  margin-top: auto;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+  letter-spacing: 0.2px;
+  border: none;
+
+  /* Default (mensual) */
+  background: rgba(0,44,64,0.07);
+  color: var(--night);
+  border: 2px solid rgba(0,44,64,0.14);
+
+  &:hover:not(:disabled) {
+    background: rgba(0,44,64,0.12);
+    border-color: rgba(0,44,64,0.3);
+  }
+
+  /* Popular (anual) */
+  &.btn-popular {
+    background: linear-gradient(135deg, var(--night), var(--night2));
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 16px rgba(0,44,64,0.28);
+
+    &:hover:not(:disabled) {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(0,44,64,0.36);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+}
+
+.btn-loading-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+/* ── Security strip ──────────────────────────────── */
+.security-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+
+  span { display: flex; align-items: center; gap: 0.3rem; }
+  i    { color: var(--green); }
+}
+
+.dot {
+  width: 3px;
+  height: 3px;
+  background: var(--border);
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* ── Spin ────────────────────────────────────────── */
+.spin {
+  display: inline-block;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}

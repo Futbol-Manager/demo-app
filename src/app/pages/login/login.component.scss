@@ -1,0 +1,122 @@
+.form-login {
+  padding: 2rem;
+}
+
+.input-login {
+  margin-bottom: 4%;
+}
+
+.error-message {
+  color: rgba(179, 12, 12, 0.816) !important;
+  text-align: left;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+/* ===============================
+   PASSWORD FIELD MODERNO
+================================ */
+.password-wrapper {
+  position: relative;
+}
+
+.input-login {
+  padding-right: 42px;
+
+  /* 🔥 ELIMINA ICONO DE BOOTSTRAP */
+  &.is-invalid {
+    background-image: none !important;
+  }
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  z-index: 2;
+
+  &:hover {
+    color: var(--color-primary);
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.textoCentrado {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.btn-custom {
+  background: var(--color-primary);
+  color: var(--text-on-primary);
+  border: none;
+  border-radius: 10px;
+  height: 40px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-beige));
+    color: #0f172a;
+    box-shadow: 0 12px 25px rgba(var(--color-primary-rgb), 0.45);
+    transform: translateY(-1px);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.35);
+  }
+}
+/* ===============================
+   LOGIN – MOBILE RESPONSIVE
+================================ */
+@media (max-width: 768px) {
+
+  /* FORMULARIO */
+  .form-login {
+    width: 100%;
+    max-width: 420px;              /* 🔥 ancho real visible */
+    margin: 3rem auto 2.5rem;
+    padding: 0 1.25rem;            /* 🔥 espacio lateral REAL */
+    box-sizing: border-box;
+  }
+
+  /* INPUTS */
+  .input-login {
+    width: 100%;
+    min-height: 48px;
+    font-size: 1rem;
+    border-radius: 12px;
+    box-sizing: border-box;
+  }
+}
+
+/* ===============================
+   SAFE AREA
+================================ */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 768px) {
+
+    .form-login {
+      padding-left: calc(1.25rem + env(safe-area-inset-left));
+      padding-right: calc(1.25rem + env(safe-area-inset-right));
+      margin-bottom: calc(2.5rem + env(safe-area-inset-bottom));
+    }
+
+  }
+}
+

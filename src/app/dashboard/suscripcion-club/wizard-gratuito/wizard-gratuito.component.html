@@ -1,0 +1,389 @@
+<!-- Back button -->
+<div class="action-bar">
+  <button class="btn-back-clean" (click)="goBack()" [attr.aria-label]="'COMMON.BACK' | translate" data-tutorial="scw-volver">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
+</div>
+
+<!-- Title -->
+<div class="wizard-header">
+  <div class="wizard-icon plan-free">
+    <i class="bi bi-gift"></i>
+  </div>
+  <h1>{{ 'CLUB_PLANS.PLAN_FREE.NAME' | translate }}</h1>
+  <p>{{ 'CLUB_PLANS.WIZARD_FREE.SUBTITLE' | translate }}</p>
+</div>
+
+<!-- ═══════════ Stepper ═══════════ -->
+<div class="stepper" data-tutorial="scw-stepper">
+  <div class="stepper-track">
+    <div class="stepper-item" *ngFor="let step of steps; let i = index"
+         [ngClass]="{'active': currentStep === step, 'completed': isStepCompleted(step)}"
+         (click)="goToStep(step)">
+      <div class="step-circle">
+        <span *ngIf="!isStepCompleted(step)">{{ i + 1 }}</span>
+        <i *ngIf="isStepCompleted(step)" class="bi bi-check-lg"></i>
+      </div>
+      <span class="step-label">{{ 'CLUB_PLANS.WIZARD_FREE.STEP_' + (i + 1) | translate }}</span>
+    </div>
+    <div class="stepper-line" [style.width.%]="(getStepIndex() / (steps.length - 1)) * 100"></div>
+  </div>
+</div>
+
+<!-- ═══════════ STEP 1: Basic Registration ═══════════ -->
+<div class="wizard-step" *ngIf="currentStep === 'register'" data-tutorial="scw-content">
+  <div class="step-card">
+    <div class="step-card-header">
+      <i class="bi bi-pencil-square"></i>
+      <h2>{{ 'CLUB_PLANS.WIZARD_FREE.REGISTER_TITLE' | translate }}</h2>
+    </div>
+    <p class="step-description">{{ 'CLUB_PLANS.WIZARD_FREE.REGISTER_DESC' | translate }}</p>
+
+    <form [formGroup]="registerForm">
+      <div class="form-group">
+        <label>{{ 'CLUB_PLANS.WIZARD_FREE.CLUB_NAME' | translate }} *</label>
+        <input type="text" formControlName="clubName" class="form-control"
+               [placeholder]="'CLUB_PLANS.WIZARD_FREE.CLUB_NAME_PH' | translate">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>{{ 'CLUB_PLANS.WIZARD_FREE.CONTACT_EMAIL' | translate }} *</label>
+          <input type="email" formControlName="contactEmail" class="form-control">
+        </div>
+        <div class="form-group">
+          <label>{{ 'CLUB_PLANS.WIZARD_FREE.CONTACT_PHONE' | translate }} *</label>
+          <input type="tel" formControlName="contactPhone" class="form-control"
+                 placeholder="612345678" maxlength="9">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>{{ 'CLUB_PLANS.WIZARD_FREE.CITY' | translate }} *</label>
+        <input type="text" formControlName="city" class="form-control">
+      </div>
+    </form>
+
+    <div class="free-badge-info">
+      <i class="bi bi-gift-fill"></i>
+      <div>
+        <strong>{{ 'CLUB_PLANS.WIZARD_FREE.FREE_NOTICE_TITLE' | translate }}</strong>
+        <p>{{ 'CLUB_PLANS.WIZARD_FREE.FREE_NOTICE_DESC' | translate }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="step-footer">
+    <button class="btn btn-primary btn-next" [disabled]="!isRegisterFormValid()" (click)="nextStep()">
+      {{ 'CLUB_PLANS.WIZARD.NEXT' | translate }}
+      <i class="bi bi-arrow-right"></i>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════ STEP 2: Stripe Connect Onboarding ═══════════ -->
+<div class="wizard-step" *ngIf="currentStep === 'connect'" data-tutorial="scw-content">
+  <div class="step-card">
+    <div class="step-card-header">
+      <i class="bi bi-stripe"></i>
+      <h2>{{ 'CLUB_PLANS.WIZARD_FREE.CONNECT_TITLE' | translate }}</h2>
+    </div>
+    <p class="step-description">{{ 'CLUB_PLANS.WIZARD_FREE.CONNECT_DESC' | translate }}</p>
+
+    <!-- Not started -->
+    <div class="connect-card" *ngIf="connectStatus === 'not_started'">
+      <div class="connect-illustration">
+        <i class="bi bi-link-45deg"></i>
+      </div>
+      <h3>{{ 'CLUB_PLANS.WIZARD_FREE.CONNECT_START_TITLE' | translate }}</h3>
+      <p>{{ 'CLUB_PLANS.WIZARD_FREE.CONNECT_START_DESC' | translate }}</p>
+      <button class="btn btn-stripe" (click)="initiateStripeConnect()" [disabled]="connectLoading">
+        <span *ngIf="!connectLoading">
+          <i class="bi bi-box-arrow-up-right"></i>
+          {{ 'CLUB_PLANS.WIZARD_FREE.CONNECT_START_BTN' | translate }}
+        </span>
+        <span *ngIf="connectLoading">
+          <div class="spinner-border spinner-border-sm" role="status"></div>
+          {{ 'CLUB_PLANS.WIZARD_FREE.CONNECTING' | translate }}
+        </span>
+      </button>
+    </div>
+
+    <!-- Pending -->
+    <div class="connect-card pending" *ngIf="connectStatus === 'pending'">
+      <div class="connect-illustration pending">
+        <i class="bi bi-hourglass-split"></i>
+      </div>
+      <h3>{{ 'CLUB_PLANS.WIZARD_FREE.CONNECT_PENDING_TITLE' | translate }}</h3>
+      <p>{{ 'CLUB_PLANS.WIZARD_FREE.CONNECT_PENDING_DESC' | translate }}</p>
+      <button class="btn btn-stripe" (click)="openStripe()">
+        <i class="bi bi-box-arrow-up-right"></i>
+        Entrar a Stripe
+      </button>
+      <button class="btn btn-recheck" (click)="recheckStripeStatus()" [disabled]="recheckingStatus">
+        <span *ngIf="!recheckingStatus">
+          <i class="bi bi-arrow-clockwise"></i>
+          Volver a comprobar
+        </span>
+        <span *ngIf="recheckingStatus">
+          <div class="spinner-border spinner-border-sm" role="status"></div>
+          Comprobando...
+        </span>
+      </button>
+    </div>
+
+    <!-- Active -->
+    <div class="connect-card active" *ngIf="connectStatus === 'active'">
+      <div class="connect-illustration success">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+      <h3>{{ 'CLUB_PLANS.WIZARD_FREE.CONNECT_ACTIVE_TITLE' | translate }}</h3>
+      <p>{{ 'CLUB_PLANS.WIZARD_FREE.CONNECT_ACTIVE_DESC' | translate }}</p>
+      <button class="btn btn-stripe" (click)="openStripe()">
+        <i class="bi bi-box-arrow-up-right"></i>
+        Entrar a Stripe
+      </button>
+    </div>
+
+    <!-- Restricted -->
+    <div class="connect-card restricted" *ngIf="connectStatus === 'restricted'">
+      <div class="connect-illustration warning">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+      </div>
+      <h3>{{ 'CLUB_PLANS.WIZARD_FREE.CONNECT_RESTRICTED_TITLE' | translate }}</h3>
+      <p>{{ 'CLUB_PLANS.WIZARD_FREE.CONNECT_RESTRICTED_DESC' | translate }}</p>
+      <button class="btn btn-stripe" (click)="openStripe()">
+        <i class="bi bi-box-arrow-up-right"></i>
+        Entrar a Stripe
+      </button>
+      <button class="btn btn-recheck" (click)="recheckStripeStatus()" [disabled]="recheckingStatus">
+        <span *ngIf="!recheckingStatus">
+          <i class="bi bi-arrow-clockwise"></i>
+          Volver a comprobar
+        </span>
+        <span *ngIf="recheckingStatus">
+          <div class="spinner-border spinner-border-sm" role="status"></div>
+          Comprobando...
+        </span>
+      </button>
+      <button class="btn btn-stripe" (click)="initiateStripeConnect()">
+        <i class="bi bi-arrow-repeat"></i>
+        {{ 'CLUB_PLANS.WIZARD_FREE.CONNECT_RETRY' | translate }}
+      </button>
+    </div>
+
+    <!-- How it works -->
+    <div class="connect-health" *ngIf="connectStatus !== 'not_started'">
+      <div class="health-row">
+        <span class="health-label">Cuenta Stripe encontrada</span>
+        <strong [class.text-success]="stripeAccountExists" [class.text-danger]="!stripeAccountExists">
+          {{ stripeAccountExists ? 'Sí' : 'No' }}
+        </strong>
+      </div>
+      <div class="health-row">
+        <span class="health-label">Lista para usar</span>
+        <strong [class.text-success]="stripeReadyForUse" [class.text-warning]="!stripeReadyForUse">
+          {{ stripeReadyForUse ? 'Sí' : 'No' }}
+        </strong>
+      </div>
+      <div class="health-row" *ngIf="stripeNeedsActivation">
+        <span class="health-label">Acción</span>
+        <strong class="text-warning">Falta completar activación en Stripe</strong>
+      </div>
+    </div>
+
+    <div class="how-it-works">
+      <h4>{{ 'CLUB_PLANS.WIZARD_FREE.HOW_IT_WORKS' | translate }}</h4>
+      <div class="how-step" *ngFor="let n of [1,2,3]">
+        <div class="how-number">{{ n }}</div>
+        <div class="how-text">
+          <strong>{{ 'CLUB_PLANS.WIZARD_FREE.HOW_STEP_' + n + '_TITLE' | translate }}</strong>
+          <p>{{ 'CLUB_PLANS.WIZARD_FREE.HOW_STEP_' + n + '_DESC' | translate }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step-footer">
+    <button class="btn btn-secondary btn-prev" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      {{ 'CLUB_PLANS.WIZARD.PREVIOUS' | translate }}
+    </button>
+    <button class="btn btn-primary btn-next" [disabled]="connectStatus !== 'active'" (click)="nextStep()">
+      {{ 'CLUB_PLANS.WIZARD.NEXT' | translate }}
+      <i class="bi bi-arrow-right"></i>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════ STEP 3: Commission Configuration ═══════════ -->
+<div class="wizard-step" *ngIf="currentStep === 'commission'" data-tutorial="scw-content">
+  <div class="step-card">
+    <div class="step-card-header">
+      <i class="bi bi-sliders"></i>
+      <h2>{{ 'CLUB_PLANS.WIZARD_FREE.COMMISSION_TITLE' | translate }}</h2>
+    </div>
+    <p class="step-description">{{ 'CLUB_PLANS.WIZARD_FREE.COMMISSION_DESC' | translate }}</p>
+
+    <!-- Fixed Sphaira fee -->
+    <div class="fee-info-card sphaira">
+      <div class="fee-header">
+        <i class="bi bi-star-fill"></i>
+        <span>{{ 'CLUB_PLANS.WIZARD_FREE.SPHAIRA_FEE' | translate }}</span>
+      </div>
+      <div class="fee-details">
+        <span class="fee-value">{{ sphairaCut }}% + {{ fixedFee | number:'1.2-2' }}€</span>
+        <span class="fee-note">{{ 'CLUB_PLANS.WIZARD_FREE.SPHAIRA_FEE_NOTE' | translate }}</span>
+      </div>
+    </div>
+
+    <!-- Club commission slider -->
+    <div class="commission-config">
+      <label>{{ 'CLUB_PLANS.WIZARD_FREE.CLUB_COMMISSION' | translate }}</label>
+      <div class="slider-container">
+        <input type="range" min="0" max="50" step="0.5"
+               [value]="clubCommissionPercent"
+               (input)="onSliderChange($event)"
+               class="commission-slider">
+        <div class="slider-value">{{ clubCommissionPercent }}%</div>
+      </div>
+      <div class="slider-labels">
+        <span>0%</span>
+        <span>25%</span>
+        <span>50%</span>
+      </div>
+    </div>
+
+    <!-- Example calculation -->
+    <div class="example-calculation">
+      <h4>{{ 'CLUB_PLANS.WIZARD_FREE.EXAMPLE_TITLE' | translate }}</h4>
+      <div class="example-input">
+        <label>{{ 'CLUB_PLANS.WIZARD_FREE.MONTHLY_FEE' | translate }}</label>
+        <div class="input-with-unit">
+          <input type="number" [value]="exampleAmount" (input)="onExampleAmountChange($event)"
+                 min="0" class="form-control">
+          <span class="unit">€</span>
+        </div>
+      </div>
+
+      <div class="example-breakdown">
+        <div class="breakdown-row">
+          <span>{{ 'CLUB_PLANS.WIZARD_FREE.BASE_AMOUNT' | translate }}</span>
+          <span>{{ exampleAmount | number:'1.2-2' }}€</span>
+        </div>
+        <div class="breakdown-row fee">
+          <span><i class="bi bi-star-fill"></i> Sphaira ({{ sphairaCut }}% + {{ fixedFee | number:'1.2-2' }}€)</span>
+          <span>+{{ exampleSphairaFee | number:'1.2-2' }}€</span>
+        </div>
+        <div class="breakdown-row fee" *ngIf="clubCommissionPercent > 0">
+          <span><i class="bi bi-building"></i> {{ 'CLUB_PLANS.WIZARD_FREE.CLUB_FEE' | translate }} ({{ clubCommissionPercent }}%)</span>
+          <span>+{{ exampleClubFee | number:'1.2-2' }}€</span>
+        </div>
+        <div class="breakdown-row total">
+          <span>{{ 'CLUB_PLANS.WIZARD_FREE.PARENT_PAYS' | translate }}</span>
+          <span>{{ exampleParentPays | number:'1.2-2' }}€</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-info-box">
+      <i class="bi bi-info-circle"></i>
+      <p>{{ 'CLUB_PLANS.WIZARD_FREE.COMMISSION_INFO' | translate }}</p>
+    </div>
+  </div>
+
+  <div class="step-footer">
+    <button class="btn btn-secondary btn-prev" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      {{ 'CLUB_PLANS.WIZARD.PREVIOUS' | translate }}
+    </button>
+    <button class="btn btn-primary btn-next" (click)="nextStep()">
+      {{ 'CLUB_PLANS.WIZARD.NEXT' | translate }}
+      <i class="bi bi-arrow-right"></i>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════ STEP 4: Confirmation ═══════════ -->
+<div class="wizard-step" *ngIf="currentStep === 'confirm'" data-tutorial="scw-content">
+  <div class="step-card">
+    <div class="step-card-header">
+      <i class="bi bi-check-circle-fill"></i>
+      <h2>{{ 'CLUB_PLANS.WIZARD_FREE.CONFIRM_TITLE' | translate }}</h2>
+    </div>
+    <p class="step-description">{{ 'CLUB_PLANS.WIZARD_FREE.CONFIRM_DESC' | translate }}</p>
+
+    <!-- Summary -->
+    <div class="confirm-summary">
+      <div class="summary-item">
+        <div class="summary-icon"><i class="bi bi-building"></i></div>
+        <div class="summary-detail">
+          <span class="summary-label">{{ 'CLUB_PLANS.WIZARD_FREE.CLUB_NAME' | translate }}</span>
+          <span class="summary-value">{{ registerForm.get('clubName')?.value }}</span>
+        </div>
+      </div>
+
+      <div class="summary-item">
+        <div class="summary-icon"><i class="bi bi-envelope"></i></div>
+        <div class="summary-detail">
+          <span class="summary-label">{{ 'CLUB_PLANS.WIZARD_FREE.CONTACT_EMAIL' | translate }}</span>
+          <span class="summary-value">{{ registerForm.get('contactEmail')?.value }}</span>
+        </div>
+      </div>
+
+      <div class="summary-item">
+        <div class="summary-icon stripe"><i class="bi bi-check-circle-fill"></i></div>
+        <div class="summary-detail">
+          <span class="summary-label">Stripe Connect</span>
+          <span class="summary-value success">{{ 'CLUB_PLANS.WIZARD_FREE.CONNECT_ACTIVE_TITLE' | translate }}</span>
+        </div>
+      </div>
+
+      <div class="summary-item">
+        <div class="summary-icon"><i class="bi bi-percent"></i></div>
+        <div class="summary-detail">
+          <span class="summary-label">{{ 'CLUB_PLANS.WIZARD_FREE.COMMISSION_TOTAL' | translate }}</span>
+          <span class="summary-value">{{ totalCommissionPercent }}% + {{ fixedFee | number:'1.2-2' }}€</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Locked features warning -->
+    <div class="locked-features-notice">
+      <h4><i class="bi bi-lock-fill"></i> {{ 'CLUB_PLANS.WIZARD_FREE.LOCKED_TITLE' | translate }}</h4>
+      <p>{{ 'CLUB_PLANS.WIZARD_FREE.LOCKED_DESC' | translate }}</p>
+      <div class="locked-list">
+        <span class="locked-chip" *ngFor="let mod of ['ESTADISTICAS', 'SCOUTING', 'DOCUMENTOS', 'PUBLICIDAD']">
+          <i class="bi bi-lock-fill"></i>
+          {{ 'CLUB_PLANS.LOCKED_FEATURES.' + mod | translate }}
+        </span>
+      </div>
+    </div>
+
+    <div class="free-badge-info confirm">
+      <i class="bi bi-gift-fill"></i>
+      <div>
+        <strong>{{ 'CLUB_PLANS.WIZARD_FREE.ACTIVATE_NOTICE' | translate }}</strong>
+        <p>{{ 'CLUB_PLANS.WIZARD_FREE.ACTIVATE_NOTICE_DESC' | translate }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="step-footer">
+    <button class="btn btn-secondary btn-prev" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      {{ 'CLUB_PLANS.WIZARD.PREVIOUS' | translate }}
+    </button>
+    <button class="btn btn-free btn-confirm" (click)="confirmSetup()" [disabled]="submitting">
+      <span *ngIf="!submitting">
+        <i class="bi bi-check-lg"></i>
+        {{ 'CLUB_PLANS.WIZARD_FREE.ACTIVATE_BTN' | translate }}
+      </span>
+      <span *ngIf="submitting">
+        <div class="spinner-border spinner-border-sm" role="status"></div>
+        {{ 'CLUB_PLANS.WIZARD.PROCESSING' | translate }}
+      </span>
+    </button>
+  </div>
+</div>

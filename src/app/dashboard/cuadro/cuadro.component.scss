@@ -1,0 +1,738 @@
+/* Tema: variables CSS (light/dark en themes.scss) */
+.cuadro-dashboard {
+  background: var(--bg-main);
+  padding: 1.5rem;
+}
+
+.btn-back-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 16px;
+  margin-left: 24px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-back-clean i {
+  font-size: 1.1rem;
+}
+
+.btn-back-clean:hover {
+  background-color: var(--bg-hover);
+  transform: translateX(-2px);
+}
+
+/* ACTIVE */
+.btn-back-clean:active {
+  transform: translateX(0);
+}
+/* TITULOS */
+.section-title {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* OPCIONES */
+.option-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 1.4rem;
+  text-align: center;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: 0.25s;
+  color: var(--text-primary);
+}
+
+.option-card i {
+  font-size: 1.6rem;
+  display: block;
+  margin-bottom: 0.4rem;
+  color: var(--color-primary);
+}
+
+.option-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.info-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 1.4rem;
+  border: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+.info-card h5 {
+  color: var(--text-primary);
+}
+/* Tarjetas deshabilitadas (Entrenamientos, Lesiones): mismo estilo, sin clic */
+.option-card-disabled,
+.option-card.disabled {
+  opacity: 0.85;
+  cursor: not-allowed;
+  pointer-events: none;
+  position: relative;
+  border-color: var(--border-color);
+  i { color: var(--text-muted); }
+}
+
+.option-card small {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+/* Badge PRÓXIMAMENTE: debajo del subtítulo, fondo azul Sphaira */
+.badge-coming-soon {
+  display: block;
+  margin-top: 0.6rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #002c40 0%, #0a4a6e 100%);
+  color: #ffffff;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* =========================
+   SKELETON BASE
+========================= */
+
+.skeleton-line,
+.skeleton-badge,
+.skeleton-hour {
+  background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-hover) 37%, var(--bg-surface) 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: 6px;
+  margin-bottom: 0.6rem;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.skeleton-card {
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.skeleton-badge {
+  width: 80px;
+  height: 18px;
+  margin-bottom: 0.8rem;
+}
+
+.skeleton-line {
+  height: 14px;
+}
+
+.skeleton-line.w-70 {
+  width: 70%;
+}
+.skeleton-line.w-40 {
+  width: 40%;
+}
+
+/* CALENDARIO */
+.skeleton-calendar {
+  padding: 1rem;
+}
+
+.skeleton-hour {
+  height: 50px;
+  margin-bottom: 0.8rem;
+}
+
+/* ENTRENANDO */
+.train-card {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background: #28a745;
+  border-radius: 50%;
+}
+
+/* RESULTADOS */
+.match-card {
+  border-radius: 18px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 2px solid;
+}
+
+.match-card.victoria {
+  border-color: rgba(var(--color-primary-rgb, 49, 178, 112), 0.4);
+}
+.match-card.empate {
+  border-color: rgba(245, 158, 11, 0.5);
+}
+.match-card.derrota {
+  border-color: rgba(220, 38, 38, 0.4);
+}
+
+.match-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+.badge {
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge.victoria {
+  background: rgba(30, 126, 52, 0.15);
+  color: var(--badge-success, #22c55e);
+}
+.badge.empate {
+  background: rgba(211, 158, 0, 0.15);
+  color: var(--badge-warning, #f59e0b);
+}
+.badge.derrota {
+  background: rgba(200, 35, 51, 0.15);
+  color: var(--badge-danger, #dc2626);
+}
+
+.status {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.match-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.match-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* centra todo respecto al score */
+}
+
+/* Contenedor equipo */
+.team {
+  width: 35%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 🔑 centra el nombre respecto al score */
+}
+
+/* Visitante a la derecha */
+.team-visitor {
+  align-items: center;
+  text-align: center;
+}
+
+/* Wrapper del nombre */
+.team-name-wrapper {
+  display: flex;
+  align-items: center;
+  min-height: 32px; /* 🔑 iguala altura visual con score */
+}
+
+/* Nombre equipo */
+.team-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* Local / Visitante */
+.team-role {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.score-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.score-wrapper::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  width: 20px;
+  height: 2px;
+  background: var(--border-color);
+  border-radius: 2px;
+}
+
+.match-date {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.score {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 1.05rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: 10px;
+  min-width: 48px;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+/* =========================
+   CALENDARIO
+========================= */
+
+.calendar {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+}
+
+/* HORAS */
+.calendar-hours {
+  display: flex;
+  flex-direction: column;
+}
+
+.hour {
+  height: 32px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-align: right;
+  padding-right: 6px;
+}
+
+.calendar-body {
+  position: relative;
+  border-left: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.calendar-event {
+  position: absolute;
+  background: rgba(var(--color-primary-rgb, 49, 178, 112), 0.12);
+  border-left: 3px solid var(--color-primary);
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 0.7rem;
+  line-height: 1.2;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.calendar-event strong {
+  display: block;
+  font-size: 0.72rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-primary);
+}
+
+.calendar-event small {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+}
+
+/* ==============================
+   LÍNEA DE HORA ACTUAL
+============================== */
+.current-time-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  transition: top 0.5s ease-in-out;
+}
+
+.current-time-label {
+  position: absolute;
+  right: 4px;
+  top: -14px;
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  padding: 1px 4px;
+  border-radius: 3px;
+  line-height: 1.2;
+  border: 1px solid var(--border-color);
+}
+
+.current-time-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  flex-shrink: 0;
+  margin-left: -5px;
+  box-shadow: 0 0 4px rgba(var(--color-primary-rgb, 49, 178, 112), 0.4);
+}
+
+.current-time-rule {
+  flex: 1;
+  height: 2px;
+  background: var(--color-primary);
+  box-shadow: 0 1px 2px rgba(var(--color-primary-rgb, 49, 178, 112), 0.2);
+}
+
+/* =========================
+   PRÓXIMOS PARTIDOS (REAL)
+========================= */
+
+.next-matches-card {
+  padding: 1.4rem;
+}
+
+.next-match {
+  display: grid;
+  grid-template-columns: 1fr 140px 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: var(--header-gradient);
+  border-radius: 16px;
+  color: var(--text-on-navy);
+  position: relative;
+  border: 1px solid var(--border-color);
+}
+.center-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 120px;
+  width: auto;
+}
+
+/* EQUIPOS */
+.team-side {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: 1;
+  width: 100%;
+  justify-content: flex-start;
+}
+/* DERECHA */
+.team-side.right {
+  justify-content: flex-end;
+}
+
+.team-side.right .team-info {
+  align-items: center;
+  text-align: center;
+}
+
+.team-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.team-avatar i {
+  font-size: 1.6rem;
+  color: #fff;
+}
+
+/* VISITANTE */
+.team-avatar.visitor {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* INFO DEL EQUIPO */
+.team-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.25rem;
+  width: auto;
+  max-width: 140px;
+}
+
+.team-info.align-right {
+  align-items: center;
+  text-align: center;
+}
+
+.team-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.1;
+  word-break: break-word;
+}
+
+/* BADGES */
+.team-badge {
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  width: fit-content;
+  align-self: center;
+}
+
+/* LOCAL */
+.team-badge.local {
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+}
+
+.team-badge.visitante {
+  background: rgba(var(--color-primary-rgb, 49, 178, 112), 0.2);
+  color: var(--color-primary);
+}
+
+/* =========================
+   SKELETON (DEFAULT)
+========================= */
+
+.match-skeleton {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: var(--bg-surface);
+  border-radius: 16px;
+}
+
+.skeleton-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, var(--bg-hover) 25%, var(--bg-surface) 37%, var(--bg-hover) 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+.skeleton-vs {
+  width: 36px;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--bg-hover);
+}
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: 200px 0;
+  }
+}
+.date-badge {
+  position: relative;
+  z-index: 2;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  border-radius: 10px;
+  padding: 0.35rem 0.6rem;
+  min-width: 100px;
+  max-width: 130px;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+}
+
+.date-badge .day {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: block;
+  line-height: 1.1;
+}
+
+.date-badge .date {
+  font-size: 0.62rem;
+  color: var(--text-secondary);
+  display: block;
+  line-height: 1.1;
+}
+
+.date-badge .time {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-top: 2px;
+  display: block;
+}
+
+@media (max-width: 450px) {
+
+  .team-avatar {
+    display: none;
+  }
+
+  /* Ajuste fino al layout sin avatar */
+  .team-side {
+    gap: 6px;
+  }
+
+  .team-info {
+    max-width: 100%;
+  }
+
+  .team-name {
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .team-badge {
+    margin-top: 4px;
+  }
+  /* Caja central más ajustada */
+  .center-box {
+    margin-top: 6px;
+  }
+
+  /* Fecha mucho más compacta */
+  .date-badge {
+    padding: 4px 6px;          /* 🔑 menos espacio interno */
+    border-radius: 6px;
+    min-width: unset;
+    max-width: 140px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  }
+
+  .date-badge .day {
+    font-size: 0.65rem;
+    line-height: 1.05;
+    margin-bottom: 1px;
+  }
+
+  .date-badge .date {
+    font-size: 0.6rem;
+    line-height: 1.05;
+  }
+
+  .date-badge .time {
+    font-size: 0.7rem;
+    line-height: 1.1;
+    margin-top: 1px;
+    font-weight: 700;
+  }
+  
+}
+
+/* Dark: las variables se aplican con body.dark en themes.scss; no hace falta bloque extra */
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════ */
+@media (max-width: 768px) {
+  .cuadro-dashboard {
+    padding: 0.5rem;
+  }
+
+  .back-container {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .section-title,
+  .info-card h5 {
+    font-size: 1.2rem;
+  }
+
+  .option-card {
+    padding: 0.75rem;
+    font-size: 0.8rem;
+
+    i { font-size: 1.3rem; }
+  }
+
+  .info-card,
+  .next-matches-card {
+    padding: 0.75rem;
+  }
+
+  .match-card {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+
+  .match-body {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .team {
+    width: 100%;
+  }
+
+  .next-match {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    text-align: center;
+  }
+
+  .team-side {
+    justify-content: center;
+  }
+
+  .team-side.right {
+    justify-content: center;
+  }
+
+  .calendar {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .row.g-3 > .col-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}

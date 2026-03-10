@@ -1,0 +1,275 @@
+
+<!-- ===== PAGE HEADER PREMIUM ===== -->
+<div class="page-header">
+  <div class="back-container" data-tutorial="ej-volver">
+    <button type="button" class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <div class="header-icon">
+      <i class="bi bi-person-lines-fill"></i>
+    </div>
+    <div class="header-titles">
+      <h1 class="page-title">{{ 'ESTADIS_JUGADORES.TITLE' | translate }}</h1>
+      <p class="header-subtitle">Análisis estadístico del rendimiento individual del jugador</p>
+      <div class="header-meta" *ngIf="datosCargados">
+        <span class="meta-chip">
+          <i class="bi bi-people-fill"></i>
+          {{ players.length }} jugadores
+        </span>
+        <span class="meta-chip">
+          <i class="bi bi-calendar3"></i>
+          {{ totalMatchs }} partidos
+        </span>
+        <span class="meta-chip meta-chip--type">
+          <i class="bi bi-award"></i>
+          {{ tipoPartidoSelected }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="view-toggle-header" data-tutorial="ej-view-toggle">
+    <button type="button" class="toggle-btn-header" [class.active]="!graficasPlayers" (click)="verTablaPlayers()">
+      <i class="bi bi-table"></i>
+      <span>{{ 'ESTADIS_JUGADORES.VER_TABLA' | translate }}</span>
+    </button>
+    <button type="button" class="toggle-btn-header" [class.active]="graficasPlayers" (click)="verGraficaPlayers()">
+      <i class="bi bi-bar-chart-line"></i>
+      <span>{{ 'ESTADIS_JUGADORES.VER_GRAFICAS' | translate }}</span>
+    </button>
+  </div>
+</div>
+
+<!-- ===== FILTER TOOLBAR ===== -->
+<div class="filter-toolbar" data-tutorial="ej-filtros">
+  <div class="match-type-tabs">
+    <button type="button" class="match-tab"
+            [class.active]="tipoPartidoSelected === 'Liga'"
+            (click)="tipoPartidoSelected = 'Liga'; selectedTipoPartido()">
+      <i class="bi bi-award"></i>
+      <span>{{ 'ESTADIS_JUGADORES.LIGA' | translate }}</span>
+    </button>
+    <button type="button" class="match-tab"
+            [class.active]="tipoPartidoSelected === 'Amistoso'"
+            (click)="tipoPartidoSelected = 'Amistoso'; selectedTipoPartido()">
+      <i class="bi bi-handshake"></i>
+      <span>{{ 'ESTADIS_JUGADORES.AMISTOSO' | translate }}</span>
+    </button>
+    <button type="button" class="match-tab"
+            [class.active]="tipoPartidoSelected === 'Torneo'"
+            (click)="tipoPartidoSelected = 'Torneo'; selectedTipoPartido()">
+      <i class="bi bi-trophy"></i>
+      <span>{{ 'ESTADIS_JUGADORES.TORNEO' | translate }}</span>
+    </button>
+  </div>
+</div>
+
+<ng-container *ngIf="datosCargados || graficasPlayers">
+  <div class="stats-page">
+
+    <!-- Vista Tabla: se muestra cuando hay datos cargados y no estamos en gráficas -->
+    <section *ngIf="datosCargados && !graficasPlayers" class="stats-section">
+      <div class="card-sphaira table-card" data-tutorial="ej-tabla">
+        <div class="card-sphaira-header card-sphaira-header--flex">
+          <h2 class="card-sphaira-title">{{ 'ESTADIS_JUGADORES.TABLA_JUGADORES' | translate }}</h2>
+          <div class="filtros-sphaira filtros-sphaira--inline">
+            <div class="filtro-busqueda">
+              <label class="filtro-label">
+                <i class="bi bi-search"></i>
+                <span>Buscar</span>
+              </label>
+              <div class="filtro-input-wrap">
+                <input type="text" class="filtro-input-sphaira" [(ngModel)]="searchPlayer"
+                       placeholder="Nombre o posición..." />
+                <button *ngIf="searchPlayer" type="button" class="filtro-clear" (click)="searchPlayer = ''" aria-label="Limpiar">
+                  <i class="bi bi-x"></i>
+                </button>
+              </div>
+            </div>
+            <span class="filtro-hint" *ngIf="searchPlayer">{{ filteredPlayers.length }}/{{ players.length }}</span>
+          </div>
+        </div>
+        <div class="table-wrapper table-wrapper--modern">
+          <table class="table-sphaira table-sphaira--premium text-center">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>{{ 'ESTADIS_JUGADORES.NOMBRE' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.POSICION' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.FECHA_NAC' | translate }}</th>
+                <th>PJ</th>
+                <th>{{ 'ESTADIS_JUGADORES.MIN_TOTALES' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.MEDIA_MIN' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.GOLES' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.MEDIA_GOLES' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.ASISTENCIA' | translate }}</th>
+                <th>G+A</th>
+                <th>{{ 'ESTADIS_JUGADORES.MEDIA_ASIST' | translate }}</th>
+                <th>Med. G+A</th>
+                <th>{{ 'ESTADIS_JUGADORES.GOLES_PENALTI' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.GOLES_FALTA' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.PENALTIS_FALLADOS' | translate }}</th>
+                <th>TA</th>
+                <th>TR</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let player of paginatedPlayers; trackBy: trackByPlayerId">
+                <td>{{ player.playerId }}</td>
+                <td>{{ player.nombre }}</td>
+                <td>{{ player.posicion }}</td>
+                <td>{{ player.fecha }}</td>
+                <td>{{ player.partidosJugados }} / {{ totalMatchs }}</td>
+                <td>{{ player.minTotales }}</td>
+                <td>{{ player.mediaMinPorPartido }}</td>
+                <td>{{ player.goles }}</td>
+                <td>{{ player.mediaGolesPorPartido }}</td>
+                <td>{{ player.asistencias }}</td>
+                <td>{{ player.golesAsistencias }}</td>
+                <td>{{ player.mediaAsistPorPartido }}</td>
+                <td>{{ player.mediaGolesAsistenciasPorPartido }}</td>
+                <td>{{ player.golesPenalti }}</td>
+                <td>{{ player.golesFalta }}</td>
+                <td>{{ player.penaltisFallados }}</td>
+                <td>{{ player.tarAmarilla }}</td>
+                <td>{{ player.tarRojas }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="tabla-empty" *ngIf="filteredPlayers.length === 0">
+            <i class="bi bi-inbox"></i>
+            <p>{{ players.length === 0 ? 'No hay jugadores para el tipo de partido seleccionado.' : 'Ningún jugador coincide con la búsqueda.' }}</p>
+          </div>
+        </div>
+        <!-- Paginación centrada debajo de la tabla (estilo new-cuotas) -->
+        <div class="pagination-wrapper" *ngIf="filteredPlayers.length > 0">
+          <div class="pagination-content">
+            <span class="pagination-info">{{ paginationInfoPlayer }}</span>
+            <select class="pagination-select" [(ngModel)]="pageSizePlayer" (ngModelChange)="onPageSizePlayerChange()">
+              <option *ngFor="let size of pageSizesPlayer" [value]="size">{{ size }}</option>
+            </select>
+            <div class="pagination-controls">
+              <button type="button" class="page-btn" (click)="prevPagePlayer()" [disabled]="pagePlayer <= 1" title="Anterior">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <span class="page-indicator">{{ pagePlayer }} / {{ totalPagesPlayer }}</span>
+              <button type="button" class="page-btn" (click)="nextPagePlayer()" [disabled]="pagePlayer >= totalPagesPlayer" title="Siguiente">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Vista Gráficas -->
+    <section *ngIf="graficasPlayers" class="stats-section">
+      <div class="card-sphaira chart-card" data-tutorial="ej-grafica-jugadores">
+        <div class="card-sphaira-header">
+          <h2 class="card-sphaira-title">{{ 'ESTADIS_JUGADORES.GRAFICA_JUGADORES' | translate }}</h2>
+          <div class="filter-group chart-type-select">
+            <label for="selectGrafica" class="filter-label">{{ 'ESTADIS_JUGADORES.SELECCIONA_GRAFICA' | translate }}</label>
+            <select class="form-select form-select-sphaira" id="selectGrafica" (change)="changeGrafic($event)">
+              <option value="1">{{ 'ESTADIS_JUGADORES.MINUTOS_TOTALES' | translate }}</option>
+              <option value="2">{{ 'ESTADIS_JUGADORES.GOLES_TOTALES' | translate }}</option>
+              <option value="3">{{ 'ESTADIS_JUGADORES.ASISTENCIAS_TOTALES' | translate }}</option>
+              <option value="4">{{ 'ESTADIS_JUGADORES.PARTIDOS_JUGADOS' | translate }}</option>
+              <option value="5">{{ 'ESTADIS_JUGADORES.GOLES_PENALTI' | translate }}</option>
+              <option value="6">{{ 'ESTADIS_JUGADORES.PENALTIS_FALLADOS' | translate }}</option>
+              <option value="7">{{ 'ESTADIS_JUGADORES.TARJETAS_AMARILLAS' | translate }}</option>
+              <option value="8">{{ 'ESTADIS_JUGADORES.TARJETAS_ROJAS' | translate }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="chart-container chart-container--sphaira">
+          <canvas #barChartCanvas id="barChartUnica"></canvas>
+        </div>
+      </div>
+
+      <div class="card-sphaira goals-card" data-tutorial="ej-goles">
+        <div class="card-sphaira-header card-sphaira-header--flex">
+          <h2 class="card-sphaira-title">{{ 'ESTADIS_JUGADORES.GOLES_JUGADORES' | translate }}</h2>
+          <div class="filtros-sphaira filtros-sphaira--inline">
+            <div class="filter-group">
+              <label for="selectJugadorGoles" class="filter-label">{{ 'ESTADIS_JUGADORES.SELECCIONA_JUGADOR' | translate }}</label>
+              <select class="form-select form-select-sphaira" id="selectJugadorGoles" (change)="seleccionarIndices($event)">
+                <option value="0">{{ 'ESTADIS_JUGADORES.VER_TODOS' | translate }}</option>
+                <option *ngFor="let player of players" [value]="player.playerId">{{ player.nombre }}</option>
+              </select>
+            </div>
+            <div class="filtro-busqueda">
+              <label class="filtro-label">
+                <i class="bi bi-search"></i>
+                <span>Buscar</span>
+              </label>
+              <div class="filtro-input-wrap">
+                <input type="text" class="filtro-input-sphaira" [(ngModel)]="searchGol"
+                       placeholder="Goleador, rival, categoría..." />
+                <button *ngIf="searchGol" type="button" class="filtro-clear" (click)="searchGol = ''" aria-label="Limpiar">
+                  <i class="bi bi-x"></i>
+                </button>
+              </div>
+            </div>
+            <span class="filtro-hint" *ngIf="searchGol">{{ filteredGoles.length }}/{{ golesAvanzadoAFavor.length }}</span>
+          </div>
+        </div>
+        <div class="table-wrapper table-wrapper--modern">
+          <table class="table-sphaira table-sphaira--premium text-center">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>{{ 'ESTADIS_JUGADORES.GOL_DE' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.ASISTENCIA_DE' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.RIVAL' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.MINUTO' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.FECHA' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.CATEGORIA' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.SUB_CATEGORIA' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.OPCION' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let gol of paginatedGoles; let i = index">
+                <td>{{ (pageGol - 1) * pageSizeGol + i + 1 }}</td>
+                <td>{{ gol.nombreGoleador }}</td>
+                <td>{{ gol.nombreAsistente }}</td>
+                <td>{{ gol.postPartido?.matchPreparation?.rivalName }}</td>
+                <td>{{ gol.minuto }}</td>
+                <td>{{ gol.postPartido?.matchPreparation?.matchDate }}</td>
+                <td>{{ gol.category }}</td>
+                <td>{{ gol.subCategory }}</td>
+                <td>{{ gol.option }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="tabla-empty" *ngIf="filteredGoles.length === 0">
+            <i class="bi bi-inbox"></i>
+            <p>Ningún gol coincide con la búsqueda.</p>
+          </div>
+        </div>
+        <!-- Paginación centrada debajo de la tabla (estilo new-cuotas) -->
+        <div class="pagination-wrapper" *ngIf="filteredGoles.length > 0">
+          <div class="pagination-content">
+            <span class="pagination-info">{{ paginationInfoGol }}</span>
+            <select class="pagination-select" [(ngModel)]="pageSizeGol" (ngModelChange)="onPageSizeGolChange()">
+              <option *ngFor="let size of pageSizesGol" [value]="size">{{ size }}</option>
+            </select>
+            <div class="pagination-controls">
+              <button type="button" class="page-btn" (click)="prevPageGol()" [disabled]="pageGol <= 1" title="Anterior">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <span class="page-indicator">{{ pageGol }} / {{ totalPagesGol }}</span>
+              <button type="button" class="page-btn" (click)="nextPageGol()" [disabled]="pageGol >= totalPagesGol" title="Siguiente">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</ng-container>

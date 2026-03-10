@@ -1,0 +1,415 @@
+<div class="background">
+
+
+  <div class="overlay">
+    <div class="register-page">
+
+      <div class="register-card">
+        <!-- LANGUAGE DROPDOWN -->
+        <div class="lang-dropdown" (clickOutside)="closeLangDropdown()">
+
+          <button class="lang-toggle" (click)="toggleLangDropdown($event)">
+            <i class="bi bi-translate"></i>
+            <span class="lang-text">
+              {{ 'HEADER.CHANGE_LANG' | translate }}
+            </span>
+            <i class="bi bi-chevron-down"></i>
+          </button>
+
+          <ul class="lang-menu" *ngIf="showLangDropdown">
+            <li (click)="selectLang('es')">ES · Español</li>
+            <li (click)="selectLang('en')">EN · English</li>
+            <li (click)="selectLang('fr')">FR · Français</li>
+
+          </ul>
+
+        </div>
+        <!-- HEADER -->
+        <h2 class="title">
+          {{ 'REGISTER.TITLE' | translate }}
+        </h2>
+
+        <!-- STEPS -->
+        <div class="wizard" *ngIf="modo === 'club'">
+          <div class="step" [class.active]="activeTab === 'padre'">
+            <span>1</span> {{ 'REGISTER.TABS.PARENT' | translate }}
+          </div>
+          <div class="line"></div>
+          <div class="step" [class.active]="activeTab === 'hijos'">
+            <span>2</span> {{ 'REGISTER.TABS.CHILDREN' | translate }}
+          </div>
+        </div>
+
+
+        <!-- ================= TAB PADRE ================= -->
+        <form *ngIf="activeTab === 'padre'" [formGroup]="parentForm" (ngSubmit)="onSubmitPadre()" class="form-register">
+
+          <h4 class="subtitle">
+            {{ 'REGISTER.PARENT.QUESTION' | translate }}
+          </h4>
+
+          <!-- Parentesco -->
+          <select class="input" formControlName="parentesco">
+            <option value="1">{{ 'REGISTER.PARENT.FATHER' | translate }}</option>
+            <option value="2">{{ 'REGISTER.PARENT.MOTHER' | translate }}</option>
+            <option value="0">{{ 'REGISTER.PARENT.TUTOR' | translate }}</option>
+            <option value="3">{{ 'REGISTER.PARENT.ADULT' | translate }}</option>
+          </select>
+
+          <!-- NOMBRE / APELLIDOS -->
+          <div class="grid">
+            <div>
+              <input class="input" formControlName="name" [placeholder]="'REGISTER.COMMON.NAME' | translate" />
+              <small class="error" *ngIf="parentForm.get('name')?.touched && parentForm.get('name')?.errors">
+                {{ 'ERRORS.REQUIRED_NAME' | translate }}
+              </small>
+            </div>
+
+            <div>
+              <input class="input" formControlName="surname" [placeholder]="'REGISTER.COMMON.SURNAME' | translate" />
+              <small class="error" *ngIf="parentForm.get('surname')?.touched && parentForm.get('surname')?.errors">
+                {{ 'ERRORS.REQUIRED_SURNAME' | translate }}
+              </small>
+            </div>
+          </div>
+
+          <!-- FECHA / GÉNERO -->
+          <div class="grid">
+            <div>
+              <input type="date" class="input" formControlName="birthdate" />
+              <small class="error" *ngIf="parentForm.get('birthdate')?.touched && parentForm.get('birthdate')?.errors">
+                <span *ngIf="parentForm.get('birthdate')?.errors?.['required']">
+                  {{ 'ERRORS.REQUIRED_BIRTHDATE' | translate }}
+                </span>
+
+                <span *ngIf="parentForm.get('birthdate')?.errors?.['underage']">
+                  {{ 'ERRORS.UNDERAGE' | translate }}
+                </span>
+              </small>
+            </div>
+
+            <div>
+              <select class="input" formControlName="genre">
+                <option value="">{{ 'REGISTER.COMMON.GENDER' | translate }}</option>
+                <option value="1">{{ 'REGISTER.COMMON.GENDER_OPTIONS.MALE' | translate }}</option>
+                <option value="2">{{ 'REGISTER.COMMON.GENDER_OPTIONS.FEMALE' | translate }}</option>
+                <option value="3">{{ 'REGISTER.COMMON.GENDER_OPTIONS.OTHER' | translate }}</option>
+              </select>
+
+              <small class="error" *ngIf="parentForm.get('genre')?.touched && parentForm.get('genre')?.errors">
+                {{ 'ERRORS.REQUIRED_GENDER' | translate }}
+              </small>
+            </div>
+          </div>
+
+          <!-- EMAIL -->
+          <div class="grid">
+            <div>
+              <input class="input" formControlName="email" [placeholder]="'REGISTER.COMMON.EMAIL' | translate"
+                [readonly]="modo === 'email'" />
+              <small class="error" *ngIf="parentForm.get('email')?.touched && parentForm.get('email')?.errors">
+                <span *ngIf="parentForm.get('email')?.errors?.['required']">
+                  {{ 'ERRORS.REQUIRED_EMAIL' | translate }}
+                </span>
+                <span *ngIf="parentForm.get('email')?.errors?.['email']">
+                  {{ 'ERRORS.INVALID_EMAIL' | translate }}
+                </span>
+              </small>
+            </div>
+
+            <div>
+              <input class="input" formControlName="confirmEmail"
+                [placeholder]="'REGISTER.COMMON.EMAIL_REPEAT' | translate" [readonly]="modo === 'email'" />
+              <small class="error"
+                *ngIf="parentForm.get('confirmEmail')?.touched && parentForm.get('confirmEmail')?.errors">
+                <span *ngIf="parentForm.get('confirmEmail')?.errors?.['required']">
+                  {{ 'ERRORS.REQUIRED_CONFIRM_EMAIL' | translate }}
+                </span>
+                <span *ngIf="parentForm.get('confirmEmail')?.errors?.['mismatch']">
+                  {{ 'ERRORS.EMAIL_MISMATCH' | translate }}
+                </span>
+              </small>
+            </div>
+          </div>
+
+          <!-- TELÉFONO -->
+          <div class="grid">
+            <input class="input" formControlName="phone" [placeholder]="'REGISTER.COMMON.PHONE' | translate" />
+            <small class="error" *ngIf="parentForm.get('phone')?.touched && parentForm.get('phone')?.errors">
+              {{ 'ERRORS.REQUIRED_PHONE' | translate }}
+            </small>
+          </div>
+
+          <!-- CONTRASEÑA -->
+          <div class="grid">
+            <div>
+              <input type="password" class="input" formControlName="password"
+                [placeholder]="'REGISTER.COMMON.PASSWORD' | translate" />
+              <small class="error" *ngIf="parentForm.get('password')?.touched && parentForm.get('password')?.errors">
+                {{ 'ERRORS.REQUIRED_PASSWORD' | translate }}
+              </small>
+            </div>
+
+            <div>
+              <input type="password" class="input" formControlName="password2"
+                [placeholder]="'REGISTER.COMMON.REPEAT_PASSWORD' | translate" />
+              <small class="error" *ngIf="parentForm.get('password2')?.touched && parentForm.get('password2')?.errors">
+                {{ 'ERRORS.PASSWORD_MISMATCH' | translate }}
+              </small>
+            </div>
+          </div>
+          <!-- FOOTER CHECKS -->
+          <div class="checks">
+            <label class="check-item">
+              <input type="checkbox" formControlName="terms" />
+              <span class="check-custom"></span>
+              <span class="check-text">
+                {{ 'REGISTER.COMMON.TERMS_PREFIX' | translate }}
+                <a href="#" target="_blank">
+                  {{ 'REGISTER.COMMON.TERMS_LINK' | translate }}
+                </a>
+              </span>
+            </label>
+            <!-- ERROR -->
+            <small class="error" *ngIf="parentForm.get('terms')?.touched && parentForm.get('terms')?.invalid">
+              {{ 'ERRORS.TERMS_REQUIRED' | translate }}
+            </small>
+            <label class="check-item">
+              <input type="checkbox" formControlName="comunicaciones" />
+              <span class="check-custom"></span>
+              <span class="check-text">
+                {{ 'REGISTER.COMMON.COMMS_PREFIX' | translate }}
+                <a href="#" target="_blank">
+                  {{ 'REGISTER.COMMON.COMMS_LINK' | translate }}
+                </a>
+              </span>
+            </label>
+
+          </div>
+
+          <button type="submit" class="btn-primary">
+            {{
+            modo === 'email' && esPadreAsociadoAJugador
+            ? ('REGISTER.COMMON.FINISH' | translate)
+            : ('REGISTER.COMMON.NEXT' | translate)
+            }}
+          </button>
+
+        </form>
+
+        <div *ngIf="activeTab === 'hijos' && modo === 'club'" class="tab-content">
+
+          <form [formGroup]="childrenForm" (ngSubmit)="finish()" class="form-register">
+
+            <!-- TITULO TAB -->
+            <h4 class="section-title">
+              {{ 'REGISTER.CHILDREN.TITLE' | translate }}
+            </h4>
+
+            <!-- Nº HIJOS -->
+            <div class="form-group mb-4">
+              <label class="form-label">
+                {{ 'REGISTER.CHILDREN.COUNT' | translate }}
+              </label>
+
+              <select class="input-register" formControlName="numHijos" (change)="updateChildren()">
+                <option *ngFor="let n of [1,2,3,4,5]" [value]="n">
+                  {{ n }}
+                </option>
+              </select>
+            </div>
+
+            <!-- DATOS HIJOS -->
+            <div *ngFor="let index of hijosVisibles; trackBy: trackByIndex" class="child-card">
+
+
+              <div class="child-header">
+                <span class="child-badge">{{ index + 1 }}</span>
+                <h6 class="child-title">
+                  {{ 'REGISTER.CHILDREN.DATA' | translate:{ num: index + 1 } }}
+                </h6>
+              </div>
+
+              <div class="grid">
+                <div class="form-field">
+                  <label class="form-label">
+                    {{ 'REGISTER.COMMON.NAME' | translate }}
+                  </label>
+                  <input class="input-register" [formControlName]="'hijo' + (index + 1)" />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label">
+                    {{ 'REGISTER.COMMON.SURNAME' | translate }}
+                  </label>
+                  <input class="input-register" [formControlName]="'ape' + (index + 1)" />
+                </div>
+              </div>
+
+              <div class="grid mt-3">
+                <div class="form-field">
+                  <label class="form-label">
+                    {{ 'REGISTER.COMMON.BIRTHDATE' | translate }}
+                  </label>
+                  <input type="date" class="input-register" [formControlName]="'fech' + (index + 1)" />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label">
+                    {{ 'COMMON.ID' | translate }}
+                  </label>
+                  <input class="input-register" [formControlName]="'dni' + (index + 1)"
+                    (blur)="validateHijo(childrenForm.get('dni' + (index + 1))?.value, index)" />
+
+                </div>
+              </div>
+
+              <div class="validation-result success" *ngIf="estadoValidacionHijos[index] === true">
+                ✔ {{ 'REGISTER.VALIDATION.PLAYER_VALID' | translate }}
+              </div>
+
+              <div class="validation-result error" *ngIf="estadoValidacionHijos[index] === false">
+                ✖ {{ 'REGISTER.VALIDATION.PLAYER_EXISTS' | translate }}
+              </div>
+
+            </div>
+
+            <!-- BOTONES -->
+            <div class="actions">
+
+              <button type="submit" class="btn btn-success w-100 btn-register" [disabled]="isLoading">
+                <ng-container *ngIf="!isLoading; else loadingTpl">
+                  {{ 'REGISTER.COMMON.FINISH' | translate }}
+                </ng-container>
+
+                <ng-template #loadingTpl>
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                  Procesando...
+                </ng-template>
+              </button>
+
+              <button type="button" class="btn btn-outline-secondary" (click)="back()">
+                {{ 'REGISTER.COMMON.BACK' | translate }}
+              </button>
+
+            </div>
+
+          </form>
+        </div>
+
+
+        <!-- FOOTER -->
+        <div class="card-footer">
+          <div class="row text-center">
+            <div class="col-md-12">
+              <p>{{ 'REGISTER.AUTH.ALREADY_HAVE_ACCOUNT' | translate }} <a (click)="toLogin($event)" href="#">{{
+                  'REGISTER.AUTH.LOGIN_HERE' | translate }} </a>
+              </p>
+              <p>{{ 'REGISTER.COMMON.HELP' | translate }} <a href="#"
+                  onclick="event.preventDefault()">info&#64;sphairatech.com</a>
+              </p>
+              <p>{{ 'REGISTER.COMMON.WHATSAPP' | translate }} +34 623 91 17 72</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =============================================
+     MODAL — CONSENTIMIENTO USO DE IA
+     ============================================= -->
+<div class="consent-modal-backdrop" *ngIf="showConsentModal" (click)="closeConsentModal()">
+  <div class="consent-modal" (click)="$event.stopPropagation()">
+
+    <!-- CABECERA -->
+    <div class="consent-modal__header">
+      <div class="consent-modal__header-left">
+        <span class="consent-modal__icon">⚖️</span>
+        <div>
+          <h3 class="consent-modal__title">Consentimiento para el Uso de Inteligencia Artificial</h3>
+          <span class="consent-modal__subtitle">Lectura obligatoria antes de completar el registro</span>
+        </div>
+      </div>
+      <button class="consent-modal__close" (click)="closeConsentModal()" type="button">✕</button>
+    </div>
+
+    <!-- CUERPO — TEXTO LEGAL SCROLLABLE -->
+    <div class="consent-modal__body">
+
+      <p><strong>Responsable del Tratamiento:</strong> Sphaira Tech, S.L. (en adelante, "Sphaira Tech"), con domicilio social en España, es la responsable del tratamiento de sus datos personales en el sentido del Reglamento (UE) 2016/679 (RGPD/GDPR).</p>
+
+      <p>Al marcar la casilla inferior, usted, en calidad de padre, madre o tutor legal (en adelante, el "Usuario"), declara haber leído, comprendido y aceptado expresamente las siguientes condiciones relativas al uso de tecnologías de Inteligencia Artificial (IA) en la plataforma Sphaira Tech:</p>
+
+      <p><strong>1. Uso de Servicios de Inteligencia Artificial de Terceros</strong><br>
+      La plataforma Sphaira Tech integra servicios de Inteligencia Artificial proporcionados por terceros proveedores que pueden incluir, entre otros: <strong>OpenAI, LLC</strong> (modelos GPT-4/GPT-4o), con sede en San Francisco, California, EE.UU.; <strong>Google LLC</strong> (modelos Gemini), con sede en Mountain View, California, EE.UU.; y <strong>Anthropic, PBC</strong> (modelos Claude), con sede en San Francisco, California, EE.UU. Dichos servicios se utilizan para ofrecer funcionalidades avanzadas tales como análisis de rendimiento deportivo, generación de informes personalizados, recomendaciones inteligentes y asistencia automatizada.</p>
+
+      <p><strong>2. Datos Tratados y Transferencia Internacional</strong><br>
+      Para el funcionamiento de las funcionalidades de IA, determinados datos —que pueden incluir información de rendimiento deportivo, estadísticas, datos del perfil del usuario y contenidos introducidos en la plataforma— podrán ser procesados a través de las APIs privadas de los proveedores mencionados, cuyos servidores pueden estar ubicados fuera del Espacio Económico Europeo (EEE), incluyendo los Estados Unidos de América. Sphaira Tech garantiza que estas transferencias internacionales se realizan bajo las garantías adecuadas exigidas por el Reglamento (UE) 2016/679 (RGPD/GDPR) y conforme a la Ley Orgánica 3/2018, de 5 de diciembre, de Protección de Datos Personales y Garantía de los Derechos Digitales (LOPDGDD).</p>
+
+      <p><strong>3. Finalidad del Tratamiento</strong><br>
+      Los datos procesados mediante IA se utilizarán exclusivamente para: (a) personalizar la experiencia del usuario dentro de la plataforma; (b) generar análisis, estadísticas e informes deportivos; (c) mejorar y optimizar los servicios ofrecidos por Sphaira Tech; y (d) facilitar la detección y el desarrollo del talento deportivo. Sphaira Tech <strong>no venderá, cederá ni utilizará sus datos para entrenar modelos de IA de terceros</strong> de modo que permita su identificación personal, salvo que medie un consentimiento expreso adicional o exista una obligación legal.</p>
+
+      <p><strong>4. Menores de Edad</strong><br>
+      Al proporcionar datos de menores bajo su tutela, usted declara expresamente ser su padre/madre o tutor legal y tener plena capacidad jurídica para prestar el presente consentimiento en nombre de dichos menores, en conformidad con el artículo 8 del RGPD y el artículo 7 de la LOPDGDD.</p>
+
+      <p><strong>5. Derechos del Usuario</strong><br>
+      En cualquier momento podrá ejercer sus derechos de acceso, rectificación, supresión ("derecho al olvido"), limitación del tratamiento, portabilidad y oposición, así como revocar el presente consentimiento —sin que ello afecte a la licitud del tratamiento previo a dicha revocación— contactando con Sphaira Tech en: <strong>privacy&#64;sphairatech.com</strong>.</p>
+
+      <p><strong>6. Carácter Necesario del Consentimiento</strong><br>
+      La aceptación del presente consentimiento es requisito imprescindible para completar el registro y acceder a las funcionalidades de Inteligencia Artificial de la plataforma. Sin dicha aceptación, no es posible finalizar el proceso de registro.</p>
+
+    </div>
+
+    <!-- CHECKBOX DE FIRMA -->
+    <div class="consent-modal__check-area">
+      <label class="consent-modal__check-label" [class.is-checked]="modalConsentChecked">
+        <input type="checkbox" [(ngModel)]="modalConsentChecked" />
+        <span class="consent-modal__check-box">
+          <svg *ngIf="modalConsentChecked" viewBox="0 0 12 10" fill="none">
+            <path d="M1 5l3.5 3.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="consent-modal__check-text">
+          He leído íntegramente el texto anterior y presto mi <strong>consentimiento libre, específico, informado e inequívoco</strong> para el tratamiento de mis datos y los de los menores a mi cargo mediante servicios de Inteligencia Artificial (OpenAI, Gemini, Anthropic), conforme al artículo 7 del RGPD.
+        </span>
+      </label>
+      <p class="consent-modal__check-warning" *ngIf="!modalConsentChecked">
+        ⚠ Debe marcar la casilla para poder completar el registro.
+      </p>
+    </div>
+
+    <!-- ACCIONES PRINCIPALES (vista normal) -->
+    <div class="consent-modal__actions" *ngIf="!showConsentWarning">
+      <button type="button" class="consent-modal__btn-decline" (click)="declineConsent()">
+        Prefiero no aceptar
+      </button>
+      <button type="button" class="consent-modal__btn-confirm"
+              [disabled]="!modalConsentChecked"
+              (click)="confirmConsent()">
+        ✔ Acepto y completo el registro
+      </button>
+    </div>
+
+    <!-- AVISO: CONSECUENCIAS DE NO FIRMAR -->
+    <div class="consent-modal__warning-area" *ngIf="showConsentWarning">
+      <div class="consent-modal__warning-box">
+        <span class="consent-modal__warning-icon">⚠️</span>
+        <p class="consent-modal__warning-text">
+          <strong>Atención:</strong> Si no firma este consentimiento, el club <strong>no podrá solicitar informes deportivos ni económicos</strong> (relativos a los pagos al club) sobre su hijo/a a través de la plataforma Sphaira Tech. Esta funcionalidad requiere el uso de Inteligencia Artificial y el tratamiento de los datos autorizados.
+        </p>
+      </div>
+      <p class="consent-modal__warning-question">¿Desea firmar el consentimiento?</p>
+      <div class="consent-modal__warning-actions">
+        <button type="button" class="consent-modal__btn-sign-no" (click)="confirmNoConsent()">
+          NO FIRMAR
+        </button>
+        <button type="button" class="consent-modal__btn-sign-yes" (click)="backToConsent()">
+          FIRMAR
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

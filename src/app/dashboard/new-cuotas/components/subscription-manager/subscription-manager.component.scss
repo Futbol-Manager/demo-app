@@ -1,0 +1,68 @@
+.subscription-manager-container {
+  .badge {
+    font-size: 0.78rem;
+    text-transform: capitalize;
+
+    &.status-active {
+      background-color: #28a745;
+      color: #fff;
+    }
+    &.status-paused {
+      background-color: #fd7e14;
+      color: #fff;
+    }
+    &.status-canceled {
+      background-color: #dc3545;
+      color: #fff;
+    }
+  }
+
+  .table th {
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  .btn-group-sm .btn {
+    padding: 0.2rem 0.4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .subscription-manager-container {
+    .table th,
+    .table td {
+      font-size: 0.78rem;
+      padding: 0.35rem 0.4rem;
+    }
+
+    .table th {
+      white-space: normal;
+    }
+
+    .btn-group-sm .btn {
+      padding: 0.15rem 0.3rem;
+      font-size: 0.72rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .subscription-manager-container {
+    .table th,
+    .table td {
+      font-size: 0.72rem;
+      padding: 0.25rem 0.3rem;
+    }
+
+    .btn-group-sm {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .btn {
+        width: 100%;
+        font-size: 0.68rem;
+      }
+    }
+  }
+}

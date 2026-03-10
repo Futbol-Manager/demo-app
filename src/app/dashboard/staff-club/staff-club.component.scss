@@ -1,0 +1,843 @@
+// ─── Staff Club — Diseño premium Sphaira ────────────────────────────────────
+$navy: #002c40;
+$navy-mid: #0a4a6e;
+$green: #31b270;
+$green-dark: darken($green, 6%);
+$danger: #dc2626;
+$danger-bg: rgba(220, 38, 38, 0.1);
+$warning: #d97706;
+$warning-bg: rgba(217, 119, 6, 0.12);
+$success-bg: rgba(49, 178, 112, 0.12);
+$border: #e2e8f0;
+$text: #1e293b;
+$text-muted: #64748b;
+$bg: #f8fafc;
+$gradient-header: linear-gradient(135deg, $navy 0%, $navy-mid 50%, $green 100%);
+
+// ─── PAGE HEADER ───────────────────────────────────────────────────────────
+.staff-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 56px;
+  padding: 0.65rem 1.25rem;
+  margin-bottom: 1rem;
+  border-radius: 14px;
+  background: $gradient-header;
+  box-shadow: 0 4px 20px rgba(0, 44, 64, 0.22), 0 1px 4px rgba(49, 178, 112, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+    pointer-events: none;
+  }
+}
+
+.staff-header-back { flex-shrink: 0; z-index: 1; }
+
+.staff-btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.9rem;
+  background: rgba(255, 255, 255, 0.13);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  backdrop-filter: blur(4px);
+
+  i { font-size: 1rem; }
+  &:hover { background: rgba(255, 255, 255, 0.22); transform: translateX(-2px); }
+}
+
+.staff-header-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 1;
+}
+
+.staff-header-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.staff-header-subtitle {
+  margin: 2px 0 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+}
+
+.staff-header-spacer { flex-shrink: 0; min-width: 90px; }
+
+// ─── CONTENT & TOOLBAR ─────────────────────────────────────────────────────
+.staff-page-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+}
+
+.staff-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 12px 16px;
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 44, 64, 0.06);
+}
+
+.staff-toolbar-count {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $text-muted;
+
+  i { color: $green; font-size: 1rem; }
+}
+
+.staff-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  background: linear-gradient(135deg, $green, $green-dark);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba($green, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  i { font-size: 1.05rem; }
+  &:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba($green, 0.45); }
+  &:active { transform: translateY(0); }
+}
+
+// ─── LOADING ──────────────────────────────────────────────────────────────
+.staff-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  gap: 1rem;
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: $text-muted;
+  }
+}
+
+// ─── EMPTY STATE ──────────────────────────────────────────────────────────
+.staff-empty {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: #fff;
+  border: 1px dashed $border;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0, 44, 64, 0.06);
+
+  .staff-empty-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 1.25rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba($green, 0.15), rgba($navy, 0.08));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      font-size: 2rem;
+      color: $green;
+    }
+  }
+
+  h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: $text;
+  }
+
+  p {
+    margin: 0 0 1.25rem;
+    font-size: 0.95rem;
+    color: $text-muted;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+// ─── GRID & CARDS — 4 columnas por fila ─────────────────────────────────────
+.staff-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.staff-card {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid $border;
+  box-shadow: 0 2px 16px rgba(0, 44, 64, 0.08);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0, 44, 64, 0.12); }
+  &.staff-card--disabled {
+    opacity: 0.7;
+    &:hover { transform: none; box-shadow: 0 2px 16px rgba(0, 44, 64, 0.08); }
+  }
+}
+
+.staff-card-inner {
+  padding: 0;
+}
+
+// ─── Cabecera: identidad (izq) + acciones (derecha) ─────────────────────────
+.staff-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1rem 0.85rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.staff-card-identity {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.staff-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $navy, $navy-mid);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.82rem;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 44, 64, 0.2);
+
+  &.staff-avatar--inactive {
+    background: $text-muted;
+    box-shadow: none;
+  }
+}
+
+.staff-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.staff-name {
+  margin: 0 0 0.2rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: $text;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.staff-email {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0 0 0.4rem;
+  font-size: 0.75rem;
+  color: $text-muted;
+  min-width: 0;
+
+  i {
+    font-size: 0.7rem;
+    opacity: 0.8;
+    flex-shrink: 0;
+  }
+  span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.staff-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+
+  &.staff-badge--active {
+    background: $success-bg;
+    color: $green;
+  }
+  &.staff-badge--inactive {
+    background: rgba(220, 38, 38, 0.1);
+    color: $danger;
+  }
+}
+
+// Acciones: grupo "Acceso" (toggle) + botones Editar / Eliminar
+.staff-card-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.staff-action-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.staff-action-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.staff-action-btns {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+// Toggle switch (card)
+.staff-toggle-wrap {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+  cursor: pointer;
+
+  input { opacity: 0; width: 0; height: 0; }
+  &.staff-toggle-wrap--sm { width: 36px; height: 20px; }
+}
+
+.staff-toggle-slider {
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  background: #cbd5e1;
+  transition: background 0.2s;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    left: 3px;
+    top: 3px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+  }
+}
+
+.staff-toggle-wrap input:checked + .staff-toggle-slider {
+  background: $green;
+  &::before { transform: translateX(18px); }
+}
+.staff-toggle-wrap.staff-toggle-wrap--sm input:checked + .staff-toggle-slider::before {
+  transform: translateX(16px);
+}
+.staff-toggle-wrap input:disabled + .staff-toggle-slider { opacity: 0.6; cursor: not-allowed; }
+
+.staff-btn-icon {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s, transform 0.15s;
+
+  &:hover { transform: scale(1.05); }
+}
+
+.staff-btn-edit {
+  background: rgba($green, 0.12);
+  color: $green;
+  &:hover { background: rgba($green, 0.22); }
+}
+
+.staff-btn-delete {
+  background: $danger-bg;
+  color: $danger;
+  &:hover { background: rgba(220, 38, 38, 0.2); }
+}
+
+.staff-card-perms-wrap {
+  padding: 0.75rem 1rem;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+}
+
+.staff-perms-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+
+  i {
+    font-size: 0.75rem;
+    color: $navy;
+    opacity: 0.8;
+  }
+}
+
+.staff-card-perms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.staff-perm-chip {
+  padding: 0.22rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  background: rgba($navy, 0.08);
+  color: $navy;
+  line-height: 1.2;
+
+  &.staff-perm-chip--none {
+    background: #e2e8f0;
+    color: $text-muted;
+  }
+}
+
+// ─── MODAL CREAR/EDITAR ───────────────────────────────────────────────────
+.staff-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: staffFadeIn 0.2s ease;
+
+  &.staff-modal-backdrop--confirm {
+    background: rgba(0, 0, 0, 0.5);
+  }
+}
+
+@keyframes staffFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.staff-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255,255,255,0.05);
+  animation: staffModalIn 0.25s ease;
+}
+
+@keyframes staffModalIn {
+  from { opacity: 0; transform: scale(0.96) translateY(-10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.staff-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.35rem;
+  border-bottom: 1px solid $border;
+  background: linear-gradient(180deg, #f8fafc 0%, #fff 100%);
+}
+
+.staff-modal-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: $text;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  i { color: $green; font-size: 1.2rem; }
+}
+
+.staff-modal-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: $text-muted;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: background 0.2s, color 0.2s;
+
+  &:hover { background: #f1f5f9; color: $text; }
+}
+
+.staff-modal-body {
+  padding: 1.35rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.staff-form-section {
+  margin-bottom: 1.25rem;
+
+  &:last-of-type { margin-bottom: 0; }
+}
+
+.staff-form-section-title {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  i { color: $green; }
+}
+
+.staff-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1rem;
+}
+
+.staff-field {
+  &.staff-field--full { grid-column: 1 / -1; }
+
+  label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: $text;
+    margin-bottom: 0.35rem;
+    .required { color: $danger; }
+  }
+}
+
+.staff-input {
+  width: 100%;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid $border;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: $text;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+
+  &::placeholder { color: #94a3b8; }
+  &:focus {
+    border-color: $green;
+    box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.15);
+  }
+}
+
+.staff-input-wrap-pw {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .staff-input { padding-right: 2.75rem; }
+}
+
+.staff-btn-pw-toggle {
+  position: absolute;
+  right: 0.6rem;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: $text-muted;
+  cursor: pointer;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: color 0.2s, background 0.2s;
+
+  &:hover { color: $green; background: rgba($green, 0.08); }
+}
+
+// Permisos en modal
+.staff-form-section--perms {
+  margin-top: 1rem;
+}
+
+.staff-perm-group {
+  border: 1px solid $border;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.staff-perm-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 1rem;
+  background: #f8fafc;
+  border-bottom: 1px solid $border;
+}
+
+.staff-perm-group-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: $text;
+
+  i { color: $green; font-size: 1rem; }
+}
+
+.staff-perm-group-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.staff-perm-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem 0.5rem 1.9rem;
+  border-bottom: 1px solid #f1f5f9;
+  &:last-child { border-bottom: none; }
+}
+
+.staff-perm-row-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: $text;
+  cursor: pointer;
+
+  i { color: $navy; font-size: 0.9rem; opacity: 0.8; }
+}
+
+.staff-perm-standalone {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 1rem;
+  margin-bottom: 0.4rem;
+  border: 1px solid $border;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.staff-msg {
+  margin-top: 1rem;
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &.staff-msg--error {
+    background: $danger-bg;
+    color: $danger;
+  }
+  &.staff-msg--success {
+    background: $success-bg;
+    color: $green;
+  }
+}
+
+.staff-spinner-text { font-style: italic; }
+
+.staff-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.35rem;
+  border-top: 1px solid $border;
+  background: #fafafa;
+}
+
+.staff-btn-secondary {
+  padding: 0.55rem 1.15rem;
+  border: 1px solid $border;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $text-muted;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+
+  &:hover:not(:disabled) { background: #f1f5f9; color: $text; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.staff-btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.2rem;
+  background: $danger;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+
+  &:hover:not(:disabled) { opacity: 0.9; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+// ─── MODAL CONFIRMACIÓN ───────────────────────────────────────────────────
+.staff-confirm-box {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 400px;
+  padding: 1.75rem 1.5rem;
+  text-align: center;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.22);
+  animation: staffModalIn 0.25s ease;
+}
+
+.staff-confirm-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: $text-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+
+  &.staff-confirm-icon--danger {
+    background: $danger-bg;
+    color: $danger;
+  }
+  &.staff-confirm-icon--success {
+    background: $success-bg;
+    color: $green;
+  }
+  &.staff-confirm-icon--warning {
+    background: $warning-bg;
+    color: $warning;
+  }
+}
+
+.staff-confirm-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: $text;
+}
+
+.staff-confirm-text {
+  margin: 0 0 1.25rem;
+  font-size: 0.9rem;
+  color: $text-muted;
+  line-height: 1.5;
+
+  strong { color: $text; }
+}
+
+.staff-confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+// Responsive: 2 columnas en tablet, 1 en móvil
+@media (max-width: 1200px) {
+  .staff-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .staff-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 576px) {
+  .staff-form-grid { grid-template-columns: 1fr; }
+  .staff-toolbar { flex-direction: column; align-items: stretch; }
+  .staff-btn-primary { width: 100%; justify-content: center; }
+}

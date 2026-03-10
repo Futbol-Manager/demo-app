@@ -1,0 +1,345 @@
+/* ===============================
+   CARRUSEL INFINITO SPHAIRA
+================================ */
+
+.carousel-fullwidth {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  background: #f4f4f4;
+  padding: 1rem 0;
+  overflow: hidden;
+}
+
+.carousel-container {
+  width: 100%;
+  overflow: hidden;
+  height: 70px;
+  display: flex;
+  align-items: center;
+}
+
+.carousel-track {
+  display: flex;
+  width: max-content;
+  animation: scroll-infinite 30s linear infinite;
+}
+
+.carousel-content {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  padding-right: 3rem;
+}
+
+.patrocinador-img {
+  height: 55px;
+  object-fit: contain;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: all 0.35s ease;
+
+  &:hover {
+    filter: grayscale(40%);
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+/* Animacion infinita */
+@keyframes scroll-infinite {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* ============================================
+   VER PATROCINADOR — Premium Modal
+   ============================================ */
+.vs-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(0, 20, 32, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: vsOverlayIn 0.25s ease;
+}
+
+@keyframes vsOverlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.vs-panel {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  max-height: 92vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.06),
+    0 32px 80px rgba(0, 0, 0, 0.18);
+  animation: vsPanelIn 0.35s ease;
+
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 6px; }
+}
+
+@keyframes vsPanelIn {
+  from { opacity: 0; transform: scale(0.95) translateY(-16px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Close */
+.vs-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(0, 44, 64, 0.08);
+  color: #002c40;
+  font-size: 1.05rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.15s;
+
+  &:hover {
+    background: rgba(0, 44, 64, 0.14);
+    transform: scale(1.08);
+  }
+}
+
+/* Hero */
+.vs-hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 2rem 1.5rem;
+  background: linear-gradient(160deg, #f0faf5 0%, #e6f3f0 40%, #f8fafc 100%);
+  border-bottom: 1px solid #e8eff4;
+}
+
+.vs-logo {
+  max-height: 140px;
+  max-width: 85%;
+  object-fit: contain;
+  border-radius: 12px;
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.08));
+}
+
+.vs-logo-placeholder {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgba(49, 178, 112, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    font-size: 2.5rem;
+    color: #31b270;
+  }
+}
+
+/* Name */
+.vs-name {
+  margin: 1.25rem 1.75rem 0.25rem;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #002c40;
+  line-height: 1.3;
+}
+
+/* Contact pills */
+.vs-contacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem 0;
+}
+
+.vs-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  i { font-size: 0.9rem; }
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.vs-pill--web {
+  background: rgba(15, 163, 232, 0.1);
+  color: #0c85c0;
+  &:hover { background: rgba(15, 163, 232, 0.18); color: #0c85c0; }
+}
+
+.vs-pill--phone {
+  background: rgba(49, 178, 112, 0.1);
+  color: #228b5a;
+  &:hover { background: rgba(49, 178, 112, 0.18); color: #228b5a; }
+}
+
+.vs-pill--mail {
+  background: rgba(0, 44, 64, 0.08);
+  color: #002c40;
+  &:hover { background: rgba(0, 44, 64, 0.14); color: #002c40; }
+}
+
+/* Sections */
+.vs-section {
+  margin: 1.25rem 1.75rem 0;
+  padding: 1rem 1.15rem;
+  background: #f8fafc;
+  border-radius: 14px;
+  border: 1px solid #edf2f7;
+}
+
+.vs-section--benefits {
+  background: linear-gradient(135deg, rgba(49, 178, 112, 0.06) 0%, rgba(31, 143, 138, 0.06) 100%);
+  border-color: rgba(49, 178, 112, 0.18);
+}
+
+.vs-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+
+  i {
+    font-size: 1.1rem;
+    color: #31b270;
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #002c40;
+  }
+}
+
+.vs-section-text {
+  margin: 0;
+  font-size: 0.925rem;
+  color: #475569;
+  line-height: 1.6;
+}
+
+/* CTA */
+.vs-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 1.5rem 1.75rem;
+  padding: 0.8rem 1.5rem;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #31b270 0%, #1f8f8a 100%);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(49, 178, 112, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  i { font-size: 1.05rem; }
+
+  &:hover {
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(49, 178, 112, 0.4);
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .vs-overlay {
+    padding: 0.75rem;
+  }
+
+  .vs-panel {
+    border-radius: 20px;
+    max-height: 95vh;
+  }
+
+  .vs-hero {
+    padding: 2rem 1.25rem 1.25rem;
+  }
+
+  .vs-logo {
+    max-height: 110px;
+  }
+
+  .vs-name {
+    margin-left: 1.25rem;
+    margin-right: 1.25rem;
+    font-size: 1.25rem;
+  }
+
+  .vs-contacts {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  .vs-section {
+    margin-left: 1.25rem;
+    margin-right: 1.25rem;
+  }
+
+  .vs-cta {
+    margin-left: 1.25rem;
+    margin-right: 1.25rem;
+  }
+}
+
+/* ============================================
+   DARK MODE — CARRUSEL PUBLICIDAD
+   ============================================ */
+:host-context(body.dark) {
+  .carousel-fullwidth {
+    background:
+      radial-gradient(120% 140% at 0% 0%, rgba(63, 201, 130, 0.1) 0%, rgba(63, 201, 130, 0) 42%),
+      linear-gradient(180deg, #0a1e30 0%, #081a2a 100%);
+    border-top: 1px solid rgba(63, 201, 130, 0.1);
+    border-bottom: 1px solid rgba(63, 201, 130, 0.14);
+  }
+
+  .patrocinador-img {
+    opacity: 0.86;
+    filter: brightness(1.12) contrast(1.04);
+
+    &:hover {
+      opacity: 1;
+      filter: brightness(1.2) contrast(1.07);
+    }
+  }
+}

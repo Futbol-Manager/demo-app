@@ -1,0 +1,451 @@
+<!-- ===== PAGE HEADER — Club: arriba del carrusel ===== -->
+<div class="page-header" *ngIf="profileId < 3">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()" data-tutorial="patro-volver">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+  <div class="header-center">
+    <h2 class="table-title">{{ 'NAV.SPONSORS' | translate }}</h2>
+    <p class="header-subtitle">Administra los patrocinadores y sus beneficios para el club</p>
+  </div>
+  <div class="header-spacer"></div>
+</div>
+
+<!-- HERO CARRUSEL -->
+<section class="sponsor-hero" *ngIf="listPatrocinadores.length" data-tutorial="patro-carrusel">
+  <div class="carousel-track">
+    <ng-container *ngFor="let s of listPatrocinadores">
+      <img *ngIf="s.imagen && s.oculto === 1" [src]="getSponsorImageSrc(s)" [alt]="'Logo ' + (s.nombre || 'patrocinador')" (click)="mostrarId(s)" class="hero-logo" loading="lazy">
+    </ng-container>
+
+    <!-- Duplicado para scroll infinito -->
+    <ng-container *ngFor="let s of listPatrocinadores">
+      <img *ngIf="s.imagen && s.oculto === 1" [src]="getSponsorImageSrc(s)" [alt]="'Logo ' + (s.nombre || 'patrocinador')" (click)="mostrarId(s)" class="hero-logo" loading="lazy">
+    </ng-container>
+  </div>
+</section>
+
+<!-- ===== PAGE HEADER — Jugador/Entrenador: debajo del carrusel ===== -->
+<div class="page-header page-header--below" *ngIf="profileId >= 3">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()" data-tutorial="patro-volver">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+  <div class="header-center">
+    <h2 class="table-title">{{ 'NAV.SPONSORS' | translate }}</h2>
+    <p class="header-subtitle">Administra los patrocinadores y sus beneficios para el club</p>
+  </div>
+  <div class="header-spacer"></div>
+</div>
+
+<!-- GRID -->
+<section class="container sponsor-grid" *ngIf="datosCargados" data-tutorial="patro-grid">
+
+  <!-- HEADER DE LA GRID -->
+  <div class="row mb-3">
+    <div class="col-12 d-flex justify-content-end">
+      <button *ngIf="profileId < 3" class="btn-create-sponsor" (click)="abrirModalPatrocinador()" data-tutorial="patro-nuevo">
+        <i class="bi bi-plus-lg"></i>
+        {{ 'SPONSOR.NEW' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ✅ ROW CORRECTO PARA LAS CARDS -->
+  <div class="row g-4">
+
+    <div class="col-12 col-lg-6" *ngFor="let patro of listPatrocinadores; let i = index">
+
+      <article class="sponsor-card">
+
+        <!-- LOGO -->
+        <div class="card-logo">
+          <img [src]="patro.imagen
+              ? getSponsorImageSrc(patro)
+              : 'https://appsphairatech.com/images/task-board/blank.png'"
+              [alt]="patro.nombre">
+        </div>
+
+        <!-- BODY -->
+        <div class="card-content">
+
+          <h3 class="card-name">{{ patro.nombre }}</h3>
+
+          <p class="card-desc" *ngIf="patro.descripcion">{{ patro.descripcion }}</p>
+
+          <!-- Contacto -->
+          <div class="card-links">
+            <a *ngIf="patro.web" [href]="patro.web" target="_blank" class="link-pill link-pill--web">
+              <i class="bi bi-globe2"></i>
+              <span>{{ 'SPONSOR.WEB_LINK' | translate }}</span>
+            </a>
+            <a *ngIf="patro.mail" href="mailto:{{patro.mail}}" class="link-pill link-pill--mail">
+              <i class="bi bi-envelope-fill"></i>
+              <span>{{ 'SPONSOR.EMAIL_LINK' | translate }}</span>
+            </a>
+            <a *ngIf="patro.telefono" href="tel:{{patro.telefono}}" class="link-pill link-pill--phone">
+              <i class="bi bi-telephone-fill"></i>
+              <span>{{ 'SPONSOR.PHONE_LINK' | translate }}</span>
+            </a>
+          </div>
+
+          <!-- Beneficios -->
+          <div class="benefits-block" *ngIf="patro.beneficios">
+            <div class="benefits-header">
+              <i class="bi bi-gift-fill"></i>
+              <span>{{ 'SPONSOR.BENEFITS_TITLE' | translate }}</span>
+            </div>
+            <p class="benefits-text">{{ patro.beneficios }}</p>
+          </div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="card-footer">
+          <div class="carousel-toggle" *ngIf="profileId < 3">
+            <div class="form-check form-switch mb-0">
+              <input class="form-check-input" type="checkbox" [checked]="patro.oculto === 1"
+                (change)="toggleChaneOculto(patro.oculto, patro.patrocinadorId)">
+            </div>
+            <label class="toggle-label">{{ 'SPONSOR.CAROUSEL' | translate }}</label>
+          </div>
+
+          <div class="footer-actions" [class.ms-auto]="profileId >= 3">
+            <button class="btn-view" (click)="openPatrocinador(patro, i)">
+              <i class="bi bi-eye-fill"></i>
+              <span>{{ 'SPONSOR.VIEW' | translate }}</span>
+            </button>
+            <button *ngIf="profileId < 3" class="btn-delete"
+              (click)="confirmDeletePatrocinador(patro.patrocinadorId, i, patro.nombre)">
+              <i class="bi bi-trash3"></i>
+              <span>{{ 'SPONSOR.DELETE' | translate }}</span>
+            </button>
+          </div>
+        </footer>
+
+      </article>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- Overlay -->
+<div class="modal-backdrop-custom" *ngIf="showModalCrearPatro"></div>
+
+<!-- Modal crear patrocinador -->
+<div class="modal d-block modal-overlay" tabindex="-1" role="dialog" *ngIf="showModalCrearPatro" [class.tutorial-modal-visible]="tutorialModalCrearPatro">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content sponsor-modal" data-tutorial="patro-modal-crear">
+
+      <!-- HEADER -->
+      <div class="modal-header sponsor-header">
+        <h5 class="modal-title">
+          {{ 'SPONSOR.TITLE' | translate }}
+        </h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalCrearPatro()">
+        </button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body">
+        <!-- Subida de imagen principal -->
+        <div class="text-center mb-5">
+
+          <!-- Preview o placeholder -->
+          <ng-container *ngIf="showPreview; else placeholderCrear">
+            <img [src]="imagePreviewUrl" alt="Preview" class="sponsor-image mb-3">
+          </ng-container>
+
+          <ng-template #placeholderCrear>
+            <div class="sponsor-upload-placeholder mb-3">
+              <i class="bi bi-image"></i>
+            </div>
+          </ng-template>
+
+          <h6 class="fw-semibold">
+            {{ 'SPONSOR.UPLOAD_TITLE' | translate }}
+          </h6>
+
+          <p class="text-danger small mb-2">
+            {{ 'SPONSOR.UPLOAD_HINT' | translate }}
+          </p>
+
+          <p class="small mb-3">
+            {{ 'SPONSOR.UPLOAD_FORMAT' | translate }}
+          </p>
+
+          <!-- Input file (mismo de antes, solo estilizado por CSS) -->
+          <input type="file" id="image" (change)="onFileSelected($event)">
+        </div>
+
+        <form>
+          <div class="mb-4">
+            <h6 class="section-title">
+              {{ 'SPONSOR.DATA_TITLE' | translate }}
+            </h6>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <input type="text" class="form-control sponsor-input" [(ngModel)]="patrocinadorObj.nombre" name="nombre"
+                placeholder="{{ 'SPONSOR.NAME' | translate }}" #primerCampo>
+            </div>
+
+            <div class="col-md-6">
+              <input type="text" class="form-control sponsor-input" [(ngModel)]="patrocinadorObj.web" name="web"
+                placeholder="{{ 'SPONSOR.WEB' | translate }}" (blur)="fixHttps()" />
+            </div>
+
+            <div class="col-md-6">
+              <textarea class="form-control sponsor-input" rows="5" [(ngModel)]="patrocinadorObj.descripcion"
+                name="descripcion" maxlength="300" placeholder="{{ 'SPONSOR.DESCRIPTION' | translate }}">
+              </textarea>
+            </div>
+
+            <div class="col-md-6">
+              <textarea class="form-control sponsor-input" rows="5" [(ngModel)]="patrocinadorObj.beneficios"
+                name="beneficios" maxlength="300" placeholder="{{ 'SPONSOR.BENEFITS' | translate }}">
+              </textarea>
+            </div>
+
+            <div class="col-md-6">
+              <input type="text" class="form-control sponsor-input" [(ngModel)]="patrocinadorObj.telefono"
+                name="telefono" maxlength="9" placeholder="{{ 'SPONSOR.PHONE' | translate }}">
+            </div>
+
+            <div class="col-md-6">
+              <input type="email" class="form-control sponsor-input" [(ngModel)]="patrocinadorObj.mail" name="email"
+                placeholder="{{ 'SPONSOR.EMAIL' | translate }}">
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer sponsor-footer">
+        <button type="button" class="btn btn-success px-4" [disabled]="isSaving" (click)="createUpdatePatrocinador(1)">
+
+          <ng-container *ngIf="!isSaving; else savingTpl">
+            {{ 'COMMON.SAVE' | translate }}
+          </ng-container>
+
+          <ng-template #savingTpl>
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            {{ 'COMMON.SAVING' | translate }}
+          </ng-template>
+
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- Overlay -->
+<div class="modal-backdrop-custom" *ngIf="showModalUpdatePatrocinador"></div>
+
+<!-- Modal modificar patrocinador -->
+<div class="modal d-block" tabindex="-1" role="dialog" *ngIf="showModalUpdatePatrocinador">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content sponsor-modal">
+
+      <!-- HEADER -->
+      <div class="modal-header sponsor-header">
+        <h5 class="modal-title">
+          {{ 'SPONSOR.TITLE_EDIT' | translate }}
+        </h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarPatrocinador()">
+        </button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body">
+        <form>
+
+          <!-- Imagen -->
+          <ng-container *ngIf="patrocinadorUpdate.patrocinadorId !== 0">
+            <div class="text-center mb-4">
+              <!-- Preview tiene prioridad -->
+              <ng-container *ngIf="showPreview; else imagenGuardada">
+                <img [src]="imagePreviewUrl" alt="Preview" class="sponsor-image mb-3">
+              </ng-container>
+              <!-- Imagen guardada -->
+              <ng-template #imagenGuardada>
+                <ng-container *ngIf="patrocinadorUpdate.imagen; else placeholder">
+                  <img [src]="getSponsorImageSrc(patrocinadorUpdate)" alt="Imagen del patrocinador"
+                    class="sponsor-image mb-3">
+                </ng-container>
+              </ng-template>
+
+              <!-- Placeholder -->
+              <ng-template #placeholder>
+                <span class="bi bi-person sponsor-placeholder-icon"></span>
+              </ng-template>
+
+              <h6 class="fw-semibold mt-3">
+                {{ 'SPONSOR.UPLOAD_TITLE' | translate }}
+              </h6>
+              <p class="text-danger small">
+                {{ 'SPONSOR.UPLOAD_HINT' | translate }}
+              </p>
+
+              <form (submit)="onSubmit(patrocinadorUpdate.patrocinadorId)" enctype="multipart/form-data">
+
+                <p class="small mb-2">
+                  {{ 'SPONSOR.UPLOAD_FORMAT' | translate }}
+                </p>
+
+                <input type="file" id="image" (change)="onFileSelected($event)">
+
+                <div *ngIf="showPreview" class="mt-4">
+
+                  <button *ngIf="showbtnupimg" type="submit" class="upload-btn">
+                    {{ 'SPONSOR.UPLOAD_BUTTON' | translate }}
+                  </button>
+
+                </div>
+              </form>
+
+            </div>
+          </ng-container>
+
+          <!-- Datos -->
+          <div class="mb-4">
+            <h6 class="section-title">
+              {{ 'SPONSOR.EDIT_DATA_TITLE' | translate }}
+            </h6>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <input type="text" class="form-control sponsor-input" [(ngModel)]="patrocinadorUpdate.nombre"
+                name="nombre" placeholder="{{ 'SPONSOR.NAME' | translate }}" #primerCampo>
+            </div>
+
+            <div class="col-md-6">
+              <input type="text" class="form-control sponsor-input" [(ngModel)]="patrocinadorUpdate.web" name="web"
+                placeholder="{{ 'SPONSOR.WEB' | translate }}">
+            </div>
+
+            <div class="col-md-6">
+              <textarea class="form-control sponsor-input" rows="5" [(ngModel)]="patrocinadorUpdate.descripcion"
+                name="descripcion" maxlength="300" placeholder="{{ 'SPONSOR.DESCRIPTION' | translate }}">
+              </textarea>
+            </div>
+
+            <div class="col-md-6">
+              <textarea class="form-control sponsor-input" rows="5" [(ngModel)]="patrocinadorUpdate.beneficios"
+                name="beneficios" maxlength="300" placeholder="{{ 'SPONSOR.BENEFITS' | translate }}">
+              </textarea>
+            </div>
+
+            <div class="col-md-6">
+              <input type="text" class="form-control sponsor-input" [(ngModel)]="patrocinadorUpdate.telefono"
+                name="telefono" maxlength="9" placeholder="{{ 'SPONSOR.PHONE' | translate }}">
+            </div>
+
+            <div class="col-md-6">
+              <input type="email" class="form-control sponsor-input" [(ngModel)]="patrocinadorUpdate.mail" name="email"
+                placeholder="{{ 'SPONSOR.EMAIL' | translate }}">
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer sponsor-footer">
+        <button type="button" class="btn btn-success px-4" [disabled]="isSaving" (click)="createUpdatePatrocinador(2)">
+
+          <ng-container *ngIf="!isSaving; else savingTpl">
+            {{ 'COMMON.SAVE' | translate }}
+          </ng-container>
+
+          <ng-template #savingTpl>
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            {{ 'COMMON.SAVING' | translate }}
+          </ng-template>
+
+        </button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Overlay VER patrocinador (premium) -->
+<div class="view-sponsor-overlay" *ngIf="showModalVerPatrocinador" (click)="cerrarVerPatrocinador()" appModalBackdrop>
+  <div class="view-sponsor-panel" (click)="$event.stopPropagation()">
+
+    <!-- CLOSE -->
+    <button class="view-sponsor-close" (click)="cerrarVerPatrocinador()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+
+    <!-- HERO -->
+    <div class="view-sponsor-hero">
+      <ng-container *ngIf="patrocinadorUpdate.imagen; else noSponsorImg">
+        <img [src]="getSponsorImageSrc(patrocinadorUpdate)"
+          alt="Logo de {{ patrocinadorUpdate.nombre }}" class="view-sponsor-logo" />
+      </ng-container>
+      <ng-template #noSponsorImg>
+        <div class="view-sponsor-logo-placeholder">
+          <i class="bi bi-building"></i>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- NAME -->
+    <h2 class="view-sponsor-name">{{ patrocinadorUpdate.nombre }}</h2>
+
+    <!-- CONTACT PILLS -->
+    <div class="view-sponsor-contacts">
+      <a *ngIf="patrocinadorUpdate.web" [href]="patrocinadorUpdate.web" target="_blank" class="vs-contact-pill vs-contact-pill--web">
+        <i class="bi bi-globe2"></i>
+        <span>Sitio web</span>
+      </a>
+      <a *ngIf="patrocinadorUpdate.telefono" href="tel:{{ patrocinadorUpdate.telefono }}" class="vs-contact-pill vs-contact-pill--phone">
+        <i class="bi bi-telephone-fill"></i>
+        <span>{{ patrocinadorUpdate.telefono }}</span>
+      </a>
+      <a *ngIf="patrocinadorUpdate.mail" href="mailto:{{ patrocinadorUpdate.mail }}" class="vs-contact-pill vs-contact-pill--mail">
+        <i class="bi bi-envelope-fill"></i>
+        <span>{{ patrocinadorUpdate.mail }}</span>
+      </a>
+    </div>
+
+    <!-- DESCRIPTION -->
+    <div class="view-sponsor-section" *ngIf="patrocinadorUpdate.descripcion">
+      <div class="vs-section-header">
+        <i class="bi bi-info-circle"></i>
+        <h4>Sobre el patrocinador</h4>
+      </div>
+      <p class="vs-section-text">{{ patrocinadorUpdate.descripcion }}</p>
+    </div>
+
+    <!-- BENEFITS -->
+    <div class="view-sponsor-section view-sponsor-section--benefits" *ngIf="patrocinadorUpdate.beneficios">
+      <div class="vs-section-header">
+        <i class="bi bi-gift"></i>
+        <h4>Beneficios exclusivos</h4>
+      </div>
+      <p class="vs-section-text">{{ patrocinadorUpdate.beneficios }}</p>
+    </div>
+
+    <!-- WEB CTA -->
+    <a *ngIf="patrocinadorUpdate.web" [href]="patrocinadorUpdate.web" target="_blank" class="view-sponsor-cta">
+      <i class="bi bi-box-arrow-up-right"></i>
+      Visitar {{ patrocinadorUpdate.nombre }}
+    </a>
+
+  </div>
+</div>

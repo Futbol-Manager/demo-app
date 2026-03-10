@@ -1,0 +1,37 @@
+<div class="back-container">
+  <div class="btn-back-clean" href="javascript:void(0)" (click)="irAPantalla(3)">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </div>
+</div>
+
+<!-- calendario.component.html -->
+<div class="container mt-3" *ngIf="datosCargados">
+    <h2 class="text-center">Horarios de los equipos</h2>
+    <div class="table-responsive mt-3" style="overflow-x: auto; overflow-y: scroll; height: 30em;">
+        <table id="dataTable" class="table table-bordered table-striped text-center">
+            <!-- Encabezado de la tabla -->
+            <thead class="table-custom">
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Lunes</th>
+                    <th scope="col">Martes</th>
+                    <th scope="col">Miércoles</th>
+                    <th scope="col">Jueves</th>
+                    <th scope="col">Viernes</th>
+                    <th scope="col">Sábado</th>
+                    <th scope="col">Domingo</th>
+                </tr>
+            </thead>
+            <!-- Cuerpo de la tabla -->
+            <tbody>
+                <tr *ngFor="let intervalo of horario" [ngClass]="{'current-hour': intervalo.isCurrentHour}">
+                    <td class="hora">{{ intervalo.hora }}</td>
+                    <td *ngFor="let dia of intervalo.dias">
+                        <div *ngIf="dia">{{ dia }}</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

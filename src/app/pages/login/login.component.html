@@ -1,0 +1,59 @@
+<form #thisForm="ngForm" (ngSubmit)="login()" [formGroup]="loginForm" class="form-login">
+
+  <!-- Campo de email -->
+  <div class="mb-3">
+    <input [attr.placeholder]="'LOGIN.EMAIL_PLACEHOLDER' | translate"
+      [class.is-invalid]="mailControl?.invalid && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)"
+      class="form-control input-login" formControlName="mail" id="mail" type="email">
+
+    <div *ngIf="mailControl?.hasError('required') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)"
+      class="invalid-feedback">
+      {{ 'LOGIN.EMAIL_REQUIRED' | translate }}
+    </div>
+
+    <div *ngIf="mailControl?.hasError('email') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)"
+      class="invalid-feedback">
+      {{ 'LOGIN.EMAIL_INVALID' | translate }}
+    </div>
+  </div>
+
+  <!-- Campo de contraseña (oculto en modo demo) -->
+  <div *ngIf="!isDemoMode" class="mb-3 password-wrapper">
+    <div class="password-wrapper">
+      <input [attr.placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate"
+        [class.is-invalid]="passwordControl?.invalid && (passwordControl?.dirty || passwordControl?.touched || thisForm.submitted)"
+        [type]="hidePassword ? 'password' : 'text'" class="form-control input-login" formControlName="password"
+        id="password" />
+
+      <!-- OJO SOLO SI HAY CONTENIDO -->
+      <button (click)="hidePassword = !hidePassword" *ngIf="passwordControl?.value" class="toggle-password"
+        type="button">
+        <i [class.fa-eye-slash]="!hidePassword" [class.fa-eye]="hidePassword" class="fas"></i>
+      </button>
+    </div>
+
+    <div *ngIf="passwordControl?.invalid && (passwordControl?.dirty || passwordControl?.touched || thisForm.submitted)"
+      class="invalid-feedback d-block">
+      {{ 'LOGIN.PASSWORD_REQUIRED' | translate }}
+    </div>
+  </div>
+  <!-- ERROR LOGIN -->
+  <div *ngIf="loginError" class="alert alert-danger mt-3 text-center">
+    {{ loginErrorKey | translate }}
+  </div>
+
+  <!-- Botón de login -->
+  <button class="btn btn-custom btn-block textoCentrado" type="submit" data-tutorial="login-submit">
+    {{ 'APP.BUTTONS.LOGIN' | translate }}
+  </button>
+
+  <!-- Usuario bloqueado -->
+  <div [ngStyle]="{ display: verificarCuenta ? 'block' : 'none' }" class="text-danger mt-3">
+    <p>
+      {{ 'LOGIN.BLOCKED_MESSAGE' | translate }}
+      <a (click)="enviarMail()" href="#">
+        {{ 'LOGIN.BLOCKED_LINK' | translate }}
+      </a>
+    </p>
+  </div>
+</form>

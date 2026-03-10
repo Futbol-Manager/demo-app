@@ -1,0 +1,221 @@
+<!-- ═══════════════════════════════════════
+     BOTÓN FLOTANTE (arrastrable, posición guardada)
+═══════════════════════════════════════ -->
+<div class="ai-fab-btn-wrapper" *ngIf="isVisible"
+     [style.bottom.px]="fabBottom"
+     [style.right.px]="fabRight"
+     (mousedown)="onFabPointerDown($event)"
+     (touchstart)="onFabTouchStart($event); $event.preventDefault()">
+  <button class="ai-fab-btn" [class.open]="isOpen" (click)="onFabClick($event)" type="button" aria-label="Asistente IA - clic para abrir, arrastrar para mover">
+    <i class="bi" [ngClass]="isOpen ? 'bi-x-lg' : 'bi-robot'"></i>
+    <span class="fab-pulse" *ngIf="!isOpen"></span>
+  </button>
+</div>
+
+<!-- ═══════════════════════════════════════
+     POPUP FLOTANTE (position fixed, draggable, resizable)
+═══════════════════════════════════════ -->
+<div class="ai-fab-popup"
+     *ngIf="isOpen && isVisible"
+     [style.left.px]="popupX"
+     [style.top.px]="popupY"
+     [style.width.px]="popupW"
+     [style.height.px]="popupH"
+     [class.dragging]="isDragging"
+     [class.resizing]="isResizing">
+
+  <!-- RESIZE HANDLES -->
+  <div class="fab-resize-handle handle-n" (mousedown)="startResize($event, 'n')"></div>
+  <div class="fab-resize-handle handle-s" (mousedown)="startResize($event, 's')"></div>
+  <div class="fab-resize-handle handle-e" (mousedown)="startResize($event, 'e')"></div>
+  <div class="fab-resize-handle handle-w" (mousedown)="startResize($event, 'w')"></div>
+  <div class="fab-resize-handle handle-ne" (mousedown)="startResize($event, 'ne')"></div>
+  <div class="fab-resize-handle handle-nw" (mousedown)="startResize($event, 'nw')"></div>
+  <div class="fab-resize-handle handle-se" (mousedown)="startResize($event, 'se')"></div>
+  <div class="fab-resize-handle handle-sw" (mousedown)="startResize($event, 'sw')"></div>
+
+  <!-- HEADER (draggable) -->
+  <div class="fab-header" (mousedown)="startDrag($event)">
+    <div class="fab-header-left">
+      <div class="fab-avatar">
+        <i class="bi bi-robot"></i>
+      </div>
+      <div>
+        <span class="fab-title">Asistente IA</span>
+        <span class="fab-status">
+          <span class="fab-status-dot"></span>
+          En línea · <span class="credits-link" (click)="openCreditsModal(); $event.stopPropagation()">{{ creditsAvailable }} créditos</span>
+        </span>
+      </div>
+    </div>
+    <div class="fab-header-right" (mousedown)="$event.stopPropagation()">
+      <button class="fab-header-btn" (click)="startNewConversation()" title="Nueva conversación">
+        <i class="bi bi-plus-circle"></i>
+      </button>
+      <button class="fab-header-btn" (click)="toggleHistoryPanel()" title="Historial">
+        <i class="bi bi-clock-history"></i>
+      </button>
+      <button class="fab-header-btn" (click)="toggleExpand()" [title]="isExpanded ? 'Contraer' : 'Expandir'">
+        <i class="bi" [ngClass]="isExpanded ? 'bi-arrows-angle-contract' : 'bi-arrows-angle-expand'"></i>
+      </button>
+      <button class="fab-header-btn" (click)="goToFullAssistant()" title="Abrir asistente completo">
+        <i class="bi bi-arrows-fullscreen"></i>
+      </button>
+      <button class="fab-header-btn" (click)="toggleChat()" title="Cerrar chat">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- HISTORY PANEL (overlay) -->
+  <div class="fab-history-panel" *ngIf="showHistoryPanel">
+    <div class="fab-history-header">
+      <span class="fab-history-title"><i class="bi bi-clock-history"></i> Historial</span>
+      <button class="fab-history-close" (click)="toggleHistoryPanel()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="fab-history-list" *ngIf="conversations.length > 0">
+      <div class="fab-history-item" *ngFor="let conv of conversations" (click)="loadConversation(conv)">
+        <div class="fab-history-item-info">
+          <span class="fab-history-item-title">{{ conv.title }}</span>
+          <span class="fab-history-item-meta">{{ formatDate(conv.date) }} · {{ conv.messageCount }} msgs</span>
+        </div>
+        <button class="fab-history-item-delete" (click)="deleteConversation($event, conv.id)" title="Eliminar">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+    </div>
+    <div class="fab-history-empty" *ngIf="conversations.length === 0">
+      <i class="bi bi-chat-dots"></i>
+      <span>No hay conversaciones anteriores</span>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="fab-body" #fabChatBody>
+    <!-- Privacy disclaimer -->
+    <div class="fab-privacy-notice" *ngIf="messages.length <= 2">
+      <i class="bi bi-shield-lock"></i>
+      <span>Tus datos personales no se comparten con la IA. Las respuestas son orientativas.</span>
+    </div>
+
+    <div *ngFor="let msg of messages; trackBy: trackByMsgId"
+         class="fab-message"
+         [class.msg-user]="msg.role === 'user'"
+         [class.msg-assistant]="msg.role === 'assistant'">
+
+      <div class="fab-bubble" *ngIf="!msg.isTyping && !msg.isActionPreview">
+        <div [innerHTML]="msg.text | markdownAi"></div>
+        <span class="fab-time">{{ formatTime(msg.timestamp) }}</span>
+      </div>
+
+      <!-- Action preview (confirm/cancel) -->
+      <div class="fab-bubble action-bubble" *ngIf="msg.isActionPreview && !msg.actionExecuted">
+        <app-ai-action-preview
+          [actions]="msg.pendingActions || []"
+          [isExecuting]="!!msg.isExecutingAction"
+          (confirmed)="confirmActions(msg)"
+          (cancelled)="cancelActions(msg)">
+        </app-ai-action-preview>
+        <span class="fab-time">{{ formatTime(msg.timestamp) }}</span>
+      </div>
+      <div class="fab-bubble" *ngIf="msg.isActionPreview && msg.actionExecuted">
+        <div [innerHTML]="msg.text | markdownAi"></div>
+        <span class="fab-time">{{ formatTime(msg.timestamp) }}</span>
+      </div>
+
+      <div class="fab-bubble typing-bubble" *ngIf="msg.isTyping">
+        <div class="fab-typing">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK SUGGESTIONS (always visible when not responding) -->
+    <div class="fab-quick-suggestions" *ngIf="showSuggestions && !isResponding">
+      <button *ngFor="let chip of quickSuggestions"
+              class="fab-quick-chip"
+              (click)="sendQuick(chip)">
+        <i class="bi {{ chip.icon }}"></i>
+        {{ chip.text }}
+      </button>
+    </div>
+  </div>
+
+  <!-- BANNER: contexto específico de página (al visitar sección de estadísticas) -->
+  <div class="fab-context-banner fab-context-page" *ngIf="activePageContext">
+    <i class="bi" [ngClass]="activePageContext.type === 'estadisticas-equipos' ? 'bi-shield-fill' : 'bi-people-fill'"></i>
+    <span>{{ activePageContext.type === 'estadisticas-equipos' ? 'Estadísticas de equipos' : 'Estadísticas de jugadores' }} disponibles</span>
+    <button class="fab-context-dismiss" (click)="dismissPageContext()" title="Descartar datos">
+      <i class="bi bi-x"></i>
+    </button>
+  </div>
+
+  <!-- BANNER: estadísticas precargadas al hacer login (sin contexto de página activo) -->
+  <div class="fab-context-banner fab-context-bg" *ngIf="!activePageContext && backgroundStats">
+    <i class="bi bi-bar-chart-fill"></i>
+    <span>Datos del club disponibles</span>
+    <button class="fab-context-dismiss" (click)="dismissBackgroundStats()" title="Descartar datos del club">
+      <i class="bi bi-x"></i>
+    </button>
+  </div>
+
+  <!-- INPUT -->
+  <div class="fab-input-bar">
+    <textarea
+      #chatInput
+      class="fab-input fab-input-auto"
+      [(ngModel)]="userInput"
+      (keydown)="onKeyDown($event)"
+      (input)="autoResizeInput($event)"
+      placeholder="Escribe tu pregunta..."
+      [disabled]="isResponding"
+      rows="1"
+    ></textarea>
+    <button *ngIf="isVoiceSupported && !isResponding"
+            class="fab-mic"
+            [class.recording]="isRecording"
+            (click)="toggleVoiceRecognition()"
+            aria-label="Reconocimiento de voz"
+            [title]="isRecording ? 'Detener grabación' : 'Usar micrófono'">
+      <i class="bi" [ngClass]="isRecording ? 'bi-mic-fill' : 'bi-mic'"></i>
+    </button>
+    <button *ngIf="isResponding"
+            class="fab-cancel"
+            (click)="cancelPendingRequest()"
+            aria-label="Cancelar"
+            title="Cancelar peticion">
+      <i class="bi bi-x-circle-fill"></i>
+    </button>
+    <button *ngIf="!isResponding"
+            class="fab-send"
+            [class.active]="userInput.trim().length > 0"
+            [disabled]="!userInput.trim()"
+            (click)="sendMessage()"
+            aria-label="Enviar mensaje">
+      <i class="bi bi-send-fill"></i>
+    </button>
+  </div>
+</div>
+
+<!-- MODAL DE CRÉDITOS -->
+<app-credits-modal
+  *ngIf="showCreditsModal"
+  [userId]="userId"
+  [creditsAvailable]="creditsAvailable"
+  (closed)="closeCreditsModal()"
+  (creditsPurchased)="creditsAvailable = $event">
+</app-credits-modal>
+
+<!-- MODAL DE CONFIRMACIÓN DE ELIMINACIÓN -->
+<app-confirm-dialog
+  [show]="showDeleteConfirm"
+  [title]="'¿Eliminar conversación?'"
+  [message]="'Esta acción no se puede deshacer. ¿Estás seguro de que quieres eliminar esta conversación?'"
+  [confirmText]="'Eliminar'"
+  [cancelText]="'Cancelar'"
+  [danger]="true"
+  (confirmed)="confirmDeleteConversation()"
+  (cancelled)="cancelDeleteConversation()">
+</app-confirm-dialog>

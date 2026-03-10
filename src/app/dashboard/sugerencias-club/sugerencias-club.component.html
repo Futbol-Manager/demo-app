@@ -1,0 +1,223 @@
+<!-- ================= BOTÓN VOLVER ================= -->
+<div class="back-container" data-tutorial="sug-volver">
+  <button class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>Volver</span>
+  </button>
+</div>
+
+<!-- ================= HERO BANNER ================= -->
+<div class="hero-banner" data-tutorial="sug-hero">
+  <div class="hero-particles">
+    <span class="particle p1"></span>
+    <span class="particle p2"></span>
+    <span class="particle p3"></span>
+    <span class="particle p4"></span>
+    <span class="particle p5"></span>
+  </div>
+  <div class="hero-content">
+    <div class="hero-icon-wrap">
+      <i class="bi bi-lightbulb-fill hero-icon"></i>
+    </div>
+    <h1 class="hero-title">¡Tu opinión construye Sphaira!</h1>
+    <p class="hero-subtitle">
+      Cada sugerencia que envíes será revisada por nuestro equipo y las mejores ideas
+      se convertirán en funcionalidades reales. Aquí puedes seguir el estado de tus propuestas.
+    </p>
+    <button class="btn-nueva-hero" (click)="openForm()" *ngIf="!showForm && !justSubmitted">
+      <i class="bi bi-plus-lg"></i> Nueva sugerencia
+    </button>
+  </div>
+</div>
+
+<div class="page-container">
+
+  <!-- ================= CONFIRMACIÓN POST-ENVÍO ================= -->
+  <div class="success-banner" *ngIf="justSubmitted">
+    <div class="success-icon"><i class="bi bi-check-circle-fill"></i></div>
+    <div class="success-text">
+      <h4>¡Gracias por tu sugerencia!</h4>
+      <p>Nuestro equipo la revisará y recibirás una notificación con las novedades. ¡Cada idea cuenta!</p>
+    </div>
+    <button class="btn-nueva-otra" (click)="openForm()">
+      <i class="bi bi-plus-lg"></i> Enviar otra
+    </button>
+  </div>
+
+  <!-- ================= FORMULARIO NUEVA SUGERENCIA ================= -->
+  <div class="form-card" *ngIf="showForm" data-tutorial="sug-form">
+    <div class="form-card-header">
+      <div class="form-card-icon"><i class="bi bi-pencil-square"></i></div>
+      <div>
+        <h5 class="form-card-title">Nueva sugerencia</h5>
+        <p class="form-card-subtitle">Cuéntanos tu idea, sé todo lo detallado que quieras</p>
+      </div>
+      <button class="btn-close-form" (click)="closeForm()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Categoría -->
+    <div class="category-selector mb-3">
+      <label class="form-label fw-semibold">Categoría</label>
+      <div class="category-chips">
+        <button
+          *ngFor="let cat of categorias"
+          class="cat-chip"
+          [class.active]="categoria === cat.value"
+          (click)="categoria = cat.value"
+          type="button">
+          <i class="bi {{ cat.icon }}"></i> {{ cat.label }}
+        </button>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Título <span class="text-danger">*</span></label>
+      <input
+        type="text"
+        class="form-control custom-input"
+        placeholder="Resume tu idea en una frase..."
+        [(ngModel)]="titulo"
+        maxlength="150"
+      />
+      <div class="char-counter">{{ titulo.length }}/150</div>
+    </div>
+
+    <div class="mb-4">
+      <label class="form-label fw-semibold">Descripción <span class="text-danger">*</span></label>
+      <textarea
+        class="form-control custom-input"
+        rows="5"
+        placeholder="Describe tu sugerencia en detalle. ¿Qué problema resuelve? ¿Cómo mejoraría tu día a día con Sphaira?"
+        [(ngModel)]="descripcion"
+        maxlength="2000"
+      ></textarea>
+      <div class="char-counter">{{ descripcion.length }}/2000</div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-cancelar-form" (click)="closeForm()" type="button">
+        Cancelar
+      </button>
+      <button
+        class="btn-enviar"
+        (click)="submitSugerencia()"
+        [disabled]="submitting || !titulo.trim() || !descripcion.trim()"
+        type="button">
+        <span *ngIf="submitting" class="spinner-border spinner-border-sm me-2"></span>
+        <i *ngIf="!submitting" class="bi bi-send me-2"></i>
+        {{ submitting ? 'Enviando...' : 'Enviar sugerencia' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= LOADING SKELETON ================= -->
+  <div *ngIf="loading" class="skeleton-container">
+    <div class="skeleton-card" *ngFor="let i of [1,2,3]">
+      <div class="skeleton-line skeleton-title"></div>
+      <div class="skeleton-line skeleton-text"></div>
+      <div class="skeleton-line skeleton-text short"></div>
+      <div class="skeleton-stepper"></div>
+    </div>
+  </div>
+
+  <!-- ================= ESTADO VACÍO ================= -->
+  <div *ngIf="!loading && sugerencias.length === 0 && !showForm && !justSubmitted" class="empty-state" data-tutorial="sug-list">
+    <div class="empty-icon"><i class="bi bi-lightbulb"></i></div>
+    <h5>Todavía no has enviado ninguna sugerencia</h5>
+    <p>¡Sé el primero! Tu idea puede convertirse en la próxima gran funcionalidad de Sphaira.</p>
+    <button class="btn-nueva-hero" (click)="openForm()">
+      <i class="bi bi-plus-lg"></i> Escribir mi primera sugerencia
+    </button>
+  </div>
+
+  <!-- ================= LISTA DE SUGERENCIAS ================= -->
+  <div class="sugerencias-section" *ngIf="!loading && sugerencias.length > 0" data-tutorial="sug-list">
+    <div class="section-header">
+      <h4 class="section-title">Mis sugerencias</h4>
+      <span class="section-count">{{ sugerencias.length }} {{ sugerencias.length === 1 ? 'propuesta' : 'propuestas' }}</span>
+      <button class="btn-refresh" (click)="loadSugerencias()" title="Actualizar estado">
+        <i class="bi bi-arrow-clockwise" [class.spinning]="loading"></i>
+        <span>Actualizar</span>
+      </button>
+    </div>
+
+    <div class="sugerencia-card" *ngFor="let sug of sugerencias" [class]="'card-status-' + sug.status?.toLowerCase()">
+
+      <!-- Header de la card -->
+      <div class="sugerencia-header">
+        <div class="sugerencia-cat-badge" *ngIf="sug.categoria">
+          <i class="bi {{ getCatIcon(sug.categoria) }}"></i>
+          {{ getCatLabel(sug.categoria) }}
+        </div>
+        <span class="status-badge" [ngClass]="getStatusClass(sug.status)">
+          <i class="bi {{ getStatusIcon(sug.status) }}"></i>
+          {{ getStatusLabel(sug.status) }}
+        </span>
+      </div>
+
+      <h5 class="sugerencia-title">{{ sug.title }}</h5>
+      <p class="sugerencia-desc">{{ sug.description }}</p>
+
+      <!-- Stepper de progreso -->
+      <div class="progress-stepper">
+        <!-- Paso 0: Recibida (PENDING) -->
+        <div class="step" [class.done]="isStepDone(sug.status, 0)" [class.current]="isStepCurrent(sug.status, 0)">
+          <div class="step-dot"><i class="bi bi-inbox"></i></div>
+          <span class="step-label">Recibida</span>
+        </div>
+
+        <div class="step-line" [class.done]="isStepDone(sug.status, 1)"></div>
+
+        <!-- Paso 1: En desarrollo (IN_PROGRESS) -->
+        <div class="step"
+             [class.done]="isStepDone(sug.status, 1)"
+             [class.current]="isStepCurrent(sug.status, 1)"
+             [class.rejected]="sug.status === 'REJECTED'">
+          <div class="step-dot">
+            <i class="bi" [ngClass]="sug.status === 'REJECTED' ? 'bi-x-circle' : 'bi-gear'"></i>
+          </div>
+          <span class="step-label">{{ sug.status === 'REJECTED' ? 'Rechazada' : 'En desarrollo' }}</span>
+        </div>
+
+        <div class="step-line" [class.done]="sug.status === 'DONE'"></div>
+
+        <!-- Paso 2: Implementada (DONE) -->
+        <div class="step" [class.done]="sug.status === 'DONE'" [class.current]="sug.status === 'DONE'">
+          <div class="step-dot"><i class="bi bi-check-circle"></i></div>
+          <span class="step-label">Implementada</span>
+        </div>
+      </div>
+
+      <!-- Meta info -->
+      <div class="sugerencia-meta">
+        <span class="meta-item">
+          <i class="bi bi-calendar3"></i>
+          {{ (sug.dateCreated || sug.createdAt) | date:'dd/MM/yyyy' }}
+        </span>
+        <span class="meta-item" *ngIf="sug.dateResponded">
+          <i class="bi bi-reply"></i>
+          Respuesta el {{ sug.dateResponded | date:'dd/MM/yyyy' }}
+        </span>
+      </div>
+
+      <!-- Respuesta del administrador -->
+      <div class="admin-response" *ngIf="sug.adminResponse">
+        <div class="response-header">
+          <div class="response-avatar"><i class="bi bi-person-check"></i></div>
+          <div>
+            <strong>Equipo Sphaira</strong>
+            <small class="text-muted d-block">Ha respondido a tu sugerencia</small>
+          </div>
+        </div>
+        <p class="response-text">{{ sug.adminResponse }}</p>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= FOOTER ================= -->
+<app-footer></app-footer>

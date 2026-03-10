@@ -1,0 +1,42 @@
+<div class="timeline-wrapper">
+  <!-- Toolbar -->
+  <div class="timeline-toolbar">
+    <div class="toolbar-left">
+      <span class="toolbar-label">Timeline</span>
+      <span class="event-count">{{ events.length }} eventos</span>
+    </div>
+    <div class="toolbar-right">
+      <button class="tl-btn" (click)="centerOnPlayhead()" title="Centrar en playhead">
+        <i class="bi bi-crosshair"></i>
+      </button>
+      <button class="tl-btn" (click)="zoomIn()" title="Zoom in (Ctrl+Scroll)">
+        <i class="bi bi-zoom-in"></i>
+      </button>
+      <span class="zoom-label">{{ (zoomLevel * 100).toFixed(0) }}%</span>
+      <button class="tl-btn" (click)="zoomOut()" title="Zoom out">
+        <i class="bi bi-zoom-out"></i>
+      </button>
+      <button class="tl-btn" (click)="resetZoom()" title="Reset zoom" *ngIf="zoomLevel > 1">
+        <i class="bi bi-arrow-counterclockwise"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Canvas -->
+  <div class="timeline-canvas-container" #timelineContainer>
+    <canvas #timelineCanvas
+            (click)="onCanvasClick($event)"
+            (mousemove)="onCanvasMouseMove($event)"
+            (mouseleave)="onCanvasMouseLeave()"
+            (wheel)="onWheel($event)">
+    </canvas>
+  </div>
+
+  <!-- Tooltip -->
+  <div class="event-tooltip" *ngIf="hoveredEvent"
+       [style.left.px]="tooltipX" [style.top.px]="tooltipY">
+    <strong>{{ hoveredEvent.categoryName }}</strong>
+    <span>{{ ps.formatTime(hoveredEvent.startTimeMs) }} - {{ ps.formatTime(hoveredEvent.endTimeMs) }}</span>
+    <span *ngIf="hoveredEvent.playerName">{{ hoveredEvent.playerName }}</span>
+  </div>
+</div>

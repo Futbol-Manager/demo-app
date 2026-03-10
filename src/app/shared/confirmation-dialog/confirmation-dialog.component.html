@@ -1,0 +1,12 @@
+<div class="confirmation-dialog">
+  <h2 class="confirmation-dialog__title">{{ title }}</h2>
+  <p class="confirmation-dialog__message">{{ message }}</p>
+  <div class="confirmation-dialog__actions">
+    <button type="button" class="confirmation-dialog__btn confirmation-dialog__btn--cancel" (click)="onCancel()">
+      {{ cancelText }}
+    </button>
+    <button type="button" class="confirmation-dialog__btn confirmation-dialog__btn--confirm" [class.confirmation-dialog__btn--warn]="confirmStyle === 'warn'" (click)="onConfirm()">
+      {{ confirmText }}
+    </button>
+  </div>
+</div>

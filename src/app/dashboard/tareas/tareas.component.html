@@ -1,0 +1,70 @@
+
+<!-- Encabezado premium (mismo estilo y altura que info-jugadores) -->
+<header class="page-header">
+  <div class="back-container" data-tutorial="tareas-volver">
+    <button type="button" class="btn-back-clean" (click)="irAPantalla(1)">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h2 class="table-title">
+      <i class="bi bi-list-check table-title-icon"></i>
+      {{ 'TAREAS.TITLE' | translate }}
+    </h2>
+    <p class="header-subtitle">{{ 'TAREAS.SUBTITLE' | translate }}</p>
+  </div>
+</header>
+
+<div class="tareas-page">
+  <div class="tareas-grid">
+    <div class="fifa-card" (click)="openTacticalBoard()" data-tutorial="tareas-pizarra">
+      <div class="fifa-card-inner">
+        <div class="fifa-card-icon-wrap">
+          <img src="/assets/iconos/tactica.svg" alt="" class="fifa-card-icon" />
+        </div>
+        <h3 class="fifa-card-title">{{ 'TAREAS.DIBUJAR' | translate }}</h3>
+        <p class="fifa-card-desc">{{ 'TAREAS.DIBUJAR_DESC' | translate }}</p>
+      </div>
+    </div>
+    <div class="fifa-card" (click)="irAPantalla(5)" data-tutorial="tareas-nube">
+      <div class="fifa-card-inner">
+        <div class="fifa-card-icon-wrap">
+          <i class="bi bi-cloud fifa-card-icon-bi"></i>
+        </div>
+        <h3 class="fifa-card-title">{{ 'TAREAS.NUBE' | translate }}</h3>
+        <p class="fifa-card-desc">{{ 'TAREAS.NUBE_DESC' | translate }}</p>
+      </div>
+    </div>
+    <div class="fifa-card" (click)="irAPantalla(2)" data-tutorial="tareas-historial">
+      <div class="fifa-card-inner">
+        <div class="fifa-card-icon-wrap">
+          <img src="/assets/iconos/historial-de-pedidos.svg" alt="" class="fifa-card-icon" />
+        </div>
+        <h3 class="fifa-card-title">{{ 'TAREAS.HISTORIAL' | translate }}</h3>
+        <p class="fifa-card-desc">{{ 'TAREAS.HISTORIAL_DESC' | translate }}</p>
+      </div>
+    </div>
+    <div class="fifa-card" (click)="irAPantalla(3)" data-tutorial="tareas-favoritas">
+      <div class="fifa-card-inner">
+        <div class="fifa-card-icon-wrap">
+          <img src="/assets/iconos/estrella.svg" alt="" class="fifa-card-icon" />
+        </div>
+        <h3 class="fifa-card-title">{{ 'TAREAS.FAVORITAS' | translate }}</h3>
+        <p class="fifa-card-desc">{{ 'TAREAS.FAVORITAS_DESC' | translate }}</p>
+      </div>
+    </div>
+    <div class="fifa-card" (click)="irAPantalla(4)" data-tutorial="tareas-mis">
+      <div class="fifa-card-inner">
+        <div class="fifa-card-icon-wrap">
+          <img src="/assets/iconos/cono-de-trafico.svg" alt="" class="fifa-card-icon" />
+        </div>
+        <h3 class="fifa-card-title">{{ 'TAREAS.MIS_TAREAS' | translate }}</h3>
+        <p class="fifa-card-desc">{{ 'TAREAS.MIS_TAREAS_DESC' | translate }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+

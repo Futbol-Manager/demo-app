@@ -1,0 +1,208 @@
+
+<!-- ===== PAGE HEADER ===== -->
+<div class="page-header">
+  <div class="back-container" data-tutorial="sp-volver">
+    <button type="button" class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h2 class="table-title">
+      <i class="bi bi-person-badge me-2"></i>Perfil de Jugador
+    </h2>
+    <p class="header-subtitle" *ngIf="displayName">{{ displayName }}</p>
+  </div>
+
+  <div class="page-header-stats">
+    <div class="stat-pill" *ngIf="playerFromTeam?.posicion || scoutingPlayer?.posicionPrincipal">
+      <i class="bi bi-geo-alt-fill"></i>
+      {{ (playerFromTeam?.posicion || scoutingPlayer?.posicionPrincipal) }}
+    </div>
+    <div class="stat-pill" *ngIf="playerFromTeam?.piernaNatural || scoutingPlayer?.piernaNatural">
+      <i class="bi bi-lightning-fill"></i>
+      {{ (playerFromTeam?.piernaNatural || scoutingPlayer?.piernaNatural) }}
+    </div>
+  </div>
+</div>
+
+<div class="mis-estadisticas-page">
+  <div class="mis-estadisticas-wrap" *ngIf="datosCargados">
+    <!-- Hero: foto + nombre + radar -->
+    <section class="premium-hero" data-tutorial="sp-hero">
+      <div class="premium-hero-inner">
+
+        <!-- Perfil del jugador -->
+        <div class="premium-profile">
+          <div class="premium-avatar-ring">
+            <ng-container *ngIf="profileImageUrl && !profileImageError">
+              <div class="premium-avatar-inner">
+                <img [src]="profileImageUrl" alt="" class="premium-avatar" (error)="profileImageError = true">
+              </div>
+            </ng-container>
+            <ng-container *ngIf="!profileImageUrl || profileImageError">
+              <div class="premium-avatar-inner premium-avatar-placeholder">
+                <i class="bi bi-person-fill"></i>
+              </div>
+            </ng-container>
+          </div>
+          <h1 class="premium-name">{{ displayName }}</h1>
+          <div class="premium-pills">
+            <span class="premium-pill">
+              <i class="bi bi-geo-alt-fill"></i>
+              {{ (playerFromTeam?.posicion || scoutingPlayer?.posicionPrincipal) || '—' }}
+            </span>
+            <span class="premium-pill">
+              <i class="bi bi-lightning-fill"></i>
+              {{ (playerFromTeam?.piernaNatural || scoutingPlayer?.piernaNatural) || '—' }}
+            </span>
+            <span class="premium-pill" *ngIf="(playerFromTeam?.altura || scoutingPlayer?.altura)">
+              <i class="bi bi-rulers"></i>
+              {{ playerFromTeam?.altura || scoutingPlayer?.altura }} cm
+            </span>
+          </div>
+        </div>
+
+        <!-- Divisor vertical -->
+        <div class="hero-divider"></div>
+
+        <!-- Panel radar de habilidades -->
+        <div class="premium-radar-panel" *ngIf="playerFromTeam && (playerFromTeam.habilidadConBalon || playerFromTeam.pase)">
+          <p class="premium-radar-title">
+            <i class="bi bi-hexagon-half"></i>Perfil de habilidades
+          </p>
+          <div class="premium-radar-wrap">
+            <canvas #radarCanvas></canvas>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Fila 1: Datos deportivos | Estadísticas de partidos -->
+    <div class="premium-row">
+      <section class="premium-section premium-col" data-tutorial="sp-datos">
+        <h2 class="premium-section-title">
+          <i class="bi bi-graph-up-arrow me-2"></i>Datos deportivos
+        </h2>
+        <div class="premium-data-grid">
+          <div class="premium-data-item">
+            <span class="premium-data-label">Posición</span>
+            <span class="premium-data-value">{{ (playerFromTeam?.posicion || scoutingPlayer?.posicionPrincipal) || '—' }}</span>
+          </div>
+          <div class="premium-data-item">
+            <span class="premium-data-label">Posición 2</span>
+            <span class="premium-data-value">{{ (playerFromTeam?.posicionDos || scoutingPlayer?.posicionesSecundarias) || '—' }}</span>
+          </div>
+          <div class="premium-data-item">
+            <span class="premium-data-label">Pierna natural</span>
+            <span class="premium-data-value">{{ (playerFromTeam?.piernaNatural || scoutingPlayer?.piernaNatural) || '—' }}</span>
+          </div>
+          <div class="premium-data-item">
+            <span class="premium-data-label">Altura (cm)</span>
+            <span class="premium-data-value">{{ (playerFromTeam?.altura || scoutingPlayer?.altura) || '—' }}</span>
+          </div>
+          <div class="premium-data-item">
+            <span class="premium-data-label">Peso (kg)</span>
+            <span class="premium-data-value">{{ (playerFromTeam?.peso || scoutingPlayer?.peso) || '—' }}</span>
+          </div>
+        </div>
+      </section>
+      <section class="premium-section premium-col" data-tutorial="sp-stats">
+        <h2 class="premium-section-title">
+          <i class="bi bi-trophy me-2"></i>Estadísticas de partidos
+        </h2>
+        <div class="premium-stats-grid">
+          <div class="premium-stat-card">
+            <span class="premium-stat-value">{{ partidosJugados }}</span>
+            <span class="premium-stat-label">Partidos jugados</span>
+          </div>
+          <div class="premium-stat-card">
+            <span class="premium-stat-value">{{ numTitulares }}</span>
+            <span class="premium-stat-label">Titularidades</span>
+          </div>
+          <div class="premium-stat-card">
+            <span class="premium-stat-value">{{ minutosJugados }}</span>
+            <span class="premium-stat-label">Minutos jugados</span>
+          </div>
+          <div class="premium-stat-card">
+            <span class="premium-stat-value">{{ goles }}</span>
+            <span class="premium-stat-label">Goles</span>
+          </div>
+          <div class="premium-stat-card">
+            <span class="premium-stat-value">{{ tarjetasAmarillas }}</span>
+            <span class="premium-stat-label">Tarjetas amarillas</span>
+          </div>
+          <div class="premium-stat-card">
+            <span class="premium-stat-value">{{ tarjetasRojas }}</span>
+            <span class="premium-stat-label">Tarjetas rojas</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Fila 2: Gráficas | Asistencia a entrenamientos -->
+    <div class="premium-row">
+      <section class="premium-section premium-section-graficas premium-col" data-tutorial="sp-graficas">
+        <h2 class="premium-section-title">
+          <i class="bi bi-bar-chart-line me-2"></i>Gráficas
+        </h2>
+        <div class="premium-graficas-tabs">
+          <button type="button" class="premium-graficas-tab" [class.active]="activeTabGraficas === 'estadisticas'" (click)="setTabGraficas('estadisticas')">
+            <i class="bi bi-trophy me-1"></i> Partidos
+          </button>
+          <button type="button" class="premium-graficas-tab" [class.active]="activeTabGraficas === 'asistencia'" (click)="setTabGraficas('asistencia')" [disabled]="!tieneDatosAsistenciaParaGrafica">
+            <i class="bi bi-calendar-check me-1"></i> Asistencia
+          </button>
+        </div>
+        <div class="premium-grafica-container" *ngIf="activeTabGraficas === 'estadisticas'">
+          <canvas #barEstadisticasCanvas></canvas>
+        </div>
+        <div class="premium-grafica-container" *ngIf="activeTabGraficas === 'asistencia'">
+          <canvas #barAsistenciaCanvas *ngIf="tieneDatosAsistenciaParaGrafica"></canvas>
+          <p class="premium-grafica-empty" *ngIf="!tieneDatosAsistenciaParaGrafica">
+            <i class="bi bi-calendar-x"></i> No hay datos de asistencia para mostrar por mes.
+          </p>
+        </div>
+      </section>
+      <section class="premium-section premium-section-last premium-col" data-tutorial="sp-asistencia">
+        <h2 class="premium-section-title">
+          <i class="bi bi-calendar-check me-2"></i>Asistencia a entrenamientos
+        </h2>
+        <div class="premium-table-wrap">
+          <table class="premium-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Asistencia</th>
+                <th>Retraso</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="!listAsistencia?.length">
+                <td colspan="3" class="premium-table-empty">No hay registros</td>
+              </tr>
+              <tr *ngFor="let p of listAsistencia">
+                <td>{{ p.fecha }}</td>
+                <td>
+                  <span *ngIf="p.asistencia === 1" class="premium-badge ok"><i class="bi bi-check-circle-fill"></i></span>
+                  <span *ngIf="p.asistencia === 0" class="premium-badge no"><i class="bi bi-x-circle-fill"></i></span>
+                </td>
+                <td>
+                  <span *ngIf="p.retraso === 1" class="premium-badge ok"><i class="bi bi-check-circle-fill"></i></span>
+                  <span *ngIf="p.retraso === 0" class="premium-badge no"><i class="bi bi-x-circle-fill"></i></span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div *ngIf="!datosCargados" class="premium-loading">
+    <div class="premium-loading-spinner"></div>
+    <p>Cargando información deportiva…</p>
+  </div>
+</div>
