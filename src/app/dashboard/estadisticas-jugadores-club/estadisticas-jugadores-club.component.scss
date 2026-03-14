@@ -935,18 +935,29 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$blue} 55%, #{$green} 1
 }
 
 @media (max-width: 768px) {
+  .page-header {
+    padding: 0.75rem 1rem;
+    min-height: 56px;
+  }
+
   .page-header-inner {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 0.65rem;
   }
 
   .page-header-center {
-    order: -1;
-    flex: 1 1 100%;
-    justify-content: flex-start;
+    order: 0;
+    flex: 1 1 auto;
+    justify-content: center;
+    text-align: center;
   }
 
-  .page-title { font-size: 1.05rem; }
+  .page-title {
+    font-size: 0.95rem;
+    white-space: normal;
+  }
+
+  .page-subtitle { display: none; }
 
   .main-section { padding: 1rem; }
 

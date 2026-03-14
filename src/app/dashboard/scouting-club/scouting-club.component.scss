@@ -1545,68 +1545,119 @@ textarea.form-control {
 }
 
 @media (max-width: 768px) {
-  .scouting-container {
-    padding: 16px 12px;
+  /* ── Page header: compacto, sin centering absoluto ── */
+  .page-header {
+    min-height: 50px;
+    padding: 0.55rem 0.85rem;
+    flex-wrap: nowrap;
   }
 
+  .table-title {
+    position: static;
+    transform: none;
+    flex: 1;
+    text-align: center;
+    font-size: 0.92rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
+  }
+
+  .btn-back-clean span { display: none; }
+  .btn-back-clean { padding: 0.45rem 0.65rem; }
+
+  /* ── Container ── */
+  .scouting-container { padding: 8px 8px 16px; }
+
+  /* ── Watchlist header ── */
+  .watchlist-header {
+    flex-direction: column;
+    gap: 8px;
+
+    .watchlist-search-wrap {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .watchlist-filters {
+      width: 100%;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+      &::-webkit-scrollbar { display: none; }
+    }
+  }
+
+  /* ── Botón "Añadir externo" + botón comparar: full width ── */
+  .watchlist-header .btn-primary { width: 100%; justify-content: center; }
+
+  /* Compare toggle: ocultar texto, solo icono */
+  .btn-compare-toggle span { display: none; }
+
+  /* ── Compare bar: columna en móvil ── */
+  .compare-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 14px;
+
+    .compare-bar-actions { width: 100%; justify-content: flex-end; }
+  }
+
+  /* ── Search bar ── */
   .search-bar-row {
     flex-wrap: wrap;
-
     .search-input-wrap { flex: 1 1 100%; }
     .btn-filters-toggle { flex: 1; }
     .btn-primary { flex: 1; }
   }
 
   .filter-row-4,
-  .filter-row-3 {
-    grid-template-columns: 1fr;
-  }
+  .filter-row-3 { grid-template-columns: 1fr; }
 
-  .players-grid {
-    grid-template-columns: 1fr;
-  }
+  .players-grid { grid-template-columns: 1fr; }
 
-  .pipeline-board {
-    flex-direction: column;
-  }
+  .pipeline-board { flex-direction: column; }
+  .pipeline-column { min-width: unset; }
 
-  .pipeline-column {
-    min-width: unset;
-  }
-
-  .watchlist-header {
-    flex-direction: column;
-
-    .watchlist-search-wrap {
-      width: 100%;
-    }
-  }
-
-  .scores-form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .form-row-2 {
-    grid-template-columns: 1fr;
-  }
+  .scores-form-grid { grid-template-columns: 1fr; }
+  .form-row-2 { grid-template-columns: 1fr; }
 
   .modal-card {
     width: 95%;
-    max-height: 90vh;
+    max-height: 92vh;
   }
 
-  .eval-scores-grid {
-    grid-template-columns: 1fr !important;
+  /* Modal cabecera: AI btn + close compactos */
+  .modal-header {
+    padding: 14px 16px;
+    gap: 8px;
+
+    h3 { font-size: 14px; }
+
+    .btn-ai-report {
+      font-size: 11px;
+      padding: 4px 10px;
+    }
   }
+
+  .eval-scores-grid { grid-template-columns: 1fr !important; }
 
   .detail-player-header {
     flex-direction: column;
     text-align: center;
-
-    .detail-meta {
-      justify-content: center;
-    }
+    .detail-meta { justify-content: center; }
   }
+
+  /* Sección de vídeos: botones apilados */
+  .detail-section-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .video-action-btns { flex-wrap: wrap; }
 }
 
 /* AI Report button */

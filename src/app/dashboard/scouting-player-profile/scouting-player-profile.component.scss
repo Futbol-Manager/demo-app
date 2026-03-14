@@ -939,18 +939,256 @@ $transition:     0.25s cubic-bezier(0.4, 0, 0.2, 1);
   &:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba($blue, 0.45); color: white; }
 }
 
-/* ═══ RESPONSIVE ═══ */
+/* ═══════════════════════════════════════════════════════════
+   PREMIUM MOBILE (≤ 640px) — scouting-player-profile
+   ═══════════════════════════════════════════════════════════ */
 @media (max-width: 640px) {
-  .sp-hero-content { padding: 24px 20px; }
-  .sp-card-body { padding: 18px; }
-  .sp-grid-2 { grid-template-columns: 1fr; }
-  .sp-avail-grid { grid-template-columns: 1fr 1fr; }
-  .sp-stats-row { grid-template-columns: 1fr 1fr; }
-  .sp-visibility-toggle { width: 100%; }
-  .sp-toggle-card { min-width: unset; }
+
+  /* ─── Página ────────────────────────────────────────────── */
+  .scouting-profile-page {
+    padding: 0 0 64px;
+  }
+
+  /* ─── Hero: avatar centrado + info + toggle apilados ───── */
+  .sp-hero-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 24px 18px 20px;
+    gap: 16px;
+  }
+
+  .sp-avatar-wrap {
+    flex-shrink: 0;
+  }
+
+  .sp-hero-info {
+    flex: unset;
+    width: 100%;
+    min-width: unset;
+    text-align: center;
+  }
+
+  .sp-hero-name-input {
+    text-align: center;
+    font-size: 1.4rem;
+  }
+
+  .sp-hero-meta {
+    justify-content: center;
+  }
+
+  .sp-visibility-toggle {
+    width: 100%;
+  }
+
+  .sp-toggle-card {
+    min-width: unset;
+    padding: 10px 14px;
+    gap: 10px;
+  }
+
+  /* ─── Alertas ─────────────────────────────────────────── */
+  .sp-alert {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    border-radius: 10px;
+  }
+
+  /* ─── Secciones ──────────────────────────────────────── */
+  .sp-sections {
+    gap: 14px;
+  }
+
+  .sp-card {
+    border-radius: 14px;
+  }
+
+  .sp-card-header {
+    padding: 14px 18px;
+    gap: 10px;
+
+    h3 { font-size: 0.92rem; }
+  }
+
+  .sp-card-header-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    i { font-size: 0.9rem; }
+  }
+
+  .sp-card-body {
+    padding: 16px;
+  }
+
+  /* ─── Campos: 1 columna ──────────────────────────────── */
+  .sp-grid-2 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .sp-field--full {
+    grid-column: 1;
+  }
+
+  .sp-input {
+    padding: 9px 12px;
+    font-size: 0.88rem;
+  }
+
+  .sp-textarea {
+    padding: 9px 12px;
+    font-size: 0.88rem;
+  }
+
+  /* ─── Pos chips: más compactos para wrapping fluido ───── */
+  .sp-pos-chip {
+    padding: 6px 12px;
+    font-size: 0.78rem;
+  }
+
+  /* ─── Disponibilidad: 2 columnas ────────────────────── */
+  .sp-avail-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .sp-avail-chip {
+    padding: 10px 6px;
+    font-size: 0.72rem;
+    gap: 5px;
+    i { font-size: 1rem; }
+    &:hover { border-color: $border; color: $text-secondary; }
+  }
+
+  /* ─── Stats de carrera ───────────────────────────────── */
+  .sp-stats-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .sp-stat-box {
+    padding: 12px;
+  }
+
+  /* ─── CV dropzone ────────────────────────────────────── */
+  .sp-cv-dropzone {
+    padding: 24px 16px;
+    gap: 8px;
+  }
+
+  .sp-cv-dropzone-icon {
+    width: 48px;
+    height: 48px;
+    i { font-size: 1.4rem; }
+  }
+
+  /* ─── CV preview: compact ────────────────────────────── */
+  .sp-cv-preview {
+    gap: 10px;
+    padding: 12px 14px;
+    flex-wrap: wrap;
+  }
+
+  .sp-cv-preview-info {
+    flex: 1 1 calc(100% - 100px);
+  }
+
+  /* ─── Vídeos: lista compacta ─────────────────────────── */
+  .sp-video-item {
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .sp-video-platform-icon {
+    width: 34px;
+    height: 34px;
+    i { font-size: 0.9rem; }
+  }
+
+  /* ─── Platform tabs: scroll horizontal ──────────────── */
+  .sp-platform-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+    padding-bottom: 2px;
+  }
+
+  .sp-platform-tab {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 7px 12px;
+    font-size: 0.8rem;
+  }
+
+  /* ─── Add video actions: apilados ────────────────────── */
+  .sp-add-video-actions {
+    flex-direction: column;
+    gap: 8px;
+
+    .sp-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  /* ─── Botones generales: tapables ────────────────────── */
+  .sp-btn-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+  }
+
+  /* ─── Save bar: botón full-width ─────────────────────── */
+  .sp-save-bar {
+    padding: 20px 0 0;
+  }
+
+  .sp-btn--save {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 24px;
+    font-size: 0.95rem;
+    &:hover { transform: none; }
+  }
+
+  /* ─── Modal: pantalla completa en móvil ──────────────── */
+  .sp-modal-overlay {
+    padding: 12px;
+    align-items: flex-end;
+  }
+
+  .sp-modal {
+    border-radius: 20px 20px 14px 14px;
+  }
+
+  .sp-modal-header {
+    padding: 32px 20px 20px;
+
+    h2 { font-size: 1.1rem; }
+    p  { font-size: 0.82rem; }
+  }
+
+  .sp-modal-icon-ring {
+    width: 56px;
+    height: 56px;
+    i { font-size: 1.4rem; }
+  }
+
+  .sp-modal-body {
+    padding: 16px 20px;
+  }
+
+  .sp-modal-footer {
+    padding: 14px 20px 20px;
+  }
 }
 
 @media (max-width: 400px) {
   .sp-avail-grid { grid-template-columns: 1fr; }
   .sp-hero-name-input { font-size: 1.2rem; }
+  .sp-hero-content { padding: 20px 14px; }
+  .sp-card-body { padding: 14px; }
 }

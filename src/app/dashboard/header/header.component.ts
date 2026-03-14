@@ -945,7 +945,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       event.stopPropagation();
     }
     this.showModal = false;
-    this.router.navigate(['/dashboard/suscripcion-club']);
+    window.open('https://appsphairatech.com/planes', '_blank');
   }
 
   cambiarPassword(): void {

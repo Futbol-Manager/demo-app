@@ -15,6 +15,9 @@ const CARD_WIDTH = 420;
 const CARD_HEIGHT_EST = 320;
 const CARD_GAP = 20;
 const VIEWPORT_PADDING = 24;
+const MOBILE_VIEWPORT_PADDING = 12;
+const MOBILE_CARD_EST_HEIGHT = 210;
+const MOBILE_CARD_GAP = 12;
 
 export interface SpotlightRect {
   left: number;
@@ -53,7 +56,7 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
   /** Estilo dinámico para que la flecha apunte al centro del elemento destacado (opcional) */
   arrowPositionStyle: { top?: string; left?: string; right?: string; bottom?: string; transform?: string } | null = null;
   /** Posición dinámica de la tarjeta para no superponer el elemento destacado */
-  cardStyle: { left?: string; top?: string; right?: string; transform?: string } = this.getCenteredCardStyle();
+  cardStyle: { left?: string; top?: string; right?: string; bottom?: string; transform?: string } = this.getCenteredCardStyle();
 
   /** Drag de la tarjeta */
   isDragging = false;
@@ -291,6 +294,61 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
 
   /** Posiciona la tarjeta: paso 1 y último paso siempre centrados; resto dinámico para no tapar el elemento. */
   private updateCardPosition(): void {
+    if (this.isMobileViewport()) {
+      const vw = typeof window !== 'undefined' ? window.innerWidth : 390;
+      const vh = typeof window !== 'undefined' ? window.innerHeight : 844;
+      const cardWidth = Math.max(280, Math.min(vw - 24, 520));
+      const cardLeft = Math.max(12, (vw - cardWidth) / 2);
+
+      this.cardStyle = { left: '50%', transform: 'translateX(-50%)' };
+      if (!this.spotlightRect || this.stepIndex === 1 || this.isLast) {
+        this.cardStyle = { ...this.cardStyle, bottom: 'max(10px, env(safe-area-inset-bottom))' };
+        this.arrowSide = null;
+        this.arrowPositionStyle = null;
+        this.cdr.markForCheck();
+        return;
+      }
+
+      const r = this.spotlightRect;
+      const spaceAbove = r.top - MOBILE_VIEWPORT_PADDING;
+      const spaceBelow = vh - (r.top + r.height) - MOBILE_VIEWPORT_PADDING;
+      const canPlaceBelow = spaceBelow >= MOBILE_CARD_EST_HEIGHT + MOBILE_CARD_GAP;
+      const canPlaceAbove = spaceAbove >= MOBILE_CARD_EST_HEIGHT + MOBILE_CARD_GAP;
+
+      let cardTop = vh - MOBILE_CARD_EST_HEIGHT - MOBILE_VIEWPORT_PADDING;
+
+      if (canPlaceBelow || (!canPlaceAbove && spaceBelow >= spaceAbove)) {
+        // Coloca el modal debajo del elemento para no taparlo.
+        cardTop = Math.min(
+          vh - MOBILE_CARD_EST_HEIGHT - MOBILE_VIEWPORT_PADDING,
+          r.top + r.height + MOBILE_CARD_GAP
+        );
+        this.cardStyle = { ...this.cardStyle, top: `${Math.max(MOBILE_VIEWPORT_PADDING, cardTop)}px` };
+        this.arrowSide = 'top';
+      } else if (canPlaceAbove || spaceAbove > spaceBelow) {
+        // Coloca el modal encima del elemento cuando abajo no cabe.
+        cardTop = Math.max(
+          MOBILE_VIEWPORT_PADDING,
+          r.top - MOBILE_CARD_EST_HEIGHT - MOBILE_CARD_GAP
+        );
+        this.cardStyle = { ...this.cardStyle, top: `${cardTop}px` };
+        this.arrowSide = 'bottom';
+      } else {
+        // Fallback extremo: mantener en bottom sheet.
+        this.cardStyle = { ...this.cardStyle, bottom: 'max(10px, env(safe-area-inset-bottom))' };
+        this.arrowSide = null;
+        this.arrowPositionStyle = null;
+        this.cdr.markForCheck();
+        return;
+      }
+
+      const arrowCenterX = r.left + r.width / 2;
+      const arrowLeftPx = arrowCenterX - cardLeft - 20;
+      const clampedLeft = Math.max(20, Math.min(cardWidth - 20, arrowLeftPx));
+      this.arrowPositionStyle = { left: clampedLeft + 'px', transform: 'translateX(-50%)' };
+      this.cdr.markForCheck();
+      return;
+    }
     if (this.stepIndex === 1 || this.isLast) {
       this.arrowSide = null;
       this.arrowPositionStyle = null;
@@ -403,6 +461,7 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
   // ── Drag de la tarjeta ────────────────────────────────────────────────────
 
   onCardMouseDown(evt: MouseEvent): void {
+    if (this.isMobileViewport()) return;
     const target = evt.target as HTMLElement;
     if (target.closest('button') || target.closest('input') || target.closest('label')) return;
     evt.preventDefault();
@@ -410,6 +469,7 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
   }
 
   onCardTouchStart(evt: TouchEvent): void {
+    if (this.isMobileViewport()) return;
     const target = evt.target as HTMLElement;
     if (target.closest('button') || target.closest('input') || target.closest('label')) return;
     const t = evt.touches[0];
@@ -470,6 +530,10 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
     const top  = Math.max(VIEWPORT_PADDING, Math.min(this.dragStart.cardTop  + dy, vh - CARD_HEIGHT_EST - VIEWPORT_PADDING));
     this.cardStyle = { left: left + 'px', top: top + 'px' };
     this.cdr.markForCheck();
+  }
+
+  private isMobileViewport(): boolean {
+    return typeof window !== 'undefined' && window.innerWidth <= 768;
   }
 
   // ── Acciones del usuario ───────────────────────────────────────────────────

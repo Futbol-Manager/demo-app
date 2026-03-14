@@ -138,6 +138,10 @@ const STEPS = [
   },
   {
     file: 'inicio_14.mp3',
+    text: '¿Sabías que Sphaira tiene una aplicación móvil disponible para iPhone y Android? Revisa convocatorias desde el banquillo, gestiona pagos entre reunión y reunión, consulta estadísticas en vivo y recibe alertas al instante. La experiencia en el móvil es mucho más rápida y cómoda que en el navegador. Descárgala buscando Sphaira en la tienda de Apple o en Google Play.'
+  },
+  {
+    file: 'inicio_15.mp3',
     text: 'Ya conoces tu panel de club. Navega por cualquier módulo cuando quieras y, si necesitas orientación, el botón de ayuda en cada pantalla está ahí. ¡A sacar partido a Sphaira!'
   },
 
@@ -233,14 +237,16 @@ const STEPS = [
   { file: 'coach_02.mp3', text: 'Arriba tienes el selector de temporada. Cámbialo para ver los equipos asignados en otro curso; el listado se actualiza al instante. Así puedes saltar de una temporada a otra sin salir de esta pantalla.' },
   { file: 'coach_03.mp3', text: 'Aquí están tus equipos. Cada tarjeta muestra categoría, nombre, liga, horario de entrenamiento y número de jugadores. Pulsa en una para acceder a su calendario, tareas, jugadores, estadísticas, notificaciones y el resto de opciones de ese equipo.' },
   { file: 'coach_04.mp3', text: 'Si aún no tienes equipos asignados en esta temporada, verás un mensaje orientativo y un botón para ir a la gestión de equipos del club. Cuando te asignen equipos, aparecerán aquí.' },
-  { file: 'coach_05.mp3', text: 'Ya conoces tu panel de entrenador. Elige un equipo cuando quieras y entra a su calendario, tareas, jugadores y el resto de opciones. ¡A dirigir desde la banda!' },
+  { file: 'coach_05.mp3', text: 'Los mejores entrenadores dirigen también fuera del campo. Con la app de Sphaira para iOS y Android tienes el calendario del equipo, las tareas de tus jugadores, el registro de lesiones y el chat con el cuerpo técnico en tu móvil, vayas donde vayas. La experiencia es mucho más ágil que en el navegador. ¡Descárgala en App Store o Google Play buscando Sphaira Tech!' },
+  { file: 'coach_06.mp3', text: 'Ya conoces tu panel de entrenador. Elige un equipo cuando quieras y entra a su calendario, tareas, jugadores y el resto de opciones. ¡A dirigir desde la banda!' },
 
   // ── Dashboard inicio — Padre/Jugador (player), vista "Mis hijos" ────────────
   { file: 'player_01.mp3', text: 'Esta es tu pantalla principal como padre o jugador. Aquí ves los deportistas vinculados a tu cuenta en la temporada elegida. Cada tarjeta te lleva a su mundo: calendario, cuotas, documentación, estadísticas y galería. Te contamos en un momento qué ver en cada parte.' },
   { file: 'player_02.mp3', text: 'Arriba tienes el selector de temporada. Cámbialo para ver los jugadores y equipos de otro curso; el listado se actualiza al instante. Así puedes cambiar de temporada sin salir de esta pantalla.' },
   { file: 'player_03.mp3', text: 'Aquí están tus jugadores. Cada tarjeta muestra nombre, equipo, horario de entrenamiento y próximo partido. Pulsa en una tarjeta o en Ver jugador para acceder a todas las opciones de ese jugador: calendario, cuotas, documentos y más.' },
   { file: 'player_04.mp3', text: 'Si no tienes jugadores vinculados en esta temporada, verás un mensaje orientativo. Contacta con tu club para dar de alta a los jugadores; cuando estén dados de alta, aparecerán aquí.' },
-  { file: 'player_05.mp3', text: 'Ya conoces tu panel. Pulsa en cualquier jugador cuando quieras para ver su calendario, cuotas, documentación y el resto de opciones. ¡Todo a un toque!' },
+  { file: 'player_05.mp3', text: 'Padres y jugadores que usan la app de Sphaira no se pierden nada: reciben notificaciones de convocatorias al instante, consultan horarios de entrenamiento, revisan cuotas pendientes y acceden a los documentos del club sin tener que buscar correos ni archivos. La experiencia es mucho mejor que en el navegador. Descárgala gratis buscando Sphaira en la tienda de Apple o en Google Play.' },
+  { file: 'player_06.mp3', text: 'Ya conoces tu panel de jugador. Entra en cualquier tarjeta cuando quieras para ver el calendario, las cuotas, la documentación y todas las opciones disponibles. Todo lo tienes a tu alcance.' },
 
   // ── Equipos (sin paso Volver; narrativo) ──────────────────────────────────
   { file: 'equipos_01.mp3', text: 'En esta pantalla gestionas todos los equipos de la temporada: categorías, jugadores por equipo, horarios de entrenamiento y acceso rápido al calendario de cada equipo. Te guiamos paso a paso.' },

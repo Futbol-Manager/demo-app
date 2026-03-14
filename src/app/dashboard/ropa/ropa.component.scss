@@ -420,16 +420,248 @@
   }
 }
 
-/* ===== RESPONSIVE ===== */
+/* =======================================================
+   MOBILE PREMIUM — ≤ 768px
+======================================================= */
 @media (max-width: 768px) {
+
+  /* ── 1. PAGE HEADER ── */
+  .page-header {
+    min-height: 56px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: nowrap;
+  }
+
+  .header-center {
+    position: static;
+    transform: none;
+    flex: 1;
+    align-items: center;
+    pointer-events: auto;
+  }
+
+  .page-title {
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .header-subtitle { display: none; }
+  .header-spacer   { display: none; }
+
+  .btn-back-clean span { display: none; }
+  .btn-back-clean {
+    padding: 0.45rem 0.65rem;
+    i { font-size: 1.1rem; }
+  }
+
+  /* ── 2. SEASON BAR ── */
+  .ropa-season-bar {
+    padding: 8px 0.75rem 10px;
+    gap: 8px;
+  }
+
+  .ropa-season-label { font-size: 0.82rem; }
+
+  .ropa-season-select {
+    min-width: 120px;
+    padding: 6px 10px;
+    font-size: 0.82rem;
+  }
+
+  /* ── 3. TABS: scrollable ── */
+  .ropa-tabs {
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 0 0.5rem;
+
+    &::-webkit-scrollbar { display: none; }
+  }
+
+  .ropa-tab {
+    flex-shrink: 0;
+    padding: 10px 14px;
+    font-size: 0.78rem;
+    gap: 5px;
+    white-space: nowrap;
+  }
+
+  .catalogo-tab-content { padding: 12px 0.5rem; }
+
+  /* ── 4. LEGACY WARNING BANNER ── */
+  .legacy-warning-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 12px 8px 0;
+    padding: 12px;
+    font-size: 0.82rem;
+
+    .legacy-export-btn {
+      align-self: flex-start;
+      font-size: 0.8rem;
+    }
+  }
+
+  /* ── 5. TOOLBAR ── */
   .table-actions-row {
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: 0.5rem;
+    padding: 0 8px;
   }
 
   .table-actions-right {
     width: 100%;
     justify-content: flex-end;
+    margin-right: 0;
+  }
+
+  .table-actions-left { margin-left: 0; }
+
+  /* ── 6. PLAYER CARDS ── */
+  .mobile-view { padding: 0 4px; }
+
+  .player-card {
+    border-radius: 18px;
+    box-shadow: 0 4px 18px rgba(0, 44, 64, 0.11);
+    margin-bottom: 14px;
+  }
+
+  /* Card header: 2 filas (nombre+badge / equipo) */
+  .card-header-ropa {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 14px;
+
+    .card-header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .player-name {
+      font-size: 1rem;
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .player-team {
+      font-size: 0.74rem;
+      opacity: 0.72;
+      letter-spacing: 0.01em;
+    }
+
+    .badge-status {
+      margin-left: 0;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.7rem;
+      padding: 4px 10px;
+
+      i { font-size: 0.78rem; }
+    }
+  }
+
+  /* Shirt info */
+  .card-shirt-info {
+    padding: 10px 14px 6px;
+    gap: 10px;
+
+    .shirt-field {
+      label {
+        font-size: 0.66rem;
+        letter-spacing: 0.05em;
+      }
+
+      input {
+        font-size: 0.82rem;
+        padding: 5px 8px;
+        border-radius: 8px;
+      }
+    }
+  }
+
+  /* ── 7. CLOTHING GRID: layout vertical ── */
+  .card-clothing-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 8px 14px 16px;
+  }
+
+  .clothing-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 7px;
+    padding: 10px;
+    border-radius: 10px;
+    background: #f8fafc;
+    border: 1px solid #eef2f7;
+
+    .clothing-label {
+      font-size: 0.71rem;
+      font-weight: 600;
+      color: #334155;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+      line-height: 1.3;
+    }
+
+    .clothing-controls {
+      width: 100%;
+      gap: 6px;
+      align-items: center;
+
+      select {
+        flex: 1;
+        min-width: 0;
+        height: 32px;
+        font-size: 0.79rem;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        padding: 0 8px;
+        background: #fff;
+        width: auto;
+
+        &:focus {
+          outline: none;
+          border-color: #31b270;
+          box-shadow: 0 0 0 2px rgba(49, 178, 112, 0.15);
+        }
+      }
+    }
+  }
+
+  /* Toggle button: icono circular premium */
+  .btn-toggle-sm {
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+
+    &.delivered {
+      background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+      color: #065f46;
+    }
+
+    &.not-delivered {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      color: #92400e;
+    }
   }
 }
 

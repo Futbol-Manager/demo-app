@@ -13,6 +13,9 @@
 ═══════════════════════════════════════════════ -->
 <div class="chat-container" [class.sidebar-open]="showHistory">
 
+  <!-- BACKDROP MÓVIL: cierra el sidebar al tocar fuera -->
+  <div class="mobile-sidebar-backdrop" *ngIf="showHistory" (click)="toggleHistory()"></div>
+
   <!-- SIDEBAR LATERAL DE HISTORIAL -->
   <aside class="history-sidebar" *ngIf="showHistory" data-tutorial="asistente-sidebar">
     <div class="sidebar-header">

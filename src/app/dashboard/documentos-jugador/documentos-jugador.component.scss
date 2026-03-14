@@ -156,20 +156,37 @@ $shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
 
 @media (max-width: 768px) {
   .page-header {
-    flex-wrap: wrap;
-    min-height: auto;
-    padding: 0.85rem 1rem;
+    flex-wrap: nowrap;
+    min-height: 56px;
+    padding: 0.6rem 0.85rem;
+    gap: 0.5rem;
   }
+
   .header-center {
     position: static;
     transform: none;
-    order: -1;
-    width: 100%;
-    align-items: flex-start;
+    flex: 1;
+    align-items: center;
+    text-align: center;
     pointer-events: auto;
   }
-  .table-title { font-size: 1.1rem; }
-  .header-search-box input { width: 130px; }
+
+  .table-title {
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    i { display: none; }
+  }
+
+  .header-subtitle { display: none; }
+
+  .btn-back-clean {
+    span { display: none; }
+    padding: 0.45rem 0.65rem;
+  }
+
+  .header-search-box input { width: 80px; }
 }
 
 // ─── Page ───────────────────────────────────────────────────

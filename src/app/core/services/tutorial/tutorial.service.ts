@@ -262,10 +262,17 @@ export class TutorialService {
         position: 'left'
       },
       {
+        id: 'inicio-app-movil',
+        title: '📱 Descarga la app — lleva tu club a todas partes',
+        text: '¿Sabías que Sphaira tiene una aplicación móvil disponible para iPhone y Android? Revisa convocatorias desde el banquillo, gestiona pagos entre reunión y reunión, consulta estadísticas en vivo y recibe alertas al instante. La experiencia en el móvil es mucho más rápida y cómoda que en el navegador. Descárgala buscando Sphaira en la tienda de Apple o en Google Play.',
+        audioFile: 'inicio_14.mp3',
+        position: 'bottom'
+      },
+      {
         id: 'inicio-fin',
         title: 'Listo',
         text: 'Ya conoces tu panel de club. Navega por cualquier módulo cuando quieras y, si necesitas orientación, el botón de ayuda en cada pantalla está ahí. ¡A sacar partido a Sphaira!',
-        audioFile: 'inicio_14.mp3',
+        audioFile: 'inicio_15.mp3',
         position: 'bottom'
       }
     ];
@@ -447,10 +454,17 @@ export class TutorialService {
         position: 'bottom'
       },
       {
+        id: 'inicio-coach-app-movil',
+        title: '📱 Tu vestuario digital, siempre en el bolsillo',
+        text: 'Los mejores entrenadores dirigen también fuera del campo. Con la app de Sphaira para iOS y Android tienes el calendario del equipo, las tareas de tus jugadores, el registro de lesiones y el chat con el cuerpo técnico en tu móvil, vayas donde vayas. La experiencia es mucho más ágil que en el navegador. ¡Descárgala en App Store o Google Play buscando "Sphaira Tech"!',
+        audioFile: 'coach_05.mp3',
+        position: 'bottom'
+      },
+      {
         id: 'inicio-coach-fin',
         title: 'Listo',
         text: 'Ya conoces tu panel de entrenador. Elige un equipo cuando quieras y entra a su calendario, tareas, jugadores y el resto de opciones. ¡A dirigir desde la banda!',
-        audioFile: 'coach_05.mp3',
+        audioFile: 'coach_06.mp3',
         position: 'bottom'
       }
     ];
@@ -531,10 +545,17 @@ export class TutorialService {
         position: 'bottom'
       },
       {
+        id: 'inicio-player-app-movil',
+        title: '📱 Todo el seguimiento de tu jugador, en tu móvil',
+        text: 'Padres y jugadores que usan la app de Sphaira no se pierden nada: reciben notificaciones de convocatorias al instante, consultan horarios de entrenamiento, revisan cuotas pendientes y acceden a los documentos del club sin tener que buscar correos ni archivos. La experiencia es mucho mejor que en el navegador. ¡Descárgala gratis buscando Sphaira en la tienda de Apple o en Google Play!',
+        audioFile: 'player_05.mp3',
+        position: 'bottom'
+      },
+      {
         id: 'inicio-player-fin',
         title: 'Listo',
-        text: 'Ya conoces tu panel. Pulsa en cualquier jugador cuando quieras para ver su calendario, cuotas, documentación y el resto de opciones. ¡Todo a un toque!',
-        audioFile: 'player_05.mp3',
+        text: 'Ya conoces tu panel de jugador. Entra en cualquier tarjeta cuando quieras para ver el calendario, las cuotas, la documentación y todas las opciones disponibles. Todo lo tienes a tu alcance.',
+        audioFile: 'player_06.mp3',
         position: 'bottom'
       }
     ];

@@ -483,13 +483,16 @@
   <div class="player-card" *ngFor="let ropa of ropaPlayers; let i = index">
     <!-- Card Header -->
     <div class="card-header-ropa">
-      <div class="player-name" (click)="abrirModalInfoJugador(ropa)">
-        {{ ropa.player.nombre }} {{ ropa.player.apellido }}
+      <div class="card-header-top">
+        <div class="player-name" (click)="abrirModalInfoJugador(ropa)">
+          {{ ropa.player.nombre }} {{ ropa.player.apellido }}
+        </div>
+        <span class="badge-status" [ngClass]="ropa.estado === 'OK' ? 'status-ok' : 'status-pending'">
+          <i class="bi" [ngClass]="ropa.estado === 'OK' ? 'bi-check-circle-fill' : 'bi-clock-history'"></i>
+          {{ ropa.estado === 'OK' ? 'Listo' : 'Pendiente' }}
+        </span>
       </div>
       <div class="player-team">{{ ropa.team.category }} {{ ropa.team.name }} {{ ropa.team.levelLeague }}</div>
-      <span class="badge-status" [ngClass]="ropa.estado === 'OK' ? 'status-ok' : 'status-pending'">
-        {{ ropa.estado === 'OK' ? '✅ OK' : '⏳' }}
-      </span>
     </div>
 
     <!-- Shirt Info -->
@@ -520,7 +523,7 @@
             <button class="btn-toggle-sm"
               [ngClass]="ropa[item.okKey] === 1 ? 'delivered' : 'not-delivered'"
               (click)="togglePrendaOk(ropa, item.toggleKey)">
-              {{ ropa[item.okKey] === 1 ? '✅' : '❌' }}
+              <i class="bi" [ngClass]="ropa[item.okKey] === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
             </button>
           </div>
         </div>

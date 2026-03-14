@@ -48,6 +48,13 @@
 }
 
 /* ========================= */
+/* HEADER ACTIONS GAP        */
+/* ========================= */
+.header-actions {
+  gap: 0.75rem;
+}
+
+/* ========================= */
 /* CTA SUSCRIBIRSE (azul Sphaira: muy dinámico y atractivo) */
 /* ========================= */
 $sphaira-blue: #002c40;
@@ -319,14 +326,18 @@ $sphaira-blue-bright: #0a5f7a;
 .header-tutorial-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: inherit;
+  gap: 0.55rem;
+  padding: 0.5rem 1.1rem 0.5rem 0.5rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
   font: inherit;
   cursor: pointer;
   position: relative;
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
   -webkit-tap-highlight-color: transparent;
 
   &:focus-visible {
@@ -334,15 +345,26 @@ $sphaira-blue-bright: #0a5f7a;
     outline-offset: 3px;
     border-radius: 999px;
   }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.38);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+  }
 }
 
 .header-tutorial-btn__pulse {
   position: absolute;
-  inset: -4px;
+  inset: -5px;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(0, 70, 95, 0.4) 0%, transparent 65%);
-  opacity: 0.85;
-  animation: headerTutorialPulse 2.2s ease-out infinite;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 65%);
+  opacity: 0;
+  animation: headerTutorialPulse 2.8s ease-out infinite;
   pointer-events: none;
 }
 
@@ -352,59 +374,60 @@ $sphaira-blue-bright: #0a5f7a;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  background: linear-gradient(145deg, #00465f 0%, $sphaira-blue 45%, #001a28 100%);
+  background: rgba(255, 255, 255, 0.18);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
   color: #fff;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.1),
-    0 4px 16px rgba(0, 44, 64, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1), box-shadow 0.25s ease, background 0.25s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
+  flex-shrink: 0;
 
   i {
-    font-size: 1.15rem;
+    font-size: 1rem;
     margin-left: 2px;
-    opacity: 0.95;
+    opacity: 1;
   }
 }
 
 .header-tutorial-btn:hover .header-tutorial-btn__circle {
-  transform: scale(1.1) translateY(-1px);
-  background: linear-gradient(145deg, #0a5f7a 0%, #00465f 50%, $sphaira-blue 100%);
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.15),
-    0 8px 24px rgba(0, 44, 64, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.28);
+  border-color: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transform: scale(1.08);
 }
 
 .header-tutorial-btn:active .header-tutorial-btn__circle {
-  transform: scale(0.98) translateY(0);
+  transform: scale(0.96);
 }
 
 .header-tutorial-btn__label {
   position: relative;
   z-index: 1;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   letter-spacing: 0.03em;
   white-space: nowrap;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 @keyframes headerTutorialPulse {
   0% {
-    opacity: 0.85;
+    opacity: 0;
     transform: scale(1);
+  }
+  20% {
+    opacity: 0.6;
   }
   70% {
     opacity: 0;
-    transform: scale(1.35);
+    transform: scale(1.3);
   }
   100% {
     opacity: 0;
-    transform: scale(1.35);
+    transform: scale(1.3);
   }
 }
 
@@ -860,30 +883,49 @@ $sphaira-blue-bright: #0a5f7a;
 }
 
 /* =================================================
-   HEADER MOBILE – RESPONSIVE
+   HEADER MOBILE – PREMIUM
+   Iconos unificados, espaciado consistente, jerarquía clara
    ================================================= */
 @media (max-width: 767px) {
 
-  /* ===== HEADER GENERAL ===== */
+  /* ─── Banner demo: integrado y sutil ─── */
+  .demo-mode-banner {
+    padding: 6px 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: linear-gradient(90deg, #2d1b4e 0%, #3d2463 50%, #4a2c6a 100%);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
+  }
+
+  .demo-mode-banner i {
+    opacity: 0.9;
+    margin-right: 0.25rem;
+  }
+
+  /* ─── Header principal ─── */
   .theme-header {
-    padding: 0.25rem 0.5rem;
+    padding: 0.5rem 0.75rem;
     max-width: 100vw;
     box-sizing: border-box;
-    min-height: 52px;
+    min-height: 60px;
     overflow: visible !important;
     position: relative;
     z-index: 1050;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
   }
 
-  /* Safe-area iOS (notch) */
   @supports (-webkit-touch-callout: none) {
     .theme-header {
-      padding-left: calc(0.5rem + env(safe-area-inset-left));
-      padding-right: calc(0.5rem + env(safe-area-inset-right));
+      padding-left: calc(0.75rem + env(safe-area-inset-left));
+      padding-right: calc(0.75rem + env(safe-area-inset-right));
     }
   }
 
-  /* Resetear márgenes de Bootstrap para evitar desbordamiento */
   .theme-header .container-fluid .row {
     margin-left: 0 !important;
     margin-right: 0 !important;
@@ -894,269 +936,291 @@ $sphaira-blue-bright: #0a5f7a;
     padding-right: 0 !important;
   }
 
-  /* ===== LOGO ===== */
+  /* ─── Logo ─── */
   .theme-header .col-auto.me-auto {
     flex-shrink: 1;
     min-width: 0;
-    margin-right: 0.25rem !important;
+    margin-right: 0.5rem !important;
   }
 
   .logo-image {
-    height: 36px;
-    max-width: 115px;
+    height: 38px;
+    max-width: 120px;
     width: auto;
     object-fit: contain;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
   }
 
-  /* ===== BLOQUE DERECHO ===== */
-  .theme-header .col-auto {
+  /* ─── BLOQUE ACCIONES: diseño premium unificado ─── */
+  .theme-header .header-actions {
     display: flex;
     align-items: center;
-    gap: 0.2rem !important;
+    gap: 6px;
     flex-shrink: 0;
-    overflow: visible;
   }
 
-  /* ===== CRÉDITOS IA — icono circular con badge ===== */
-  .theme-header .credits-indicator {
-    position: relative;
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
-    max-width: 36px;
-    padding: 0;
+  /* Estilo base compartido: todos los iconos del header */
+  $icon-size: 40px;
+  $icon-bg: rgba(255, 255, 255, 0.14);
+  $icon-bg-hover: rgba(255, 255, 255, 0.24);
+  $icon-border: 1px solid rgba(255, 255, 255, 0.12);
+
+  .theme-header .header-actions .header-cta-subscribe,
+  .theme-header .header-actions .header-tutorial-btn,
+  .theme-header .header-actions .header-action-icon-container,
+  .theme-header .header-actions .header-action,
+  .theme-header .header-actions .user-container,
+  .theme-header .header-actions .dropdown > .nav-link,
+  .theme-header .header-actions .dropdown > a {
+    width: $icon-size !important;
+    height: $icon-size !important;
+    min-width: $icon-size !important;
+    min-height: $icon-size !important;
+    max-width: $icon-size !important;
+    max-height: $icon-size !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 12px !important;
+    background: $icon-bg !important;
+    border: $icon-border !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .theme-header .header-actions .header-cta-subscribe:hover,
+  .theme-header .header-actions .header-tutorial-btn:hover,
+  .theme-header .header-actions .header-action-icon-container:hover,
+  .theme-header .header-actions .header-action:hover,
+  .theme-header .header-actions .user-container:hover,
+  .theme-header .header-actions .dropdown > .nav-link:hover,
+  .theme-header .header-actions .dropdown > a:hover {
+    background: $icon-bg-hover !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+    transform: scale(1.02);
+  }
+
+  .theme-header .header-actions .header-cta-subscribe:active,
+  .theme-header .header-actions .header-tutorial-btn:active,
+  .theme-header .header-actions .header-action-icon-container:active,
+  .theme-header .header-actions .header-action:active,
+  .theme-header .header-actions .user-container:active {
+    transform: scale(0.97);
+  }
+
+  /* CTA Suscripción: quitar animaciones, solo icono */
+  .theme-header .header-actions .header-cta-subscribe::before,
+  .theme-header .header-actions .header-cta-subscribe .header-cta-subscribe-glow,
+  .theme-header .header-actions .header-cta-subscribe .header-cta-subscribe-sweep {
+    display: none !important;
+  }
+
+  .theme-header .header-actions .header-cta-subscribe .header-cta-subscribe-text {
+    display: none !important;
+  }
+
+  .theme-header .header-actions .header-cta-subscribe .header-cta-subscribe-inner {
     gap: 0;
-    border-radius: 50%;
+  }
+
+  .theme-header .header-actions .header-cta-subscribe .header-cta-subscribe-inner i {
+    font-size: 1.1rem;
+    animation: none !important;
+  }
+
+  /* Tutorial: quitar pulso, unificar con el resto */
+  .theme-header .header-actions .header-tutorial-btn__pulse {
+    display: none !important;
+  }
+
+  .theme-header .header-actions .header-tutorial-btn__label {
+    display: none !important;
+  }
+
+  .theme-header .header-actions .header-tutorial-btn {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.15) !important;
-      transform: none;
-    }
-
-    i {
-      font-size: 1.15rem;
-      color: #ffd34e;
-    }
-
-    .credits-value {
-      position: absolute;
-      top: 1px;
-      right: -2px;
-      background: linear-gradient(135deg, #ffd34e 0%, #f59e0b 100%);
-      color: #002c40;
-      font-size: 0.57rem;
-      font-weight: 800;
-      min-width: 15px;
-      height: 15px;
-      line-height: 1;
-      padding: 0 3px;
-      border-radius: 10px;
-      border: 1.5px solid rgba(0, 20, 32, 0.55);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      letter-spacing: -0.01em;
-      white-space: nowrap;
-      max-width: 28px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .credits-label {
-      display: none !important;
-    }
   }
 
-  /* ===== CAMPANA DE NOTIFICACIONES ===== */
-  .theme-header .header-action-icon-container {
-    width: 36px;
-    height: 36px;
-    background: transparent !important;
-    box-shadow: none !important;
+  .theme-header .header-actions .header-tutorial-btn__circle {
+    width: $icon-size !important;
+    height: $icon-size !important;
+    border-radius: 12px !important;
+    background: $icon-bg !important;
+    border: $icon-border !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
   }
 
-  .theme-header .header-action-icon-container:hover {
-    background: rgba(255, 255, 255, 0.15) !important;
-    box-shadow: none !important;
+  .theme-header .header-actions .header-tutorial-btn__circle i {
+    font-size: 1.05rem;
+    margin-left: 2px;
   }
 
-  .theme-header .header-action-icon {
-    font-size: 1.1rem;
-  }
-
-  /* Badge de notificaciones */
-  .theme-header .header-action-icon-container .badge {
-    font-size: 0.6rem !important;
-    min-width: 15px;
-    height: 15px;
-    padding: 0 3px;
-  }
-
-  /* ===== ICONOS (AYUDA / DESCARGA / ADMIN) ===== */
-  .theme-header .header-action {
-    background: transparent !important;
-    box-shadow: none !important;
-    border-radius: 50% !important;
-    padding: 0;
-    margin: 0;
-    min-width: 36px;
-    min-height: 36px;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: auto;
-    z-index: 2;
-  }
-
-  .theme-header .header-action:hover {
-    background: rgba(255, 255, 255, 0.15) !important;
-  }
-
-  .theme-header .header-action i {
-    font-size: 1.1rem;
-    opacity: 0.95;
-  }
-
-  .theme-header .header-action span {
+  /* Ocultar textos en acciones */
+  .theme-header .header-actions .header-action span,
+  .theme-header .header-actions .user-name,
+  .theme-header .header-actions .user-arrow {
     display: none !important;
   }
 
-  /* ===== BOTÓN DE TEMA ===== */
-  .theme-header .btn-theme-toggle {
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
-    min-height: 36px;
-    max-width: 36px;
-    max-height: 36px;
-    flex: 0 0 36px;
-    padding: 0;
-    background: transparent !important;
-    box-shadow: none !important;
+  /* Iconos: tamaño uniforme */
+  .theme-header .header-actions .header-action i,
+  .theme-header .header-actions .header-action-icon,
+  .theme-header .header-actions .header-cta-subscribe-inner i,
+  .theme-header .header-actions .header-tutorial-btn__circle i {
+    font-size: 1.1rem !important;
+    opacity: 1;
   }
 
-  .theme-header .btn-theme-toggle:hover {
-    background: rgba(255, 255, 255, 0.15) !important;
-  }
-
-  .theme-header .btn-theme-toggle .theme-toggle-icon i {
-    font-size: 1.1rem;
-  }
-
-  /* ===== USUARIO / AVATAR ===== */
-  .theme-header .user-container {
-    background: transparent !important;
-    box-shadow: none !important;
-    border-radius: 50% !important;
-    padding: 0;
-    margin-left: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 36px;
-    width: 36px;
-    height: 36px;
-    pointer-events: auto;
-    z-index: 2;
-  }
-
-  .theme-header .user-container:hover {
-    background: rgba(255, 255, 255, 0.15) !important;
-  }
-
-  /* Avatar con borde coloreado para distinguirlo visualmente */
-  .account-user-avatar img {
-    width: 30px;
-    height: 30px;
+  /* Avatar: integrar en el sistema de iconos */
+  .theme-header .header-actions .account-user-avatar img {
+    width: 32px !important;
+    height: 32px !important;
     object-fit: cover;
-    border: 2px solid rgba(49, 178, 112, 0.85);
-    box-shadow: 0 0 0 1.5px rgba(49, 178, 112, 0.3);
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.6) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) !important;
   }
 
-  .user-name,
-  .user-arrow {
+  /* Badge notificaciones: premium y discreto */
+  .theme-header .header-actions .header-notification-badge {
+    font-size: 0.6rem !important;
+    font-weight: 700 !important;
+    min-width: 18px !important;
+    height: 18px !important;
+    line-height: 18px !important;
+    padding: 0 5px !important;
+    border-radius: 9px !important;
+    border: 2px solid rgba(0, 44, 64, 0.9) !important;
+    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.35) !important;
+  }
+
+  /* Créditos IA (si existe) */
+  .theme-header .header-actions .credits-indicator {
+    .credits-label { display: none !important; }
+    .credits-value {
+      font-size: 0.6rem !important;
+      min-width: 16px !important;
+      height: 16px !important;
+      border-radius: 8px !important;
+    }
+  }
+
+  /* Dropdown toggle sin flecha */
+  .theme-header .header-actions .dropdown-toggle::after {
     display: none !important;
   }
 
-  /* ===== DROPDOWNS ===== */
-  .dropdown {
-    position: relative;
-  }
-
-  .dropdown-menu {
+  .theme-header .header-actions .dropdown-menu {
     position: absolute !important;
-    top: calc(100% + 0.5rem);
+    top: calc(100% + 8px);
     right: 0;
     left: auto;
     z-index: 1060;
-    pointer-events: auto;
   }
 
-  .dropdown-toggle::after {
-    display: none !important;
+  /* ── DROPDOWN PREMIUM COMPACTO EN MÓVIL ────────────────── */
+  .theme-header .dropdown-menu {
+    min-width: 200px;
+    padding: 0.3rem 0.25rem;
+    border-radius: 14px;
+  }
+
+  .theme-header .dropdown-item {
+    padding: 0.42rem 0.75rem;
+    font-size: 0.82rem;
+    gap: 0.55rem;
+    border-radius: 9px;
+    margin: 0 0.15rem;
+  }
+
+  .theme-header .dropdown-item i.bi {
+    width: 22px;
+    height: 22px;
+    font-size: 0.82rem;
+    border-radius: 7px;
+  }
+
+  .theme-header .dropdown-divider {
+    margin: 0.25rem 0.5rem;
+  }
+
+  .dropdown-header {
+    font-size: 0.68rem;
+    padding: 0.3rem 0.75rem 0.15rem;
+  }
+
+  .dropdown-header-role {
+    font-size: 0.62rem;
+  }
+
+  .noti-title h6 {
+    font-size: 0.82rem;
+  }
+
+  /* Notificaciones dropdown compacto */
+  .notifications-dropdown {
+    min-width: 280px !important;
+    max-width: calc(100vw - 20px);
+    max-height: min(80vh, 360px);
+  }
+
+  .notifications-header {
+    font-size: 0.72rem;
+    padding: 0.3rem 0.5rem 0.28rem;
+  }
+
+  .notification-subject {
+    font-size: 0.78rem;
+  }
+
+  .notification-meta {
+    font-size: 0.68rem;
   }
 }
 
-/* MÓVILES MUY PEQUEÑOS (< 360px) */
+/* MÓVILES MUY PEQUEÑOS (< 360px) — Ajuste fino premium */
 @media (max-width: 360px) {
   .theme-header {
-    padding: 0.25rem 0.3rem;
+    padding: 0.4rem 0.5rem;
   }
 
   .logo-image {
-    height: 32px !important;
-    max-width: 95px !important;
+    height: 34px !important;
+    max-width: 100px !important;
   }
 
-  .theme-header .col-auto {
-    gap: 0.1rem !important;
+  .theme-header .header-actions {
+    gap: 4px;
   }
 
-  .theme-header .credits-indicator {
-    width: 32px !important;
-    height: 32px !important;
-    min-width: 32px !important;
-    max-width: 32px !important;
-
-    i { font-size: 1rem !important; }
-
-    .credits-value {
-      font-size: 0.52rem !important;
-      min-width: 13px !important;
-      height: 13px !important;
-      top: 0 !important;
-      right: -1px !important;
-      border-width: 1px !important;
-    }
+  .theme-header .header-actions .header-cta-subscribe,
+  .theme-header .header-actions .header-tutorial-btn,
+  .theme-header .header-actions .header-action-icon-container,
+  .theme-header .header-actions .header-action,
+  .theme-header .header-actions .user-container,
+  .theme-header .header-actions .dropdown > .nav-link,
+  .theme-header .header-actions .dropdown > a {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    max-width: 36px !important;
+    max-height: 36px !important;
   }
 
-  .theme-header .header-action-icon-container,
-  .theme-header .header-action,
-  .theme-header .btn-theme-toggle,
-  .theme-header .user-container {
-    width: 32px !important;
-    height: 32px !important;
-    min-width: 32px !important;
-    min-height: 32px !important;
+  .theme-header .header-actions .header-tutorial-btn__circle {
+    width: 36px !important;
+    height: 36px !important;
   }
 
-  .theme-header .header-action i,
-  .theme-header .header-action-icon,
-  .theme-header .btn-theme-toggle .theme-toggle-icon i {
-    font-size: 1rem !important;
-  }
-
-  .account-user-avatar img {
-    width: 26px !important;
-    height: 26px !important;
+  .theme-header .header-actions .account-user-avatar img {
+    width: 28px !important;
+    height: 28px !important;
   }
 }
 

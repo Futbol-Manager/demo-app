@@ -139,6 +139,49 @@ $gradient-header: linear-gradient(135deg, $navy 0%, $navy-mid 50%, $green 100%);
 
 .lc-header-spacer { flex-shrink: 0; width: 100px; }
 
+@media (max-width: 768px) {
+  .lc-page-header {
+    flex-wrap: nowrap;
+    min-height: 52px;
+    padding: 0.65rem 0.875rem;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .lc-header-back { flex: 0 0 auto; z-index: 2; }
+
+  .lc-btn-back {
+    font-size: 0.78rem;
+    padding: 0.35rem 0.65rem;
+    gap: 0.28rem;
+    i { font-size: 0.85rem; }
+  }
+
+  .lc-header-center {
+    flex: 1;
+    min-width: 0;
+    position: static;
+    left: auto;
+    transform: none;
+    text-align: center;
+    overflow: hidden;
+    pointer-events: auto;
+  }
+
+  .lc-header-title {
+    font-size: 0.88rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    justify-content: center;
+    i { display: none; }
+  }
+
+  .lc-header-subtitle { display: none; }
+
+  .lc-header-spacer { display: none; }
+}
+
 /* ═══════ KPI CARDS (premium) ═══════ */
 .kpi-row {
   display: grid;

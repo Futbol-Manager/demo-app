@@ -140,22 +140,193 @@ $border: rgba(0, 44, 64, 0.08);
   i { font-size: 0.82rem; opacity: 0.85; }
 }
 
+/* ═══════════════════════════════════════════════════════════
+   PREMIUM MOBILE (≤ 768px) — scouting-player
+   ═══════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
+
+  /* ─── Header: fila única compacta ─────────────────────── */
   .page-header {
-    flex-wrap: wrap;
-    min-height: auto;
-    padding: 0.85rem 1rem;
+    flex-wrap: nowrap;
+    min-height: 56px;
+    padding: 0.6rem 1rem;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    border-radius: 14px;
   }
+
   .header-center {
     position: static;
     transform: none;
-    order: -1;
-    width: 100%;
-    align-items: flex-start;
+    flex: 1;
+    width: auto;
+    align-items: center;
+    text-align: center;
+    order: 0;
     pointer-events: auto;
   }
-  .table-title { font-size: 1.1rem; }
-  .page-header-stats { flex-wrap: wrap; }
+
+  .table-title {
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    i { display: none; }
+  }
+
+  .header-subtitle { display: none; }
+
+  .btn-back-clean {
+    span { display: none; }
+    padding: 0.45rem 0.65rem;
+    &:hover { transform: none; }
+  }
+
+  /* Stat pills: se muestran en el hero, se ocultan del header */
+  .page-header-stats { display: none; }
+
+  /* ─── Contenido: padding simétrico ───────────────────── */
+  .mis-estadisticas-wrap {
+    padding: 0 0.75rem 2rem;
+  }
+
+  /* ─── Hero: compacto y táctil ─────────────────────────── */
+  .premium-hero {
+    padding: 1.25rem 1.1rem;
+    border-radius: 16px;
+    margin-bottom: 0.85rem;
+  }
+
+  .premium-hero-inner {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.1rem;
+  }
+
+  .premium-avatar-ring {
+    width: 108px;
+    height: 108px;
+    margin-bottom: 0.75rem;
+  }
+
+  .premium-name {
+    font-size: 1.2rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .premium-pills {
+    gap: 0.3rem;
+    justify-content: center;
+  }
+
+  .premium-pill {
+    font-size: 0.74rem;
+    padding: 0.22rem 0.65rem;
+  }
+
+  .premium-radar-wrap {
+    width: min(230px, 82vw);
+    height: min(230px, 82vw);
+    min-height: unset;
+    border-radius: 14px;
+  }
+
+  /* ─── Filas de secciones: gap menor ────────────────────── */
+  .premium-row {
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  /* ─── Secciones: padding compacto ──────────────────────── */
+  .premium-section {
+    padding: 0.85rem 0.95rem;
+    border-radius: 12px;
+  }
+
+  .premium-section-title {
+    font-size: 0.9rem;
+    margin-bottom: 0.55rem;
+    padding-bottom: 0.35rem;
+  }
+
+  /* ─── Datos deportivos: 2 columnas ─────────────────────── */
+  .premium-data-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .premium-data-item {
+    padding: 0.6rem 0.7rem;
+    border-radius: 10px;
+  }
+
+  .premium-data-label {
+    font-size: 0.62rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .premium-data-value {
+    font-size: 0.88rem;
+  }
+
+  /* ─── Estadísticas de partidos: 3 columnas compactas ───── */
+  .premium-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.45rem;
+  }
+
+  .premium-stat-card {
+    padding: 0.5rem 0.4rem;
+    border-radius: 10px;
+    &:hover { transform: none; box-shadow: none; }
+  }
+
+  .premium-stat-value {
+    font-size: 1.1rem;
+    margin-bottom: 0.1rem;
+  }
+
+  .premium-stat-label {
+    font-size: 0.58rem;
+    line-height: 1.3;
+  }
+
+  /* ─── Gráficas: scrollable tabs + altura compacta ──────── */
+  .premium-graficas-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+  }
+
+  .premium-graficas-tab {
+    white-space: nowrap;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.82rem;
+  }
+
+  .premium-grafica-container {
+    height: 175px;
+    min-height: 150px;
+    padding: 0.6rem 0.75rem;
+  }
+
+  /* ─── Tabla de asistencia: compacta ────────────────────── */
+  .premium-table-wrap {
+    max-height: 260px;
+    border-radius: 8px;
+  }
+
+  .premium-table th,
+  .premium-table td {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.82rem;
+  }
+
+  /* ─── Loading ───────────────────────────────────────────── */
+  .premium-loading {
+    min-height: 30vh;
+  }
 }
 
 .mis-estadisticas-wrap {

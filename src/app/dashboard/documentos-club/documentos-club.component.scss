@@ -512,6 +512,9 @@
    TABLA MODERNA
 ========================= */
 
+/* La lista de tarjetas móvil está oculta en escritorio */
+.docs-mobile-list { display: none; }
+
 .modern-table {
   border-collapse: separate;
   border-spacing: 0 10px;
@@ -1016,27 +1019,253 @@
 ========================================================= */
 @media (max-width: 768px) {
 
-  .table thead { display: none; }
-
-  .table tbody tr {
-    display: block;
+  /* ── PAGE HEADER ── */
+  .page-header {
+    flex-wrap: nowrap;
+    min-height: 52px;
+    padding: 0.65rem 0.875rem;
+    gap: 0.5rem;
+    align-items: center;
+    border-radius: 16px;
     margin-bottom: 1rem;
-    border-radius: 14px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   }
 
-  .table tbody td {
+  .back-container { flex: 0 0 auto; }
+
+  .btn-back-clean {
+    font-size: 0.78rem;
+    padding: 0.38rem 0.65rem;
+  }
+
+  .header-center {
+    flex: 1;
+    min-width: 0;
+    position: static;
+    transform: none;
+    text-align: center;
+    overflow: hidden;
+    pointer-events: auto;
+    align-items: center;
+  }
+
+  .table-title {
+    font-size: 0.88rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+
+  .header-subtitle { display: none; }
+  .header-spacer   { display: none; }
+
+  /* ── TOOLBAR BÚSQUEDA + FILTRO ── */
+  .docs-toolbar-inner {
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 0.75rem 0.85rem;
+  }
+
+  .docs-toolbar-search-wrap {
+    max-width: 100%;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .docs-toolbar-divider { display: none; }
+
+  .docs-toolbar-filter-wrap {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+  }
+
+  .docs-filter-select {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .docs-toolbar-count-wrap {
+    margin-left: 0;
+    padding-left: 0;
+    width: 100%;
+  }
+
+  .docs-toolbar-count-badge {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* ── ACTION CARDS: horizontal ── */
+  .action-card {
+    flex-direction: row;
+    text-align: left;
+    padding: 14px 16px;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+
+  .action-card-icon {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+  }
+
+  .action-card-title {
+    flex: 1;
+    font-size: 0.82rem;
+    margin: 0;
+  }
+
+  .action-card-btn {
+    margin-top: 0;
+    width: auto;
+    padding: 8px 14px;
+    font-size: 0.78rem;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  /* ── OCULTAR TABLA EN MÓVIL ── */
+  .table-responsive { overflow: visible; }
+  .modern-table { display: none !important; }
+
+  /* ── TARJETAS MÓVIL ── */
+  .docs-mobile-list { display: block; }
+
+  .doc-mc {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #f0f4f8;
+    box-shadow: 0 2px 10px rgba(0, 44, 64, 0.07);
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+
+  /* TOP: ring + nombre + equipo */
+  .doc-mc-top {
     display: flex;
-    justify-content: space-between;
-    padding: 10px 14px;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 12px 8px;
   }
 
-  .table tbody td::before {
-    content: attr(data-label);
+  /* Ring reutiliza los estilos globales del componente */
+  .doc-mc-top .ring-wrap {
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+  }
+
+  .doc-mc-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .doc-mc-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.3;
+    word-break: break-word;
+  }
+
+  .doc-mc-teams {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  /* BODY: descripción + fecha */
+  .doc-mc-body {
+    padding: 0 12px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .doc-mc-desc {
+    margin: 0;
+    font-size: 0.76rem;
+    color: #64748b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .doc-mc-custom-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72rem;
     font-weight: 600;
+    color: #7a5c2e;
+    background: rgba(239, 220, 182, 0.5);
+    padding: 2px 8px;
+    border-radius: 6px;
+    width: fit-content;
   }
 
-  .modal-dialog {
-    margin: 1rem;
+  .doc-mc-date {
+    font-size: 0.68rem;
+    color: #94a3b8;
   }
+
+  /* ACTIONS */
+  .doc-mc-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    padding: 9px 12px 10px;
+    border-top: 1px solid #f0f4f8;
+    background: #f8fafc;
+  }
+
+  .doc-mc-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: none;
+    background: #eef2f7;
+    color: #334155;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    flex-shrink: 0;
+
+    i { font-size: 1rem; color: #334155; }
+
+    &:active { background: #dde4ed; }
+  }
+
+  .doc-mc-btn--danger {
+    background: #fee2e2;
+    i { color: #dc2626; }
+    &:active { background: #fecaca; }
+  }
+
+  /* ── PAGINACIÓN ── */
+  .pagination-content {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    justify-content: center;
+  }
+
+  .pagination-info {
+    font-size: 0.78rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  /* ── MODAL ── */
+  .modal-dialog { margin: 0.75rem; }
 }

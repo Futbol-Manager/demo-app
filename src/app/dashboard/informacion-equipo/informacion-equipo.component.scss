@@ -924,19 +924,20 @@ $g-sidebar: linear-gradient(160deg, #{$sp-navy} 0%, #{$sp-navy-mid} 60%, darken(
 @media (max-width: 768px) {
   .page-header {
     border-radius: 14px;
-    padding: 1rem 1.25rem;
-    min-height: 64px;
-    flex-wrap: wrap;
+    padding: 0.75rem 1rem;
+    min-height: 56px;
+    flex-wrap: nowrap;
   }
 
   .page-header-title {
-    position: static;
+    position: relative;
+    left: auto;
     transform: none;
-    order: -1;
-    width: 100%;
     text-align: center;
-    h2 { font-size: 1.1rem; }
+    h2 { font-size: 1.05rem; }
   }
+
+  .header-subtitle { display: none; }
 
   .page-header-spacer { display: none; }
 

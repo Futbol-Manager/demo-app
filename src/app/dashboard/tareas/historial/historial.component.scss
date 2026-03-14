@@ -443,20 +443,28 @@ $g-brand:        linear-gradient(135deg, #{$sp-navy} 0%, #{$sp-navy-mid} 50%, #{
 
 @media (max-width: 768px) {
   .page-header {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     padding: 0.875rem 1rem;
     min-height: 60px;
   }
 
   .header-center {
-    position: static;
+    flex: 1;
+    position: relative;
+    left: auto;
     transform: none;
-    order: -1;
-    width: 100%;
     text-align: center;
   }
 
-  .header-center .table-title { font-size: 1.1rem; white-space: normal; }
+  .header-center .table-title {
+    font-size: 0.95rem;
+    white-space: normal;
+    justify-content: center;
+  }
+
+  .table-title-icon { display: none; }
+
+  .header-subtitle { display: none; }
 
   .task-grid { grid-template-columns: 1fr 1fr; gap: 0.85rem; }
   .detail-panel-inner { max-width: 100%; }

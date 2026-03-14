@@ -127,19 +127,36 @@ $shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
 
 @media (max-width: 768px) {
   .page-header {
-    flex-wrap: wrap;
-    min-height: auto;
-    padding: 0.85rem 1rem;
+    flex-wrap: nowrap;
+    min-height: 56px;
+    padding: 0.6rem 0.85rem;
+    gap: 0.5rem;
   }
+
   .header-center {
     position: static;
     transform: none;
-    order: -1;
-    width: 100%;
-    align-items: flex-start;
+    flex: 1;
+    align-items: center;
+    text-align: center;
     pointer-events: auto;
   }
-  .table-title { font-size: 1.1rem; }
+
+  .table-title {
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    i { display: none; }
+  }
+
+  .header-subtitle { display: none; }
+  .page-header-spacer { display: none !important; }
+
+  .btn-back-clean {
+    span { display: none; }
+    padding: 0.45rem 0.65rem;
+  }
 }
 
 // ─── Page & loading ─────────────────────────────────────────
@@ -3298,7 +3315,7 @@ $sphaira-navy: #002c40;
 
 @media (max-width: 768px) {
   .cuotas-container {
-    padding: 0 1rem;
+    padding: 0 0.85rem;
   }
 
   .cuotas-page-banner {
@@ -3319,6 +3336,21 @@ $sphaira-navy: #002c40;
     justify-content: center;
   }
 
+  /* Banner Sphaira Pay: columna en móvil */
+  .cq-sphaira-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+    &-btn { width: 100%; justify-content: center; }
+  }
+
+  /* Top grid cards: más compactas */
+  .estado-card { padding: 1rem; }
+  .shortcut-card { padding: 0.85rem 1rem; flex-direction: row; gap: 0.6rem; }
+  .shortcut-card-text { text-align: left; }
+  .shortcut-card-title { text-align: left; }
+  .shortcut-card-subtitle { text-align: left; }
+
   .transfer-card {
     grid-template-columns: 1fr;
     gap: 0;
@@ -3332,7 +3364,6 @@ $sphaira-navy: #002c40;
   .estado-card-value {
     font-size: 1.35rem;
   }
-
 
   .modal-pago {
     max-height: 95vh;
@@ -3591,6 +3622,167 @@ $sphaira-navy: #002c40;
     line-height: 1.6;
     margin: 0;
     max-width: 340px;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PREMIUM MOBILE — Cuota cards dedicadas (≤ 640px)
+// Template HTML propio (.cq-mc-list) — mismo patrón que documentos-club
+// ═══════════════════════════════════════════════════════════════
+
+// Ocultar lista móvil en escritorio
+.cq-mc-list {
+  display: none;
+}
+
+@media (max-width: 640px) {
+
+  // 1. Ocultar tabla desktop y mostrar tarjetas móviles
+  .cq-list {
+    display: none !important;
+  }
+
+  .cq-mc-list {
+    display: block;
+    margin: 0;
+    padding: 0.5rem 0 0;
+  }
+
+  // 2. Tarjeta individual
+  .cq-mc {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0.85rem 0.9rem 0.85rem 1.1rem;
+    border-bottom: 1px solid $border;
+    background: #fff;
+    transition: background 0.15s;
+
+    &:last-child { border-bottom: none; }
+    &:hover { background: rgba($primary, 0.02); }
+
+    // Barra de estado (izquierda)
+    .cq-mc-bar {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      border-radius: 0 2px 2px 0;
+      background: $border;
+    }
+
+    &.cq-mc--paid   .cq-mc-bar { background: $success; }
+    &.cq-mc--pending .cq-mc-bar { background: $warning; }
+    &.cq-mc--overdue .cq-mc-bar { background: $danger; }
+
+    // Selected state
+    &.cq-mc--selected {
+      background: linear-gradient(90deg, rgba(0,44,64,0.04) 0%, rgba(31,143,138,0.03) 100%);
+    }
+  }
+
+  // 3. Fila superior: [check?] + info + [botones]
+  .cq-mc-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+  }
+
+  .cq-mc-check {
+    flex: 0 0 auto;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+  }
+
+  .cq-mc-info {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .cq-mc-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $text-primary;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .cq-mc-btns {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    align-self: flex-start;
+  }
+
+  // 4. Fila de datos: 4 celdas en cuadrícula 2x2
+  .cq-mc-data {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 0;
+    margin-top: 0.65rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid rgba($border, 0.6);
+  }
+
+  .cq-mc-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding-right: 0.25rem;
+  }
+
+  .cq-mc-label {
+    font-size: 0.58rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: $text-muted;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .cq-mc-val {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: $text-primary;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &--sphaira { color: #0d7c4a; }
+    &--paid    { color: $success; }
+    &--pending { color: $warning; }
+    &--overdue { color: $danger; font-weight: 700; }
+  }
+
+  // 5. Badges de tipo de pago (dentro de cq-mc-info)
+  .cq-mc-info .cq-tipo-badge {
+    align-self: flex-start;
+  }
+
+  // 6. Action buttons: tapables
+  .cq-mc-btns .cq-action-btn {
+    width: 2.1rem !important;
+    height: 2.1rem !important;
+    font-size: 0.95rem !important;
+  }
+
+  // 7. Panel header compacto
+  .cq-panel-header {
+    padding: 0.75rem 0.9rem;
+    gap: 0.5rem;
+  }
+
+  .cq-panel-title {
+    font-size: 0.88rem;
   }
 }
 

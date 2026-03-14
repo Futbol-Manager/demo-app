@@ -645,7 +645,127 @@ $st-white: #ffffff;
   }
 }
 
-// Chip de entrega (alineado con pestaña "Tallas jugadores")
+// ─── Mobile premium ≤ 768px ──────────────────────────────────────────────────
+@media (max-width: 768px) {
+  .filtros-premium-inner { padding: 12px 14px; }
+
+  .filtros-row { gap: 10px; }
+
+  .filtros-left {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .filtro-equipo,
+  .filtro-jugador {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .filtro-select-premium {
+    width: 100%;
+    font-size: 0.875rem;
+  }
+
+  .filtro-input-premium {
+    font-size: 0.875rem;
+  }
+
+  .filtros-stats {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  .stat-card {
+    padding: 4px 8px;
+    .stat-value { font-size: 12px; }
+    .stat-label { font-size: 8px; }
+  }
+
+  /* Tabla: columna jugador más compacta */
+  .col-jugador {
+    min-width: 160px;
+    max-width: 200px;
+  }
+
+  .jugador-info {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .jugador-avatar,
+  .jugador-initials {
+    width: 36px;
+    height: 36px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  .jugador-nombre { font-size: 12px; }
+
+  .jugador-nick { font-size: 10px; }
+
+  /* Prenda header más compacto */
+  .col-prenda { min-width: 120px; }
+
+  .prenda-header {
+    padding: 10px 6px;
+    gap: 5px;
+  }
+
+  .prenda-header-img-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+  }
+
+  .prenda-nombre { font-size: 11px; }
+
+  .prenda-stats { gap: 6px; }
+
+  .prenda-stat { font-size: 10px; }
+
+  /* Celda talla */
+  .talla-select {
+    max-width: 72px;
+    font-size: 11px;
+    padding: 4px 6px;
+  }
+
+  .delivery-chip-icon-only {
+    width: 28px;
+    min-width: 28px;
+    height: 28px;
+    border-radius: 6px;
+
+    i { font-size: 0.78rem; }
+  }
+
+  /* Indicador de scroll horizontal */
+  .tabla-scroll {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: sticky;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 28px;
+      background: linear-gradient(to left, rgba(255,255,255,0.9), transparent);
+      pointer-events: none;
+      display: block;
+      float: right;
+      height: 100%;
+    }
+  }
+}
+
+// ─── Chip de entrega (alineado con pestaña "Tallas jugadores")
 .delivery-chip {
   display: inline-flex;
   align-items: center;

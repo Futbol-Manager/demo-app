@@ -239,6 +239,93 @@
 
     </table>
 
+    <!-- ===== LISTA MÓVIL: cards dedicadas (visible solo en móvil) ===== -->
+    <div class="docs-mobile-list" *ngIf="!loadingData">
+      <div class="doc-mc" *ngFor="let doc of documentosPaginados">
+
+        <!-- TOP: ring + nombre + equipo -->
+        <div class="doc-mc-top">
+          <div class="ring-wrap"
+               (click)="openCompletionDetail(doc)"
+               title="Ver detalle de completados"
+               [class.ring--complete]="doc.totalPadres > 0 && doc.totalSubidos >= doc.totalPadres"
+               [class.ring--partial]="doc.totalSubidos > 0 && doc.totalSubidos < doc.totalPadres"
+               [class.ring--empty]="!doc.totalSubidos || doc.totalSubidos === 0">
+            <svg viewBox="0 0 48 48" class="ring-svg">
+              <circle cx="24" cy="24" r="18" class="ring-track"/>
+              <circle cx="24" cy="24" r="18" class="ring-fill"
+                [style.stroke-dashoffset]="(doc.totalPadres > 0 ? (1 - doc.totalSubidos / doc.totalPadres) : 1) * 113.1"/>
+            </svg>
+            <div class="ring-label">
+              <span class="ring-num">{{ doc.totalSubidos }}</span>
+              <span class="ring-sep">/</span>
+              <span class="ring-den">{{ doc.totalPadres }}</span>
+            </div>
+          </div>
+
+          <div class="doc-mc-info">
+            <span class="doc-mc-name">{{ doc.nombre }}</span>
+            <div class="doc-mc-teams">
+              <span class="badge badge-sphaira-team" *ngFor="let tid of doc.teamIds">
+                {{ getTeamNames([tid]) }}
+              </span>
+              <span *ngIf="!doc.teamIds || doc.teamIds.length === 0" class="badge badge-sphaira-all">Todos</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- BODY: descripción + fecha -->
+        <div class="doc-mc-body">
+          <p class="doc-mc-desc" *ngIf="doc.requiere < 2 && doc.descripcion">{{ doc.descripcion }}</p>
+          <span class="doc-mc-custom-badge" *ngIf="doc.requiere == 2">
+            <i class="bi bi-card-text"></i> {{ 'DOCS_EQUIPO.DOCS.CUSTOM' | translate }}
+          </span>
+          <span class="doc-mc-date" *ngIf="doc.fecCreate">{{ doc.fecCreate | date:'dd/MM/yyyy' }}</span>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="doc-mc-actions">
+          <button class="doc-mc-btn" title="{{ 'DOCS_EQUIPO.DOCS.VISIBILITY' | translate }}"
+            (click)="visible(doc, doc.docClubesId, doc.visible)">
+            <i [ngClass]="doc.visible === 0 ? 'bi bi-eye' : 'bi bi-eye-slash'"></i>
+          </button>
+
+          <button *ngIf="doc.requiere < 2" class="doc-mc-btn"
+            title="{{ 'DOCS_EQUIPO.DOCS.REQUIRE_UPLOAD' | translate }}"
+            (click)="requiere(doc, doc.docClubesId, doc.requiere)">
+            <i [ngClass]="doc.requiere === 1 ? 'bi bi-file-earmark-arrow-up' : 'bi bi-slash-lg'"></i>
+          </button>
+
+          <button *ngIf="doc.requiere == 2" class="doc-mc-btn"
+            title="{{ 'DOCS_EQUIPO.COMMON.EDIT' | translate }}" (click)="editarPersonalizado(doc)">
+            <i class="bi bi-pencil"></i>
+          </button>
+
+          <button *ngIf="doc.requiere == 2" class="doc-mc-btn"
+            title="Ver registros" (click)="openRegistros(doc)">
+            <i class="bi bi-journal-text"></i>
+          </button>
+
+          <button *ngIf="doc.file" class="doc-mc-btn" title="{{ 'DOCS_EQUIPO.DOCS.OPEN' | translate }}"
+            (click)="abrirPdf(doc.file)">
+            <i class="bi bi-box-arrow-up-right"></i>
+          </button>
+
+          <button *ngIf="doc.file" class="doc-mc-btn" title="{{ 'DOCS_EQUIPO.COMMON.COPY' | translate }}"
+            (click)="copyLink(doc.file)">
+            <i class="bi bi-copy"></i>
+          </button>
+
+          <button class="doc-mc-btn doc-mc-btn--danger"
+            title="{{ 'DOCS_EQUIPO.COMMON.DELETE' | translate }}"
+            (click)="confirmarEliminarDoc(getDocIndex(doc), doc.docClubesId, doc.nombre)">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
     <!-- Paginación (estilo ropa: centrada, card blanca, 1/3) -->
     <div class="pagination-wrapper" *ngIf="!loadingData && documentosFiltrados.length > 0">
       <div class="pagination-content">

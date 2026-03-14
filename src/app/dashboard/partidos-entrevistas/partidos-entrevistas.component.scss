@@ -1625,14 +1625,71 @@ $transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 @media (max-width: 768px) {
   .gallery-page { padding: 0 12px 50px; }
 
+  /* ── HEADER MÓVIL ─────────────────────────────────────── */
   .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 22px 20px;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.65rem 0.875rem;
+    min-height: auto;
+    gap: 0.4rem;
     border-radius: $radius;
   }
-  .page-title { font-size: 1.15rem; }
-  .page-header-stats { width: 100%; }
+
+  /* Fila 1: Volver + Título */
+  .back-container {
+    flex: 0 0 auto;
+    order: 1;
+    z-index: 2;
+  }
+
+  .btn-back-clean {
+    font-size: 0.78rem;
+    padding: 0.35rem 0.65rem;
+    gap: 0.28rem;
+    i { font-size: 0.85rem; }
+  }
+
+  .header-center {
+    flex: 1;
+    min-width: 0;
+    order: 2;
+    position: static;
+    left: auto;
+    transform: none;
+    text-align: center;
+    overflow: hidden;
+    pointer-events: auto;
+    align-items: center;
+  }
+
+  .table-title {
+    font-size: 0.88rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .header-subtitle { display: none; }
+
+  /* Fila 2: Chips de estadísticas */
+  .page-header-stats {
+    order: 3;
+    width: 100%;
+    display: flex;
+    gap: 6px;
+    flex-wrap: nowrap;
+    justify-content: center;
+  }
+
+  .stat-pill {
+    flex: 1;
+    justify-content: center;
+    font-size: 0.7rem;
+    padding: 0.3rem 0.5rem;
+    gap: 4px;
+    i { font-size: 0.72rem; }
+  }
 
   .match-card { min-width: 130px; }
 

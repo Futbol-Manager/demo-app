@@ -833,11 +833,65 @@ $gradient-header: linear-gradient(135deg, $navy 0%, $navy-mid 50%, $green 100%);
 }
 
 @media (max-width: 768px) {
+  /* ── Page header: compacto, sin centering absoluto ── */
+  .staff-page-header {
+    flex-wrap: nowrap;
+    min-height: 50px;
+    padding: 0.6rem 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .staff-header-center {
+    position: static;
+    transform: none;
+    flex: 1;
+    text-align: center;
+  }
+
+  .staff-header-title {
+    font-size: 0.92rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .staff-header-subtitle { display: none; }
+  .staff-header-spacer   { display: none; }
+
+  .staff-btn-back span { display: none; }
+  .staff-btn-back { padding: 0.45rem 0.65rem; }
+
+  /* ── Content ── */
+  .staff-page-content { padding: 0 0.75rem 1.5rem; }
+
+  /* ── Grid: 1 columna ── */
   .staff-grid { grid-template-columns: 1fr; }
+
+  /* ── Cards: sin hover lift en táctil ── */
+  .staff-card:hover { transform: none; }
+
+  /* ── Card head: wrap si hay poco espacio ── */
+  .staff-card-head { flex-wrap: wrap; }
+
+  /* ── Botones de acción más grandes (tappable) ── */
+  .staff-btn-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 0.95rem;
+  }
 }
 
 @media (max-width: 576px) {
   .staff-form-grid { grid-template-columns: 1fr; }
-  .staff-toolbar { flex-direction: column; align-items: stretch; }
+  .staff-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
   .staff-btn-primary { width: 100%; justify-content: center; }
+  .staff-modal-footer {
+    flex-wrap: wrap;
+    .staff-btn-secondary,
+    .staff-btn-primary { flex: 1; justify-content: center; }
+  }
 }

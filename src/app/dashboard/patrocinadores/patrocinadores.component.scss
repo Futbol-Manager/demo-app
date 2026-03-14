@@ -481,32 +481,139 @@ $gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$gree
   }
 }
 
-/* ================================
-   RESPONSIVE
-================================ */
+/* =======================================================
+   MOBILE PREMIUM — ≤ 768px
+======================================================= */
 @media (max-width: 768px) {
-  .carousel-track {
-    gap: 2rem;
+
+  /* ── 1. PAGE HEADER compact ── */
+  .page-header {
+    min-height: 56px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: nowrap;
   }
 
-  .hero-logo {
-    height: 48px;
+  .header-center {
+    position: static;
+    transform: none;
+    flex: 1;
+    align-items: center;
+    pointer-events: auto;
   }
 
-  .action-content {
-    flex-direction: column;
-    gap: 0.75rem;
+  .table-title {
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  .card-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.4rem;
+  .header-subtitle { display: none; }
+  .header-spacer   { display: none; }
+
+  .btn-back-clean span { display: none; }
+  .btn-back-clean {
+    padding: 0.45rem 0.65rem;
+    i { font-size: 1.1rem; }
   }
 
-  .card-links {
-    font-size: 0.9rem;
+  /* ── 2. CAROUSEL ── */
+  .sponsor-hero { padding: 1rem 0; }
+  .carousel-track { gap: 2rem; }
+  .hero-logo { height: 44px; }
+
+  /* ── 3. GRID ── */
+  .sponsor-grid {
+    margin-top: 1rem;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
   }
+
+  /* ── 4. SPONSOR CARDS ── */
+  .sponsor-card {
+    /* sin hover lift en táctil */
+    &:hover { transform: none; }
+  }
+
+  .card-logo {
+    min-height: 90px;
+    padding: 1rem;
+
+    img { max-height: 58px; }
+  }
+
+  .card-content {
+    padding: 0.85rem 1rem 0.5rem;
+    gap: 0.45rem;
+  }
+
+  .card-name { font-size: 0.95rem; }
+
+  .card-links { gap: 0.35rem; }
+
+  .link-pill {
+    padding: 0.28rem 0.65rem;
+    font-size: 0.74rem;
+  }
+
+  .benefits-block { padding: 0.55rem 0.75rem; }
+
+  /* Footer: toggle + acciones en columna en pantallas muy pequeñas */
+  .card-footer {
+    padding: 0.55rem 1rem;
+    gap: 0.5rem;
+  }
+
+  .footer-actions {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-end;
+
+    .btn-view, .btn-delete {
+      flex: 1;
+      justify-content: center;
+      padding: 0.42rem 0.7rem;
+    }
+  }
+
+  /* toggle ocupa todo el ancho disponible */
+  .carousel-toggle { flex: 1; }
+
+  /* ── 5. BOTÓN NUEVO PATROCINADOR ── */
+  .btn-create-sponsor {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.88rem;
+    padding: 0.55rem 1rem;
+  }
+
+  /* ── 6. MODALES: input file desbordaba ── */
+  input[type="file"] {
+    width: 100%;
+    max-width: 100%;
+    font-size: 0.82rem;
+    box-sizing: border-box;
+  }
+
+  .sponsor-image {
+    max-width: 100%;
+    max-height: 160px;
+  }
+
+  .sponsor-upload-placeholder {
+    width: 100%;
+    max-width: 100%;
+    height: 110px;
+  }
+
+  .modal-body {
+    padding: 1rem;
+
+    .text-center.mb-5 { margin-bottom: 1.25rem !important; }
+  }
+
+  .sponsor-footer { padding: 0.85rem 1rem; }
 }
 
 /* Fondo gris oscuro detrás del modal */
@@ -901,44 +1008,47 @@ input[type="file"]:focus {
   }
 }
 
-/* Responsive */
+/* Responsive — panel "Ver patrocinador" */
 @media (max-width: 600px) {
-  .view-sponsor-overlay {
-    padding: 0.75rem;
-  }
+  .view-sponsor-overlay { padding: 0.5rem; }
 
   .view-sponsor-panel {
     border-radius: 20px;
-    max-height: 95vh;
+    max-height: 96vh;
   }
 
   .view-sponsor-hero {
     padding: 2rem 1.25rem 1.25rem;
   }
 
-  .view-sponsor-logo {
-    max-height: 110px;
-  }
+  .view-sponsor-logo { max-height: 100px; }
 
   .view-sponsor-name {
-    margin-left: 1.25rem;
-    margin-right: 1.25rem;
-    font-size: 1.25rem;
+    margin: 1rem 1.25rem 0.2rem;
+    font-size: 1.15rem;
   }
 
   .view-sponsor-contacts {
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
+    padding: 0.6rem 1.25rem 0;
+    gap: 0.4rem;
+
+    .vs-contact-pill {
+      padding: 0.35rem 0.7rem;
+      font-size: 0.76rem;
+    }
   }
 
   .view-sponsor-section {
-    margin-left: 1.25rem;
-    margin-right: 1.25rem;
+    margin: 0.9rem 1.25rem 0;
+    padding: 0.85rem 1rem;
   }
 
+  .vs-section-text { font-size: 0.875rem; }
+
   .view-sponsor-cta {
-    margin-left: 1.25rem;
-    margin-right: 1.25rem;
+    margin: 1.25rem 1.25rem;
+    padding: 0.7rem 1.25rem;
+    font-size: 0.9rem;
   }
 }
 

@@ -248,6 +248,54 @@ import { User } from 'src/app/core/models/users/user.model';
         font-size: 0.95rem;
       }
     }
+
+    @media (max-width: 768px) {
+      .page-header {
+        flex-wrap: nowrap;
+        min-height: 52px;
+        padding: 0.65rem 0.875rem;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      .back-container {
+        flex: 0 0 auto;
+        z-index: 2;
+      }
+
+      .btn-back-clean {
+        font-size: 0.78rem;
+        padding: 0.35rem 0.65rem;
+        gap: 0.28rem;
+      }
+
+      .btn-back-clean i { font-size: 0.85rem; }
+
+      .header-center {
+        flex: 1;
+        min-width: 0;
+        position: static;
+        left: auto;
+        transform: none;
+        text-align: center;
+        overflow: hidden;
+        pointer-events: auto;
+        align-items: center;
+      }
+
+      .table-title {
+        font-size: 0.88rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .table-title i { display: none; }
+
+      .header-subtitle { display: none; }
+
+      .page-header-spacer { display: none; }
+    }
   `]
 })
 export class LesionesEquipoComponent implements OnInit, OnDestroy {

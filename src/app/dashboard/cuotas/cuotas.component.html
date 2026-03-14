@@ -338,6 +338,92 @@
             <span>Sin cuotas obligatorias asignadas</span>
           </div>
         </div>
+
+        <!-- ===== LISTA MÓVIL OBLIGATORIAS (visible solo en móvil) ===== -->
+        <div class="cq-mc-list" *ngIf="cuotasObligatoriasFiltered.length">
+          <div class="cq-mc"
+               *ngFor="let cuota of cuotasObligatoriasFiltered"
+               [class.cq-mc--paid]="cuota.pagado === cuota.importe"
+               [class.cq-mc--pending]="cuota.pagado !== cuota.importe && cuota.pagado !== '0'"
+               [class.cq-mc--overdue]="cuota.pagado === '0'"
+               [class.cq-mc--selected]="isCuotaSelected(cuota)"
+               [class.cq-mc--selectable]="stripeBtoShow && canSelectCuota(cuota)"
+               (click)="stripeBtoShow && canSelectCuota(cuota) ? toggleCuotaSelection(cuota) : null">
+
+            <span class="cq-mc-bar"></span>
+
+            <div class="cq-mc-head">
+              <div class="cq-mc-check" *ngIf="stripeBtoShow" (click)="$event.stopPropagation()">
+                <label class="cq-checkbox" *ngIf="canSelectCuota(cuota)" [class.cq-checkbox--checked]="isCuotaSelected(cuota)">
+                  <input type="checkbox" [checked]="isCuotaSelected(cuota)" (change)="toggleCuotaSelection(cuota)">
+                  <span class="cq-checkbox-box"><i class="bi bi-check-lg"></i></span>
+                </label>
+                <span class="cq-checkbox-locked" *ngIf="!canSelectCuota(cuota)">
+                  <i class="bi bi-lock-fill" *ngIf="isSphaira(cuota)"></i>
+                  <i class="bi bi-check2-all" *ngIf="!isSphaira(cuota) && cuota.pagado >= cuota.importe"></i>
+                </span>
+              </div>
+
+              <div class="cq-mc-info">
+                <span class="cq-mc-name">{{ cuota.nombre }}</span>
+                <span class="cq-tipo-badge cq-tipo-badge--sphaira" *ngIf="isSphaira(cuota)">
+                  <i class="bi bi-lightning-charge-fill"></i> Sphaira Pay
+                </span>
+                <span class="cq-tipo-badge cq-tipo-badge--manual" *ngIf="isManual(cuota)">
+                  <i class="bi bi-cash"></i> Manual
+                </span>
+                <span class="cq-tipo-badge" *ngIf="!isSphaira(cuota) && !isManual(cuota)">
+                  <i class="bi bi-cash-coin"></i> Puntual
+                </span>
+              </div>
+
+              <div class="cq-mc-btns" (click)="$event.stopPropagation()">
+                <ng-container *ngIf="(+cuota.pagado) < (+cuota.importe)">
+                  <span *ngIf="isSphaira(cuota) && savedCards.length > 0"
+                        class="cq-action-btn cq-action-btn--sphaira-auto">
+                    <i class="bi bi-patch-check-fill"></i>
+                  </span>
+                  <button *ngIf="isSphaira(cuota) && stripeBtoShow && savedCards.length === 0"
+                          class="cq-action-btn cq-action-btn--subscribe"
+                          (click)="openModalStripeParaCuota(cuota)">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                  </button>
+                  <button *ngIf="canCancelCuota(cuota)"
+                          class="cq-action-btn cq-action-btn--cancel"
+                          (click)="requestCancelCuota(cuota)">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                </ng-container>
+              </div>
+            </div>
+
+            <div class="cq-mc-data">
+              <div class="cq-mc-cell">
+                <span class="cq-mc-label">Importe</span>
+                <span class="cq-mc-val" *ngIf="!isSphaira(cuota)">{{ parseFloatHelper(cuota.importe) }} €</span>
+                <span class="cq-mc-val cq-mc-val--sphaira" *ngIf="isSphaira(cuota)">{{ getDisplayAmount(cuota) }} €</span>
+              </div>
+              <div class="cq-mc-cell">
+                <span class="cq-mc-label">Pagado</span>
+                <span class="cq-mc-val"
+                      [class.cq-mc-val--paid]="cuota.pagado === cuota.importe"
+                      [class.cq-mc-val--pending]="cuota.pagado !== cuota.importe && cuota.pagado !== '0'"
+                      [class.cq-mc-val--overdue]="cuota.pagado === '0'">
+                  {{ getPagadoVisible(cuota) }} €
+                </span>
+              </div>
+              <div class="cq-mc-cell">
+                <span class="cq-mc-label">Vence</span>
+                <span class="cq-mc-val">{{ cuota.plazo || '-' }}</span>
+              </div>
+              <div class="cq-mc-cell">
+                <span class="cq-mc-label">F. pago</span>
+                <span class="cq-mc-val">{{ cuota.fechaPago || '-' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -519,6 +605,92 @@
             <span>Sin cuotas opcionales asignadas</span>
           </div>
         </div>
+
+        <!-- ===== LISTA MÓVIL OPCIONALES (visible solo en móvil) ===== -->
+        <div class="cq-mc-list" *ngIf="cuotasNoObligatoriasFiltered.length">
+          <div class="cq-mc"
+               *ngFor="let cuota of cuotasNoObligatoriasFiltered"
+               [class.cq-mc--paid]="cuota.pagado === cuota.importe"
+               [class.cq-mc--pending]="cuota.pagado !== cuota.importe && cuota.pagado !== '0'"
+               [class.cq-mc--overdue]="cuota.pagado === '0'"
+               [class.cq-mc--selected]="isCuotaSelected(cuota)"
+               [class.cq-mc--selectable]="stripeBtoShow && canSelectCuota(cuota)"
+               (click)="stripeBtoShow && canSelectCuota(cuota) ? toggleCuotaSelection(cuota) : null">
+
+            <span class="cq-mc-bar"></span>
+
+            <div class="cq-mc-head">
+              <div class="cq-mc-check" *ngIf="stripeBtoShow" (click)="$event.stopPropagation()">
+                <label class="cq-checkbox" *ngIf="canSelectCuota(cuota)" [class.cq-checkbox--checked]="isCuotaSelected(cuota)">
+                  <input type="checkbox" [checked]="isCuotaSelected(cuota)" (change)="toggleCuotaSelection(cuota)">
+                  <span class="cq-checkbox-box"><i class="bi bi-check-lg"></i></span>
+                </label>
+                <span class="cq-checkbox-locked" *ngIf="!canSelectCuota(cuota)">
+                  <i class="bi bi-lock-fill" *ngIf="isSphaira(cuota)"></i>
+                  <i class="bi bi-check2-all" *ngIf="!isSphaira(cuota) && cuota.pagado >= cuota.importe"></i>
+                </span>
+              </div>
+
+              <div class="cq-mc-info">
+                <span class="cq-mc-name">{{ cuota.nombre }}</span>
+                <span class="cq-tipo-badge cq-tipo-badge--sphaira" *ngIf="isSphaira(cuota)">
+                  <i class="bi bi-lightning-charge-fill"></i> Sphaira Pay
+                </span>
+                <span class="cq-tipo-badge cq-tipo-badge--manual" *ngIf="isManual(cuota)">
+                  <i class="bi bi-cash"></i> Manual
+                </span>
+                <span class="cq-tipo-badge" *ngIf="!isSphaira(cuota) && !isManual(cuota)">
+                  <i class="bi bi-cash-coin"></i> Puntual
+                </span>
+              </div>
+
+              <div class="cq-mc-btns" (click)="$event.stopPropagation()">
+                <ng-container *ngIf="(+cuota.pagado) < (+cuota.importe)">
+                  <span *ngIf="isSphaira(cuota) && savedCards.length > 0"
+                        class="cq-action-btn cq-action-btn--sphaira-auto">
+                    <i class="bi bi-patch-check-fill"></i>
+                  </span>
+                  <button *ngIf="isSphaira(cuota) && stripeBtoShow && savedCards.length === 0"
+                          class="cq-action-btn cq-action-btn--subscribe"
+                          (click)="openModalStripeParaCuota(cuota)">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                  </button>
+                  <button *ngIf="canCancelCuota(cuota)"
+                          class="cq-action-btn cq-action-btn--cancel"
+                          (click)="requestCancelCuota(cuota)">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                </ng-container>
+              </div>
+            </div>
+
+            <div class="cq-mc-data">
+              <div class="cq-mc-cell">
+                <span class="cq-mc-label">Importe</span>
+                <span class="cq-mc-val" *ngIf="!isSphaira(cuota)">{{ parseFloatHelper(cuota.importe) }} €</span>
+                <span class="cq-mc-val cq-mc-val--sphaira" *ngIf="isSphaira(cuota)">{{ getDisplayAmount(cuota) }} €</span>
+              </div>
+              <div class="cq-mc-cell">
+                <span class="cq-mc-label">Pagado</span>
+                <span class="cq-mc-val"
+                      [class.cq-mc-val--paid]="cuota.pagado === cuota.importe"
+                      [class.cq-mc-val--pending]="cuota.pagado !== cuota.importe && cuota.pagado !== '0'"
+                      [class.cq-mc-val--overdue]="cuota.pagado === '0'">
+                  {{ getPagadoVisible(cuota) }} €
+                </span>
+              </div>
+              <div class="cq-mc-cell">
+                <span class="cq-mc-label">Vence</span>
+                <span class="cq-mc-val">{{ cuota.plazo || '-' }}</span>
+              </div>
+              <div class="cq-mc-cell">
+                <span class="cq-mc-label">F. pago</span>
+                <span class="cq-mc-val">{{ cuota.fechaPago || '-' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
 

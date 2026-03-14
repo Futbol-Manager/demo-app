@@ -289,7 +289,30 @@ $g-brand:        linear-gradient(135deg, #{$sp-navy} 0%, #{$sp-navy-mid} 50%, #{
 }
 
 @media (max-width: 768px) {
-  .tareas-title { font-size: 1.5rem; }
+  .page-header {
+    flex-wrap: nowrap;
+    padding: 0.875rem 1rem;
+    min-height: 60px;
+  }
+
+  .header-center {
+    flex: 1;
+    position: relative;
+    left: auto;
+    transform: none;
+    text-align: center;
+  }
+
+  .header-center .table-title {
+    font-size: 0.95rem;
+    white-space: normal;
+    justify-content: center;
+  }
+
+  .table-title-icon { display: none; }
+
+  .header-subtitle { display: none; }
+
   .tareas-grid { flex-wrap: wrap; gap: 1rem; }
   .fifa-card { flex: 1 1 calc(50% - 0.5rem); }
   .fifa-card-inner { padding: 1.25rem; }

@@ -748,51 +748,92 @@ $shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
   padding: 0 12px;
 }
 
+/* ── BACKDROP MÓVIL (elemento real con click handler) ── */
+.mobile-sidebar-backdrop { display: none; }
+
 /* ═══════════════════════════════════════
    RESPONSIVE
 ═══════════════════════════════════════ */
 @media (max-width: 768px) {
+  /* ── Back container: compacto ── */
+  .back-container { padding: 0.4rem 0.75rem; }
+
+  .btn-back-clean {
+    margin-left: 0;
+    margin-top: 0;
+    font-size: 0.85rem;
+    padding: 0.3rem 0.55rem;
+  }
+
+  /* ── Sidebar: drawer de anchura adaptable ── */
   .history-sidebar {
     position: fixed;
     top: 0;
     left: 0;
+    width: min(300px, 88vw);
     height: 100vh;
-    z-index: 1000;
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    z-index: 1001;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.22);
+    overflow-y: auto;
   }
 
-  .chat-container.sidebar-open::after {
-    content: '';
+  /* ── Backdrop real: oscurece y permite cerrar tocando fuera ── */
+  .mobile-sidebar-backdrop {
+    display: block;
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.52);
+    z-index: 1000;
+    cursor: pointer;
   }
+
+  /* Quitar el pseudo-elemento (ya no es necesario) */
+  .chat-container.sidebar-open::after { display: none; }
 
   .chat-page {
     padding: 0 0.5rem;
   }
 
   .chat-container {
-    height: calc(100vh - 120px);
+    height: calc(100vh - 110px);
   }
 
+  /* ── Chat header compact ── */
   .chat-header {
-    padding: 14px 16px;
+    padding: 10px 14px;
     border-radius: 14px 14px 0 0;
+    gap: 10px;
   }
 
   .chat-header-icon {
-    width: 40px;
-    height: 40px;
-    font-size: 1.3rem;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    font-size: 1.1rem;
+  }
+
+  .chat-header-info {
+    h5 { font-size: 0.95rem; }
+  }
+
+  .chat-header-status {
+    font-size: 0.72rem;
+  }
+
+  .credits-badge {
+    font-size: 0.72rem;
+    padding: 4px 8px;
+    i { font-size: 0.8rem; }
+  }
+
+  .header-action-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
   }
 
   .chat-body {
-    padding: 16px 12px;
+    padding: 14px 10px;
     gap: 12px;
   }
 
@@ -814,7 +855,7 @@ $shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
   }
 
   .chat-suggestions {
-    padding: 12px 12px 6px;
+    padding: 10px 10px 6px;
   }
 
   .suggestions-grid {
@@ -827,7 +868,7 @@ $shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
   }
 
   .chat-input-bar {
-    padding: 12px 12px 10px;
+    padding: 10px 10px 8px;
     border-radius: 0 0 14px 14px;
   }
 
