@@ -384,7 +384,7 @@ const STEPS = [
 
   // ── Calendario Club ───────────────────────────────────────────────────────
   { file: 'cal_01.mp3', text: 'En esta pantalla tienes la vista mensual de partidos y entrenamientos de todos los equipos del club. Filtra por equipo con los chips, navega entre meses y pulsa en un día o en un evento para ver el detalle. Te explicamos cada parte.' },
-  { file: 'cal_03.mp3', text: 'Empecemos por el filtro de equipos. Cada chip corresponde a un equipo; el color y el icono de ojo indican si está visible. Pulsa en un chip para mostrarlo u ocultarlo, o usa los botones de mostrar y ocultar todos.' },
+  { file: 'cal_03.mp3', text: 'Empecemos por el filtro de equipos. Cada etiqueta de color corresponde a un equipo, y el icono de ojo indica si ese equipo está visible en el calendario. Pulsa en una etiqueta para mostrarlo u ocultarlo, o usa los botones para mostrar u ocultar todos a la vez.' },
   { file: 'cal_04.mp3', text: 'Para navegar entre meses usa las flechas de anterior y siguiente. El botón Hoy te lleva directamente al mes actual.' },
   { file: 'cal_05.mp3', text: 'Aquí tienes el calendario. Los puntos de color indican eventos: forma de pesa para entrenamientos y forma de balón para partidos. Pulsa en una celda para abrir el panel del día.' },
   { file: 'cal_06.mp3', text: 'Al pulsar en cualquier día se abre el panel lateral con todos los eventos de ese día agrupados por equipo. Cada evento puede abrirse para ver sus detalles completos.' },
@@ -582,7 +582,7 @@ const STEPS = [
 
   // ── Calendario equipo (entrenador) ─────────────────────────────────────────
   { file: 'caleq_01.mp3', text: 'Aquí ves el calendario de entrenamientos y partidos del equipo. Puedes cambiar entre vista año, mes y semana, y usar el planificador con IA para organizar la semana. Te guiamos paso a paso.' },
-  { file: 'caleq_02.mp3', text: 'Cambia entre vista por año (grid de meses), por mes (tabla) o por semana (7 días). Cada vista muestra entrenamientos y partidos.' },
+  { file: 'caleq_02.mp3', text: 'Cambia entre tres vistas: la vista anual muestra todos los meses en cuadrícula, la mensual despliega los días en tabla y la semanal te da el detalle de siete días seguidos. Cada vista muestra los entrenamientos y partidos programados.' },
   { file: 'caleq_03.mp3', text: 'Abre el planificador semanal con IA para generar o ajustar la planificación de la semana.' },
   { file: 'caleq_04.mp3', text: 'Avanza o retrocede en el tiempo (año, mes o semana según la vista activa).' },
   { file: 'caleq_05.mp3', text: 'Celdas con entrenamientos y partidos. Pulsa en un día para ver o editar eventos. Puedes arrastrar eventos entre días en vista semana.' },
