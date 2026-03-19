@@ -22,13 +22,28 @@ export class ElevenlabsTtsService {
   }
 
   /**
-   * Convierte texto a audio usando ElevenLabs TTS.
-   * Devuelve un Observable con el Blob de audio (mp3) o falla si no hay config o la API falla.
+   * Convierte texto a audio usando ElevenLabs TTS con la voz configurada por defecto.
    */
   speak(text: string): Observable<Blob> {
     const env = environment as { elevenLabsApiKey?: string; elevenLabsVoiceId?: string };
-    const apiKey = env.elevenLabsApiKey;
-    const voiceId = env.elevenLabsVoiceId;
+    return this.speakWithVoice(text, env.elevenLabsApiKey, env.elevenLabsVoiceId);
+  }
+
+  /**
+   * Convierte texto a audio usando la voz correspondiente al código de idioma ISO 639-1.
+   * Si no hay voz configurada para ese idioma, usa elevenLabsVoiceId como fallback.
+   */
+  speakForLang(text: string, lang: string): Observable<Blob> {
+    const env = environment as {
+      elevenLabsApiKey?: string;
+      elevenLabsVoiceId?: string;
+      elevenLabsVoicesByLang?: Record<string, string>;
+    };
+    const voiceId = (env.elevenLabsVoicesByLang?.[lang]) ?? env.elevenLabsVoiceId;
+    return this.speakWithVoice(text, env.elevenLabsApiKey, voiceId);
+  }
+
+  private speakWithVoice(text: string, apiKey?: string, voiceId?: string): Observable<Blob> {
     if (!apiKey || !voiceId) {
       return of(new Blob());
     }
@@ -38,10 +53,7 @@ export class ElevenlabsTtsService {
       'Content-Type': 'application/json',
       Accept: 'audio/mpeg'
     });
-    const body = {
-      text: text.trim() || ' ',
-      model_id: DEFAULT_MODEL_ID
-    };
+    const body = { text: text.trim() || ' ', model_id: DEFAULT_MODEL_ID };
     return this.http.post(url, body, { headers, responseType: 'blob' }).pipe(
       catchError(() => of(new Blob()))
     );

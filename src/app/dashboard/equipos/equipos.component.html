@@ -119,7 +119,7 @@
                    src="assets/images/user/demo-club-logo.png"
                    alt="Escudo del club"
                    class="tc-shield-img"
-                   (error)="$any($event.target).src='assets/images/user/demo-club-logo.svg'" />
+                   (error)="$any($event.target).src='assets/images/user/demo-club-logo.png'" />
               <img *ngIf="!isDemo && (team.imgClub || pictureClub)"
                    [src]="getShieldImageSrc(team)"
                    alt="Escudo del club"

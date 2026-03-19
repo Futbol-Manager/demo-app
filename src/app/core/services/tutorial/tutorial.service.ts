@@ -181,6 +181,11 @@ export class TutorialService {
     this.screens.set('menu-entrenador-pt', this.getMenuEntrenadorStepsPt());
     this.screens.set('menu-entrenador-it', this.getMenuEntrenadorStepsIt());
     this.screens.set('opcionesjugador', this.getOpcionesjugadorSteps());
+    this.screens.set('opcionesjugador-en', this.getOpcionesjugadorStepsEn());
+    this.screens.set('opcionesjugador-fr', this.getOpcionesjugadorStepsFr());
+    this.screens.set('opcionesjugador-de', this.getOpcionesjugadorStepsDe());
+    this.screens.set('opcionesjugador-pt', this.getOpcionesjugadorStepsPt());
+    this.screens.set('opcionesjugador-it', this.getOpcionesjugadorStepsIt());
     this.screens.set('calendario', this.getCalendarioSteps());
     this.screens.set('calendario-en', this.getCalendarioStepsEn());
     this.screens.set('calendario-fr', this.getCalendarioStepsFr());
@@ -230,6 +235,11 @@ export class TutorialService {
     this.screens.set('jugadores-pt', this.getJugadoresStepsPt());
     this.screens.set('jugadores-it', this.getJugadoresStepsIt());
     this.screens.set('jugador', this.getJugadorSteps());
+    this.screens.set('jugador-en', this.getJugadorStepsEn());
+    this.screens.set('jugador-fr', this.getJugadorStepsFr());
+    this.screens.set('jugador-de', this.getJugadorStepsDe());
+    this.screens.set('jugador-pt', this.getJugadorStepsPt());
+    this.screens.set('jugador-it', this.getJugadorStepsIt());
     this.screens.set('informacion-equipo', this.getInformacionEquipoSteps());
     this.screens.set('informacion-equipo-en', this.getInformacionEquipoStepsEn());
     this.screens.set('informacion-equipo-fr', this.getInformacionEquipoStepsFr());
@@ -281,8 +291,23 @@ export class TutorialService {
     this.screens.set('documentos-entrenador-pt', this.getDocumentosEntrenadorStepsPt());
     this.screens.set('documentos-entrenador-it', this.getDocumentosEntrenadorStepsIt());
     this.screens.set('cuotas', this.getCuotasSteps());
+    this.screens.set('cuotas-en', this.getCuotasStepsEn());
+    this.screens.set('cuotas-fr', this.getCuotasStepsFr());
+    this.screens.set('cuotas-de', this.getCuotasStepsDe());
+    this.screens.set('cuotas-pt', this.getCuotasStepsPt());
+    this.screens.set('cuotas-it', this.getCuotasStepsIt());
     this.screens.set('documentos-jugador', this.getDocumentosJugadorSteps());
+    this.screens.set('documentos-jugador-en', this.getDocumentosJugadorStepsEn());
+    this.screens.set('documentos-jugador-fr', this.getDocumentosJugadorStepsFr());
+    this.screens.set('documentos-jugador-de', this.getDocumentosJugadorStepsDe());
+    this.screens.set('documentos-jugador-pt', this.getDocumentosJugadorStepsPt());
+    this.screens.set('documentos-jugador-it', this.getDocumentosJugadorStepsIt());
     this.screens.set('scouting-player', this.getScoutingPlayerSteps());
+    this.screens.set('scouting-player-en', this.getScoutingPlayerStepsEn());
+    this.screens.set('scouting-player-fr', this.getScoutingPlayerStepsFr());
+    this.screens.set('scouting-player-de', this.getScoutingPlayerStepsDe());
+    this.screens.set('scouting-player-pt', this.getScoutingPlayerStepsPt());
+    this.screens.set('scouting-player-it', this.getScoutingPlayerStepsIt());
     this.screens.set('patrocinadores-usuario', this.getPatrocinadoresUsuarioSteps());
     this.screens.set('patrocinadores-usuario-en', this.getPatrocinadoresUsuarioStepsEn());
     this.screens.set('patrocinadores-usuario-fr', this.getPatrocinadoresUsuarioStepsFr());
@@ -291,6 +316,11 @@ export class TutorialService {
     this.screens.set('patrocinadores-usuario-it', this.getPatrocinadoresUsuarioStepsIt());
     this.screens.set('lesiones-jugador', this.getLesionesSteps());
     this.screens.set('ropa-jugador', this.getRopaJugadorSteps());
+    this.screens.set('ropa-jugador-en', this.getRopaJugadorStepsEn());
+    this.screens.set('ropa-jugador-fr', this.getRopaJugadorStepsFr());
+    this.screens.set('ropa-jugador-de', this.getRopaJugadorStepsDe());
+    this.screens.set('ropa-jugador-pt', this.getRopaJugadorStepsPt());
+    this.screens.set('ropa-jugador-it', this.getRopaJugadorStepsIt());
     this.screens.set('scouting-player-profile', this.getScoutingPlayerProfileSteps());
     this.screens.set('erp', this.getErpSteps());
     this.screens.set('menu-fisio', this.getMenuFisioSteps());
@@ -4470,6 +4500,121 @@ export class TutorialService {
     ];
   }
 
+  /** Cuotas — EN */
+  private getCuotasStepsEn(): TutorialStep[] {
+    return [
+      { id: 'cq-bienvenida', title: 'Pay fees', text: 'You are on the fee payment screen. Here you can check the status of your fees, link a card with Sphaira Pay for automatic charges, view mandatory and optional fees, and access bank transfer details. Let us guide you step by step.', audioFile: 'cq_01_en.mp3', position: 'bottom' },
+      { id: 'cq-estado', title: 'Status & Sphaira Pay', text: 'At the top you will see the total paid and pending cards. From here you can access Sphaira Pay: link a card, view the linked card, or manage automatic charges.', audioFile: 'cq_02_en.mp3', targetSelector: '[data-tutorial="cq-estado"]', position: 'bottom' },
+      { id: 'cq-selection-bar', title: 'Selection bar', text: 'When you select one-time fees, the bar appears showing the total and the Clear and Pay buttons to open the payment modal.', audioFile: 'cq_03_en.mp3', targetSelector: '[data-tutorial="cq-selection-bar"]', position: 'top' },
+      { id: 'cq-obligatorias', title: 'Mandatory fees', text: 'Mandatory fees panel: filter by concept, payment type, status, due date, and date. The table shows concept, type, amount, paid, due date, and actions such as linking a card or cancelling.', audioFile: 'cq_04_en.mp3', targetSelector: '[data-tutorial="cq-obligatorias"]', position: 'left' },
+      { id: 'cq-opcionales', title: 'Optional fees', text: 'Optional fees: same structure with filters and list. You can select multiple and pay in bulk if available.', audioFile: 'cq_05_en.mp3', targetSelector: '[data-tutorial="cq-opcionales"]', position: 'left' },
+      { id: 'cq-transfer', title: 'Bank transfer', text: 'Club bank details: IBAN, concept, contact, and Bizum. Make the transfer and notify the club when you have paid.', audioFile: 'cq_06_en.mp3', targetSelector: '[data-tutorial="cq-transfer"]', position: 'left' },
+      { id: 'cq-fin', title: 'All done', text: 'You now know the fees screen. Link a card with Sphaira Pay if you use it, select and pay fees, or use bank transfer as indicated by the club.', audioFile: 'cq_07_en.mp3', position: 'bottom' }
+    ];
+  }
+
+  /** Cuotas — FR */
+  private getCuotasStepsFr(): TutorialStep[] {
+    return [
+      { id: 'cq-bienvenida', title: 'Payer les cotisations', text: 'Vous etes sur l ecran de paiement des cotisations. Ici vous pouvez consulter l etat de vos cotisations, associer une carte avec Sphaira Pay pour les prelevements automatiques, voir les obligatoires et facultatives, et avoir les coordonnees bancaires pour payer par virement. Nous vous guidons pas a pas.', audioFile: 'cq_01_fr.mp3', position: 'bottom' },
+      { id: 'cq-estado', title: 'Statut et Sphaira Pay', text: 'En haut vous verrez les cartes total paye et en attente. Depuis ici vous accedeez a Sphaira Pay : associer une carte, voir la carte associee ou gerer les prelevements automatiques.', audioFile: 'cq_02_fr.mp3', targetSelector: '[data-tutorial="cq-estado"]', position: 'bottom' },
+      { id: 'cq-selection-bar', title: 'Barre de selection', text: 'En selectionnant des cotisations ponctuelles, la barre apparait avec le total et les boutons Effacer et Payer pour ouvrir la fenetre de paiement.', audioFile: 'cq_03_fr.mp3', targetSelector: '[data-tutorial="cq-selection-bar"]', position: 'top' },
+      { id: 'cq-obligatorias', title: 'Cotisations obligatoires', text: 'Panneau des cotisations obligatoires : filtres par concept, type de paiement, statut, echeance et date. Le tableau affiche concept, type, montant, paye, echeance et actions comme associer une carte ou annuler.', audioFile: 'cq_04_fr.mp3', targetSelector: '[data-tutorial="cq-obligatorias"]', position: 'left' },
+      { id: 'cq-opcionales', title: 'Cotisations facultatives', text: 'Cotisations facultatives : meme structure avec filtres et liste. Vous pouvez en selectionner plusieurs et payer en bloc si disponible.', audioFile: 'cq_05_fr.mp3', targetSelector: '[data-tutorial="cq-opcionales"]', position: 'left' },
+      { id: 'cq-transfer', title: 'Virement bancaire', text: 'Coordonnees bancaires du club : IBAN, concept, contact et Bizum. Effectuez le virement et informez le club une fois le paiement effectue.', audioFile: 'cq_06_fr.mp3', targetSelector: '[data-tutorial="cq-transfer"]', position: 'left' },
+      { id: 'cq-fin', title: 'Termine', text: 'Vous maitrisez maintenant l ecran des cotisations. Associez une carte avec Sphaira Pay si vous l utilisez, selectionnez et payez les cotisations ou utilisez le virement selon les indications du club.', audioFile: 'cq_07_fr.mp3', position: 'bottom' }
+    ];
+  }
+
+  /** Cuotas — DE */
+  private getCuotasStepsDe(): TutorialStep[] {
+    return [
+      { id: 'cq-bienvenida', title: 'Beitrage bezahlen', text: 'Sie befinden sich auf dem Bildschirm zur Beitragszahlung. Hier konnen Sie den Status Ihrer Beitrage pruefen, eine Karte mit Sphaira Pay fuer automatische Abbuchungen verknupfen, Pflicht- und optionale Beitrage einsehen sowie Bankdaten fur eine Uberweisung abrufen. Wir fuhren Sie Schritt fur Schritt.', audioFile: 'cq_01_de.mp3', position: 'bottom' },
+      { id: 'cq-estado', title: 'Status und Sphaira Pay', text: 'Oben sehen Sie die Karten mit dem gezahlten Gesamtbetrag und dem ausstehenden Betrag. Von hier aus gelangen Sie zu Sphaira Pay: Karte verknupfen, verknupfte Karte anzeigen oder automatische Abbuchungen verwalten.', audioFile: 'cq_02_de.mp3', targetSelector: '[data-tutorial="cq-estado"]', position: 'bottom' },
+      { id: 'cq-selection-bar', title: 'Auswahlleiste', text: 'Wenn Sie einmalige Beitrage markieren, erscheint die Leiste mit dem Gesamtbetrag und den Schaltflachen Leeren und Bezahlen, um das Zahlungsfenster zu offnen.', audioFile: 'cq_03_de.mp3', targetSelector: '[data-tutorial="cq-selection-bar"]', position: 'top' },
+      { id: 'cq-obligatorias', title: 'Pflichtbeitrage', text: 'Panel fur Pflichtbeitrage: Filter nach Konzept, Zahlungsart, Status, Falligkeitsdatum und Datum. Die Tabelle zeigt Konzept, Art, Betrag, Bezahlt, Falligkeitsdatum und Aktionen wie Karte verknupfen oder Stornieren.', audioFile: 'cq_04_de.mp3', targetSelector: '[data-tutorial="cq-obligatorias"]', position: 'left' },
+      { id: 'cq-opcionales', title: 'Optionale Beitrage', text: 'Optionale Beitrage: gleiche Struktur mit Filtern und Liste. Sie konnen mehrere auswahlen und bei Verfugbarkeit als Block bezahlen.', audioFile: 'cq_05_de.mp3', targetSelector: '[data-tutorial="cq-opcionales"]', position: 'left' },
+      { id: 'cq-transfer', title: 'Bankuberweisung', text: 'Bankdaten des Vereins: IBAN, Konzept, Kontakt und Bizum. Fuhren Sie die Uberweisung durch und benachrichtigen Sie den Verein nach der Zahlung.', audioFile: 'cq_06_de.mp3', targetSelector: '[data-tutorial="cq-transfer"]', position: 'left' },
+      { id: 'cq-fin', title: 'Fertig', text: 'Sie beherrschen jetzt den Beitragszahlungsbildschirm. Verknupfen Sie eine Karte mit Sphaira Pay, falls Sie es nutzen, wahlen und bezahlen Sie Beitrage oder nutzen Sie die Uberweisung, wie vom Verein angegeben.', audioFile: 'cq_07_de.mp3', position: 'bottom' }
+    ];
+  }
+
+  /** Cuotas — PT */
+  private getCuotasStepsPt(): TutorialStep[] {
+    return [
+      { id: 'cq-bienvenida', title: 'Pagar quotas', text: 'Esta no ecra de pagamento de quotas. Aqui pode consultar o estado das suas quotas, associar um cartao com o Sphaira Pay para cobranças automaticas, ver as obrigatorias e opcionais, e ter os dados para pagar por transferencia. Guiamo-lo passo a passo.', audioFile: 'cq_01_pt.mp3', position: 'bottom' },
+      { id: 'cq-estado', title: 'Estado e Sphaira Pay', text: 'No topo vera os cartoes de total pago e pendente. A partir daqui acede ao Sphaira Pay: associar cartao, ver o cartao associado ou gerir cobranças automaticas.', audioFile: 'cq_02_pt.mp3', targetSelector: '[data-tutorial="cq-estado"]', position: 'bottom' },
+      { id: 'cq-selection-bar', title: 'Barra de selecao', text: 'Ao marcar quotas pontuais aparece a barra com o total e os botoes Limpar e Pagar para abrir o modal de pagamento.', audioFile: 'cq_03_pt.mp3', targetSelector: '[data-tutorial="cq-selection-bar"]', position: 'top' },
+      { id: 'cq-obligatorias', title: 'Quotas obrigatorias', text: 'Painel de quotas obrigatorias: filtros por conceito, tipo de pagamento, estado, vencimento e data. A tabela mostra conceito, tipo, montante, pago, vencimento e acoes como associar cartao ou cancelar.', audioFile: 'cq_04_pt.mp3', targetSelector: '[data-tutorial="cq-obligatorias"]', position: 'left' },
+      { id: 'cq-opcionales', title: 'Quotas opcionais', text: 'Quotas opcionais: mesma estrutura com filtros e lista. Pode selecionar varias e pagar em bloco se disponivel.', audioFile: 'cq_05_pt.mp3', targetSelector: '[data-tutorial="cq-opcionales"]', position: 'left' },
+      { id: 'cq-transfer', title: 'Transferencia bancaria', text: 'Dados bancarios do clube: IBAN, conceito, contacto e Bizum. Efetue a transferencia e notifique o clube apos o pagamento.', audioFile: 'cq_06_pt.mp3', targetSelector: '[data-tutorial="cq-transfer"]', position: 'left' },
+      { id: 'cq-fin', title: 'Pronto', text: 'Ja conhece o ecra de quotas. Associe um cartao com Sphaira Pay se o utilizar, selecione e pague as quotas ou use transferencia conforme indicado pelo clube.', audioFile: 'cq_07_pt.mp3', position: 'bottom' }
+    ];
+  }
+
+  /** Cuotas — IT */
+  private getCuotasStepsIt(): TutorialStep[] {
+    return [
+      { id: 'cq-bienvenida', title: 'Pagare le quote', text: 'Sei nella schermata di pagamento delle quote. Qui puoi consultare lo stato delle tue quote, collegare una carta con Sphaira Pay per gli addebiti automatici, vedere quelle obbligatorie e facoltative, e avere i dati per pagare tramite bonifico. Ti guidiamo passo dopo passo.', audioFile: 'cq_01_it.mp3', position: 'bottom' },
+      { id: 'cq-estado', title: 'Stato e Sphaira Pay', text: 'In alto vedrai le schede del totale pagato e in attesa. Da qui accedi a Sphaira Pay: collegare una carta, vedere quella collegata o gestire gli addebiti automatici.', audioFile: 'cq_02_it.mp3', targetSelector: '[data-tutorial="cq-estado"]', position: 'bottom' },
+      { id: 'cq-selection-bar', title: 'Barra di selezione', text: 'Selezionando quote una tantum appare la barra con il totale e i pulsanti Cancella e Paga per aprire il modal di pagamento.', audioFile: 'cq_03_it.mp3', targetSelector: '[data-tutorial="cq-selection-bar"]', position: 'top' },
+      { id: 'cq-obligatorias', title: 'Quote obbligatorie', text: 'Pannello delle quote obbligatorie: filtri per concetto, tipo di pagamento, stato, scadenza e data. La tabella mostra concetto, tipo, importo, pagato, scadenza e azioni come collegare una carta o annullare.', audioFile: 'cq_04_it.mp3', targetSelector: '[data-tutorial="cq-obligatorias"]', position: 'left' },
+      { id: 'cq-opcionales', title: 'Quote facoltative', text: 'Quote facoltative: stessa struttura con filtri e lista. Puoi selezionarne piu e pagare in blocco se disponibile.', audioFile: 'cq_05_it.mp3', targetSelector: '[data-tutorial="cq-opcionales"]', position: 'left' },
+      { id: 'cq-transfer', title: 'Bonifico bancario', text: 'Coordinate bancarie del club: IBAN, concetto, contatto e Bizum. Effettua il bonifico e notifica il club dopo il pagamento.', audioFile: 'cq_06_it.mp3', targetSelector: '[data-tutorial="cq-transfer"]', position: 'left' },
+      { id: 'cq-fin', title: 'Fatto', text: 'Ora conosci la schermata delle quote. Collega una carta con Sphaira Pay se lo usi, seleziona e paga le quote oppure usa il bonifico come indicato dal club.', audioFile: 'cq_07_it.mp3', position: 'bottom' }
+    ];
+  }
+
+  /** Documentos jugador — EN */
+  private getDocumentosJugadorStepsEn(): TutorialStep[] {
+    return [
+      { id: 'dj-bienvenida', title: 'Documentation', text: 'You are in the documentation your club requests from you. You can download documents shared by the club, upload the ones they ask for, or fill in forms. Each card shows its status: pending or completed. Let us guide you step by step.', audioFile: 'dj_01_en.mp3', position: 'bottom' },
+      { id: 'dj-busqueda', title: 'Search document', text: 'Use the search field to filter the document list by name.', audioFile: 'dj_02_en.mp3', targetSelector: '[data-tutorial="dj-busqueda"]', position: 'bottom' },
+      { id: 'dj-grid', title: 'Document list', text: 'Each card shows name, description, and status: Pending download or Downloaded, Pending upload or Uploaded, Pending completion or Completed. Depending on the type, use the Download, Upload document, or Fill in button.', audioFile: 'dj_03_en.mp3', targetSelector: '[data-tutorial="dj-grid"]', position: 'left' },
+      { id: 'dj-fin', title: 'All done', text: 'You now know the documentation section. Download, upload, or fill in each document as requested by the club.', audioFile: 'dj_04_en.mp3', position: 'bottom' }
+    ];
+  }
+
+  /** Documentos jugador — FR */
+  private getDocumentosJugadorStepsFr(): TutorialStep[] {
+    return [
+      { id: 'dj-bienvenida', title: 'Documentation', text: 'Vous etes dans la documentation que votre club vous demande. Vous pouvez telecharger les documents partages par le club, envoyer ceux qu il vous demande ou remplir des formulaires. Chaque carte affiche son statut : en attente ou complete. Nous vous guidons pas a pas.', audioFile: 'dj_01_fr.mp3', position: 'bottom' },
+      { id: 'dj-busqueda', title: 'Rechercher un document', text: 'Utilisez le champ de recherche pour filtrer la liste de documents par nom.', audioFile: 'dj_02_fr.mp3', targetSelector: '[data-tutorial="dj-busqueda"]', position: 'bottom' },
+      { id: 'dj-grid', title: 'Liste de documents', text: 'Chaque carte affiche nom, description et statut : Telechargement en attente ou Telecharge, Envoi en attente ou Envoye, A remplir ou Complete. Selon le type, utilisez le bouton Telecharger, Envoyer le document ou Remplir.', audioFile: 'dj_03_fr.mp3', targetSelector: '[data-tutorial="dj-grid"]', position: 'left' },
+      { id: 'dj-fin', title: 'Termine', text: 'Vous connaissez maintenant la section documentation. Telechargez, envoyez ou remplissez chaque document selon la demande du club.', audioFile: 'dj_04_fr.mp3', position: 'bottom' }
+    ];
+  }
+
+  /** Documentos jugador — DE */
+  private getDocumentosJugadorStepsDe(): TutorialStep[] {
+    return [
+      { id: 'dj-bienvenida', title: 'Dokumentation', text: 'Sie befinden sich in der Dokumentation, die Ihr Verein von Ihnen anfordert. Sie konnen vom Verein freigegebene Dokumente herunterladen, die angefragten hochladen oder Formulare ausfullen. Jede Karte zeigt den Status: ausstehend oder abgeschlossen. Wir fuhren Sie Schritt fur Schritt.', audioFile: 'dj_01_de.mp3', position: 'bottom' },
+      { id: 'dj-busqueda', title: 'Dokument suchen', text: 'Verwenden Sie das Suchfeld, um die Dokumentliste nach Namen zu filtern.', audioFile: 'dj_02_de.mp3', targetSelector: '[data-tutorial="dj-busqueda"]', position: 'bottom' },
+      { id: 'dj-grid', title: 'Dokumentliste', text: 'Jede Karte zeigt Name, Beschreibung und Status: Download ausstehend oder Heruntergeladen, Upload ausstehend oder Hochgeladen, Zum Ausfullen oder Abgeschlossen. Je nach Typ verwenden Sie die Schaltflache Herunterladen, Dokument hochladen oder Ausfullen.', audioFile: 'dj_03_de.mp3', targetSelector: '[data-tutorial="dj-grid"]', position: 'left' },
+      { id: 'dj-fin', title: 'Fertig', text: 'Sie kennen jetzt den Dokumentationsbereich. Laden Sie herunter, laden Sie hoch oder fullen Sie jedes Dokument gemaß den Anforderungen des Vereins aus.', audioFile: 'dj_04_de.mp3', position: 'bottom' }
+    ];
+  }
+
+  /** Documentos jugador — PT */
+  private getDocumentosJugadorStepsPt(): TutorialStep[] {
+    return [
+      { id: 'dj-bienvenida', title: 'Documentacao', text: 'Esta na documentacao que o seu clube lhe solicita. Pode descarregar os documentos partilhados pelo clube, enviar os que lhe pedem ou preencher formularios. Cada cartao mostra o estado: pendente ou concluido. Guiamo-lo passo a passo.', audioFile: 'dj_01_pt.mp3', position: 'bottom' },
+      { id: 'dj-busqueda', title: 'Pesquisar documento', text: 'Utilize o campo de pesquisa para filtrar a lista de documentos por nome.', audioFile: 'dj_02_pt.mp3', targetSelector: '[data-tutorial="dj-busqueda"]', position: 'bottom' },
+      { id: 'dj-grid', title: 'Lista de documentos', text: 'Cada cartao mostra nome, descricao e estado: Download pendente ou Transferido, Upload pendente ou Enviado, Por preencher ou Concluido. Consoante o tipo, utilize o botao Transferir, Enviar documento ou Preencher.', audioFile: 'dj_03_pt.mp3', targetSelector: '[data-tutorial="dj-grid"]', position: 'left' },
+      { id: 'dj-fin', title: 'Pronto', text: 'Ja conhece a secao de documentacao. Descarregue, envie ou preencha cada documento conforme solicitado pelo clube.', audioFile: 'dj_04_pt.mp3', position: 'bottom' }
+    ];
+  }
+
+  /** Documentos jugador — IT */
+  private getDocumentosJugadorStepsIt(): TutorialStep[] {
+    return [
+      { id: 'dj-bienvenida', title: 'Documentazione', text: 'Sei nella documentazione che il tuo club ti richiede. Puoi scaricare i documenti condivisi dal club, caricare quelli che ti chiedono o compilare moduli. Ogni scheda mostra lo stato: in attesa o completato. Ti guidiamo passo dopo passo.', audioFile: 'dj_01_it.mp3', position: 'bottom' },
+      { id: 'dj-busqueda', title: 'Cerca documento', text: 'Usa il campo di ricerca per filtrare la lista dei documenti per nome.', audioFile: 'dj_02_it.mp3', targetSelector: '[data-tutorial="dj-busqueda"]', position: 'bottom' },
+      { id: 'dj-grid', title: 'Lista documenti', text: 'Ogni scheda mostra nome, descrizione e stato: Download in attesa o Scaricato, Upload in attesa o Caricato, Da compilare o Completato. A seconda del tipo, usa il pulsante Scarica, Carica documento o Compila.', audioFile: 'dj_03_it.mp3', targetSelector: '[data-tutorial="dj-grid"]', position: 'left' },
+      { id: 'dj-fin', title: 'Fatto', text: 'Ora conosci la sezione documentazione. Scarica, carica o compila ogni documento come richiesto dal club.', audioFile: 'dj_04_it.mp3', position: 'bottom' }
+    ];
+  }
+
   /** Pasos del tutorial Perfil de jugador (scouting-player): sin paso Volver; textos instructivos. */
   private getScoutingPlayerSteps(): TutorialStep[] {
     return [
@@ -5078,6 +5223,263 @@ export class TutorialService {
       { id: 'videos-busqueda', title: 'Ricerca e filtro per cartella', text: 'Per trovare un video specifico, cerca per titolo, giocatore o etichetta. Se è selezionata una cartella, appare un breadcrumb che puoi rimuovere per vedere tutti i video di nuovo.', audioFile: 'videos_06_it.mp3', targetSelector: '[data-tutorial="videos-busqueda"]', position: 'bottom' },
       { id: 'videos-grid', title: 'Griglia video', text: 'E qui ci sono tutti i tuoi video. Ogni scheda mostra miniatura, titolo, giocatore, cartella, etichette e data. Dalle azioni puoi riprodurre, esportare in Drive, analizzare il video, spostarlo in cartella o eliminarlo.', audioFile: 'videos_07_it.mp3', targetSelector: '[data-tutorial="videos-grid"]', position: 'left' },
       { id: 'videos-fin', title: 'Completato', text: 'Hai padroneggiato la Videoteca. Carica o collega video, organizzali in cartelle e usa Analizza video per etichettare le giocate nel modulo Analisi Video quando ne hai bisogno.', audioFile: 'videos_08_it.mp3', position: 'bottom' }
+    ];
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // OPCIONES JUGADOR — EN / FR / DE / PT / IT
+  // ─────────────────────────────────────────────────────────────
+
+  private getOpcionesjugadorStepsEn(): TutorialStep[] {
+    return [
+      { id: 'oj-bienvenida', title: 'Player options', text: 'You are in the player menu. From here you access each section using cards: Personal data, Calendar, Pay fees, Documents, Rankings & results, My stats, Gallery, Notifications, Sponsors, Injuries and Kit. We will walk you through each one.', audioFile: 'oj_01_en.mp3', position: 'bottom' },
+      { id: 'oj-datos-personales', title: 'Personal data', text: 'The Personal data card opens your profile: view and edit your name, date of birth, position, contact details and the rest of your personal information.', audioFile: 'oj_02_en.mp3', targetSelector: '[data-tutorial="oj-datos-personales"]', position: 'bottom' },
+      { id: 'oj-calendario', title: 'Calendar', text: 'The Calendar card shows all your training sessions and matches organised by date. Enter to see the full schedule.', audioFile: 'oj_03_en.mp3', targetSelector: '[data-tutorial="oj-calendario"]', position: 'bottom' },
+      { id: 'oj-pagar-cuotas', title: 'Pay fees', text: 'Pay fees: here you or your family manage and pay the club fees. Link a card with Sphaira Pay, review mandatory and optional fees, or pay by bank transfer if the club indicates it.', audioFile: 'oj_04_en.mp3', targetSelector: '[data-tutorial="oj-pagar-cuotas"]', position: 'bottom' },
+      { id: 'oj-documentacion', title: 'Documents', text: 'Documents: all the files and documents the club requests from you. Download the ones the club shares, upload the ones they ask for, or fill in forms.', audioFile: 'oj_05_en.mp3', targetSelector: '[data-tutorial="oj-documentacion"]', position: 'bottom' },
+      { id: 'oj-clasificacion', title: 'Rankings & results', text: 'Rankings & results: check your team\'s position in the competition table and the match history with results.', audioFile: 'oj_06_en.mp3', targetSelector: '[data-tutorial="oj-clasificacion"]', position: 'bottom' },
+      { id: 'oj-mis-estadisticas', title: 'My stats', text: 'My stats: goals, assists, minutes played and other metrics about your personal performance this season.', audioFile: 'oj_07_en.mp3', targetSelector: '[data-tutorial="oj-mis-estadisticas"]', position: 'bottom' },
+      { id: 'oj-galeria', title: 'Gallery', text: 'The Gallery shows team photos and moments that you can view and download.', audioFile: 'oj_08_en.mp3', targetSelector: '[data-tutorial="oj-galeria"]', position: 'bottom' },
+      { id: 'oj-notificaciones', title: 'Notifications', text: 'Notifications: messages and alerts from the club and the coach addressed to you.', audioFile: 'oj_09_en.mp3', targetSelector: '[data-tutorial="oj-notificaciones"]', position: 'bottom' },
+      { id: 'oj-patrocinadores', title: 'Sponsors', text: 'Club sponsors: logos, contact information and benefits they offer to players.', audioFile: 'oj_10_en.mp3', targetSelector: '[data-tutorial="oj-patrocinadores"]', position: 'bottom' },
+      { id: 'oj-lesiones', title: 'Injuries', text: 'Injuries: view your injury history and current recovery status if any.', audioFile: 'oj_11_en.mp3', targetSelector: '[data-tutorial="oj-lesiones"]', position: 'bottom' },
+      { id: 'oj-ropa', title: 'Kit', text: 'Club kit: the equipment catalogue and size selection so the club can manage orders.', audioFile: 'oj_12_en.mp3', targetSelector: '[data-tutorial="oj-ropa"]', position: 'bottom' },
+      { id: 'oj-fin', title: 'All done', text: 'You have completed the tour. You now know all the player options. Tap any card to enter that section whenever you need it.', audioFile: 'oj_13_en.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getOpcionesjugadorStepsFr(): TutorialStep[] {
+    return [
+      { id: 'oj-bienvenida', title: 'Options du joueur', text: 'Vous êtes dans le menu du joueur. Depuis ici vous accédez à chaque section via des cartes : Données personnelles, Calendrier, Payer les cotisations, Documentation, Classement et résultats, Mes statistiques, Galerie, Notifications, Sponsors, Blessures et Équipement. Nous vous guidons dans chacune.', audioFile: 'oj_01_fr.mp3', position: 'bottom' },
+      { id: 'oj-datos-personales', title: 'Données personnelles', text: 'La carte Données personnelles ouvre votre profil : consultez et modifiez votre nom, date de naissance, poste, coordonnées et le reste de vos informations personnelles.', audioFile: 'oj_02_fr.mp3', targetSelector: '[data-tutorial="oj-datos-personales"]', position: 'bottom' },
+      { id: 'oj-calendario', title: 'Calendrier', text: 'La carte Calendrier affiche tous vos entraînements et matchs organisés par date. Entrez pour voir le planning complet.', audioFile: 'oj_03_fr.mp3', targetSelector: '[data-tutorial="oj-calendario"]', position: 'bottom' },
+      { id: 'oj-pagar-cuotas', title: 'Payer les cotisations', text: 'Payer les cotisations : ici vous ou votre famille gérez et réglez les cotisations du club. Liez une carte avec Sphaira Pay, vérifiez les obligatoires et optionnelles, et payez par virement si le club l\'indique.', audioFile: 'oj_04_fr.mp3', targetSelector: '[data-tutorial="oj-pagar-cuotas"]', position: 'bottom' },
+      { id: 'oj-documentacion', title: 'Documentation', text: 'Documentation : tous les fichiers et documents que le club vous demande. Téléchargez ceux que le club partage, envoyez ceux qu\'il demande ou remplissez des formulaires.', audioFile: 'oj_05_fr.mp3', targetSelector: '[data-tutorial="oj-documentacion"]', position: 'bottom' },
+      { id: 'oj-clasificacion', title: 'Classement et résultats', text: 'Classement et résultats : consultez le tableau de votre équipe dans la compétition et l\'historique des matchs et résultats.', audioFile: 'oj_06_fr.mp3', targetSelector: '[data-tutorial="oj-clasificacion"]', position: 'bottom' },
+      { id: 'oj-mis-estadisticas', title: 'Mes statistiques', text: 'Mes statistiques : buts, passes décisives, minutes jouées et autres indicateurs de votre performance personnelle cette saison.', audioFile: 'oj_07_fr.mp3', targetSelector: '[data-tutorial="oj-mis-estadisticas"]', position: 'bottom' },
+      { id: 'oj-galeria', title: 'Galerie', text: 'La Galerie affiche les photos et moments de l\'équipe que vous pouvez consulter et télécharger.', audioFile: 'oj_08_fr.mp3', targetSelector: '[data-tutorial="oj-galeria"]', position: 'bottom' },
+      { id: 'oj-notificaciones', title: 'Notifications', text: 'Notifications : messages et avis du club et de l\'entraîneur qui vous sont adressés.', audioFile: 'oj_09_fr.mp3', targetSelector: '[data-tutorial="oj-notificaciones"]', position: 'bottom' },
+      { id: 'oj-patrocinadores', title: 'Sponsors', text: 'Sponsors du club : logos, coordonnées et avantages qu\'ils offrent aux joueurs.', audioFile: 'oj_10_fr.mp3', targetSelector: '[data-tutorial="oj-patrocinadores"]', position: 'bottom' },
+      { id: 'oj-lesiones', title: 'Blessures', text: 'Blessures : consultez votre historique de blessures et l\'état de récupération le cas échéant.', audioFile: 'oj_11_fr.mp3', targetSelector: '[data-tutorial="oj-lesiones"]', position: 'bottom' },
+      { id: 'oj-ropa', title: 'Équipement', text: 'Équipement du club : catalogue de tenues et sélection des tailles pour que le club gère les commandes.', audioFile: 'oj_12_fr.mp3', targetSelector: '[data-tutorial="oj-ropa"]', position: 'bottom' },
+      { id: 'oj-fin', title: 'Terminé', text: 'Vous avez terminé la visite. Vous connaissez désormais toutes les options du joueur. Appuyez sur n\'importe quelle carte pour accéder à cette section quand vous en avez besoin.', audioFile: 'oj_13_fr.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getOpcionesjugadorStepsDe(): TutorialStep[] {
+    return [
+      { id: 'oj-bienvenida', title: 'Spieleroptionen', text: 'Sie befinden sich im Spielermenü. Von hier aus gelangen Sie über Karten zu jedem Bereich: Persönliche Daten, Kalender, Beiträge zahlen, Dokumente, Tabelle & Ergebnisse, Meine Statistiken, Galerie, Benachrichtigungen, Sponsoren, Verletzungen und Ausrüstung. Wir führen Sie durch jeden Bereich.', audioFile: 'oj_01_de.mp3', position: 'bottom' },
+      { id: 'oj-datos-personales', title: 'Persönliche Daten', text: 'Die Karte Persönliche Daten öffnet Ihr Profil: Sehen und bearbeiten Sie Ihren Namen, Ihr Geburtsdatum, Ihre Position, Ihre Kontaktdaten und Ihre weiteren persönlichen Informationen.', audioFile: 'oj_02_de.mp3', targetSelector: '[data-tutorial="oj-datos-personales"]', position: 'bottom' },
+      { id: 'oj-calendario', title: 'Kalender', text: 'Die Kalender-Karte zeigt alle Ihre Trainingseinheiten und Spiele nach Datum geordnet. Betreten Sie diese, um den vollständigen Plan zu sehen.', audioFile: 'oj_03_de.mp3', targetSelector: '[data-tutorial="oj-calendario"]', position: 'bottom' },
+      { id: 'oj-pagar-cuotas', title: 'Beiträge zahlen', text: 'Beiträge zahlen: hier verwalten und bezahlen Sie oder Ihre Familie die Vereinsbeiträge. Verknüpfen Sie eine Karte mit Sphaira Pay, überprüfen Sie Pflicht- und optionale Beiträge oder zahlen Sie per Banküberweisung, wenn der Verein dies angibt.', audioFile: 'oj_04_de.mp3', targetSelector: '[data-tutorial="oj-pagar-cuotas"]', position: 'bottom' },
+      { id: 'oj-documentacion', title: 'Dokumente', text: 'Dokumente: alle Dateien und Unterlagen, die der Verein von Ihnen verlangt. Laden Sie die vom Verein geteilten herunter, laden Sie die angeforderten hoch oder füllen Sie Formulare aus.', audioFile: 'oj_05_de.mp3', targetSelector: '[data-tutorial="oj-documentacion"]', position: 'bottom' },
+      { id: 'oj-clasificacion', title: 'Tabelle & Ergebnisse', text: 'Tabelle & Ergebnisse: sehen Sie die Tabellenposition Ihres Teams im Wettbewerb und die Spielhistorie mit Ergebnissen.', audioFile: 'oj_06_de.mp3', targetSelector: '[data-tutorial="oj-clasificacion"]', position: 'bottom' },
+      { id: 'oj-mis-estadisticas', title: 'Meine Statistiken', text: 'Meine Statistiken: Tore, Vorlagen, gespielte Minuten und andere Kennzahlen Ihrer persönlichen Leistung in dieser Saison.', audioFile: 'oj_07_de.mp3', targetSelector: '[data-tutorial="oj-mis-estadisticas"]', position: 'bottom' },
+      { id: 'oj-galeria', title: 'Galerie', text: 'Die Galerie zeigt Mannschaftsfotos und -momente, die Sie ansehen und herunterladen können.', audioFile: 'oj_08_de.mp3', targetSelector: '[data-tutorial="oj-galeria"]', position: 'bottom' },
+      { id: 'oj-notificaciones', title: 'Benachrichtigungen', text: 'Benachrichtigungen: Nachrichten und Hinweise vom Verein und Trainer, die an Sie gerichtet sind.', audioFile: 'oj_09_de.mp3', targetSelector: '[data-tutorial="oj-notificaciones"]', position: 'bottom' },
+      { id: 'oj-patrocinadores', title: 'Sponsoren', text: 'Vereinssponsoren: Logos, Kontaktinformationen und Vorteile, die sie Spielern bieten.', audioFile: 'oj_10_de.mp3', targetSelector: '[data-tutorial="oj-patrocinadores"]', position: 'bottom' },
+      { id: 'oj-lesiones', title: 'Verletzungen', text: 'Verletzungen: sehen Sie Ihre Verletzungshistorie und den aktuellen Genesungsstand, falls vorhanden.', audioFile: 'oj_11_de.mp3', targetSelector: '[data-tutorial="oj-lesiones"]', position: 'bottom' },
+      { id: 'oj-ropa', title: 'Ausrüstung', text: 'Vereinsausrüstung: Ausrüstungskatalog und Größenauswahl, damit der Verein Bestellungen verwalten kann.', audioFile: 'oj_12_de.mp3', targetSelector: '[data-tutorial="oj-ropa"]', position: 'bottom' },
+      { id: 'oj-fin', title: 'Fertig', text: 'Sie haben die Tour abgeschlossen. Sie kennen nun alle Spieleroptionen. Tippen Sie auf eine beliebige Karte, um jederzeit auf den jeweiligen Bereich zuzugreifen.', audioFile: 'oj_13_de.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getOpcionesjugadorStepsPt(): TutorialStep[] {
+    return [
+      { id: 'oj-bienvenida', title: 'Opções do jogador', text: 'Está no menu do jogador. A partir daqui acede a cada secção através de cartões: Dados pessoais, Calendário, Pagar quotas, Documentação, Classificação e resultados, As minhas estatísticas, Galeria, Notificações, Patrocinadores, Lesões e Equipamento. Explicamos cada uma.', audioFile: 'oj_01_pt.mp3', position: 'bottom' },
+      { id: 'oj-datos-personales', title: 'Dados pessoais', text: 'O cartão Dados pessoais abre o seu perfil: consulte e edite o seu nome, data de nascimento, posição, contacto e o restante das suas informações pessoais.', audioFile: 'oj_02_pt.mp3', targetSelector: '[data-tutorial="oj-datos-personales"]', position: 'bottom' },
+      { id: 'oj-calendario', title: 'Calendário', text: 'O cartão Calendário mostra todos os seus treinos e jogos organizados por data. Entre para ver o planeamento completo.', audioFile: 'oj_03_pt.mp3', targetSelector: '[data-tutorial="oj-calendario"]', position: 'bottom' },
+      { id: 'oj-pagar-cuotas', title: 'Pagar quotas', text: 'Pagar quotas: aqui você ou a sua família gere e paga as quotas do clube. Associe um cartão com o Sphaira Pay, verifique as obrigatórias e opcionais e pague por transferência se o clube o indicar.', audioFile: 'oj_04_pt.mp3', targetSelector: '[data-tutorial="oj-pagar-cuotas"]', position: 'bottom' },
+      { id: 'oj-documentacion', title: 'Documentação', text: 'Documentação: todos os ficheiros e documentos que o clube lhe solicita. Descarregue os que o clube partilha, carregue os que pedem ou preencha formulários.', audioFile: 'oj_05_pt.mp3', targetSelector: '[data-tutorial="oj-documentacion"]', position: 'bottom' },
+      { id: 'oj-clasificacion', title: 'Classificação e resultados', text: 'Classificação e resultados: consulte a tabela da sua equipa na competição e o histórico de jogos e resultados.', audioFile: 'oj_06_pt.mp3', targetSelector: '[data-tutorial="oj-clasificacion"]', position: 'bottom' },
+      { id: 'oj-mis-estadisticas', title: 'As minhas estatísticas', text: 'As minhas estatísticas: golos, assistências, minutos jogados e outras métricas do seu desempenho pessoal na temporada.', audioFile: 'oj_07_pt.mp3', targetSelector: '[data-tutorial="oj-mis-estadisticas"]', position: 'bottom' },
+      { id: 'oj-galeria', title: 'Galeria', text: 'A Galeria mostra fotos e momentos da equipa que pode ver e descarregar.', audioFile: 'oj_08_pt.mp3', targetSelector: '[data-tutorial="oj-galeria"]', position: 'bottom' },
+      { id: 'oj-notificaciones', title: 'Notificações', text: 'Notificações: mensagens e avisos do clube e do treinador dirigidos a si.', audioFile: 'oj_09_pt.mp3', targetSelector: '[data-tutorial="oj-notificaciones"]', position: 'bottom' },
+      { id: 'oj-patrocinadores', title: 'Patrocinadores', text: 'Patrocinadores do clube: logótipos, informações de contacto e benefícios que oferecem aos jogadores.', audioFile: 'oj_10_pt.mp3', targetSelector: '[data-tutorial="oj-patrocinadores"]', position: 'bottom' },
+      { id: 'oj-lesiones', title: 'Lesões', text: 'Lesões: consulte o seu historial de lesões e o estado de recuperação, se existir.', audioFile: 'oj_11_pt.mp3', targetSelector: '[data-tutorial="oj-lesiones"]', position: 'bottom' },
+      { id: 'oj-ropa', title: 'Equipamento', text: 'Equipamento do clube: catálogo de fardamento e indicação de tamanhos para que o clube gira as encomendas.', audioFile: 'oj_12_pt.mp3', targetSelector: '[data-tutorial="oj-ropa"]', position: 'bottom' },
+      { id: 'oj-fin', title: 'Concluído', text: 'Completou a visita. Já conhece todas as opções do jogador. Toque em qualquer cartão para aceder a essa secção quando precisar.', audioFile: 'oj_13_pt.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getOpcionesjugadorStepsIt(): TutorialStep[] {
+    return [
+      { id: 'oj-bienvenida', title: 'Opzioni giocatore', text: 'Sei nel menu del giocatore. Da qui accedi a ogni sezione tramite le schede: Dati personali, Calendario, Pagare le quote, Documentazione, Classifica e risultati, Le mie statistiche, Galleria, Notifiche, Sponsor, Infortuni e Abbigliamento. Ti spieghiamo ciascuna.', audioFile: 'oj_01_it.mp3', position: 'bottom' },
+      { id: 'oj-datos-personales', title: 'Dati personali', text: 'La scheda Dati personali apre il tuo profilo: consulta e modifica il tuo nome, data di nascita, ruolo, contatto e le restanti informazioni personali.', audioFile: 'oj_02_it.mp3', targetSelector: '[data-tutorial="oj-datos-personales"]', position: 'bottom' },
+      { id: 'oj-calendario', title: 'Calendario', text: 'La scheda Calendario mostra tutti gli allenamenti e le partite organizzati per data. Entra per vedere il programma completo.', audioFile: 'oj_03_it.mp3', targetSelector: '[data-tutorial="oj-calendario"]', position: 'bottom' },
+      { id: 'oj-pagar-cuotas', title: 'Pagare le quote', text: 'Pagare le quote: qui tu o la tua famiglia gestite e pagate le quote del club. Collega una carta con Sphaira Pay, controlla quelle obbligatorie e facoltative e paga tramite bonifico se il club lo indica.', audioFile: 'oj_04_it.mp3', targetSelector: '[data-tutorial="oj-pagar-cuotas"]', position: 'bottom' },
+      { id: 'oj-documentacion', title: 'Documentazione', text: 'Documentazione: tutti i file e i documenti che il club ti richiede. Scarica quelli che il club condivide, carica quelli che ti chiedono o compila i moduli.', audioFile: 'oj_05_it.mp3', targetSelector: '[data-tutorial="oj-documentacion"]', position: 'bottom' },
+      { id: 'oj-clasificacion', title: 'Classifica e risultati', text: 'Classifica e risultati: consulta la classifica della tua squadra nella competizione e lo storico delle partite e dei risultati.', audioFile: 'oj_06_it.mp3', targetSelector: '[data-tutorial="oj-clasificacion"]', position: 'bottom' },
+      { id: 'oj-mis-estadisticas', title: 'Le mie statistiche', text: 'Le mie statistiche: gol, assist, minuti giocati e altre metriche delle tue prestazioni personali nella stagione.', audioFile: 'oj_07_it.mp3', targetSelector: '[data-tutorial="oj-mis-estadisticas"]', position: 'bottom' },
+      { id: 'oj-galeria', title: 'Galleria', text: 'La Galleria mostra foto e momenti della squadra che puoi visualizzare e scaricare.', audioFile: 'oj_08_it.mp3', targetSelector: '[data-tutorial="oj-galeria"]', position: 'bottom' },
+      { id: 'oj-notificaciones', title: 'Notifiche', text: 'Notifiche: messaggi e avvisi del club e dell\'allenatore indirizzati a te.', audioFile: 'oj_09_it.mp3', targetSelector: '[data-tutorial="oj-notificaciones"]', position: 'bottom' },
+      { id: 'oj-patrocinadores', title: 'Sponsor', text: 'Sponsor del club: loghi, informazioni di contatto e vantaggi che offrono ai giocatori.', audioFile: 'oj_10_it.mp3', targetSelector: '[data-tutorial="oj-patrocinadores"]', position: 'bottom' },
+      { id: 'oj-lesiones', title: 'Infortuni', text: 'Infortuni: consulta il tuo storico degli infortuni e lo stato di recupero se presenti.', audioFile: 'oj_11_it.mp3', targetSelector: '[data-tutorial="oj-lesiones"]', position: 'bottom' },
+      { id: 'oj-ropa', title: 'Abbigliamento', text: 'Abbigliamento del club: catalogo dell\'equipaggiamento e indicazione delle taglie affinché il club gestisca gli ordini.', audioFile: 'oj_12_it.mp3', targetSelector: '[data-tutorial="oj-ropa"]', position: 'bottom' },
+      { id: 'oj-fin', title: 'Completato', text: 'Hai completato la visita. Ora conosci tutte le opzioni del giocatore. Tocca una qualsiasi scheda per accedere a quella sezione quando ne hai bisogno.', audioFile: 'oj_13_it.mp3', position: 'bottom' }
+    ];
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // JUGADOR (Datos personales) — EN / FR / DE / PT / IT
+  // ─────────────────────────────────────────────────────────────
+
+  private getJugadorStepsEn(): TutorialStep[] {
+    return [
+      { id: 'jd-bienvenida', title: 'Player personal data', text: 'You are on the player\'s personal data sheet. Here you can view and edit the photo, personal data, sports information, guardians and bank details. We will guide you step by step.', audioFile: 'jd_01_en.mp3', position: 'bottom' },
+      { id: 'jd-foto', title: 'Player photo', text: 'At the top you have the player\'s photo. You can upload a new one in JPG or PNG format; when creating a player the photo is uploaded on saving.', audioFile: 'jd_02_en.mp3', targetSelector: '[data-tutorial="jd-foto"]', position: 'bottom' },
+      { id: 'jd-tabs', title: 'Information tabs', text: 'The Personal information and Sports information tabs organise the form. In personal you will see name, surname, date of birth, contact, address and guardian and bank data; in sports, position, measurements and skills.', audioFile: 'jd_03_en.mp3', targetSelector: '[data-tutorial="jd-tabs"]', position: 'bottom' },
+      { id: 'jd-datos', title: 'Player data', text: 'All the player\'s fields are shown here: name, surname, ID, phone, email, address, nationality and the rest. Fill in or modify whichever you need.', audioFile: 'jd_04_en.mp3', targetSelector: '[data-tutorial="jd-datos"]', position: 'left' },
+      { id: 'jd-acciones', title: 'Actions', text: 'At the bottom you have the ID button to upload or view the player\'s identity document, and Save to apply all changes. Remember to save after editing.', audioFile: 'jd_05_en.mp3', targetSelector: '[data-tutorial="jd-acciones"]', position: 'top' },
+      { id: 'jd-fin', title: 'All done', text: 'You have completed the tour. You now know the player\'s personal data sheet. Keep the information up to date whenever you need to.', audioFile: 'jd_06_en.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getJugadorStepsFr(): TutorialStep[] {
+    return [
+      { id: 'jd-bienvenida', title: 'Données personnelles du joueur', text: 'Vous êtes sur la fiche des données personnelles du joueur. Ici vous pouvez consulter et modifier la photo, les données personnelles, les informations sportives, les tuteurs et les données bancaires. Nous vous guidons pas à pas.', audioFile: 'jd_01_fr.mp3', position: 'bottom' },
+      { id: 'jd-foto', title: 'Photo du joueur', text: 'En haut se trouve la photo du joueur. Vous pouvez en télécharger une nouvelle au format JPG ou PNG ; lors de la création d\'un joueur la photo est téléchargée à l\'enregistrement.', audioFile: 'jd_02_fr.mp3', targetSelector: '[data-tutorial="jd-foto"]', position: 'bottom' },
+      { id: 'jd-tabs', title: 'Onglets d\'information', text: 'Les onglets Informations personnelles et Informations sportives organisent le formulaire. Dans Personnelles vous verrez le nom, prénom, date de naissance, contact, adresse et données des tuteurs et bancaires ; dans Sportives, le poste, les mensurations et les compétences.', audioFile: 'jd_03_fr.mp3', targetSelector: '[data-tutorial="jd-tabs"]', position: 'bottom' },
+      { id: 'jd-datos', title: 'Données du joueur', text: 'Tous les champs du joueur sont affichés ici : nom, prénom, carte d\'identité, téléphone, email, adresse, nationalité et le reste. Remplissez ou modifiez ceux dont vous avez besoin.', audioFile: 'jd_04_fr.mp3', targetSelector: '[data-tutorial="jd-datos"]', position: 'left' },
+      { id: 'jd-acciones', title: 'Actions', text: 'En bas vous avez le bouton Pièce d\'identité pour télécharger ou voir le document d\'identité du joueur, et Enregistrer pour appliquer toutes les modifications. N\'oubliez pas d\'enregistrer après avoir édité.', audioFile: 'jd_05_fr.mp3', targetSelector: '[data-tutorial="jd-acciones"]', position: 'top' },
+      { id: 'jd-fin', title: 'Terminé', text: 'Vous avez terminé la visite. Vous connaissez désormais la fiche de données personnelles du joueur. Maintenez les informations à jour quand vous en avez besoin.', audioFile: 'jd_06_fr.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getJugadorStepsDe(): TutorialStep[] {
+    return [
+      { id: 'jd-bienvenida', title: 'Persönliche Daten des Spielers', text: 'Sie befinden sich auf dem Formular der persönlichen Daten des Spielers. Hier können Sie das Foto, die persönlichen Daten, die sportlichen Informationen, die Erziehungsberechtigten und die Bankdaten einsehen und bearbeiten. Wir führen Sie Schritt für Schritt.', audioFile: 'jd_01_de.mp3', position: 'bottom' },
+      { id: 'jd-foto', title: 'Foto des Spielers', text: 'Oben befindet sich das Foto des Spielers. Sie können ein neues im JPG- oder PNG-Format hochladen; beim Erstellen eines Spielers wird das Foto beim Speichern hochgeladen.', audioFile: 'jd_02_de.mp3', targetSelector: '[data-tutorial="jd-foto"]', position: 'bottom' },
+      { id: 'jd-tabs', title: 'Informationsreiter', text: 'Die Reiter Persönliche Informationen und Sportliche Informationen organisieren das Formular. Im persönlichen Bereich sehen Sie Name, Nachname, Geburtsdatum, Kontakt, Adresse und Daten der Erziehungsberechtigten und Bank; im sportlichen Bereich Position, Maße und Fähigkeiten.', audioFile: 'jd_03_de.mp3', targetSelector: '[data-tutorial="jd-tabs"]', position: 'bottom' },
+      { id: 'jd-datos', title: 'Spielerdaten', text: 'Hier werden alle Felder des Spielers angezeigt: Name, Nachname, Ausweis, Telefon, E-Mail, Adresse, Nationalität und der Rest. Füllen Sie aus oder ändern Sie, was Sie benötigen.', audioFile: 'jd_04_de.mp3', targetSelector: '[data-tutorial="jd-datos"]', position: 'left' },
+      { id: 'jd-acciones', title: 'Aktionen', text: 'Unten haben Sie die Schaltfläche Ausweis zum Hochladen oder Ansehen des Ausweisdokuments des Spielers, und Speichern um alle Änderungen zu übernehmen. Denken Sie daran, nach dem Bearbeiten zu speichern.', audioFile: 'jd_05_de.mp3', targetSelector: '[data-tutorial="jd-acciones"]', position: 'top' },
+      { id: 'jd-fin', title: 'Fertig', text: 'Sie haben die Tour abgeschlossen. Sie kennen nun das Formular der persönlichen Daten des Spielers. Halten Sie die Informationen aktuell, wann immer Sie es brauchen.', audioFile: 'jd_06_de.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getJugadorStepsPt(): TutorialStep[] {
+    return [
+      { id: 'jd-bienvenida', title: 'Dados pessoais do jogador', text: 'Está na ficha de dados pessoais do jogador. Aqui pode consultar e editar a foto, os dados pessoais, a informação desportiva, os tutores e os dados bancários. Guiamo-lo passo a passo.', audioFile: 'jd_01_pt.mp3', position: 'bottom' },
+      { id: 'jd-foto', title: 'Foto do jogador', text: 'No topo tem a foto do jogador. Pode carregar uma nova em formato JPG ou PNG; ao criar um jogador a foto é carregada ao guardar.', audioFile: 'jd_02_pt.mp3', targetSelector: '[data-tutorial="jd-foto"]', position: 'bottom' },
+      { id: 'jd-tabs', title: 'Separadores de informação', text: 'Os separadores Informação pessoal e Informação desportiva organizam o formulário. Em pessoal verá nome, apelido, data de nascimento, contacto, morada e dados dos tutores e bancários; em desportivo, posição, medidas e habilidades.', audioFile: 'jd_03_pt.mp3', targetSelector: '[data-tutorial="jd-tabs"]', position: 'bottom' },
+      { id: 'jd-datos', title: 'Dados do jogador', text: 'Aqui são mostrados todos os campos do jogador: nome, apelido, BI/CC, telefone, email, morada, nacionalidade e o resto. Preencha ou modifique os que necessitar.', audioFile: 'jd_04_pt.mp3', targetSelector: '[data-tutorial="jd-datos"]', position: 'left' },
+      { id: 'jd-acciones', title: 'Ações', text: 'Na parte inferior tem o botão Documento para carregar ou ver o documento de identidade do jogador, e Guardar para aplicar todas as alterações. Lembre-se de guardar após editar.', audioFile: 'jd_05_pt.mp3', targetSelector: '[data-tutorial="jd-acciones"]', position: 'top' },
+      { id: 'jd-fin', title: 'Concluído', text: 'Completou a visita. Já conhece a ficha de dados pessoais do jogador. Mantenha a informação atualizada sempre que necessário.', audioFile: 'jd_06_pt.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getJugadorStepsIt(): TutorialStep[] {
+    return [
+      { id: 'jd-bienvenida', title: 'Dati personali del giocatore', text: 'Sei nella scheda dei dati personali del giocatore. Qui puoi consultare e modificare la foto, i dati personali, le informazioni sportive, i tutori e i dati bancari. Ti guidiamo passo dopo passo.', audioFile: 'jd_01_it.mp3', position: 'bottom' },
+      { id: 'jd-foto', title: 'Foto del giocatore', text: 'In alto hai la foto del giocatore. Puoi caricare una nuova in formato JPG o PNG; alla creazione di un giocatore la foto viene caricata al salvataggio.', audioFile: 'jd_02_it.mp3', targetSelector: '[data-tutorial="jd-foto"]', position: 'bottom' },
+      { id: 'jd-tabs', title: 'Schede informative', text: 'Le schede Informazioni personali e Informazioni sportive organizzano il modulo. Nelle personali vedrai nome, cognome, data di nascita, contatto, indirizzo e dati dei tutori e bancari; nelle sportive, ruolo, misure e abilità.', audioFile: 'jd_03_it.mp3', targetSelector: '[data-tutorial="jd-tabs"]', position: 'bottom' },
+      { id: 'jd-datos', title: 'Dati del giocatore', text: 'Qui sono mostrati tutti i campi del giocatore: nome, cognome, documento d\'identità, telefono, email, indirizzo, nazionalità e il resto. Compila o modifica quelli che ti servono.', audioFile: 'jd_04_it.mp3', targetSelector: '[data-tutorial="jd-datos"]', position: 'left' },
+      { id: 'jd-acciones', title: 'Azioni', text: 'In fondo hai il pulsante Documento per caricare o visualizzare il documento di identità del giocatore, e Salva per applicare tutte le modifiche. Ricorda di salvare dopo aver modificato.', audioFile: 'jd_05_it.mp3', targetSelector: '[data-tutorial="jd-acciones"]', position: 'top' },
+      { id: 'jd-fin', title: 'Completato', text: 'Hai completato la visita. Ora conosci la scheda dei dati personali del giocatore. Mantieni le informazioni aggiornate quando ne hai bisogno.', audioFile: 'jd_06_it.mp3', position: 'bottom' }
+    ];
+  }
+
+  // ─── Scouting Player — idiomas ───────────────────────────────────────────
+
+  private getScoutingPlayerStepsEn(): TutorialStep[] {
+    return [
+      { id: 'sp-bienvenida', title: 'Player profile', text: 'You are on the player\'s sports profile. Here you will see their photo, data, skills radar, match statistics, charts and training attendance. We\'ll guide you step by step.', audioFile: 'sp_01_en.mp3', position: 'bottom' },
+      { id: 'sp-hero', title: 'Profile and skills', text: 'At the top: avatar, name and pills with position, preferred foot and height. The skills panel shows the radar with ratings if data has been loaded.', audioFile: 'sp_02_en.mp3', targetSelector: '[data-tutorial="sp-hero"]', position: 'left' },
+      { id: 'sp-datos', title: 'Sports data', text: 'Sports data: main position, secondary position, preferred foot, height and weight.', audioFile: 'sp_03_en.mp3', targetSelector: '[data-tutorial="sp-datos"]', position: 'left' },
+      { id: 'sp-stats', title: 'Match statistics', text: 'Match statistics: matches played, starting appearances, minutes, goals, yellow cards and red cards.', audioFile: 'sp_04_en.mp3', targetSelector: '[data-tutorial="sp-stats"]', position: 'left' },
+      { id: 'sp-graficas', title: 'Charts', text: 'Matches and Attendance tabs: switch between the statistics chart and the monthly training attendance chart.', audioFile: 'sp_05_en.mp3', targetSelector: '[data-tutorial="sp-graficas"]', position: 'left' },
+      { id: 'sp-asistencia', title: 'Training attendance', text: 'Attendance table: date, whether the player attended and whether they arrived late at each session.', audioFile: 'sp_06_en.mp3', targetSelector: '[data-tutorial="sp-asistencia"]', position: 'left' },
+      { id: 'sp-fin', title: 'Done', text: 'Now you know the player profile. Review data, statistics and attendance whenever you need it.', audioFile: 'sp_07_en.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getScoutingPlayerStepsFr(): TutorialStep[] {
+    return [
+      { id: 'sp-bienvenida', title: 'Profil du joueur', text: 'Vous êtes sur le profil sportif du joueur. Vous y verrez sa photo, ses données, son radar de compétences, ses statistiques de matchs, ses graphiques et son assiduité aux entraînements. Nous vous guidons pas à pas.', audioFile: 'sp_01_fr.mp3', position: 'bottom' },
+      { id: 'sp-hero', title: 'Profil et compétences', text: 'En haut : avatar, nom et pastilles avec poste, pied fort et taille. Le panneau de compétences affiche le radar avec les évaluations si les données ont été chargées.', audioFile: 'sp_02_fr.mp3', targetSelector: '[data-tutorial="sp-hero"]', position: 'left' },
+      { id: 'sp-datos', title: 'Données sportives', text: 'Données sportives : poste principal, poste secondaire, pied fort, taille et poids.', audioFile: 'sp_03_fr.mp3', targetSelector: '[data-tutorial="sp-datos"]', position: 'left' },
+      { id: 'sp-stats', title: 'Statistiques de matchs', text: 'Statistiques de matchs : matchs joués, titularisations, minutes, buts, cartons jaunes et cartons rouges.', audioFile: 'sp_04_fr.mp3', targetSelector: '[data-tutorial="sp-stats"]', position: 'left' },
+      { id: 'sp-graficas', title: 'Graphiques', text: 'Onglets Matchs et Présence : basculez entre le graphique des statistiques et celui de la présence mensuelle aux entraînements.', audioFile: 'sp_05_fr.mp3', targetSelector: '[data-tutorial="sp-graficas"]', position: 'left' },
+      { id: 'sp-asistencia', title: 'Présence aux entraînements', text: 'Tableau de présence : date, si le joueur était présent et s\'il est arrivé en retard à chaque séance.', audioFile: 'sp_06_fr.mp3', targetSelector: '[data-tutorial="sp-asistencia"]', position: 'left' },
+      { id: 'sp-fin', title: 'Terminé', text: 'Vous connaissez maintenant le profil du joueur. Consultez ses données, statistiques et présences à tout moment.', audioFile: 'sp_07_fr.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getScoutingPlayerStepsDe(): TutorialStep[] {
+    return [
+      { id: 'sp-bienvenida', title: 'Spielerprofil', text: 'Sie befinden sich im Sportprofil des Spielers. Hier sehen Sie Foto, Daten, Fähigkeits-Radar, Spielstatistiken, Diagramme und Trainingsanwesenheit. Wir führen Sie Schritt für Schritt.', audioFile: 'sp_01_de.mp3', position: 'bottom' },
+      { id: 'sp-hero', title: 'Profil und Fähigkeiten', text: 'Oben: Avatar, Name und Chips mit Position, Standbein und Größe. Das Fähigkeitspanel zeigt den Radar mit den Bewertungen, sofern Daten geladen wurden.', audioFile: 'sp_02_de.mp3', targetSelector: '[data-tutorial="sp-hero"]', position: 'left' },
+      { id: 'sp-datos', title: 'Sportliche Daten', text: 'Sportliche Daten: Hauptposition, Nebenposition, Standbein, Größe und Gewicht.', audioFile: 'sp_03_de.mp3', targetSelector: '[data-tutorial="sp-datos"]', position: 'left' },
+      { id: 'sp-stats', title: 'Spielstatistiken', text: 'Spielstatistiken: gespielte Spiele, Startelfeinsätze, Minuten, Tore, Gelbe Karten und Rote Karten.', audioFile: 'sp_04_de.mp3', targetSelector: '[data-tutorial="sp-stats"]', position: 'left' },
+      { id: 'sp-graficas', title: 'Diagramme', text: 'Reiter Spiele und Anwesenheit: wechseln Sie zwischen dem Statistikdiagramm und dem monatlichen Trainingsanwesenheitsdiagramm.', audioFile: 'sp_05_de.mp3', targetSelector: '[data-tutorial="sp-graficas"]', position: 'left' },
+      { id: 'sp-asistencia', title: 'Trainingsanwesenheit', text: 'Anwesenheitstabelle: Datum, ob der Spieler anwesend war und ob er bei jeder Einheit zu spät gekommen ist.', audioFile: 'sp_06_de.mp3', targetSelector: '[data-tutorial="sp-asistencia"]', position: 'left' },
+      { id: 'sp-fin', title: 'Fertig', text: 'Jetzt kennen Sie das Spielerprofil. Überprüfen Sie Daten, Statistiken und Anwesenheit, wann immer Sie es brauchen.', audioFile: 'sp_07_de.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getScoutingPlayerStepsPt(): TutorialStep[] {
+    return [
+      { id: 'sp-bienvenida', title: 'Perfil do jogador', text: 'Está no perfil desportivo do jogador. Aqui verá a sua foto, dados, radar de competências, estatísticas de jogos, gráficos e assiduidade aos treinos. Guiamo-lo passo a passo.', audioFile: 'sp_01_pt.mp3', position: 'bottom' },
+      { id: 'sp-hero', title: 'Perfil e competências', text: 'No topo: avatar, nome e etiquetas com posição, pé dominante e altura. O painel de competências mostra o radar com as avaliações se os dados estiverem carregados.', audioFile: 'sp_02_pt.mp3', targetSelector: '[data-tutorial="sp-hero"]', position: 'left' },
+      { id: 'sp-datos', title: 'Dados desportivos', text: 'Dados desportivos: posição principal, posição secundária, pé dominante, altura e peso.', audioFile: 'sp_03_pt.mp3', targetSelector: '[data-tutorial="sp-datos"]', position: 'left' },
+      { id: 'sp-stats', title: 'Estatísticas de jogos', text: 'Estatísticas de jogos: jogos disputados, titularidades, minutos, golos, cartões amarelos e cartões vermelhos.', audioFile: 'sp_04_pt.mp3', targetSelector: '[data-tutorial="sp-stats"]', position: 'left' },
+      { id: 'sp-graficas', title: 'Gráficos', text: 'Separadores Jogos e Presença: alterne entre o gráfico de estatísticas e o de presença mensal nos treinos.', audioFile: 'sp_05_pt.mp3', targetSelector: '[data-tutorial="sp-graficas"]', position: 'left' },
+      { id: 'sp-asistencia', title: 'Assiduidade aos treinos', text: 'Tabela de presenças: data, se o jogador esteve presente e se chegou atrasado a cada sessão.', audioFile: 'sp_06_pt.mp3', targetSelector: '[data-tutorial="sp-asistencia"]', position: 'left' },
+      { id: 'sp-fin', title: 'Concluído', text: 'Já conhece o perfil do jogador. Consulte os dados, estatísticas e assiduidade sempre que precisar.', audioFile: 'sp_07_pt.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getScoutingPlayerStepsIt(): TutorialStep[] {
+    return [
+      { id: 'sp-bienvenida', title: 'Profilo giocatore', text: 'Sei nel profilo sportivo del giocatore. Qui vedrai la sua foto, i dati, il radar delle competenze, le statistiche delle partite, i grafici e la presenza agli allenamenti. Ti guidiamo passo dopo passo.', audioFile: 'sp_01_it.mp3', position: 'bottom' },
+      { id: 'sp-hero', title: 'Profilo e competenze', text: 'In alto: avatar, nome e etichette con ruolo, piede dominante e altezza. Il pannello delle competenze mostra il radar con le valutazioni se i dati sono stati caricati.', audioFile: 'sp_02_it.mp3', targetSelector: '[data-tutorial="sp-hero"]', position: 'left' },
+      { id: 'sp-datos', title: 'Dati sportivi', text: 'Dati sportivi: ruolo principale, ruolo secondario, piede dominante, altezza e peso.', audioFile: 'sp_03_it.mp3', targetSelector: '[data-tutorial="sp-datos"]', position: 'left' },
+      { id: 'sp-stats', title: 'Statistiche partite', text: 'Statistiche partite: partite giocate, titolarità, minuti, gol, cartellini gialli e cartellini rossi.', audioFile: 'sp_04_it.mp3', targetSelector: '[data-tutorial="sp-stats"]', position: 'left' },
+      { id: 'sp-graficas', title: 'Grafici', text: 'Schede Partite e Presenze: passa tra il grafico delle statistiche e quello della presenza mensile agli allenamenti.', audioFile: 'sp_05_it.mp3', targetSelector: '[data-tutorial="sp-graficas"]', position: 'left' },
+      { id: 'sp-asistencia', title: 'Presenza agli allenamenti', text: 'Tabella presenze: data, se il giocatore era presente e se è arrivato in ritardo a ogni sessione.', audioFile: 'sp_06_it.mp3', targetSelector: '[data-tutorial="sp-asistencia"]', position: 'left' },
+      { id: 'sp-fin', title: 'Fatto', text: 'Ora conosci il profilo del giocatore. Consulta dati, statistiche e presenze ogni volta che ne hai bisogno.', audioFile: 'sp_07_it.mp3', position: 'bottom' }
+    ];
+  }
+
+  // ─── Ropa Jugador — idiomas ───────────────────────────────────────────────
+
+  private getRopaJugadorStepsEn(): TutorialStep[] {
+    return [
+      { id: 'rj-bienvenida', title: 'My kit sizes', text: 'You are in the team\'s kit catalogue. Select your size for each item; it saves automatically and the club uses these preferences for orders. We\'ll guide you step by step.', audioFile: 'rj_01_en.mp3', position: 'bottom' },
+      { id: 'rj-grid', title: 'Kit catalogue', text: 'Each card shows the image, name, description and the size selector. Choose between Not selected or the available sizes; when you choose, it saves instantly and you\'ll see the saving or saved status.', audioFile: 'rj_02_en.mp3', targetSelector: '[data-tutorial="rj-grid"]', position: 'left' },
+      { id: 'rj-fin', title: 'Done', text: 'Now you know My kit sizes. Keep your preferences up to date for each team item.', audioFile: 'rj_03_en.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getRopaJugadorStepsFr(): TutorialStep[] {
+    return [
+      { id: 'rj-bienvenida', title: 'Mes tailles de tenue', text: 'Vous êtes dans le catalogue de tenues de l\'équipe. Sélectionnez votre taille pour chaque article ; cela se sauvegarde automatiquement et le club utilise ces préférences pour les commandes. Nous vous guidons pas à pas.', audioFile: 'rj_01_fr.mp3', position: 'bottom' },
+      { id: 'rj-grid', title: 'Catalogue de tenues', text: 'Chaque carte affiche l\'image, le nom, la description et le sélecteur de taille. Choisissez entre Non sélectionné ou les tailles disponibles ; au choix, la sauvegarde est instantanée et vous verrez l\'état en cours de sauvegarde ou sauvegardé.', audioFile: 'rj_02_fr.mp3', targetSelector: '[data-tutorial="rj-grid"]', position: 'left' },
+      { id: 'rj-fin', title: 'Terminé', text: 'Vous connaissez maintenant Mes tailles de tenue. Maintenez vos préférences à jour pour chaque article de l\'équipe.', audioFile: 'rj_03_fr.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getRopaJugadorStepsDe(): TutorialStep[] {
+    return [
+      { id: 'rj-bienvenida', title: 'Meine Kleidergrößen', text: 'Sie befinden sich im Kleiderkatalog des Teams. Wählen Sie Ihre Größe für jedes Kleidungsstück; es wird automatisch gespeichert und der Verein nutzt diese Präferenzen für Bestellungen. Wir führen Sie Schritt für Schritt.', audioFile: 'rj_01_de.mp3', position: 'bottom' },
+      { id: 'rj-grid', title: 'Kleiderkatalog', text: 'Jede Karte zeigt Bild, Name, Beschreibung und den Größenwähler. Wählen Sie zwischen Nicht ausgewählt oder den verfügbaren Größen; bei der Auswahl wird sofort gespeichert und Sie sehen den Status Speichern oder Gespeichert.', audioFile: 'rj_02_de.mp3', targetSelector: '[data-tutorial="rj-grid"]', position: 'left' },
+      { id: 'rj-fin', title: 'Fertig', text: 'Jetzt kennen Sie Meine Kleidergrößen. Halten Sie Ihre Präferenzen für jedes Teamkleidungsstück aktuell.', audioFile: 'rj_03_de.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getRopaJugadorStepsPt(): TutorialStep[] {
+    return [
+      { id: 'rj-bienvenida', title: 'Os meus tamanhos de roupa', text: 'Está no catálogo de roupa da equipa. Selecione o seu tamanho para cada peça; guarda automaticamente e o clube usa estas preferências para os pedidos. Guiamo-lo passo a passo.', audioFile: 'rj_01_pt.mp3', position: 'bottom' },
+      { id: 'rj-grid', title: 'Catálogo de roupa', text: 'Cada cartão mostra a imagem, nome, descrição e o seletor de tamanho. Escolha entre Não selecionado ou os tamanhos disponíveis; ao escolher, guarda instantaneamente e verá o estado a guardar ou guardado.', audioFile: 'rj_02_pt.mp3', targetSelector: '[data-tutorial="rj-grid"]', position: 'left' },
+      { id: 'rj-fin', title: 'Concluído', text: 'Já conhece Os meus tamanhos de roupa. Mantenha as suas preferências atualizadas para cada peça da equipa.', audioFile: 'rj_03_pt.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getRopaJugadorStepsIt(): TutorialStep[] {
+    return [
+      { id: 'rj-bienvenida', title: 'Le mie taglie di abbigliamento', text: 'Sei nel catalogo di abbigliamento della squadra. Seleziona la tua taglia per ogni capo; si salva automaticamente e il club usa queste preferenze per gli ordini. Ti guidiamo passo dopo passo.', audioFile: 'rj_01_it.mp3', position: 'bottom' },
+      { id: 'rj-grid', title: 'Catalogo abbigliamento', text: 'Ogni scheda mostra l\'immagine, il nome, la descrizione e il selettore della taglia. Scegli tra Non selezionato o le taglie disponibili; alla scelta si salva istantaneamente e vedrai lo stato salvataggio o salvato.', audioFile: 'rj_02_it.mp3', targetSelector: '[data-tutorial="rj-grid"]', position: 'left' },
+      { id: 'rj-fin', title: 'Fatto', text: 'Ora conosci Le mie taglie di abbigliamento. Mantieni le tue preferenze aggiornate per ogni capo della squadra.', audioFile: 'rj_03_it.mp3', position: 'bottom' }
     ];
   }
 }

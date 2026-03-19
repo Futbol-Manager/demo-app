@@ -37,7 +37,7 @@
                  [src]="getDisplayLogoUrl()"
                  alt="Logo equipo"
                  class="logo-preview"
-                 (error)="$any($event.target).src='assets/images/user/demo-club-logo.svg'" />
+                 (error)="$any($event.target).src='assets/images/user/demo-club-logo.png'" />
             <div *ngIf="!getDisplayLogoUrl()" class="logo-placeholder">
               <i class="bi bi-shield-fill"></i>
               <span>{{ 'INFO_EQUIPO.LOGO_UPLOAD' | translate }}</span>

@@ -20,9 +20,23 @@ export const demoenvironment = {
     coachMonthly: 'price_1Q5x7MHzMBDrutQnaF1WOHLm',
     coachAnnual: 'price_1Q5x7uHzMBDrutQnCnc54UjO'
   },
-  /** ElevenLabs TTS para voces del tutorial demo. Voice ID: cambia en elevenlabs.io si quieres otra voz. */
-  elevenLabsApiKey: 'sk_fa63b8c6808921291db5eab60b443f115d484fda7eef6f36',
-  elevenLabsVoiceId: '21m00Tcm4TlvDq8ikWAM' // Rachel (multilingual). Puedes usar otro voice_id desde tu cuenta ElevenLabs.
+  /** ElevenLabs TTS para la narración intro de la demo (eleven_multilingual_v2).
+   *  Voice IDs obtenidos en https://elevenlabs.io/voice-library
+   *  "Daniel" (onwK4e9ZLuTAKqWW03F9) — voz masculina europea, naturalísima en ES/FR/DE/PT/IT.
+   *  "George" (JBFqnCBsd6RMkjVDRZzb) — voz masculina British English.
+   *  Puedes sustituir cualquier ID por otro desde tu cuenta ElevenLabs.
+   */
+  elevenLabsApiKey: 'sk_a1bf9a764eb0a236c2fd0a2b944101bf7c4a8a0a112b3574',
+  elevenLabsVoiceId: 'RwzBDEn5f6FIgpAjH9YN', // Mateo — hombre castellano de España (default)
+  /** Voces específicas por código ISO 639-1. Si no se define para un idioma se usa elevenLabsVoiceId. */
+  elevenLabsVoicesByLang: {
+    es: 'RwzBDEn5f6FIgpAjH9YN', // Mateo — acento castellano de España
+    en: 'JBFqnCBsd6RMkjVDRZzb', // George — British English, masculino
+    fr: 'onwK4e9ZLuTAKqWW03F9', // Daniel — excelente en francés
+    de: 'onwK4e9ZLuTAKqWW03F9', // Daniel — buena pronunciación alemana
+    pt: 'onwK4e9ZLuTAKqWW03F9', // Daniel — natural en portugués
+    it: 'onwK4e9ZLuTAKqWW03F9', // Daniel — fluido en italiano
+  } as Record<string, string>
 };
 
 /** Para desplegar en demo.sphairatech.com: leads a API dedicada (APIURLDEMO), que debe usar una BD distinta a producción. */

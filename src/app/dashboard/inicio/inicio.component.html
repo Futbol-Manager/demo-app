@@ -199,9 +199,10 @@
           <article class="team-card">
             <!-- HEADER -->
             <div class="team-header">
-              <div class="team-logo">
-                <img *ngIf="team.imgClub" [src]="imageBaseUrlUser + team.imgClub" [alt]="team.name" />
-                <span *ngIf="!team.imgClub" class="bi bi-people-fill"></span>
+              <div class="team-logo" [class.team-logo--demo]="isDemo">
+                <img *ngIf="isDemo" src="assets/images/user/demo-club-logo.png" [alt]="team.name" class="demo-logo" />
+                <img *ngIf="!isDemo && team.imgClub" [src]="imageBaseUrlUser + team.imgClub" [alt]="team.name" />
+                <span *ngIf="!isDemo && !team.imgClub" class="bi bi-people-fill"></span>
               </div>
 
               <div class="team-title">

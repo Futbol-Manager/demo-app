@@ -11,6 +11,7 @@ import { AiChatService } from 'src/app/core/services/ai-chat/ai-chat.service';
 import { AiPageContextService } from 'src/app/core/services/ai-chat/ai-page-context.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
+import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
 
 @Component({
   selector: 'app-estadisticas-equipos-club',
@@ -18,6 +19,8 @@ import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service
   styleUrls: ['./estadisticas-equipos-club.component.scss'],
 })
 export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
+  get isDemo(): boolean { return isDemoMode() === true; }
+
   clubId = 0;
   resumenes: any[] = [];
   resumentotales: any[] = [];

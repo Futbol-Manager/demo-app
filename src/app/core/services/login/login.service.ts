@@ -249,6 +249,49 @@ export class LoginService {
   }
 
   /**
+   * Login demo completo: crea el usuario con email + rol y navega al dashboard.
+   * Combina loginDemoLocal + setDemoUserAndNavigate en un solo paso, sin
+   * intermediar por /demo-role. Pensado para el flujo de intro storytelling.
+   */
+  loginDemoAndSetRole(email: string, role: DemoRole): void {
+    const trimmed = (email || '').trim();
+    if (!trimmed) return;
+    const profileId: 1 | 2 | 3 = role === 'club' ? 1 : role === 'coach' ? 2 : 3;
+    const profileNames: Record<DemoRole, string> = { club: 'Club', coach: 'Entrenador', player: 'Jugador' };
+    const demoAvatars: Record<DemoRole, string> = {
+      club:   'demo-club-logo.png',
+      coach:  'demo-coach-avatar.svg',
+      player: 'demo-player-avatar.svg',
+    };
+    const plain = {
+      userId: 1,
+      mail: trimmed,
+      firstName: 'Usuario',
+      secondName: 'Demo',
+      idValidation: 2,
+      profileType: { profileId, profileName: profileNames[role] },
+      playerId: 0,
+      playerIds: [] as number[],
+      staffPermissions: [] as string[],
+      birthdate: null,
+      password: null,
+      profile: null,
+      pictureUser: demoAvatars[role],
+      idGenre: null,
+      dateCreate: null,
+      nameSon: null,
+      mobile: null,
+      parentesco: null,
+    };
+    const token = 'demo-token-' + Date.now();
+    localStorage.setItem('usuario', JSON.stringify(plain));
+    localStorage.setItem('token', token);
+    this['usuarioAutenticado'].next(new User(plain));
+    this.demoService.setDemoRole(role);
+    this.router.navigate(['/dashboard/inicio']);
+  }
+
+  /**
    * En modo demo: actualiza el usuario con el perfil del rol seleccionado,
    * guarda en localStorage, emite y navega al dashboard correspondiente.
    */

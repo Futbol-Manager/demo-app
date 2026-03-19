@@ -346,59 +346,59 @@
                             <h2 class="form-modal-section-heading">{{ 'JUG.FORM_PLAYER_DATA' | translate }}</h2>
                             <div class="row g-3 form-modal-fields">
                                 <div class="col-12 col-md-6">
-                                    <label class="form-modal-label">Nombre</label>
+                                    <label class="form-modal-label">{{ 'JUG.FORM_LABEL_NAME' | translate }}</label>
                                     <input type="text" class="form-control form-modal-input" id="nombre" name="nombre"
-                                        [(ngModel)]="player.nombre" placeholder="Nombre" #primerCampo>
+                                        [(ngModel)]="player.nombre" [placeholder]="'JUG.FORM_LABEL_NAME' | translate" #primerCampo>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <label class="form-modal-label">Apellido</label>
+                                    <label class="form-modal-label">{{ 'JUG.FORM_LABEL_SURNAME' | translate }}</label>
                                     <input type="text" class="form-control form-modal-input" id="apellido"
-                                        name="apellido" [(ngModel)]="player.apellido" placeholder="Apellido">
+                                        name="apellido" [(ngModel)]="player.apellido" [placeholder]="'JUG.FORM_LABEL_SURNAME' | translate">
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <label class="form-modal-label">Fecha de nacimiento</label>
+                                    <label class="form-modal-label">{{ 'JUG.BIRTH' | translate }}</label>
                                     <input type="date" class="form-control form-modal-input" id="fechaDeNacimiento"
                                         name="fechaDeNacimiento" [(ngModel)]="player.fechaDeNacimiento"
-                                        placeholder="Fecha de Nacimiento">
+                                        [placeholder]="'JUG.BIRTH' | translate">
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <label class="form-modal-label">DNI/NIE</label>
+                                    <label class="form-modal-label">{{ 'JUG.FORM_LABEL_DNI' | translate }}</label>
                                     <input type="text" class="form-control form-modal-input" id="dni" name="dni"
-                                        [(ngModel)]="player.dni" placeholder="DNI/NIE">
+                                        [(ngModel)]="player.dni" [placeholder]="'JUG.FORM_LABEL_DNI' | translate">
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <label class="form-modal-label">Teléfono</label>
+                                    <label class="form-modal-label">{{ 'JUG.FORM_LABEL_PHONE' | translate }}</label>
                                     <input type="text" class="form-control form-modal-input" id="telefono"
-                                        name="telefono" [(ngModel)]="player.telefono" placeholder="Teléfono"
+                                        name="telefono" [(ngModel)]="player.telefono" [placeholder]="'JUG.FORM_LABEL_PHONE' | translate"
                                         maxlength="9">
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <label class="form-modal-label">Email</label>
+                                    <label class="form-modal-label">{{ 'JUG.FORM_LABEL_EMAIL' | translate }}</label>
                                     <input type="text" class="form-control form-modal-input" id="email" name="email"
                                         [(ngModel)]="player.email" placeholder="Email">
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <label class="form-modal-label">Nombre camiseta</label>
+                                    <label class="form-modal-label">{{ 'JUG.FORM_LABEL_NICK' | translate }}</label>
                                     <input type="text" class="form-control form-modal-input" id="nick" name="nick"
-                                        [(ngModel)]="player.nick" placeholder="Nombre camiseta">
+                                        [(ngModel)]="player.nick" [placeholder]="'JUG.FORM_LABEL_NICK' | translate">
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <label class="form-modal-label">Nº de camiseta</label>
+                                    <label class="form-modal-label">{{ 'JUG.FORM_LABEL_NUMBER' | translate }}</label>
                                     <input type="number" class="form-control form-modal-input" id="numero" name="numero"
-                                        [(ngModel)]="player.numero" placeholder="Nº de camiseta">
+                                        [(ngModel)]="player.numero" [placeholder]="'JUG.FORM_LABEL_NUMBER' | translate">
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-modal-label">Dirección</label>
+                                    <label class="form-modal-label">{{ 'JUG.FORM_LABEL_ADDRESS' | translate }}</label>
                                     <input type="text" class="form-control form-modal-input" id="direccion"
-                                        name="direccion" [(ngModel)]="player.direccion" placeholder="Dirección">
+                                        name="direccion" [(ngModel)]="player.direccion" [placeholder]="'JUG.FORM_LABEL_ADDRESS' | translate">
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <label class="form-modal-label">Municipio</label>
+                                    <label class="form-modal-label">{{ 'JUG.FORM_LABEL_CITY' | translate }}</label>
                                     <input type="text" class="form-control form-modal-input" id="municipio"
-                                        name="municipio" [(ngModel)]="player.municipio" placeholder="Municipio">
+                                        name="municipio" [(ngModel)]="player.municipio" [placeholder]="'JUG.FORM_LABEL_CITY' | translate">
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <label class="form-modal-label">Nacionalidad</label>
+                                    <label class="form-modal-label">{{ 'JUG.FORM_LABEL_NATIONALITY' | translate }}</label>
                                     <select class="form-control form-modal-input" id="nacionalidad" name="nacionalidad"
                                         [(ngModel)]="player.nacionalidad">
                                         <option value="España">España</option>
@@ -411,31 +411,31 @@
                             <!-- Tutores -->
                             <div *ngIf="!showTutor1 && player.tutor1 == 0" class="form-modal-tutor-block">
                                 <div class="form-check">
-                                    <button type="button" class="btn btn-outline-primary" (click)="onTutorCheck2()">Firmar</button>
-                                    <label class="form-check-label ms-2">Confirmo que tengo autorización del otro tutor para ver o rellenar los datos</label>
+                                    <button type="button" class="btn btn-outline-primary" (click)="onTutorCheck2()">{{ 'JUG.BTN_SIGN' | translate }}</button>
+                                    <label class="form-check-label ms-2">{{ 'JUG.FORM_TUTOR_CONFIRM' | translate }}</label>
                                 </div>
                             </div>
                             <div *ngIf="showTutor1" class="form-modal-tutor-section">
-                                <h2 class="form-modal-section-heading">Datos del {{ parentTutor1 }}</h2>
+                                <h2 class="form-modal-section-heading">{{ 'COMMON.DATA_OF' | translate }} {{ parentTutor1 }}</h2>
                                 <div class="row g-3 form-modal-fields">
                                     <div class="col-12 col-md-6">
-                                        <label class="form-modal-label">Nombre</label>
+                                        <label class="form-modal-label">{{ 'JUG.FORM_LABEL_NAME' | translate }}</label>
                                         <input type="text" class="form-control form-modal-input" id="nombrePadre"
-                                            name="nombrePadre" [(ngModel)]="player.nombrePadre" placeholder="Nombre">
+                                            name="nombrePadre" [(ngModel)]="player.nombrePadre" [placeholder]="'JUG.FORM_LABEL_NAME' | translate">
                                     </div>
                                     <div class="col-12 col-md-6">
-                                        <label class="form-modal-label">DNI/NIE</label>
+                                        <label class="form-modal-label">{{ 'JUG.FORM_LABEL_DNI' | translate }}</label>
                                         <input type="text" class="form-control form-modal-input" id="dniPadre"
-                                            name="dniPadre" [(ngModel)]="player.dniPadre" placeholder="DNI/NIE">
+                                            name="dniPadre" [(ngModel)]="player.dniPadre" [placeholder]="'JUG.FORM_LABEL_DNI' | translate">
                                     </div>
                                     <div class="col-12 col-md-6">
-                                        <label class="form-modal-label">Teléfono</label>
+                                        <label class="form-modal-label">{{ 'JUG.FORM_LABEL_PHONE' | translate }}</label>
                                         <input type="text" class="form-control form-modal-input" id="telefonoPadre"
                                             name="telefonoPadre" [(ngModel)]="player.telefonoPadre"
-                                            placeholder="Teléfono" maxlength="9">
+                                            [placeholder]="'JUG.FORM_LABEL_PHONE' | translate" maxlength="9">
                                     </div>
                                     <div class="col-12 col-md-6">
-                                        <label class="form-modal-label">Email</label>
+                                        <label class="form-modal-label">{{ 'JUG.FORM_LABEL_EMAIL' | translate }}</label>
                                         <input type="text" class="form-control form-modal-input" id="emailPadre"
                                             name="emailPadre" [(ngModel)]="player.emailPadre" placeholder="Email">
                                     </div>
@@ -443,31 +443,31 @@
                             </div>
                             <div *ngIf="!showTutor2 && player.tutor2 == 0" class="form-modal-tutor-block">
                                 <div class="form-check">
-                                    <button type="button" class="btn btn-danger" (click)="onTutorCheck()">Firmar</button>
-                                    <label class="form-check-label ms-2">Confirmo que tengo autorización del otro tutor para ver o rellenar los datos</label>
+                                    <button type="button" class="btn btn-danger" (click)="onTutorCheck()">{{ 'JUG.BTN_SIGN' | translate }}</button>
+                                    <label class="form-check-label ms-2">{{ 'JUG.FORM_TUTOR_CONFIRM' | translate }}</label>
                                 </div>
                             </div>
                             <div *ngIf="showTutor2" class="form-modal-tutor-section">
-                                <h2 class="form-modal-section-heading">Datos de la {{ parentTutor2 }}</h2>
+                                <h2 class="form-modal-section-heading">{{ 'COMMON.DATA_OF' | translate }} {{ parentTutor2 }}</h2>
                                 <div class="row g-3 form-modal-fields">
                                     <div class="col-12 col-md-6">
-                                        <label class="form-modal-label">Nombre</label>
+                                        <label class="form-modal-label">{{ 'JUG.FORM_LABEL_NAME' | translate }}</label>
                                         <input type="text" class="form-control form-modal-input" id="nombreMadre"
-                                            name="nombreMadre" [(ngModel)]="player.nombreMadre" placeholder="Nombre">
+                                            name="nombreMadre" [(ngModel)]="player.nombreMadre" [placeholder]="'JUG.FORM_LABEL_NAME' | translate">
                                     </div>
                                     <div class="col-12 col-md-6">
-                                        <label class="form-modal-label">DNI/NIE</label>
+                                        <label class="form-modal-label">{{ 'JUG.FORM_LABEL_DNI' | translate }}</label>
                                         <input type="text" class="form-control form-modal-input" id="dniMadre"
-                                            name="dniMadre" [(ngModel)]="player.dniMadre" placeholder="DNI/NIE">
+                                            name="dniMadre" [(ngModel)]="player.dniMadre" [placeholder]="'JUG.FORM_LABEL_DNI' | translate">
                                     </div>
                                     <div class="col-12 col-md-6">
-                                        <label class="form-modal-label">Teléfono</label>
+                                        <label class="form-modal-label">{{ 'JUG.FORM_LABEL_PHONE' | translate }}</label>
                                         <input type="text" class="form-control form-modal-input" id="telefonoMadre"
                                             name="telefonoMadre" [(ngModel)]="player.telefonoMadre"
-                                            placeholder="Teléfono" maxlength="9">
+                                            [placeholder]="'JUG.FORM_LABEL_PHONE' | translate" maxlength="9">
                                     </div>
                                     <div class="col-12 col-md-6">
-                                        <label class="form-modal-label">Email</label>
+                                        <label class="form-modal-label">{{ 'JUG.FORM_LABEL_EMAIL' | translate }}</label>
                                         <input type="text" class="form-control form-modal-input" id="emailMadre"
                                             name="emailMadre" [(ngModel)]="player.emailMadre" placeholder="Email">
                                     </div>
@@ -476,22 +476,22 @@
 
                             <!-- Datos bancarios -->
                             <div *ngIf="(usuarioActual?.profileType?.profileId ?? 0) != 2" class="form-modal-bank-section">
-                                <h2 class="form-modal-section-heading">Datos bancarios</h2>
+                                <h2 class="form-modal-section-heading">{{ 'JUG.SECTION_BANK' | translate }}</h2>
                                 <div class="row g-3 form-modal-fields">
                                     <div class="col-12 col-md-4">
-                                        <label class="form-modal-label">IBAN</label>
+                                        <label class="form-modal-label">{{ 'JUG.FORM_LABEL_IBAN' | translate }}</label>
                                         <input type="text" class="form-control form-modal-input" id="iban" name="iban"
                                             [(ngModel)]="player.iban" placeholder="IBAN">
                                     </div>
                                     <div class="col-12 col-md-4">
-                                        <label class="form-modal-label">Entidad</label>
+                                        <label class="form-modal-label">{{ 'JUG.FORM_LABEL_ENTITY' | translate }}</label>
                                         <input type="text" class="form-control form-modal-input" id="entidad" name="entidad"
-                                            [(ngModel)]="player.entidad" placeholder="Entidad">
+                                            [(ngModel)]="player.entidad" [placeholder]="'JUG.FORM_LABEL_ENTITY' | translate">
                                     </div>
                                     <div class="col-12 col-md-4">
-                                        <label class="form-modal-label">Titular</label>
+                                        <label class="form-modal-label">{{ 'JUG.FORM_LABEL_HOLDER' | translate }}</label>
                                         <input type="text" class="form-control form-modal-input" id="titu" name="titu"
-                                            [(ngModel)]="player.titularBanco" placeholder="Titular">
+                                            [(ngModel)]="player.titularBanco" [placeholder]="'JUG.FORM_LABEL_HOLDER' | translate">
                                     </div>
                                 </div>
                             </div>
@@ -499,10 +499,10 @@
 
                         <!-- Pestaña: Información deportiva -->
                         <div class="tab-pane" [class.active]="formModalActiveTab === 'deportiva'" role="tabpanel" *ngIf="(usuarioActual?.profileType?.profileId ?? 0) < 3">
-                            <h2 class="form-modal-section-heading">Datos deportivos</h2>
+                            <h2 class="form-modal-section-heading">{{ 'JUG.SECTION_SPORT' | translate }}</h2>
                             <div class="row g-3 form-modal-fields mb-3">
                                 <div class="col-12 col-md-4 col-lg-2">
-                                    <label class="form-modal-label">Posición</label>
+                                    <label class="form-modal-label">{{ 'JUG.FORM_LABEL_POSITION' | translate }}</label>
                                     <select class="form-control form-modal-input" id="posicion" name="posicion"
                                         [(ngModel)]="player.posicion" (click)="showPortero(player.posicion)">
                                         <option value="Sin definir">Sin definir</option>
@@ -519,7 +519,7 @@
                                     </select>
                                 </div>
                                 <div class="col-12 col-md-4 col-lg-2">
-                                    <label class="form-modal-label">Posición 2</label>
+                                    <label class="form-modal-label">{{ 'JUG.FORM_LABEL_POSITION2' | translate }}</label>
                                     <select class="form-control form-modal-input" id="posicionDos" name="posicionDos"
                                         [(ngModel)]="player.posicionDos" (click)="showPortero(player.posicionDos)">
                                         <option value="Sin definir">Sin definir</option>
@@ -536,7 +536,7 @@
                                     </select>
                                 </div>
                                 <div class="col-12 col-md-4 col-lg-2">
-                                    <label class="form-modal-label">Pierna natural</label>
+                                    <label class="form-modal-label">{{ 'JUG.FORM_LABEL_FOOT' | translate }}</label>
                                     <select class="form-control form-modal-input" id="piernaNatural"
                                         name="piernaNatural" [(ngModel)]="player.piernaNatural">
                                         <option value="Derecha">Derecha</option>
@@ -545,12 +545,12 @@
                                     </select>
                                 </div>
                                 <div class="col-12 col-md-4 col-lg-2">
-                                    <label class="form-modal-label">Altura (cm)</label>
+                                    <label class="form-modal-label">{{ 'JUG.FORM_LABEL_HEIGHT' | translate }}</label>
                                     <input type="number" class="form-control form-modal-input" id="altura" name="altura"
-                                        [(ngModel)]="player.altura" placeholder="Altura">
+                                        [(ngModel)]="player.altura" [placeholder]="'JUG.FORM_LABEL_HEIGHT' | translate">
                                 </div>
                                 <div class="col-12 col-md-4 col-lg-2">
-                                    <label class="form-modal-label">Peso (Kg)</label>
+                                    <label class="form-modal-label">{{ 'JUG.FORM_LABEL_WEIGHT' | translate }}</label>
                                     <input type="number" class="form-control form-modal-input" id="peso" name="peso"
                                         [(ngModel)]="player.peso" placeholder="Peso">
                                 </div>
@@ -562,17 +562,17 @@
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
                                         <!-- Contenido de la subcolumna -->
-                                        <label><strong>Habilidad con el balón</strong></label>
+                                        <label><strong>{{ 'JUG.SKILL_BALL_LABEL' | translate }}</strong></label>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="habilidadConBalon">Media total:</label>
+                                            <label for="habilidadConBalon">{{ 'JUG.STAT_TOTAL' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="habilidadConBalon"
                                                 name="habilidadConBalon" [(ngModel)]="player.habilidadConBalon"
-                                                placeholder="Habilidad con Balón" disabled>
+                                                [placeholder]="'JUG.SKILL_BALL_LABEL' | translate" disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -580,21 +580,21 @@
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="tiroPrecisionFalta">Control de Balón:</label>
+                                            <label for="tiroPrecisionFalta">{{ 'JUG.SKILL_BALL_CONTROL' | translate }}</label>
                                             <input type="text" class="form-control custom-input"
                                                 id="habilidadConBalonControlDeBalon"
                                                 name="habilidadConBalonControlDeBalon"
                                                 [(ngModel)]="player.habilidadConBalonControlDeBalon"
-                                                placeholder="Control de Balón" (change)="promedioHabilidad()">
+                                                [placeholder]="'JUG.SKILL_BALL_CONTROL' | translate" (change)="promedioHabilidad()">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="tiroPrecisionFalta">Regate:</label>
+                                            <label for="tiroPrecisionFalta">{{ 'JUG.SKILL_DRIBBLE' | translate }}</label>
                                             <input type="text" class="form-control custom-input"
                                                 id="habilidadConBalonRegate" name="habilidadConBalonRegate"
-                                                [(ngModel)]="player.habilidadConBalonRegate" placeholder="Regate"
+                                                [(ngModel)]="player.habilidadConBalonRegate" [placeholder]="'JUG.SKILL_DRIBBLE' | translate"
                                                 (change)="promedioHabilidad()">
                                         </div>
                                     </div>
@@ -606,16 +606,16 @@
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
                                         <!-- Contenido de la subcolumna -->
-                                        <label><strong>Pase</strong></label>
+                                        <label><strong>{{ 'JUG.STAT_PASS' | translate }}</strong></label>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="pase">Media total:</label>
+                                            <label for="pase">{{ 'JUG.STAT_TOTAL' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="pase" name="pase"
-                                                [(ngModel)]="player.pase" placeholder="Pase" disabled>
+                                                [(ngModel)]="player.pase" [placeholder]="'JUG.STAT_PASS' | translate" disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -623,20 +623,20 @@
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="tiroPrecisionFalta">Pase Corto:</label>
+                                            <label for="tiroPrecisionFalta">{{ 'JUG.SKILL_SHORT_PASS' | translate }}</label>
                                             <input type="text" class="form-control custom-input"
                                                 id="habilidadConBalonPaseCorto" name="habilidadConBalonPaseCorto"
-                                                [(ngModel)]="player.paseCorto" placeholder="Pase Corto"
+                                                [(ngModel)]="player.paseCorto" [placeholder]="'JUG.SKILL_SHORT_PASS' | translate"
                                                 (change)="promedioPase()">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="tiroPrecisionFalta">Pase Largo:</label>
+                                            <label for="tiroPrecisionFalta">{{ 'JUG.SKILL_LONG_PASS' | translate }}</label>
                                             <input type="text" class="form-control custom-input"
                                                 id="habilidadConBalonPaseLargo" name="habilidadConBalonPaseLargo"
-                                                [(ngModel)]="player.paseLargo" placeholder="Pase Largo"
+                                                [(ngModel)]="player.paseLargo" [placeholder]="'JUG.SKILL_LONG_PASS' | translate"
                                                 (change)="promedioPase()">
                                         </div>
                                     </div>
@@ -645,10 +645,10 @@
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="tiroPrecisionFalta">Centros:</label>
+                                            <label for="tiroPrecisionFalta">{{ 'JUG.SKILL_CROSS' | translate }}</label>
                                             <input type="text" class="form-control custom-input"
                                                 id="habilidadConBalonCentros" name="habilidadConBalonCentros"
-                                                [(ngModel)]="player.centros" placeholder="Centros">
+                                                [(ngModel)]="player.centros" [placeholder]="'JUG.SKILL_CROSS' | translate">
                                         </div>
                                     </div>
                                 </div>
@@ -659,16 +659,16 @@
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
                                         <!-- Contenido de la subcolumna -->
-                                        <label><strong>Tiro</strong></label>
+                                        <label><strong>{{ 'JUG.STAT_SHOT' | translate }}</strong></label>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="tiro">Media total:</label>
+                                            <label for="tiro">{{ 'JUG.STAT_TOTAL' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="tiro" name="tiro"
-                                                [(ngModel)]="player.tiro" placeholder="Tiro" disabled>
+                                                [(ngModel)]="player.tiro" [placeholder]="'JUG.STAT_SHOT' | translate" disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -676,19 +676,19 @@
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="tiroPrecisionFalta">Potencia:</label>
+                                            <label for="tiroPrecisionFalta">{{ 'JUG.SKILL_POWER' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="tiroPotenciaDeTiro"
                                                 name="tiroPotenciaDeTiro" [(ngModel)]="player.tiroPotenciaDeTiro"
-                                                placeholder="Potencia" (change)="promedioTiro()">
+                                                [placeholder]="'JUG.SKILL_POWER' | translate" (change)="promedioTiro()">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="tiroPrecisionFalta">Definición:</label>
+                                            <label for="tiroPrecisionFalta">{{ 'JUG.SKILL_FINESSE' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="tiroDefinicion"
                                                 name="tiroDefinicion" [(ngModel)]="player.tiroDefinicion"
-                                                placeholder="Definición" (change)="promedioTiro()">
+                                                [placeholder]="'JUG.SKILL_FINESSE' | translate" (change)="promedioTiro()">
                                         </div>
                                     </div>
                                 </div>
@@ -696,18 +696,18 @@
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="tiroPrecisionFalta">Lejano:</label>
+                                            <label for="tiroPrecisionFalta">{{ 'JUG.SKILL_LONG_SHOT' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="tiroTirosLejanos"
                                                 name="tiroTirosLejanos" [(ngModel)]="player.tiroTirosLejanos"
-                                                placeholder="Tiros Lejano" (change)="promedioTiro()">
+                                                [placeholder]="'JUG.SKILL_LONG_SHOT' | translate" (change)="promedioTiro()">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="tiroPrecisionFalta">Volea:</label>
+                                            <label for="tiroPrecisionFalta">{{ 'JUG.SKILL_VOLLEY' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="tiroVoleas"
-                                                name="tiroVoleas" [(ngModel)]="player.tiroVoleas" placeholder="Volea"
+                                                name="tiroVoleas" [(ngModel)]="player.tiroVoleas" [placeholder]="'JUG.SKILL_VOLLEY' | translate"
                                                 (change)="promedioTiro()">
                                         </div>
                                     </div>
@@ -716,19 +716,19 @@
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="tiroPrecisionFalta">Precisión Falta:</label>
+                                            <label for="tiroPrecisionFalta">{{ 'JUG.SKILL_FREE_KICK' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="tiroPrecisionFalta"
                                                 name="tiroPrecisionFalta" [(ngModel)]="player.tiroPrecisionFalta"
-                                                placeholder="Tiro - Precisión Falta" (change)="promedioTiro()">
+                                                [placeholder]="'JUG.SKILL_FREE_KICK' | translate" (change)="promedioTiro()">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="tiroPenaltis">Penaltis:</label>
+                                            <label for="tiroPenaltis">{{ 'JUG.SKILL_PENALTY' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="tiroPenaltis"
                                                 name="tiroPenaltis" [(ngModel)]="player.tiroPenaltis"
-                                                placeholder="Tiro - Penaltis" (change)="promedioTiro()">
+                                                [placeholder]="'JUG.SKILL_PENALTY' | translate" (change)="promedioTiro()">
                                         </div>
                                     </div>
                                 </div>
@@ -736,10 +736,10 @@
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="tiroCabezazo">Cabezazo:</label>
+                                            <label for="tiroCabezazo">{{ 'JUG.SKILL_HEADER' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="tiroCabezazo"
                                                 name="tiroCabezazo" [(ngModel)]="player.tiroCabezazo"
-                                                placeholder="Tiro - Cabezazo" (change)="promedioTiro()">
+                                                [placeholder]="'JUG.SKILL_HEADER' | translate" (change)="promedioTiro()">
                                         </div>
                                     </div>
                                 </div>
@@ -752,16 +752,16 @@
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
                                         <!-- Contenido de la subcolumna -->
-                                        <label><strong>Defensa</strong></label>
+                                        <label><strong>{{ 'JUG.STAT_DEFENSE' | translate }}</strong></label>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="defensa">Media total:</label>
+                                            <label for="defensa">{{ 'JUG.STAT_TOTAL' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="defensa"
-                                                name="defensa" [(ngModel)]="player.defensa" placeholder="Defensa"
+                                                name="defensa" [(ngModel)]="player.defensa" [placeholder]="'JUG.STAT_DEFENSE' | translate"
                                                 disabled>
                                         </div>
                                     </div>
@@ -770,19 +770,19 @@
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="defensaMarcaje">Marcaje:</label>
+                                            <label for="defensaMarcaje">{{ 'JUG.SKILL_MARKING' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="defensaMarcaje"
                                                 name="defensaMarcaje" [(ngModel)]="player.defensaMarcaje"
-                                                placeholder="Marcaje" (change)="promedioDefensa()">
+                                                [placeholder]="'JUG.SKILL_MARKING' | translate" (change)="promedioDefensa()">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="defensaEntradas">Entradas:</label>
+                                            <label for="defensaEntradas">{{ 'JUG.SKILL_TACKLE' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="defensaEntradas"
                                                 name="defensaEntradas" [(ngModel)]="player.defensaEntradas"
-                                                placeholder="Entradas" (change)="promedioDefensa()">
+                                                [placeholder]="'JUG.SKILL_TACKLE' | translate" (change)="promedioDefensa()">
                                         </div>
                                     </div>
                                 </div>
@@ -790,10 +790,10 @@
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="defensaRobos">Robos:</label>
+                                            <label for="defensaRobos">{{ 'JUG.SKILL_STEAL' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="defensaRobos"
                                                 name="defensaRobos" [(ngModel)]="player.defensaRobos"
-                                                placeholder="Defensa - Robos" (change)="promedioDefensa()">
+                                                [placeholder]="'JUG.SKILL_STEAL' | translate" (change)="promedioDefensa()">
                                         </div>
                                     </div>
                                 </div>
@@ -804,16 +804,16 @@
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
                                         <!-- Contenido de la subcolumna -->
-                                        <label><strong>Físico</strong></label>
+                                        <label><strong>{{ 'JUG.STAT_PHYSICAL' | translate }}</strong></label>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="fisico">Media total:</label>
+                                            <label for="fisico">{{ 'JUG.STAT_TOTAL' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="fisico"
-                                                name="fisico" [(ngModel)]="player.fisico" placeholder="Físico" disabled>
+                                                name="fisico" [(ngModel)]="player.fisico" [placeholder]="'JUG.STAT_PHYSICAL' | translate" disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -821,19 +821,19 @@
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="fisicoAceleracion">Aceleración:</label>
+                                            <label for="fisicoAceleracion">{{ 'JUG.SKILL_ACCEL' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="fisicoAceleracion"
                                                 name="fisicoAceleracion" [(ngModel)]="player.fisicoAceleracion"
-                                                placeholder="Aceleración" (change)="promedioFisico()">
+                                                [placeholder]="'JUG.SKILL_ACCEL' | translate" (change)="promedioFisico()">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="fisicoVelocidad">Velocidad:</label>
+                                            <label for="fisicoVelocidad">{{ 'JUG.SKILL_SPEED' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="fisicoVelocidad"
                                                 name="fisicoVelocidad" [(ngModel)]="player.fisicoVelocidad"
-                                                placeholder="Velocidad" (change)="promedioFisico()">
+                                                [placeholder]="'JUG.SKILL_SPEED' | translate" (change)="promedioFisico()">
                                         </div>
                                     </div>
                                 </div>
@@ -841,19 +841,19 @@
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="fisicoAgilidad">Agilidad:</label>
+                                            <label for="fisicoAgilidad">{{ 'JUG.SKILL_AGILITY' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="fisicoAgilidad"
                                                 name="fisicoAgilidad" [(ngModel)]="player.fisicoAgilidad"
-                                                placeholder="Agilidad" (change)="promedioFisico()">
+                                                [placeholder]="'JUG.SKILL_AGILITY' | translate" (change)="promedioFisico()">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="fisicoResistencia">Resistencia:</label>
+                                            <label for="fisicoResistencia">{{ 'JUG.SKILL_STAMINA' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="fisicoResistencia"
                                                 name="fisicoResistencia" [(ngModel)]="player.fisicoResistencia"
-                                                placeholder="Resistencia" (change)="promedioFisico()">
+                                                [placeholder]="'JUG.SKILL_STAMINA' | translate" (change)="promedioFisico()">
                                         </div>
                                     </div>
                                 </div>
@@ -861,28 +861,28 @@
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="fisicoFuerza">Fuerza:</label>
+                                            <label for="fisicoFuerza">{{ 'JUG.SKILL_STRENGTH' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="fisicoFuerza"
                                                 name="fisicoFuerza" [(ngModel)]="player.fisicoFuerza"
-                                                placeholder="Fuerza" (change)="promedioFisico()">
+                                                [placeholder]="'JUG.SKILL_STRENGTH' | translate" (change)="promedioFisico()">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="fisicoEquilibrio">Equilibrio:</label>
+                                            <label for="fisicoEquilibrio">{{ 'JUG.SKILL_BALANCE' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="fisicoEquilibrio"
                                                 name="fisicoEquilibrio" [(ngModel)]="player.fisicoEquilibrio"
-                                                placeholder="Equilibrio" (change)="promedioFisico()">
+                                                [placeholder]="'JUG.SKILL_BALANCE' | translate" (change)="promedioFisico()">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
-                                        <label for="fisicoSalto">Salto:</label>
+                                        <label for="fisicoSalto">{{ 'JUG.SKILL_JUMP' | translate }}</label>
                                         <input type="text" class="form-control custom-input" id="fisicoSalto"
-                                            name="fisicoSalto" [(ngModel)]="player.fisicoSalto" placeholder="Salto"
+                                            name="fisicoSalto" [(ngModel)]="player.fisicoSalto" [placeholder]="'JUG.SKILL_JUMP' | translate"
                                             (change)="promedioFisico()">
                                     </div>
                                 </div>
@@ -893,17 +893,17 @@
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
                                         <!-- Contenido de la subcolumna -->
-                                        <label><strong>Mentalidad</strong></label>
+                                        <label><strong>{{ 'JUG.STAT_MENTAL' | translate }}</strong></label>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="mentalidad">Media total:</label>
+                                            <label for="mentalidad">{{ 'JUG.STAT_TOTAL' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="mentalidad"
                                                 name="mentalidad" [(ngModel)]="player.mentalidad"
-                                                placeholder="Mentalidad" disabled>
+                                                [placeholder]="'JUG.STAT_MENTAL' | translate" disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -911,20 +911,20 @@
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="mentalidadAgresividad">Agresividad:</label>
+                                            <label for="mentalidadAgresividad">{{ 'JUG.SKILL_AGGRESSION' | translate }}</label>
                                             <input type="text" class="form-control custom-input"
                                                 id="mentalidadAgresividad" name="mentalidadAgresividad"
-                                                [(ngModel)]="player.mentalidadAgresividad" placeholder="Agresividad"
+                                                [(ngModel)]="player.mentalidadAgresividad" [placeholder]="'JUG.SKILL_AGGRESSION' | translate"
                                                 (change)="promedioMentalidad()">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="mentalidadAnticipacion">Anticipación:</label>
+                                            <label for="mentalidadAnticipacion">{{ 'JUG.SKILL_ANTICIPATION' | translate }}</label>
                                             <input type="text" class="form-control custom-input"
                                                 id="mentalidadAnticipacion" name="mentalidadAnticipacion"
-                                                [(ngModel)]="player.mentalidadAnticipacion" placeholder="Anticipación"
+                                                [(ngModel)]="player.mentalidadAnticipacion" [placeholder]="'JUG.SKILL_ANTICIPATION' | translate"
                                                 (change)="promedioMentalidad()">
                                         </div>
                                     </div>
@@ -933,20 +933,20 @@
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="mentalidadInterceptacion">Interceptación:</label>
+                                            <label for="mentalidadInterceptacion">{{ 'JUG.SKILL_INTERCEPTION' | translate }}</label>
                                             <input type="text" class="form-control custom-input"
                                                 id="mentalidadInterceptacion" name="mentalidadInterceptacion"
                                                 [(ngModel)]="player.mentalidadInterceptacion"
-                                                placeholder="Interceptación" (change)="promedioMentalidad()">
+                                                [placeholder]="'JUG.SKILL_INTERCEPTION' | translate" (change)="promedioMentalidad()">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="mentalidadVision">Visión:</label>
+                                            <label for="mentalidadVision">{{ 'JUG.SKILL_VISION' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="mentalidadVision"
                                                 name="mentalidadVision" [(ngModel)]="player.mentalidadVision"
-                                                placeholder="Visión" (change)="promedioMentalidad()">
+                                                [placeholder]="'JUG.SKILL_VISION' | translate" (change)="promedioMentalidad()">
                                         </div>
                                     </div>
                                 </div>
@@ -954,10 +954,10 @@
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="mentalidadCompostura">Compostura:</label>
+                                            <label for="mentalidadCompostura">{{ 'JUG.SKILL_COMPOSURE' | translate }}</label>
                                             <input type="text" class="form-control custom-input"
                                                 id="mentalidadCompostura" name="mentalidadCompostura"
-                                                [(ngModel)]="player.mentalidadCompostura" placeholder="Compostura"
+                                                [(ngModel)]="player.mentalidadCompostura" [placeholder]="'JUG.SKILL_COMPOSURE' | translate"
                                                 (change)="promedioMentalidad()">
                                         </div>
                                     </div>
@@ -972,16 +972,16 @@
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
                                         <!-- Contenido de la subcolumna -->
-                                        <label><strong>Portero</strong></label>
+                                        <label><strong>{{ 'JUG.GK_LABEL' | translate }}</strong></label>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="portero">Media total:</label>
+                                            <label for="portero">{{ 'JUG.STAT_TOTAL' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="portero"
-                                                name="portero" [(ngModel)]="player.portero" placeholder="Portero"
+                                                name="portero" [(ngModel)]="player.portero" [placeholder]="'JUG.GK_LABEL' | translate"
                                                 disabled>
                                         </div>
                                     </div>
@@ -990,19 +990,19 @@
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="porteroColocacion">Colocación:</label>
+                                            <label for="porteroColocacion">{{ 'JUG.SKILL_POSITIONING' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="porteroColocacion"
                                                 name="porteroColocacion" [(ngModel)]="player.porteroColocacion"
-                                                placeholder="Colocación" (change)="promedioPortero()">
+                                                [placeholder]="'JUG.SKILL_POSITIONING' | translate" (change)="promedioPortero()">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="porteroEstirada">Estirada:</label>
+                                            <label for="porteroEstirada">{{ 'JUG.SKILL_DIVING' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="porteroEstirada"
                                                 name="porteroEstirada" [(ngModel)]="player.porteroEstirada"
-                                                placeholder="Estirada" (change)="promedioPortero()">
+                                                [placeholder]="'JUG.SKILL_DIVING' | translate" (change)="promedioPortero()">
                                         </div>
                                     </div>
                                 </div>
@@ -1010,19 +1010,19 @@
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="porteroParadas">Paradas:</label>
+                                            <label for="porteroParadas">{{ 'JUG.SKILL_SAVES' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="porteroParadas"
                                                 name="porteroParadas" [(ngModel)]="player.porteroParadas"
-                                                placeholder="Paradas" (change)="promedioPortero()">
+                                                [placeholder]="'JUG.SKILL_SAVES' | translate" (change)="promedioPortero()">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="porteroSaques">Saques:</label>
+                                            <label for="porteroSaques">{{ 'JUG.SKILL_KICKS' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="porteroSaques"
                                                 name="porteroSaques" [(ngModel)]="player.porteroSaques"
-                                                placeholder="Saques" (change)="promedioPortero()">
+                                                [placeholder]="'JUG.SKILL_KICKS' | translate" (change)="promedioPortero()">
                                         </div>
                                     </div>
                                 </div>
@@ -1030,10 +1030,10 @@
                                     <div class="col-12 col-md-6">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="porteroReflejos">Reflejos:</label>
+                                            <label for="porteroReflejos">{{ 'JUG.SKILL_REFLEXES' | translate }}</label>
                                             <input type="text" class="form-control custom-input" id="porteroReflejos"
                                                 name="porteroReflejos" [(ngModel)]="player.porteroReflejos"
-                                                placeholder="Reflejos" (change)="promedioPortero()">
+                                                [placeholder]="'JUG.SKILL_REFLEXES' | translate" (change)="promedioPortero()">
                                         </div>
                                     </div>
                                 </div>
@@ -1048,10 +1048,10 @@
                                         <!-- Contenido de la subcolumna -->
 
                                         <div class="form-group">
-                                            <label for="especialidades">Especialidades:</label>
+                                            <label for="especialidades">{{ 'JUG.SKILL_SPECIALTIES' | translate }}</label>
                                             <textarea class="form-control custom-input" id="especialidades"
                                                 name="especialidades" [(ngModel)]="player.especialidades"
-                                                placeholder="¿Qué habilidad específica destacarías?"
+                                                [placeholder]="'JUG.SKILL_PLACEHOLDER_SPEC' | translate"
                                                 rows="2"></textarea>
                                         </div>
                                     </div>
@@ -1066,10 +1066,10 @@
                                     <div class="col-12 col-md-12">
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
-                                            <label for="opinionDelEntrenador">Opinión del Entrenador:</label>
+                                            <label for="opinionDelEntrenador">{{ 'JUG.SKILL_COACH_OPINION' | translate }}</label>
                                             <textarea class="form-control custom-input" id="opinionDelEntrenador"
                                                 name="opinionDelEntrenador" [(ngModel)]="player.opinionDelEntrenador"
-                                                placeholder="Opinión del Entrenador" rows="5"></textarea>
+                                                [placeholder]="'JUG.SKILL_COACH_OPINION' | translate" rows="5"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -1079,7 +1079,7 @@
                     </div>
                     <div *ngIf="(usuarioActual?.profileType?.profileId ?? 0) < 3" class="text-center my-3">
                         <button class="btn btn-outline-primary" (click)="showPlayerInfo(player.playerId)">
-                            + Otros datos del jugador
+                            {{ 'JUG.BTN_OTHER_DATA' | translate }}
                         </button>
                     </div>
                     <div class="modal-footer modal-footer-fifa" data-tutorial="jd-acciones">
@@ -1089,7 +1089,7 @@
                             <i class="bi bi-person-badge"></i> DNI
                         </button>
                         <button type="button" class="btn btn-fifa btn-fifa-primary" (click)="crearJugador()">
-                            <i class="bi bi-check-lg"></i> Guardar
+                            <i class="bi bi-check-lg"></i> {{ 'JUG.BTN_SAVE' | translate }}
                         </button>
                     </div>
                 </form>
@@ -1106,7 +1106,7 @@
     <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" role="document">
         <div class="modal-content modal-content-fifa player-info-modal-content">
             <div class="modal-header modal-header-fifa">
-                <h5 class="modal-title">Información del Jugador</h5>
+                <h5 class="modal-title">{{ 'JUG.MODAL_INFO_TITLE' | translate }}</h5>
                 <button type="button" class="btn-close btn-close-white" aria-label="Cerrar" (click)="cerrarModalInfoJugador()"></button>
             </div>
             <div class="modal-body modal-body-fifa player-info-modal-body">
@@ -1176,123 +1176,123 @@
                         </div>
 
                         <!-- Datos deportivos (posición, altura, peso, habilidades) -->
-                        <h2 class="modal-section-heading">Datos deportivos</h2>
+                        <h2 class="modal-section-heading">{{ 'JUG.SECTION_SPORT' | translate }}</h2>
                         <div class="row g-2 mb-3">
-                            <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Posición</span><span class="value">{{ selectedPlayer.posicion || '—' }}</span></div></div>
-                            <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Posición 2</span><span class="value">{{ selectedPlayer.posicionDos || '—' }}</span></div></div>
-                            <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Pierna natural</span><span class="value">{{ selectedPlayer.piernaNatural || '—' }}</span></div></div>
-                            <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Altura (cm)</span><span class="value">{{ selectedPlayer.altura || '—' }}</span></div></div>
-                            <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Peso (Kg)</span><span class="value">{{ selectedPlayer.peso || '—' }}</span></div></div>
+                            <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.FORM_LABEL_POSITION' | translate }}</span><span class="value">{{ selectedPlayer.posicion || '—' }}</span></div></div>
+                            <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.FORM_LABEL_POSITION2' | translate }}</span><span class="value">{{ selectedPlayer.posicionDos || '—' }}</span></div></div>
+                            <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.FORM_LABEL_FOOT' | translate }}</span><span class="value">{{ selectedPlayer.piernaNatural || '—' }}</span></div></div>
+                            <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.FORM_LABEL_HEIGHT' | translate }}</span><span class="value">{{ selectedPlayer.altura || '—' }}</span></div></div>
+                            <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.FORM_LABEL_WEIGHT' | translate }}</span><span class="value">{{ selectedPlayer.peso || '—' }}</span></div></div>
                         </div>
                         <div class="row g-2 mb-2">
-                            <div class="col-12"><span class="info-block-label">Habilidad con el balón</span></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Media total</span><span class="value">{{ selectedPlayer.habilidadConBalon || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Control</span><span class="value">{{ selectedPlayer.habilidadConBalonControlDeBalon || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Regate</span><span class="value">{{ selectedPlayer.habilidadConBalonRegate || '—' }}</span></div></div>
+                            <div class="col-12"><span class="info-block-label">{{ 'JUG.SKILL_BALL_LABEL' | translate }}</span></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.STAT_TOTAL' | translate }}</span><span class="value">{{ selectedPlayer.habilidadConBalon || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_BALL_CONTROL' | translate }}</span><span class="value">{{ selectedPlayer.habilidadConBalonControlDeBalon || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_DRIBBLE' | translate }}</span><span class="value">{{ selectedPlayer.habilidadConBalonRegate || '—' }}</span></div></div>
                         </div>
                         <div class="row g-2 mb-2">
-                            <div class="col-12"><span class="info-block-label">Pase</span></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Media total</span><span class="value">{{ selectedPlayer.pase || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Pase corto</span><span class="value">{{ selectedPlayer.paseCorto || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Pase largo</span><span class="value">{{ selectedPlayer.paseLargo || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Centros</span><span class="value">{{ selectedPlayer.centros || '—' }}</span></div></div>
+                            <div class="col-12"><span class="info-block-label">{{ 'JUG.STAT_PASS' | translate }}</span></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.STAT_TOTAL' | translate }}</span><span class="value">{{ selectedPlayer.pase || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_SHORT_PASS' | translate }}</span><span class="value">{{ selectedPlayer.paseCorto || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_LONG_PASS' | translate }}</span><span class="value">{{ selectedPlayer.paseLargo || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_CROSS' | translate }}</span><span class="value">{{ selectedPlayer.centros || '—' }}</span></div></div>
                         </div>
                         <div class="row g-2 mb-2">
-                            <div class="col-12"><span class="info-block-label">Tiro</span></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Media total</span><span class="value">{{ selectedPlayer.tiro || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Potencia</span><span class="value">{{ selectedPlayer.tiroPotenciaDeTiro || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Definición</span><span class="value">{{ selectedPlayer.tiroDefinicion || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Lejano</span><span class="value">{{ selectedPlayer.tiroTirosLejanos || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Volea</span><span class="value">{{ selectedPlayer.tiroVoleas || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Precisión falta</span><span class="value">{{ selectedPlayer.tiroPrecisionFalta || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Penaltis</span><span class="value">{{ selectedPlayer.tiroPenaltis || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Cabezazo</span><span class="value">{{ selectedPlayer.tiroCabezazo || '—' }}</span></div></div>
+                            <div class="col-12"><span class="info-block-label">{{ 'JUG.STAT_SHOT' | translate }}</span></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.STAT_TOTAL' | translate }}</span><span class="value">{{ selectedPlayer.tiro || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_POWER' | translate }}</span><span class="value">{{ selectedPlayer.tiroPotenciaDeTiro || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_FINESSE' | translate }}</span><span class="value">{{ selectedPlayer.tiroDefinicion || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_LONG_SHOT' | translate }}</span><span class="value">{{ selectedPlayer.tiroTirosLejanos || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_VOLLEY' | translate }}</span><span class="value">{{ selectedPlayer.tiroVoleas || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_FREE_KICK' | translate }}</span><span class="value">{{ selectedPlayer.tiroPrecisionFalta || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_PENALTY' | translate }}</span><span class="value">{{ selectedPlayer.tiroPenaltis || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_HEADER' | translate }}</span><span class="value">{{ selectedPlayer.tiroCabezazo || '—' }}</span></div></div>
                         </div>
                         <div class="row g-2 mb-2">
-                            <div class="col-12"><span class="info-block-label">Defensa</span></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Media total</span><span class="value">{{ selectedPlayer.defensa || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Marcaje</span><span class="value">{{ selectedPlayer.defensaMarcaje || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Entradas</span><span class="value">{{ selectedPlayer.defensaEntradas || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Robos</span><span class="value">{{ selectedPlayer.defensaRobos || '—' }}</span></div></div>
+                            <div class="col-12"><span class="info-block-label">{{ 'JUG.STAT_DEFENSE' | translate }}</span></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.STAT_TOTAL' | translate }}</span><span class="value">{{ selectedPlayer.defensa || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_MARKING' | translate }}</span><span class="value">{{ selectedPlayer.defensaMarcaje || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_TACKLE' | translate }}</span><span class="value">{{ selectedPlayer.defensaEntradas || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_STEAL' | translate }}</span><span class="value">{{ selectedPlayer.defensaRobos || '—' }}</span></div></div>
                         </div>
                         <div class="row g-2 mb-2">
-                            <div class="col-12"><span class="info-block-label">Físico</span></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Media total</span><span class="value">{{ selectedPlayer.fisico || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Aceleración</span><span class="value">{{ selectedPlayer.fisicoAceleracion || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Velocidad</span><span class="value">{{ selectedPlayer.fisicoVelocidad || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Agilidad</span><span class="value">{{ selectedPlayer.fisicoAgilidad || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Resistencia</span><span class="value">{{ selectedPlayer.fisicoResistencia || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Fuerza</span><span class="value">{{ selectedPlayer.fisicoFuerza || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Equilibrio</span><span class="value">{{ selectedPlayer.fisicoEquilibrio || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Salto</span><span class="value">{{ selectedPlayer.fisicoSalto || '—' }}</span></div></div>
+                            <div class="col-12"><span class="info-block-label">{{ 'JUG.STAT_PHYSICAL' | translate }}</span></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.STAT_TOTAL' | translate }}</span><span class="value">{{ selectedPlayer.fisico || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_ACCEL' | translate }}</span><span class="value">{{ selectedPlayer.fisicoAceleracion || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_SPEED' | translate }}</span><span class="value">{{ selectedPlayer.fisicoVelocidad || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_AGILITY' | translate }}</span><span class="value">{{ selectedPlayer.fisicoAgilidad || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_STAMINA' | translate }}</span><span class="value">{{ selectedPlayer.fisicoResistencia || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_STRENGTH' | translate }}</span><span class="value">{{ selectedPlayer.fisicoFuerza || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_BALANCE' | translate }}</span><span class="value">{{ selectedPlayer.fisicoEquilibrio || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_JUMP' | translate }}</span><span class="value">{{ selectedPlayer.fisicoSalto || '—' }}</span></div></div>
                         </div>
                         <div class="row g-2 mb-3">
-                            <div class="col-12"><span class="info-block-label">Mentalidad</span></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Media total</span><span class="value">{{ selectedPlayer.mentalidad || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Agresividad</span><span class="value">{{ selectedPlayer.mentalidadAgresividad || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Anticipación</span><span class="value">{{ selectedPlayer.mentalidadAnticipacion || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Interceptación</span><span class="value">{{ selectedPlayer.mentalidadInterceptacion || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Visión</span><span class="value">{{ selectedPlayer.mentalidadVision || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Compostura</span><span class="value">{{ selectedPlayer.mentalidadCompostura || '—' }}</span></div></div>
+                            <div class="col-12"><span class="info-block-label">{{ 'JUG.STAT_MENTAL' | translate }}</span></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.STAT_TOTAL' | translate }}</span><span class="value">{{ selectedPlayer.mentalidad || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_AGGRESSION' | translate }}</span><span class="value">{{ selectedPlayer.mentalidadAgresividad || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_ANTICIPATION' | translate }}</span><span class="value">{{ selectedPlayer.mentalidadAnticipacion || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_INTERCEPTION' | translate }}</span><span class="value">{{ selectedPlayer.mentalidadInterceptacion || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_VISION' | translate }}</span><span class="value">{{ selectedPlayer.mentalidadVision || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_COMPOSURE' | translate }}</span><span class="value">{{ selectedPlayer.mentalidadCompostura || '—' }}</span></div></div>
                         </div>
                         <div class="row g-2 mb-3" *ngIf="selectedPlayer.posicion?.includes('Portero') || selectedPlayer.posicionDos?.includes('Portero')">
-                            <div class="col-12"><span class="info-block-label">Portero</span></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Media total</span><span class="value">{{ selectedPlayer.portero || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Colocación</span><span class="value">{{ selectedPlayer.porteroColocacion || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Estirada</span><span class="value">{{ selectedPlayer.porteroEstirada || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Paradas</span><span class="value">{{ selectedPlayer.porteroParadas || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Saques</span><span class="value">{{ selectedPlayer.porteroSaques || '—' }}</span></div></div>
-                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Reflejos</span><span class="value">{{ selectedPlayer.porteroReflejos || '—' }}</span></div></div>
+                            <div class="col-12"><span class="info-block-label">{{ 'JUG.GK_LABEL' | translate }}</span></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.STAT_TOTAL' | translate }}</span><span class="value">{{ selectedPlayer.portero || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_POSITIONING' | translate }}</span><span class="value">{{ selectedPlayer.porteroColocacion || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_DIVING' | translate }}</span><span class="value">{{ selectedPlayer.porteroEstirada || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_SAVES' | translate }}</span><span class="value">{{ selectedPlayer.porteroParadas || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_KICKS' | translate }}</span><span class="value">{{ selectedPlayer.porteroSaques || '—' }}</span></div></div>
+                            <div class="col-4 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ 'JUG.SKILL_REFLEXES' | translate }}</span><span class="value">{{ selectedPlayer.porteroReflejos || '—' }}</span></div></div>
                         </div>
 
-                        <h2 class="modal-section-heading">Estadísticas de partidos</h2>
+                        <h2 class="modal-section-heading">{{ 'JUG.STATS_TITLE' | translate }}</h2>
                         <div class="row row-cols-1 row-cols-md-3 g-3">
-                            <div class="col"><div class="stat-card-pro"><span class="stat-card-label">Partidos jugados</span><span class="stat-card-value">{{ partidosJugados }}</span></div></div>
-                            <div class="col"><div class="stat-card-pro"><span class="stat-card-label">Titularidades</span><span class="stat-card-value">{{ numTitulares }}</span></div></div>
-                            <div class="col"><div class="stat-card-pro"><span class="stat-card-label">Minutos jugados</span><span class="stat-card-value">{{ minutosJugados }}</span></div></div>
-                            <div class="col"><div class="stat-card-pro"><span class="stat-card-label">Goles</span><span class="stat-card-value">{{ goles }}</span></div></div>
-                            <div class="col"><div class="stat-card-pro"><span class="stat-card-label">Tarjetas Amarillas</span><span class="stat-card-value">{{ tarjetasAmarillas }}</span></div></div>
-                            <div class="col"><div class="stat-card-pro"><span class="stat-card-label">Tarjetas Rojas</span><span class="stat-card-value">{{ tarjetasRojas }}</span></div></div>
+                            <div class="col"><div class="stat-card-pro"><span class="stat-card-label">{{ 'JUG.STAT_MATCHES' | translate }}</span><span class="stat-card-value">{{ partidosJugados }}</span></div></div>
+                            <div class="col"><div class="stat-card-pro"><span class="stat-card-label">{{ 'JUG.STAT_STARTERS' | translate }}</span><span class="stat-card-value">{{ numTitulares }}</span></div></div>
+                            <div class="col"><div class="stat-card-pro"><span class="stat-card-label">{{ 'JUG.STAT_MINUTES' | translate }}</span><span class="stat-card-value">{{ minutosJugados }}</span></div></div>
+                            <div class="col"><div class="stat-card-pro"><span class="stat-card-label">{{ 'JUG.STAT_GOALS' | translate }}</span><span class="stat-card-value">{{ goles }}</span></div></div>
+                            <div class="col"><div class="stat-card-pro"><span class="stat-card-label">{{ 'JUG.STAT_YELLOW' | translate }}</span><span class="stat-card-value">{{ tarjetasAmarillas }}</span></div></div>
+                            <div class="col"><div class="stat-card-pro"><span class="stat-card-label">{{ 'JUG.STAT_RED' | translate }}</span><span class="stat-card-value">{{ tarjetasRojas }}</span></div></div>
                         </div>
-                        <h2 class="modal-section-heading">Últimos partidos</h2>
+                        <h2 class="modal-section-heading">{{ 'JUG.RECENT_MATCHES' | translate }}</h2>
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <button (click)="prev()" class="btn btn-sm btn-outline-secondary" [disabled]="true">‹</button>
                             <div class="d-flex flex-wrap justify-content-center gap-2">
                                 <div *ngFor="let item of getVisibleItems()" class="card partido-card partido-card-sm">
                                     <div class="card-body text-center py-2 px-3">
                                         <h6 class="card-title small mb-0">{{ item.name.length > 10 ? (item.name | slice:0:10) + '...' : item.name }}</h6>
-                                        <p class="card-text small mb-0">Resultado: {{ item.resultado }}</p>
+                                        <p class="card-text small mb-0">{{ 'JUG.RESULT_LABEL' | translate }} {{ item.resultado }}</p>
                                         <span class="badge">{{ iconos[item.letra] }}</span>
                                     </div>
                                 </div>
                             </div>
                             <button (click)="next()" class="btn btn-sm btn-outline-secondary" [disabled]="true">›</button>
                         </div>
-                        <h2 class="modal-section-heading">Próximos partidos</h2>
+                        <h2 class="modal-section-heading">{{ 'JUG.NEXT_MATCHES' | translate }}</h2>
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <button (click)="prev2()" class="btn btn-sm btn-outline-secondary" [disabled]="true">‹</button>
                             <div class="d-flex flex-wrap justify-content-center gap-2">
                                 <div *ngFor="let item2 of getVisibleItems2()" class="card partido-card partido-card-sm">
                                     <div class="card-body text-center py-2 px-3">
                                         <h6 class="card-title small mb-0">{{ item2.name }}</h6>
-                                        <p class="card-text small mb-0">Resultado: 0 - 0</p>
+                                        <p class="card-text small mb-0">{{ 'JUG.RESULT_LABEL' | translate }} 0 - 0</p>
                                     </div>
                                 </div>
                             </div>
                             <button (click)="next2()" class="btn btn-sm btn-outline-secondary" [disabled]="true">›</button>
                         </div>
-                        <h2 class="modal-section-heading">Asistencia a entrenamientos</h2>
+                        <h2 class="modal-section-heading">{{ 'JUG.ATTENDANCE_TITLE' | translate }}</h2>
                         <div class="table-responsive mi-div table-wrap-fifa">
                             <table class="table table-fifa-pro">
                                 <thead>
                                     <tr>
-                                        <th>Fecha</th>
-                                        <th>Asistencia</th>
-                                        <th>Retraso</th>
+                                        <th>{{ 'JUG.TH_DATE_LABEL' | translate }}</th>
+                                        <th>{{ 'JUG.TH_ATTENDANCE' | translate }}</th>
+                                        <th>{{ 'JUG.TH_DELAY' | translate }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngIf="!listAsistencia?.length"><td colspan="3" class="text-center text-muted py-4">No hay registros</td></tr>
+                                    <tr *ngIf="!listAsistencia?.length"><td colspan="3" class="text-center text-muted py-4">{{ 'JUG.NO_RECORDS' | translate }}</td></tr>
                                     <tr *ngFor="let player of listAsistencia">
                                         <td>{{ player.fecha }}</td>
                                         <td>

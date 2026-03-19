@@ -11,7 +11,11 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "generate-tutorial-audio": "node scripts/generate-tutorial-audio.mjs",
-    "generate-tutorial-audio:tareas04": "node scripts/generate-tutorial-audio.mjs --only=tareas_04 --force"
+    "generate-tutorial-audio:tareas04": "node scripts/generate-tutorial-audio.mjs --only=tareas_04 --force",
+    "generate-narration-audio": "node scripts/generate-narration-audio.mjs",
+    "generate-narration-audio:es": "node scripts/generate-narration-audio.mjs --only=es --force",
+    "generate-narration-audio:edge": "python scripts/generate-narration-audio-edge.py",
+    "generate-narration-audio:edge:force": "python scripts/generate-narration-audio-edge.py --force"
   },
   "private": true,
   "dependencies": {

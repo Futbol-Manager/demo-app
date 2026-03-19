@@ -10,7 +10,7 @@
 
   <div class="header-center">
     <h2 class="table-title">
-      <i class="bi bi-person-badge me-2"></i>Perfil de Jugador
+      <i class="bi bi-person-badge me-2"></i>{{ 'SP.PAGE_TITLE' | translate }}
     </h2>
     <p class="header-subtitle" *ngIf="displayName">{{ displayName }}</p>
   </div>
@@ -70,7 +70,7 @@
         <!-- Panel radar de habilidades -->
         <div class="premium-radar-panel" *ngIf="playerFromTeam && (playerFromTeam.habilidadConBalon || playerFromTeam.pase)">
           <p class="premium-radar-title">
-            <i class="bi bi-hexagon-half"></i>Perfil de habilidades
+            <i class="bi bi-hexagon-half"></i>{{ 'SP.RADAR_TITLE' | translate }}
           </p>
           <div class="premium-radar-wrap">
             <canvas #radarCanvas></canvas>
@@ -84,59 +84,59 @@
     <div class="premium-row">
       <section class="premium-section premium-col" data-tutorial="sp-datos">
         <h2 class="premium-section-title">
-          <i class="bi bi-graph-up-arrow me-2"></i>Datos deportivos
+          <i class="bi bi-graph-up-arrow me-2"></i>{{ 'JUG.SECTION_SPORT' | translate }}
         </h2>
         <div class="premium-data-grid">
           <div class="premium-data-item">
-            <span class="premium-data-label">Posición</span>
+            <span class="premium-data-label">{{ 'JUG.FORM_LABEL_POSITION' | translate }}</span>
             <span class="premium-data-value">{{ (playerFromTeam?.posicion || scoutingPlayer?.posicionPrincipal) || '—' }}</span>
           </div>
           <div class="premium-data-item">
-            <span class="premium-data-label">Posición 2</span>
+            <span class="premium-data-label">{{ 'JUG.FORM_LABEL_POSITION2' | translate }}</span>
             <span class="premium-data-value">{{ (playerFromTeam?.posicionDos || scoutingPlayer?.posicionesSecundarias) || '—' }}</span>
           </div>
           <div class="premium-data-item">
-            <span class="premium-data-label">Pierna natural</span>
+            <span class="premium-data-label">{{ 'JUG.FORM_LABEL_FOOT' | translate }}</span>
             <span class="premium-data-value">{{ (playerFromTeam?.piernaNatural || scoutingPlayer?.piernaNatural) || '—' }}</span>
           </div>
           <div class="premium-data-item">
-            <span class="premium-data-label">Altura (cm)</span>
+            <span class="premium-data-label">{{ 'JUG.FORM_LABEL_HEIGHT' | translate }}</span>
             <span class="premium-data-value">{{ (playerFromTeam?.altura || scoutingPlayer?.altura) || '—' }}</span>
           </div>
           <div class="premium-data-item">
-            <span class="premium-data-label">Peso (kg)</span>
+            <span class="premium-data-label">{{ 'JUG.FORM_LABEL_WEIGHT' | translate }}</span>
             <span class="premium-data-value">{{ (playerFromTeam?.peso || scoutingPlayer?.peso) || '—' }}</span>
           </div>
         </div>
       </section>
       <section class="premium-section premium-col" data-tutorial="sp-stats">
         <h2 class="premium-section-title">
-          <i class="bi bi-trophy me-2"></i>Estadísticas de partidos
+          <i class="bi bi-trophy me-2"></i>{{ 'JUG.STATS_TITLE' | translate }}
         </h2>
         <div class="premium-stats-grid">
           <div class="premium-stat-card">
             <span class="premium-stat-value">{{ partidosJugados }}</span>
-            <span class="premium-stat-label">Partidos jugados</span>
+            <span class="premium-stat-label">{{ 'JUG.STAT_MATCHES' | translate }}</span>
           </div>
           <div class="premium-stat-card">
             <span class="premium-stat-value">{{ numTitulares }}</span>
-            <span class="premium-stat-label">Titularidades</span>
+            <span class="premium-stat-label">{{ 'JUG.STAT_STARTERS' | translate }}</span>
           </div>
           <div class="premium-stat-card">
             <span class="premium-stat-value">{{ minutosJugados }}</span>
-            <span class="premium-stat-label">Minutos jugados</span>
+            <span class="premium-stat-label">{{ 'JUG.STAT_MINUTES' | translate }}</span>
           </div>
           <div class="premium-stat-card">
             <span class="premium-stat-value">{{ goles }}</span>
-            <span class="premium-stat-label">Goles</span>
+            <span class="premium-stat-label">{{ 'JUG.STAT_GOALS' | translate }}</span>
           </div>
           <div class="premium-stat-card">
             <span class="premium-stat-value">{{ tarjetasAmarillas }}</span>
-            <span class="premium-stat-label">Tarjetas amarillas</span>
+            <span class="premium-stat-label">{{ 'JUG.STAT_YELLOW' | translate }}</span>
           </div>
           <div class="premium-stat-card">
             <span class="premium-stat-value">{{ tarjetasRojas }}</span>
-            <span class="premium-stat-label">Tarjetas rojas</span>
+            <span class="premium-stat-label">{{ 'JUG.STAT_RED' | translate }}</span>
           </div>
         </div>
       </section>
@@ -146,14 +146,14 @@
     <div class="premium-row">
       <section class="premium-section premium-section-graficas premium-col" data-tutorial="sp-graficas">
         <h2 class="premium-section-title">
-          <i class="bi bi-bar-chart-line me-2"></i>Gráficas
+          <i class="bi bi-bar-chart-line me-2"></i>{{ 'SP.CHARTS_TITLE' | translate }}
         </h2>
         <div class="premium-graficas-tabs">
           <button type="button" class="premium-graficas-tab" [class.active]="activeTabGraficas === 'estadisticas'" (click)="setTabGraficas('estadisticas')">
-            <i class="bi bi-trophy me-1"></i> Partidos
+            <i class="bi bi-trophy me-1"></i> {{ 'SP.TAB_MATCHES' | translate }}
           </button>
           <button type="button" class="premium-graficas-tab" [class.active]="activeTabGraficas === 'asistencia'" (click)="setTabGraficas('asistencia')" [disabled]="!tieneDatosAsistenciaParaGrafica">
-            <i class="bi bi-calendar-check me-1"></i> Asistencia
+            <i class="bi bi-calendar-check me-1"></i> {{ 'SP.TAB_ATTENDANCE' | translate }}
           </button>
         </div>
         <div class="premium-grafica-container" *ngIf="activeTabGraficas === 'estadisticas'">
@@ -162,26 +162,26 @@
         <div class="premium-grafica-container" *ngIf="activeTabGraficas === 'asistencia'">
           <canvas #barAsistenciaCanvas *ngIf="tieneDatosAsistenciaParaGrafica"></canvas>
           <p class="premium-grafica-empty" *ngIf="!tieneDatosAsistenciaParaGrafica">
-            <i class="bi bi-calendar-x"></i> No hay datos de asistencia para mostrar por mes.
+            <i class="bi bi-calendar-x"></i> {{ 'SP.NO_ATTENDANCE_DATA' | translate }}
           </p>
         </div>
       </section>
       <section class="premium-section premium-section-last premium-col" data-tutorial="sp-asistencia">
         <h2 class="premium-section-title">
-          <i class="bi bi-calendar-check me-2"></i>Asistencia a entrenamientos
+          <i class="bi bi-calendar-check me-2"></i>{{ 'JUG.ATTENDANCE_TITLE' | translate }}
         </h2>
         <div class="premium-table-wrap">
           <table class="premium-table">
             <thead>
               <tr>
-                <th>Fecha</th>
-                <th>Asistencia</th>
-                <th>Retraso</th>
+                <th>{{ 'JUG.TH_DATE_LABEL' | translate }}</th>
+                <th>{{ 'JUG.TH_ATTENDANCE' | translate }}</th>
+                <th>{{ 'JUG.TH_DELAY' | translate }}</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="!listAsistencia?.length">
-                <td colspan="3" class="premium-table-empty">No hay registros</td>
+                <td colspan="3" class="premium-table-empty">{{ 'JUG.NO_RECORDS' | translate }}</td>
               </tr>
               <tr *ngFor="let p of listAsistencia">
                 <td>{{ p.fecha }}</td>
@@ -203,6 +203,6 @@
 
   <div *ngIf="!datosCargados" class="premium-loading">
     <div class="premium-loading-spinner"></div>
-    <p>Cargando información deportiva…</p>
+    <p>{{ 'SP.LOADING' | translate }}</p>
   </div>
 </div>

@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { take, switchMap, map, catchError } from 'rxjs/operators';
 import { LoginService } from './core/services/login/login.service';
 import { TeamService } from './core/services/team/team.service';
+import { DemoService } from './core/services/demo/demo.service';
 
 const CACHE_KEY = 'coach_sub_status';
 const CACHE_TTL_MS = 5 * 60 * 1000;
@@ -14,13 +15,17 @@ export class CoachSubscriptionGuard implements CanActivateChild {
   constructor(
     private loginService: LoginService,
     private teamService: TeamService,
-    private router: Router
+    private router: Router,
+    private demoService: DemoService,
   ) {}
 
   canActivateChild(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> {
+    // En modo demo no hay suscripciones reales: permitir acceso siempre.
+    if (this.demoService.isDemoMode()) return of(true);
+
     const path = state.url;
     if (EXEMPT_PATHS.some(p => path.includes(p))) {
       return of(true);

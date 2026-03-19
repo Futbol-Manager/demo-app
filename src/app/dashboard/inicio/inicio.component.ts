@@ -47,6 +47,8 @@ export class InicioComponent implements OnInit {
     return this.staffPermissions.some(p => p.startsWith('DASHBOARD_'));
   }
 
+  get isDemo(): boolean { return isDemoMode() === true; }
+
   /** En modo demo mostramos siempre las tarjetas de Ropa, Patrocinadores, Notificaciones, Scouting, etc. */
   get showPremiumCards(): boolean {
     return isDemoMode() === true || (!this.clubLoading && this.clubOk);

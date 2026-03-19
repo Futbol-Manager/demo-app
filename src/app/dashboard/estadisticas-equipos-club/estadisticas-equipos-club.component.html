@@ -88,9 +88,14 @@
             <!-- EQUIPO -->
             <td class="col-team">
               <div class="team-cell">
-                <div class="team-avatar" [attr.data-initial]="resumen.categoria?.charAt(0)"></div>
+                <div class="team-avatar" [attr.data-initial]="(resumen.equipo || resumen.categoria)?.charAt(0)">
+                  <img *ngIf="isDemo"
+                       src="assets/images/user/demo-club-logo.png"
+                       alt="Escudo"
+                       class="avatar-logo" />
+                </div>
                 <div class="team-info">
-                  <a class="team-name" (click)="verTablaequipo(i)">{{ resumen.categoria }}</a>
+                  <a class="team-name" (click)="verTablaequipo(i)">{{ resumen.equipo || resumen.categoria }}</a>
                   <span class="division-badge" *ngIf="resumen.division">{{ resumen.division }}</span>
                 </div>
               </div>

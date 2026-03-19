@@ -12,11 +12,11 @@ import { ParentChildrenComponent } from './pages/register/parent-children/parent
 import { DemoRoleSelectionComponent } from './pages/demo-role/demo-role.component';
 
 const appRoutes: Routes = [
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: '', redirectTo: '/demo-role', pathMatch: 'full' },
   { path: 'home', component: HomeComponent, canActivate: [AlreadyAuthGuard] },
   { path: 'login', redirectTo: '/home', pathMatch: 'full' },
   { path: 'login/:token', component: LoginComponent },
-  { path: 'demo-role', component: DemoRoleSelectionComponent, canActivate: [AuthGuard] },
+  { path: 'demo-role', component: DemoRoleSelectionComponent },
   { path: 'registro', component: RegisterComponent },
   { path: 'registro/:playerId/:email/:isMenor', component: ParentChildrenComponent },
   { path: 'registro-padres/:clubId', component: ParentChildrenComponent },

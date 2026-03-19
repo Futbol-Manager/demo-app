@@ -3191,6 +3191,300 @@ const STEPS_DOCE_IT = [
   { file: 'doce_03_it.mp3', text: 'Hai padroneggiato la schermata dei documenti. Scarica quello che il club condivide, carica o compila quello che ti chiedono e tieni tutto aggiornato.' },
 ];
 
+// ── /dashboard/opcionesjugador ────────────────────────────────────────────────
+const STEPS_OJ_EN = [
+  { file: 'oj_01_en.mp3', text: 'You are in the player menu. From here you access each section using cards: Personal data, Calendar, Pay fees, Documents, Rankings and results, My stats, Gallery, Notifications, Sponsors, Injuries and Kit. We will walk you through each one.' },
+  { file: 'oj_02_en.mp3', text: 'The Personal data card opens your profile: view and edit your name, date of birth, position, contact details and the rest of your personal information.' },
+  { file: 'oj_03_en.mp3', text: 'The Calendar card shows all your training sessions and matches organised by date. Enter to see the full schedule.' },
+  { file: 'oj_04_en.mp3', text: 'Pay fees: here you or your family manage and pay the club fees. Link a card with Sphaira Pay, review mandatory and optional fees, or pay by bank transfer if the club indicates it.' },
+  { file: 'oj_05_en.mp3', text: 'Documents: all the files and documents the club requests from you. Download the ones the club shares, upload the ones they ask for, or fill in forms.' },
+  { file: 'oj_06_en.mp3', text: "Rankings and results: check your team's position in the competition table and the match history with results." },
+  { file: 'oj_07_en.mp3', text: 'My stats: goals, assists, minutes played and other metrics about your personal performance this season.' },
+  { file: 'oj_08_en.mp3', text: 'The Gallery shows team photos and moments that you can view and download.' },
+  { file: 'oj_09_en.mp3', text: 'Notifications: messages and alerts from the club and the coach addressed to you.' },
+  { file: 'oj_10_en.mp3', text: 'Club sponsors: logos, contact information and benefits they offer to players.' },
+  { file: 'oj_11_en.mp3', text: 'Injuries: view your injury history and current recovery status if any.' },
+  { file: 'oj_12_en.mp3', text: 'Club kit: the equipment catalogue and size selection so the club can manage orders.' },
+  { file: 'oj_13_en.mp3', text: 'You have completed the tour. You now know all the player options. Tap any card to enter that section whenever you need it.' },
+];
+const STEPS_OJ_FR = [
+  { file: 'oj_01_fr.mp3', text: "Vous êtes dans le menu du joueur. Depuis ici vous accédez à chaque section via des cartes : Données personnelles, Calendrier, Payer les cotisations, Documentation, Classement et résultats, Mes statistiques, Galerie, Notifications, Sponsors, Blessures et Équipement. Nous vous guidons dans chacune." },
+  { file: 'oj_02_fr.mp3', text: "La carte Données personnelles ouvre votre profil : consultez et modifiez votre nom, date de naissance, poste, coordonnées et le reste de vos informations personnelles." },
+  { file: 'oj_03_fr.mp3', text: "La carte Calendrier affiche tous vos entraînements et matchs organisés par date. Entrez pour voir le planning complet." },
+  { file: 'oj_04_fr.mp3', text: "Payer les cotisations : ici vous ou votre famille gérez et réglez les cotisations du club. Liez une carte avec Sphaira Pay, vérifiez les obligatoires et optionnelles, et payez par virement si le club l'indique." },
+  { file: 'oj_05_fr.mp3', text: "Documentation : tous les fichiers et documents que le club vous demande. Téléchargez ceux que le club partage, envoyez ceux qu'il demande ou remplissez des formulaires." },
+  { file: 'oj_06_fr.mp3', text: "Classement et résultats : consultez le tableau de votre équipe dans la compétition et l'historique des matchs et résultats." },
+  { file: 'oj_07_fr.mp3', text: "Mes statistiques : buts, passes décisives, minutes jouées et autres indicateurs de votre performance personnelle cette saison." },
+  { file: 'oj_08_fr.mp3', text: "La Galerie affiche les photos et moments de l'équipe que vous pouvez consulter et télécharger." },
+  { file: 'oj_09_fr.mp3', text: "Notifications : messages et avis du club et de l'entraîneur qui vous sont adressés." },
+  { file: 'oj_10_fr.mp3', text: "Sponsors du club : logos, coordonnées et avantages qu'ils offrent aux joueurs." },
+  { file: 'oj_11_fr.mp3', text: "Blessures : consultez votre historique de blessures et l'état de récupération le cas échéant." },
+  { file: 'oj_12_fr.mp3', text: "Équipement du club : catalogue de tenues et sélection des tailles pour que le club gère les commandes." },
+  { file: 'oj_13_fr.mp3', text: "Vous avez terminé la visite. Vous connaissez désormais toutes les options du joueur. Appuyez sur n'importe quelle carte pour accéder à cette section quand vous en avez besoin." },
+];
+const STEPS_OJ_DE = [
+  { file: 'oj_01_de.mp3', text: 'Sie befinden sich im Spielermenü. Von hier aus gelangen Sie über Karten zu jedem Bereich: Persönliche Daten, Kalender, Beiträge zahlen, Dokumente, Tabelle und Ergebnisse, Meine Statistiken, Galerie, Benachrichtigungen, Sponsoren, Verletzungen und Ausrüstung. Wir führen Sie durch jeden Bereich.' },
+  { file: 'oj_02_de.mp3', text: 'Die Karte Persönliche Daten öffnet Ihr Profil: Sehen und bearbeiten Sie Ihren Namen, Ihr Geburtsdatum, Ihre Position, Ihre Kontaktdaten und Ihre weiteren persönlichen Informationen.' },
+  { file: 'oj_03_de.mp3', text: 'Die Kalender-Karte zeigt alle Ihre Trainingseinheiten und Spiele nach Datum geordnet. Betreten Sie diese, um den vollständigen Plan zu sehen.' },
+  { file: 'oj_04_de.mp3', text: 'Beiträge zahlen: hier verwalten und bezahlen Sie oder Ihre Familie die Vereinsbeiträge. Verknüpfen Sie eine Karte mit Sphaira Pay, überprüfen Sie Pflicht- und optionale Beiträge oder zahlen Sie per Banküberweisung, wenn der Verein dies angibt.' },
+  { file: 'oj_05_de.mp3', text: 'Dokumente: alle Dateien und Unterlagen, die der Verein von Ihnen verlangt. Laden Sie die vom Verein geteilten herunter, laden Sie die angeforderten hoch oder füllen Sie Formulare aus.' },
+  { file: 'oj_06_de.mp3', text: 'Tabelle und Ergebnisse: sehen Sie die Tabellenposition Ihres Teams im Wettbewerb und die Spielhistorie mit Ergebnissen.' },
+  { file: 'oj_07_de.mp3', text: 'Meine Statistiken: Tore, Vorlagen, gespielte Minuten und andere Kennzahlen Ihrer persönlichen Leistung in dieser Saison.' },
+  { file: 'oj_08_de.mp3', text: 'Die Galerie zeigt Mannschaftsfotos und -momente, die Sie ansehen und herunterladen können.' },
+  { file: 'oj_09_de.mp3', text: 'Benachrichtigungen: Nachrichten und Hinweise vom Verein und Trainer, die an Sie gerichtet sind.' },
+  { file: 'oj_10_de.mp3', text: 'Vereinssponsoren: Logos, Kontaktinformationen und Vorteile, die sie Spielern bieten.' },
+  { file: 'oj_11_de.mp3', text: 'Verletzungen: sehen Sie Ihre Verletzungshistorie und den aktuellen Genesungsstand, falls vorhanden.' },
+  { file: 'oj_12_de.mp3', text: 'Vereinsausrüstung: Ausrüstungskatalog und Größenauswahl, damit der Verein Bestellungen verwalten kann.' },
+  { file: 'oj_13_de.mp3', text: 'Sie haben die Tour abgeschlossen. Sie kennen nun alle Spieleroptionen. Tippen Sie auf eine beliebige Karte, um jederzeit auf den jeweiligen Bereich zuzugreifen.' },
+];
+const STEPS_OJ_PT = [
+  { file: 'oj_01_pt.mp3', text: 'Está no menu do jogador. A partir daqui acede a cada secção através de cartões: Dados pessoais, Calendário, Pagar quotas, Documentação, Classificação e resultados, As minhas estatísticas, Galeria, Notificações, Patrocinadores, Lesões e Equipamento. Explicamos cada uma.' },
+  { file: 'oj_02_pt.mp3', text: 'O cartão Dados pessoais abre o seu perfil: consulte e edite o seu nome, data de nascimento, posição, contacto e o restante das suas informações pessoais.' },
+  { file: 'oj_03_pt.mp3', text: 'O cartão Calendário mostra todos os seus treinos e jogos organizados por data. Entre para ver o planeamento completo.' },
+  { file: 'oj_04_pt.mp3', text: 'Pagar quotas: aqui você ou a sua família gere e paga as quotas do clube. Associe um cartão com o Sphaira Pay, verifique as obrigatórias e opcionais e pague por transferência se o clube o indicar.' },
+  { file: 'oj_05_pt.mp3', text: 'Documentação: todos os ficheiros e documentos que o clube lhe solicita. Descarregue os que o clube partilha, carregue os que pedem ou preencha formulários.' },
+  { file: 'oj_06_pt.mp3', text: 'Classificação e resultados: consulte a tabela da sua equipa na competição e o histórico de jogos e resultados.' },
+  { file: 'oj_07_pt.mp3', text: 'As minhas estatísticas: golos, assistências, minutos jogados e outras métricas do seu desempenho pessoal na temporada.' },
+  { file: 'oj_08_pt.mp3', text: 'A Galeria mostra fotos e momentos da equipa que pode ver e descarregar.' },
+  { file: 'oj_09_pt.mp3', text: 'Notificações: mensagens e avisos do clube e do treinador dirigidos a si.' },
+  { file: 'oj_10_pt.mp3', text: 'Patrocinadores do clube: logótipos, informações de contacto e benefícios que oferecem aos jogadores.' },
+  { file: 'oj_11_pt.mp3', text: 'Lesões: consulte o seu historial de lesões e o estado de recuperação, se existir.' },
+  { file: 'oj_12_pt.mp3', text: 'Equipamento do clube: catálogo de fardamento e indicação de tamanhos para que o clube gira as encomendas.' },
+  { file: 'oj_13_pt.mp3', text: 'Completou a visita. Já conhece todas as opções do jogador. Toque em qualquer cartão para aceder a essa secção quando precisar.' },
+];
+const STEPS_OJ_IT = [
+  { file: 'oj_01_it.mp3', text: 'Sei nel menu del giocatore. Da qui accedi a ogni sezione tramite le schede: Dati personali, Calendario, Pagare le quote, Documentazione, Classifica e risultati, Le mie statistiche, Galleria, Notifiche, Sponsor, Infortuni e Abbigliamento. Ti spieghiamo ciascuna.' },
+  { file: 'oj_02_it.mp3', text: 'La scheda Dati personali apre il tuo profilo: consulta e modifica il tuo nome, data di nascita, ruolo, contatto e le restanti informazioni personali.' },
+  { file: 'oj_03_it.mp3', text: 'La scheda Calendario mostra tutti gli allenamenti e le partite organizzati per data. Entra per vedere il programma completo.' },
+  { file: 'oj_04_it.mp3', text: 'Pagare le quote: qui tu o la tua famiglia gestite e pagate le quote del club. Collega una carta con Sphaira Pay, controlla quelle obbligatorie e facoltative e paga tramite bonifico se il club lo indica.' },
+  { file: 'oj_05_it.mp3', text: 'Documentazione: tutti i file e i documenti che il club ti richiede. Scarica quelli che il club condivide, carica quelli che ti chiedono o compila i moduli.' },
+  { file: 'oj_06_it.mp3', text: 'Classifica e risultati: consulta la classifica della tua squadra nella competizione e lo storico delle partite e dei risultati.' },
+  { file: 'oj_07_it.mp3', text: 'Le mie statistiche: gol, assist, minuti giocati e altre metriche delle tue prestazioni personali nella stagione.' },
+  { file: 'oj_08_it.mp3', text: 'La Galleria mostra foto e momenti della squadra che puoi visualizzare e scaricare.' },
+  { file: 'oj_09_it.mp3', text: "Notifiche: messaggi e avvisi del club e dell'allenatore indirizzati a te." },
+  { file: 'oj_10_it.mp3', text: 'Sponsor del club: loghi, informazioni di contatto e vantaggi che offrono ai giocatori.' },
+  { file: 'oj_11_it.mp3', text: 'Infortuni: consulta il tuo storico degli infortuni e lo stato di recupero se presenti.' },
+  { file: 'oj_12_it.mp3', text: "Abbigliamento del club: catalogo dell'equipaggiamento e indicazione delle taglie affinché il club gestisca gli ordini." },
+  { file: 'oj_13_it.mp3', text: 'Hai completato la visita. Ora conosci tutte le opzioni del giocatore. Tocca una qualsiasi scheda per accedere a quella sezione quando ne hai bisogno.' },
+];
+
+// ── /dashboard/jugador/:teamId/:playerId ──────────────────────────────────────
+const STEPS_JD_EN = [
+  { file: 'jd_01_en.mp3', text: "You are on the player's personal data sheet. Here you can view and edit the photo, personal data, sports information, guardians and bank details. We will guide you step by step." },
+  { file: 'jd_02_en.mp3', text: "At the top you have the player's photo. You can upload a new one in JPG or PNG format; when creating a player the photo is uploaded on saving." },
+  { file: 'jd_03_en.mp3', text: "The Personal information and Sports information tabs organise the form. In personal you will see name, surname, date of birth, contact, address and guardian and bank data; in sports, position, measurements and skills." },
+  { file: 'jd_04_en.mp3', text: "All the player's fields are shown here: name, surname, ID, phone, email, address, nationality and the rest. Fill in or modify whichever you need." },
+  { file: 'jd_05_en.mp3', text: "At the bottom you have the ID button to upload or view the player's identity document, and Save to apply all changes. Remember to save after editing." },
+  { file: 'jd_06_en.mp3', text: "You have completed the tour. You now know the player's personal data sheet. Keep the information up to date whenever you need to." },
+];
+const STEPS_JD_FR = [
+  { file: 'jd_01_fr.mp3', text: "Vous êtes sur la fiche des données personnelles du joueur. Ici vous pouvez consulter et modifier la photo, les données personnelles, les informations sportives, les tuteurs et les données bancaires. Nous vous guidons pas à pas." },
+  { file: 'jd_02_fr.mp3', text: "En haut se trouve la photo du joueur. Vous pouvez en télécharger une nouvelle au format JPG ou PNG ; lors de la création d'un joueur la photo est téléchargée à l'enregistrement." },
+  { file: 'jd_03_fr.mp3', text: "Les onglets Informations personnelles et Informations sportives organisent le formulaire. Dans Personnelles vous verrez le nom, prénom, date de naissance, contact, adresse et données des tuteurs et bancaires ; dans Sportives, le poste, les mensurations et les compétences." },
+  { file: 'jd_04_fr.mp3', text: "Tous les champs du joueur sont affichés ici : nom, prénom, carte d'identité, téléphone, email, adresse, nationalité et le reste. Remplissez ou modifiez ceux dont vous avez besoin." },
+  { file: 'jd_05_fr.mp3', text: "En bas vous avez le bouton Pièce d'identité pour télécharger ou voir le document d'identité du joueur, et Enregistrer pour appliquer toutes les modifications. N'oubliez pas d'enregistrer après avoir édité." },
+  { file: 'jd_06_fr.mp3', text: "Vous avez terminé la visite. Vous connaissez désormais la fiche de données personnelles du joueur. Maintenez les informations à jour quand vous en avez besoin." },
+];
+const STEPS_JD_DE = [
+  { file: 'jd_01_de.mp3', text: 'Sie befinden sich auf dem Formular der persönlichen Daten des Spielers. Hier können Sie das Foto, die persönlichen Daten, die sportlichen Informationen, die Erziehungsberechtigten und die Bankdaten einsehen und bearbeiten. Wir führen Sie Schritt für Schritt.' },
+  { file: 'jd_02_de.mp3', text: 'Oben befindet sich das Foto des Spielers. Sie können ein neues im JPG- oder PNG-Format hochladen; beim Erstellen eines Spielers wird das Foto beim Speichern hochgeladen.' },
+  { file: 'jd_03_de.mp3', text: 'Die Reiter Persönliche Informationen und Sportliche Informationen organisieren das Formular. Im persönlichen Bereich sehen Sie Name, Nachname, Geburtsdatum, Kontakt, Adresse und Daten der Erziehungsberechtigten und Bank; im sportlichen Bereich Position, Maße und Fähigkeiten.' },
+  { file: 'jd_04_de.mp3', text: 'Hier werden alle Felder des Spielers angezeigt: Name, Nachname, Ausweis, Telefon, E-Mail, Adresse, Nationalität und der Rest. Füllen Sie aus oder ändern Sie, was Sie benötigen.' },
+  { file: 'jd_05_de.mp3', text: 'Unten haben Sie die Schaltfläche Ausweis zum Hochladen oder Ansehen des Ausweisdokuments des Spielers, und Speichern um alle Änderungen zu übernehmen. Denken Sie daran, nach dem Bearbeiten zu speichern.' },
+  { file: 'jd_06_de.mp3', text: 'Sie haben die Tour abgeschlossen. Sie kennen nun das Formular der persönlichen Daten des Spielers. Halten Sie die Informationen aktuell, wann immer Sie es brauchen.' },
+];
+const STEPS_JD_PT = [
+  { file: 'jd_01_pt.mp3', text: 'Está na ficha de dados pessoais do jogador. Aqui pode consultar e editar a foto, os dados pessoais, a informação desportiva, os tutores e os dados bancários. Guiamo-lo passo a passo.' },
+  { file: 'jd_02_pt.mp3', text: 'No topo tem a foto do jogador. Pode carregar uma nova em formato JPG ou PNG; ao criar um jogador a foto é carregada ao guardar.' },
+  { file: 'jd_03_pt.mp3', text: 'Os separadores Informação pessoal e Informação desportiva organizam o formulário. Em pessoal verá nome, apelido, data de nascimento, contacto, morada e dados dos tutores e bancários; em desportivo, posição, medidas e habilidades.' },
+  { file: 'jd_04_pt.mp3', text: 'Aqui são mostrados todos os campos do jogador: nome, apelido, BI/CC, telefone, email, morada, nacionalidade e o resto. Preencha ou modifique os que necessitar.' },
+  { file: 'jd_05_pt.mp3', text: 'Na parte inferior tem o botão Documento para carregar ou ver o documento de identidade do jogador, e Guardar para aplicar todas as alterações. Lembre-se de guardar após editar.' },
+  { file: 'jd_06_pt.mp3', text: 'Completou a visita. Já conhece a ficha de dados pessoais do jogador. Mantenha a informação atualizada sempre que necessário.' },
+];
+const STEPS_JD_IT = [
+  { file: 'jd_01_it.mp3', text: 'Sei nella scheda dei dati personali del giocatore. Qui puoi consultare e modificare la foto, i dati personali, le informazioni sportive, i tutori e i dati bancari. Ti guidiamo passo dopo passo.' },
+  { file: 'jd_02_it.mp3', text: 'In alto hai la foto del giocatore. Puoi caricare una nuova in formato JPG o PNG; alla creazione di un giocatore la foto viene caricata al salvataggio.' },
+  { file: 'jd_03_it.mp3', text: 'Le schede Informazioni personali e Informazioni sportive organizzano il modulo. Nelle personali vedrai nome, cognome, data di nascita, contatto, indirizzo e dati dei tutori e bancari; nelle sportive, ruolo, misure e abilità.' },
+  { file: 'jd_04_it.mp3', text: "Qui sono mostrati tutti i campi del giocatore: nome, cognome, documento d'identità, telefono, email, indirizzo, nazionalità e il resto. Compila o modifica quelli che ti servono." },
+  { file: 'jd_05_it.mp3', text: "In fondo hai il pulsante Documento per caricare o visualizzare il documento di identità del giocatore, e Salva per applicare tutte le modifiche. Ricorda di salvare dopo aver modificato." },
+  { file: 'jd_06_it.mp3', text: 'Hai completato la visita. Ora conosci la scheda dei dati personali del giocatore. Mantieni le informazioni aggiornate quando ne hai bisogno.' },
+];
+
+// ── /dashboard/cuotas jugador (player fees view) — EN ─────────────────────
+const STEPS_PCQ_EN = [
+  { file: 'cq_01_en.mp3', text: 'You are on the fee payment screen. Here you can check the status of your fees, link a card with Sphaira Pay for automatic charges, view mandatory and optional fees, and access bank transfer details. Let us guide you step by step.' },
+  { file: 'cq_02_en.mp3', text: 'At the top you will see the total paid and pending cards. From here you can access Sphaira Pay: link a card, view the linked card, or manage automatic charges.' },
+  { file: 'cq_03_en.mp3', text: 'When you select one-time fees, the bar appears showing the total and the Clear and Pay buttons to open the payment modal.' },
+  { file: 'cq_04_en.mp3', text: 'Mandatory fees panel: filter by concept, payment type, status, due date, and date. The table shows concept, type, amount, paid, due date, and actions such as linking a card or cancelling.' },
+  { file: 'cq_05_en.mp3', text: 'Optional fees: same structure with filters and list. You can select multiple and pay in bulk if available.' },
+  { file: 'cq_06_en.mp3', text: 'Club bank details: IBAN, concept, contact, and Bizum. Make the transfer and notify the club when you have paid.' },
+  { file: 'cq_07_en.mp3', text: 'You now know the fees screen. Link a card with Sphaira Pay if you use it, select and pay fees, or use bank transfer as indicated by the club.' },
+];
+
+// ── /dashboard/cuotas jugador — FR ────────────────────────────────────────
+const STEPS_PCQ_FR = [
+  { file: 'cq_01_fr.mp3', text: "Vous etes sur l ecran de paiement des cotisations. Ici vous pouvez consulter l etat de vos cotisations, associer une carte avec Sphaira Pay pour les prelevements automatiques, voir les obligatoires et facultatives, et avoir les coordonnees bancaires pour payer par virement. Nous vous guidons pas a pas." },
+  { file: 'cq_02_fr.mp3', text: "En haut vous verrez les cartes total paye et en attente. Depuis ici vous accedez a Sphaira Pay : associer une carte, voir la carte associee ou gerer les prelevements automatiques." },
+  { file: 'cq_03_fr.mp3', text: "En selectionnant des cotisations ponctuelles, la barre apparait avec le total et les boutons Effacer et Payer pour ouvrir la fenetre de paiement." },
+  { file: 'cq_04_fr.mp3', text: "Panneau des cotisations obligatoires : filtres par concept, type de paiement, statut, echeance et date. Le tableau affiche concept, type, montant, paye, echeance et actions comme associer une carte ou annuler." },
+  { file: 'cq_05_fr.mp3', text: "Cotisations facultatives : meme structure avec filtres et liste. Vous pouvez en selectionner plusieurs et payer en bloc si disponible." },
+  { file: 'cq_06_fr.mp3', text: "Coordonnees bancaires du club : IBAN, concept, contact et Bizum. Effectuez le virement et informez le club une fois le paiement effectue." },
+  { file: 'cq_07_fr.mp3', text: "Vous maitrisez maintenant l ecran des cotisations. Associez une carte avec Sphaira Pay si vous l utilisez, selectionnez et payez les cotisations ou utilisez le virement selon les indications du club." },
+];
+
+// ── /dashboard/cuotas jugador — DE ────────────────────────────────────────
+const STEPS_PCQ_DE = [
+  { file: 'cq_01_de.mp3', text: 'Sie befinden sich auf dem Bildschirm zur Beitragszahlung. Hier koennen Sie den Status Ihrer Beitraege pruefen, eine Karte mit Sphaira Pay fuer automatische Abbuchungen verknuepfen, Pflicht- und optionale Beitraege einsehen sowie Bankdaten fuer eine Ueberweisung abrufen. Wir fuehren Sie Schritt fuer Schritt.' },
+  { file: 'cq_02_de.mp3', text: 'Oben sehen Sie die Karten mit dem gezahlten Gesamtbetrag und dem ausstehenden Betrag. Von hier aus gelangen Sie zu Sphaira Pay: Karte verknuepfen, verknuepfte Karte anzeigen oder automatische Abbuchungen verwalten.' },
+  { file: 'cq_03_de.mp3', text: 'Wenn Sie einmalige Beitraege markieren, erscheint die Leiste mit dem Gesamtbetrag und den Schaltflaechen Leeren und Bezahlen, um das Zahlungsfenster zu oeffnen.' },
+  { file: 'cq_04_de.mp3', text: 'Panel fuer Pflichtbeitraege: Filter nach Konzept, Zahlungsart, Status, Faelligkeitsdatum und Datum. Die Tabelle zeigt Konzept, Art, Betrag, Bezahlt, Faelligkeitsdatum und Aktionen wie Karte verknuepfen oder Stornieren.' },
+  { file: 'cq_05_de.mp3', text: 'Optionale Beitraege: gleiche Struktur mit Filtern und Liste. Sie koennen mehrere auswaehlen und bei Verfuegbarkeit als Block bezahlen.' },
+  { file: 'cq_06_de.mp3', text: 'Bankdaten des Vereins: IBAN, Konzept, Kontakt und Bizum. Fuehren Sie die Ueberweisung durch und benachrichtigen Sie den Verein nach der Zahlung.' },
+  { file: 'cq_07_de.mp3', text: 'Sie beherrschen jetzt den Beitragszahlungsbildschirm. Verknuepfen Sie eine Karte mit Sphaira Pay, falls Sie es nutzen, waehlen und bezahlen Sie Beitraege oder nutzen Sie die Ueberweisung, wie vom Verein angegeben.' },
+];
+
+// ── /dashboard/cuotas jugador — PT ────────────────────────────────────────
+const STEPS_PCQ_PT = [
+  { file: 'cq_01_pt.mp3', text: 'Esta no ecra de pagamento de quotas. Aqui pode consultar o estado das suas quotas, associar um cartao com o Sphaira Pay para cobranças automaticas, ver as obrigatorias e opcionais, e ter os dados para pagar por transferencia. Guiamo-lo passo a passo.' },
+  { file: 'cq_02_pt.mp3', text: 'No topo vera os cartoes de total pago e pendente. A partir daqui acede ao Sphaira Pay: associar cartao, ver o cartao associado ou gerir cobranças automaticas.' },
+  { file: 'cq_03_pt.mp3', text: 'Ao marcar quotas pontuais aparece a barra com o total e os botoes Limpar e Pagar para abrir o modal de pagamento.' },
+  { file: 'cq_04_pt.mp3', text: 'Painel de quotas obrigatorias: filtros por conceito, tipo de pagamento, estado, vencimento e data. A tabela mostra conceito, tipo, montante, pago, vencimento e acoes como associar cartao ou cancelar.' },
+  { file: 'cq_05_pt.mp3', text: 'Quotas opcionais: mesma estrutura com filtros e lista. Pode selecionar varias e pagar em bloco se disponivel.' },
+  { file: 'cq_06_pt.mp3', text: 'Dados bancarios do clube: IBAN, conceito, contacto e Bizum. Efetue a transferencia e notifique o clube apos o pagamento.' },
+  { file: 'cq_07_pt.mp3', text: 'Ja conhece o ecra de quotas. Associe um cartao com Sphaira Pay se o utilizar, selecione e pague as quotas ou use transferencia conforme indicado pelo clube.' },
+];
+
+// ── /dashboard/cuotas jugador — IT ────────────────────────────────────────
+const STEPS_PCQ_IT = [
+  { file: 'cq_01_it.mp3', text: 'Sei nella schermata di pagamento delle quote. Qui puoi consultare lo stato delle tue quote, collegare una carta con Sphaira Pay per gli addebiti automatici, vedere quelle obbligatorie e facoltative, e avere i dati per pagare tramite bonifico. Ti guidiamo passo dopo passo.' },
+  { file: 'cq_02_it.mp3', text: 'In alto vedrai le schede del totale pagato e in attesa. Da qui accedi a Sphaira Pay: collegare una carta, vedere quella collegata o gestire gli addebiti automatici.' },
+  { file: 'cq_03_it.mp3', text: 'Selezionando quote una tantum appare la barra con il totale e i pulsanti Cancella e Paga per aprire il modal di pagamento.' },
+  { file: 'cq_04_it.mp3', text: 'Pannello delle quote obbligatorie: filtri per concetto, tipo di pagamento, stato, scadenza e data. La tabella mostra concetto, tipo, importo, pagato, scadenza e azioni come collegare una carta o annullare.' },
+  { file: 'cq_05_it.mp3', text: 'Quote facoltative: stessa struttura con filtri e lista. Puoi selezionarne piu e pagare in blocco se disponibile.' },
+  { file: 'cq_06_it.mp3', text: 'Coordinate bancarie del club: IBAN, concetto, contatto e Bizum. Effettua il bonifico e notifica il club dopo il pagamento.' },
+  { file: 'cq_07_it.mp3', text: 'Ora conosci la schermata delle quote. Collega una carta con Sphaira Pay se lo usi, seleziona e paga le quote oppure usa il bonifico come indicato dal club.' },
+];
+
+// ── /dashboard/documentos-jugador — EN ────────────────────────────────────
+const STEPS_DJ_EN = [
+  { file: 'dj_01_en.mp3', text: 'You are in the documentation your club requests from you. You can download documents shared by the club, upload the ones they ask for, or fill in forms. Each card shows its status: pending or completed. Let us guide you step by step.' },
+  { file: 'dj_02_en.mp3', text: 'Use the search field to filter the document list by name.' },
+  { file: 'dj_03_en.mp3', text: 'Each card shows name, description, and status: Pending download or Downloaded, Pending upload or Uploaded, Pending completion or Completed. Depending on the type, use the Download, Upload document, or Fill in button.' },
+  { file: 'dj_04_en.mp3', text: 'You now know the documentation section. Download, upload, or fill in each document as requested by the club.' },
+];
+
+// ── /dashboard/documentos-jugador — FR ────────────────────────────────────
+const STEPS_DJ_FR = [
+  { file: 'dj_01_fr.mp3', text: "Vous etes dans la documentation que votre club vous demande. Vous pouvez telecharger les documents partages par le club, envoyer ceux qu il vous demande ou remplir des formulaires. Chaque carte affiche son statut : en attente ou complete. Nous vous guidons pas a pas." },
+  { file: 'dj_02_fr.mp3', text: "Utilisez le champ de recherche pour filtrer la liste de documents par nom." },
+  { file: 'dj_03_fr.mp3', text: "Chaque carte affiche nom, description et statut : Telechargement en attente ou Telecharge, Envoi en attente ou Envoye, A remplir ou Complete. Selon le type, utilisez le bouton Telecharger, Envoyer le document ou Remplir." },
+  { file: 'dj_04_fr.mp3', text: "Vous connaissez maintenant la section documentation. Telechargez, envoyez ou remplissez chaque document selon la demande du club." },
+];
+
+// ── /dashboard/documentos-jugador — DE ────────────────────────────────────
+const STEPS_DJ_DE = [
+  { file: 'dj_01_de.mp3', text: 'Sie befinden sich in der Dokumentation, die Ihr Verein von Ihnen anfordert. Sie koennen vom Verein freigegebene Dokumente herunterladen, die angefragten hochladen oder Formulare ausfullen. Jede Karte zeigt den Status: ausstehend oder abgeschlossen. Wir fuehren Sie Schritt fuer Schritt.' },
+  { file: 'dj_02_de.mp3', text: 'Verwenden Sie das Suchfeld, um die Dokumentliste nach Namen zu filtern.' },
+  { file: 'dj_03_de.mp3', text: 'Jede Karte zeigt Name, Beschreibung und Status: Download ausstehend oder Heruntergeladen, Upload ausstehend oder Hochgeladen, Zum Ausfullen oder Abgeschlossen. Je nach Typ verwenden Sie die Schaltflaeche Herunterladen, Dokument hochladen oder Ausfullen.' },
+  { file: 'dj_04_de.mp3', text: 'Sie kennen jetzt den Dokumentationsbereich. Laden Sie herunter, laden Sie hoch oder fullen Sie jedes Dokument gemaess den Anforderungen des Vereins aus.' },
+];
+
+// ── /dashboard/documentos-jugador — PT ────────────────────────────────────
+const STEPS_DJ_PT = [
+  { file: 'dj_01_pt.mp3', text: 'Esta na documentacao que o seu clube lhe solicita. Pode descarregar os documentos partilhados pelo clube, enviar os que lhe pedem ou preencher formularios. Cada cartao mostra o estado: pendente ou concluido. Guiamo-lo passo a passo.' },
+  { file: 'dj_02_pt.mp3', text: 'Utilize o campo de pesquisa para filtrar a lista de documentos por nome.' },
+  { file: 'dj_03_pt.mp3', text: 'Cada cartao mostra nome, descricao e estado: Download pendente ou Transferido, Upload pendente ou Enviado, Por preencher ou Concluido. Consoante o tipo, utilize o botao Transferir, Enviar documento ou Preencher.' },
+  { file: 'dj_04_pt.mp3', text: 'Ja conhece a secao de documentacao. Descarregue, envie ou preencha cada documento conforme solicitado pelo clube.' },
+];
+
+// ── /dashboard/documentos-jugador — IT ────────────────────────────────────
+const STEPS_SP_EN = [
+  { file: 'sp_01_en.mp3', text: 'You are on the player\'s sports profile. Here you will see their photo, data, skills radar, match statistics, charts and training attendance. We\'ll guide you step by step.' },
+  { file: 'sp_02_en.mp3', text: 'At the top: avatar, name and pills with position, preferred foot and height. The skills panel shows the radar with ratings if data has been loaded.' },
+  { file: 'sp_03_en.mp3', text: 'Sports data: main position, secondary position, preferred foot, height and weight.' },
+  { file: 'sp_04_en.mp3', text: 'Match statistics: matches played, starting appearances, minutes, goals, yellow cards and red cards.' },
+  { file: 'sp_05_en.mp3', text: 'Matches and Attendance tabs: switch between the statistics chart and the monthly training attendance chart.' },
+  { file: 'sp_06_en.mp3', text: 'Attendance table: date, whether the player attended and whether they arrived late at each session.' },
+  { file: 'sp_07_en.mp3', text: 'Now you know the player profile. Review data, statistics and attendance whenever you need it.' },
+];
+
+const STEPS_SP_FR = [
+  { file: 'sp_01_fr.mp3', text: 'Vous etes sur le profil sportif du joueur. Vous y verrez sa photo, ses donnees, son radar de competences, ses statistiques de matchs, ses graphiques et son assiduite aux entrainements. Nous vous guidons pas a pas.' },
+  { file: 'sp_02_fr.mp3', text: 'En haut : avatar, nom et pastilles avec poste, pied fort et taille. Le panneau de competences affiche le radar avec les evaluations si les donnees ont ete chargees.' },
+  { file: 'sp_03_fr.mp3', text: 'Donnees sportives : poste principal, poste secondaire, pied fort, taille et poids.' },
+  { file: 'sp_04_fr.mp3', text: 'Statistiques de matchs : matchs joues, titularisations, minutes, buts, cartons jaunes et cartons rouges.' },
+  { file: 'sp_05_fr.mp3', text: 'Onglets Matchs et Presence : basculez entre le graphique des statistiques et celui de la presence mensuelle aux entrainements.' },
+  { file: 'sp_06_fr.mp3', text: 'Tableau de presence : date, si le joueur etait present et s il est arrive en retard a chaque seance.' },
+  { file: 'sp_07_fr.mp3', text: 'Vous connaissez maintenant le profil du joueur. Consultez ses donnees, statistiques et presences a tout moment.' },
+];
+
+const STEPS_SP_DE = [
+  { file: 'sp_01_de.mp3', text: 'Sie befinden sich im Sportprofil des Spielers. Hier sehen Sie Foto, Daten, Faehigkeits-Radar, Spielstatistiken, Diagramme und Trainingsanwesenheit. Wir fuehren Sie Schritt fuer Schritt.' },
+  { file: 'sp_02_de.mp3', text: 'Oben: Avatar, Name und Chips mit Position, Standbein und Groesse. Das Faehigkeitspanel zeigt den Radar mit den Bewertungen, sofern Daten geladen wurden.' },
+  { file: 'sp_03_de.mp3', text: 'Sportliche Daten: Hauptposition, Nebenposition, Standbein, Groesse und Gewicht.' },
+  { file: 'sp_04_de.mp3', text: 'Spielstatistiken: gespielte Spiele, Startelfeinsaetze, Minuten, Tore, Gelbe Karten und Rote Karten.' },
+  { file: 'sp_05_de.mp3', text: 'Reiter Spiele und Anwesenheit: wechseln Sie zwischen dem Statistikdiagramm und dem monatlichen Trainingsanwesenheitsdiagramm.' },
+  { file: 'sp_06_de.mp3', text: 'Anwesenheitstabelle: Datum, ob der Spieler anwesend war und ob er bei jeder Einheit zu spaet gekommen ist.' },
+  { file: 'sp_07_de.mp3', text: 'Jetzt kennen Sie das Spielerprofil. Ueberpruefen Sie Daten, Statistiken und Anwesenheit, wann immer Sie es brauchen.' },
+];
+
+const STEPS_SP_PT = [
+  { file: 'sp_01_pt.mp3', text: 'Esta no perfil desportivo do jogador. Aqui vera a sua foto, dados, radar de competencias, estatisticas de jogos, graficos e assiduidade aos treinos. Guiamo-lo passo a passo.' },
+  { file: 'sp_02_pt.mp3', text: 'No topo: avatar, nome e etiquetas com posicao, pe dominante e altura. O painel de competencias mostra o radar com as avaliacoes se os dados estiverem carregados.' },
+  { file: 'sp_03_pt.mp3', text: 'Dados desportivos: posicao principal, posicao secundaria, pe dominante, altura e peso.' },
+  { file: 'sp_04_pt.mp3', text: 'Estatisticas de jogos: jogos disputados, titularidades, minutos, golos, cartoes amarelos e cartoes vermelhos.' },
+  { file: 'sp_05_pt.mp3', text: 'Separadores Jogos e Presenca: alterne entre o grafico de estatisticas e o de presenca mensal nos treinos.' },
+  { file: 'sp_06_pt.mp3', text: 'Tabela de presencas: data, se o jogador esteve presente e se chegou atrasado a cada sessao.' },
+  { file: 'sp_07_pt.mp3', text: 'Ja conhece o perfil do jogador. Consulte os dados, estatisticas e assiduidade sempre que precisar.' },
+];
+
+const STEPS_SP_IT = [
+  { file: 'sp_01_it.mp3', text: 'Sei nel profilo sportivo del giocatore. Qui vedrai la sua foto, i dati, il radar delle competenze, le statistiche delle partite, i grafici e la presenza agli allenamenti. Ti guidiamo passo dopo passo.' },
+  { file: 'sp_02_it.mp3', text: 'In alto: avatar, nome e etichette con ruolo, piede dominante e altezza. Il pannello delle competenze mostra il radar con le valutazioni se i dati sono stati caricati.' },
+  { file: 'sp_03_it.mp3', text: 'Dati sportivi: ruolo principale, ruolo secondario, piede dominante, altezza e peso.' },
+  { file: 'sp_04_it.mp3', text: 'Statistiche partite: partite giocate, titolarita, minuti, gol, cartellini gialli e cartellini rossi.' },
+  { file: 'sp_05_it.mp3', text: 'Schede Partite e Presenze: passa tra il grafico delle statistiche e quello della presenza mensile agli allenamenti.' },
+  { file: 'sp_06_it.mp3', text: 'Tabella presenze: data, se il giocatore era presente e se e arrivato in ritardo a ogni sessione.' },
+  { file: 'sp_07_it.mp3', text: 'Ora conosci il profilo del giocatore. Consulta dati, statistiche e presenze ogni volta che ne hai bisogno.' },
+];
+
+const STEPS_RJ_EN = [
+  { file: 'rj_01_en.mp3', text: 'You are in the team\'s kit catalogue. Select your size for each item; it saves automatically and the club uses these preferences for orders. We\'ll guide you step by step.' },
+  { file: 'rj_02_en.mp3', text: 'Each card shows the image, name, description and the size selector. Choose between Not selected or the available sizes; when you choose, it saves instantly and you\'ll see the saving or saved status.' },
+  { file: 'rj_03_en.mp3', text: 'Now you know My kit sizes. Keep your preferences up to date for each team item.' },
+];
+
+const STEPS_RJ_FR = [
+  { file: 'rj_01_fr.mp3', text: 'Vous etes dans le catalogue de tenues de l equipe. Selectionnez votre taille pour chaque article ; cela se sauvegarde automatiquement et le club utilise ces preferences pour les commandes. Nous vous guidons pas a pas.' },
+  { file: 'rj_02_fr.mp3', text: 'Chaque carte affiche l image, le nom, la description et le selecteur de taille. Choisissez entre Non selectionne ou les tailles disponibles ; au choix, la sauvegarde est instantanee et vous verrez l etat en cours de sauvegarde ou sauvegarde.' },
+  { file: 'rj_03_fr.mp3', text: 'Vous connaissez maintenant Mes tailles de tenue. Maintenez vos preferences a jour pour chaque article de l equipe.' },
+];
+
+const STEPS_RJ_DE = [
+  { file: 'rj_01_de.mp3', text: 'Sie befinden sich im Kleiderkatalog des Teams. Waehlen Sie Ihre Groesse fuer jedes Kleidungsstueck; es wird automatisch gespeichert und der Verein nutzt diese Praeferenzen fuer Bestellungen. Wir fuehren Sie Schritt fuer Schritt.' },
+  { file: 'rj_02_de.mp3', text: 'Jede Karte zeigt Bild, Name, Beschreibung und den Groessenwahler. Waehlen Sie zwischen Nicht ausgewaehlt oder den verfuegbaren Groessen; bei der Auswahl wird sofort gespeichert und Sie sehen den Status Speichern oder Gespeichert.' },
+  { file: 'rj_03_de.mp3', text: 'Jetzt kennen Sie Meine Kleidergroessen. Halten Sie Ihre Praeferenzen fuer jedes Teamkleidungsstueck aktuell.' },
+];
+
+const STEPS_RJ_PT = [
+  { file: 'rj_01_pt.mp3', text: 'Esta no catalogo de roupa da equipa. Selecione o seu tamanho para cada peca; guarda automaticamente e o clube usa estas preferencias para os pedidos. Guiamo-lo passo a passo.' },
+  { file: 'rj_02_pt.mp3', text: 'Cada cartao mostra a imagem, nome, descricao e o seletor de tamanho. Escolha entre Nao selecionado ou os tamanhos disponiveis; ao escolher, guarda instantaneamente e vera o estado a guardar ou guardado.' },
+  { file: 'rj_03_pt.mp3', text: 'Ja conhece Os meus tamanhos de roupa. Mantenha as suas preferencias atualizadas para cada peca da equipa.' },
+];
+
+const STEPS_RJ_IT = [
+  { file: 'rj_01_it.mp3', text: 'Sei nel catalogo di abbigliamento della squadra. Seleziona la tua taglia per ogni capo; si salva automaticamente e il club usa queste preferenze per gli ordini. Ti guidiamo passo dopo passo.' },
+  { file: 'rj_02_it.mp3', text: 'Ogni scheda mostra l immagine, il nome, la descrizione e il selettore della taglia. Scegli tra Non selezionato o le taglie disponibili; alla scelta si salva istantaneamente e vedrai lo stato salvataggio o salvato.' },
+  { file: 'rj_03_it.mp3', text: 'Ora conosci Le mie taglie di abbigliamento. Mantieni le tue preferenze aggiornate per ogni capo della squadra.' },
+];
+
+const STEPS_DJ_IT = [
+  { file: 'dj_01_it.mp3', text: "Sei nella documentazione che il tuo club ti richiede. Puoi scaricare i documenti condivisi dal club, caricare quelli che ti chiedono o compilare moduli. Ogni scheda mostra lo stato: in attesa o completato. Ti guidiamo passo dopo passo." },
+  { file: 'dj_02_it.mp3', text: "Usa il campo di ricerca per filtrare la lista dei documenti per nome." },
+  { file: 'dj_03_it.mp3', text: "Ogni scheda mostra nome, descrizione e stato: Download in attesa o Scaricato, Upload in attesa o Caricato, Da compilare o Completato. A seconda del tipo, usa il pulsante Scarica, Carica documento o Compila." },
+  { file: 'dj_04_it.mp3', text: "Ora conosci la sezione documentazione. Scarica, carica o compila ogni documento come richiesto dal club." },
+];
+
 async function main() {
   if (!fs.existsSync(OUTPUT_DIR)) {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
@@ -3453,6 +3747,48 @@ async function main() {
     { steps: STEPS_DOCE_DE, voiceId: VOICE_ID_DE, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'de', model: MODEL_ID_MULTILINGUAL },
     { steps: STEPS_DOCE_PT, voiceId: VOICE_ID_PT, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'pt', model: MODEL_ID_MULTILINGUAL },
     { steps: STEPS_DOCE_IT, voiceId: VOICE_ID_IT, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'it', model: MODEL_ID_MULTILINGUAL },
+
+    // ── /dashboard/opcionesjugador ────────────────────────────────────────
+    { steps: STEPS_OJ_EN, voiceId: VOICE_ID_EN, voiceSettings: VOICE_SETTINGS_EN,           lang: 'en', model: MODEL_ID              },
+    { steps: STEPS_OJ_FR, voiceId: VOICE_ID_FR, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'fr', model: MODEL_ID_MULTILINGUAL },
+    { steps: STEPS_OJ_DE, voiceId: VOICE_ID_DE, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'de', model: MODEL_ID_MULTILINGUAL },
+    { steps: STEPS_OJ_PT, voiceId: VOICE_ID_PT, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'pt', model: MODEL_ID_MULTILINGUAL },
+    { steps: STEPS_OJ_IT, voiceId: VOICE_ID_IT, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'it', model: MODEL_ID_MULTILINGUAL },
+
+    // ── /dashboard/jugador/:teamId/:playerId ──────────────────────────────
+    { steps: STEPS_JD_EN, voiceId: VOICE_ID_EN, voiceSettings: VOICE_SETTINGS_EN,           lang: 'en', model: MODEL_ID              },
+    { steps: STEPS_JD_FR, voiceId: VOICE_ID_FR, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'fr', model: MODEL_ID_MULTILINGUAL },
+    { steps: STEPS_JD_DE, voiceId: VOICE_ID_DE, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'de', model: MODEL_ID_MULTILINGUAL },
+    { steps: STEPS_JD_PT, voiceId: VOICE_ID_PT, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'pt', model: MODEL_ID_MULTILINGUAL },
+    { steps: STEPS_JD_IT, voiceId: VOICE_ID_IT, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'it', model: MODEL_ID_MULTILINGUAL },
+
+    // ── /dashboard/cuotas (pagar cuotas jugador) ──────────────────────────
+    { steps: STEPS_PCQ_EN, voiceId: VOICE_ID_EN, voiceSettings: VOICE_SETTINGS_EN,           lang: 'en', model: MODEL_ID              },
+    { steps: STEPS_PCQ_FR, voiceId: VOICE_ID_FR, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'fr', model: MODEL_ID_MULTILINGUAL },
+    { steps: STEPS_PCQ_DE, voiceId: VOICE_ID_DE, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'de', model: MODEL_ID_MULTILINGUAL },
+    { steps: STEPS_PCQ_PT, voiceId: VOICE_ID_PT, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'pt', model: MODEL_ID_MULTILINGUAL },
+    { steps: STEPS_PCQ_IT, voiceId: VOICE_ID_IT, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'it', model: MODEL_ID_MULTILINGUAL },
+
+    // ── /dashboard/documentos-jugador ────────────────────────────────────
+    { steps: STEPS_DJ_EN, voiceId: VOICE_ID_EN, voiceSettings: VOICE_SETTINGS_EN,           lang: 'en', model: MODEL_ID              },
+    { steps: STEPS_DJ_FR, voiceId: VOICE_ID_FR, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'fr', model: MODEL_ID_MULTILINGUAL },
+    { steps: STEPS_DJ_DE, voiceId: VOICE_ID_DE, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'de', model: MODEL_ID_MULTILINGUAL },
+    { steps: STEPS_DJ_PT, voiceId: VOICE_ID_PT, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'pt', model: MODEL_ID_MULTILINGUAL },
+    { steps: STEPS_DJ_IT, voiceId: VOICE_ID_IT, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'it', model: MODEL_ID_MULTILINGUAL },
+
+    // ── /dashboard/scouting-player ────────────────────────────────────────
+    { steps: STEPS_SP_EN, voiceId: VOICE_ID_EN, voiceSettings: VOICE_SETTINGS_EN,           lang: 'en', model: MODEL_ID              },
+    { steps: STEPS_SP_FR, voiceId: VOICE_ID_FR, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'fr', model: MODEL_ID_MULTILINGUAL },
+    { steps: STEPS_SP_DE, voiceId: VOICE_ID_DE, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'de', model: MODEL_ID_MULTILINGUAL },
+    { steps: STEPS_SP_PT, voiceId: VOICE_ID_PT, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'pt', model: MODEL_ID_MULTILINGUAL },
+    { steps: STEPS_SP_IT, voiceId: VOICE_ID_IT, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'it', model: MODEL_ID_MULTILINGUAL },
+
+    // ── /dashboard/ropa-jugador ───────────────────────────────────────────
+    { steps: STEPS_RJ_EN, voiceId: VOICE_ID_EN, voiceSettings: VOICE_SETTINGS_EN,           lang: 'en', model: MODEL_ID              },
+    { steps: STEPS_RJ_FR, voiceId: VOICE_ID_FR, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'fr', model: MODEL_ID_MULTILINGUAL },
+    { steps: STEPS_RJ_DE, voiceId: VOICE_ID_DE, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'de', model: MODEL_ID_MULTILINGUAL },
+    { steps: STEPS_RJ_PT, voiceId: VOICE_ID_PT, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'pt', model: MODEL_ID_MULTILINGUAL },
+    { steps: STEPS_RJ_IT, voiceId: VOICE_ID_IT, voiceSettings: VOICE_SETTINGS_MULTILINGUAL, lang: 'it', model: MODEL_ID_MULTILINGUAL },
   ];
 
   const SUPPORTED = ALL_JOBS.map(j => j.lang).join(', ');

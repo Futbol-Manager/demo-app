@@ -1,50 +1,351 @@
-<div class="demo-role-page">
+<!-- ════════════════════════════════════════════════════════════
+     STEP 1 — INTRO STORYTELLING
+════════════════════════════════════════════════════════════ -->
+<div class="intro" *ngIf="step === 1">
+
+  <!-- ── Barra de progreso superior ── -->
+  <div class="intro__topbar">
+    <img [src]="logoSrc" alt="Sphaira Tech" class="intro__logo">
+    <div class="intro__progress-track">
+      <div class="intro__progress-fill" [style.width.%]="slideProgress"></div>
+    </div>
+    <div class="intro__topbar-actions">
+      <button class="btn-mute"
+              [class.btn-mute--pending]="audioPending"
+              [class.btn-mute--loading]="isAudioLoading"
+              (click)="toggleAudio()"
+              [title]="(audioPending ? 'DEMO_INTRO.AUDIO_PENDING' : audioMuted ? 'DEMO_INTRO.UNMUTE' : 'DEMO_INTRO.MUTE') | translate"
+              type="button">
+        <i [class]="isAudioLoading ? 'fas fa-spinner fa-spin' : (audioMuted ? 'fas fa-volume-mute' : audioPending ? 'fas fa-play' : 'fas fa-volume-up')"></i>
+        <span *ngIf="audioPending" class="audio-pending-ring"></span>
+      </button>
+      <button class="btn-skip" (click)="skipIntro()" type="button">
+        {{ 'DEMO_INTRO.SKIP' | translate }} <i class="fas fa-forward"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Layout principal: escena (izq) + narración (der) ── -->
+  <div class="intro__body">
+
+    <!-- LEFT: Escena visual -->
+    <div class="intro__scene">
+
+      <!-- SLIDE 0: WhatsApp chaos + Excel -->
+      <div *ngIf="currentSlide === 0" class="scene scene--whatsapp" [@.disabled]="true">
+        <div class="scene__photo-bg" [style.backgroundImage]="'url(assets/images/entrenadores/entrenador-hombre-1.jpg)'"></div>
+        <div class="scene__overlay"></div>
+        <div class="scene__content">
+          <!-- Mock WhatsApp -->
+          <div class="wa-phone">
+            <div class="wa-header">
+              <i class="fas fa-users wa-ico"></i>
+              <div>
+                <span class="wa-group">⚽ Infantil A — Padres</span>
+                <span class="wa-members">24 participantes</span>
+              </div>
+              <span class="wa-time-badge">23:47</span>
+            </div>
+            <div class="wa-body">
+              <div class="wa-msg wa-msg--in"  style="--d:0.3s">¿Me mandas el comprobante del mes? 💸</div>
+              <div class="wa-msg wa-msg--in"  style="--d:0.9s">El chico no viene el martes</div>
+              <div class="wa-msg wa-msg--in"  style="--d:1.5s">¿Cuándo es la próxima reunión? 🙏</div>
+              <div class="wa-msg wa-msg--in"  style="--d:2.1s">La cuota de octubre sigue pendiente</div>
+              <div class="wa-msg wa-msg--out" style="--d:2.7s">Anotado, gracias 👍</div>
+              <div class="wa-msg wa-msg--in"  style="--d:3.3s">¿Hay entrenamiento este viernes? ⚽</div>
+              <div class="wa-msg wa-msg--in"  style="--d:3.9s">Mi hijo no puede el jueves</div>
+              <div class="wa-msg wa-msg--in"  style="--d:4.5s">¿Se ha pagado el arbitraje? 🤔</div>
+            </div>
+          </div>
+          <!-- Excel fragment flotante -->
+          <div class="excel-card">
+            <div class="excel-header">
+              <i class="fas fa-file-excel"></i>
+              <span>cuotas_2024_v3_FINAL.xlsx</span>
+            </div>
+            <table class="excel-table">
+              <tr><th>Jugador</th><th>Sep</th><th>Oct</th><th>Nov</th></tr>
+              <tr><td>García, A.</td><td class="xp">✓</td><td class="xp xpending">...</td><td class="xp xpending">...</td></tr>
+              <tr><td>Martínez, C.</td><td class="xp">✓</td><td class="xp">✓</td><td class="xp xpending">...</td></tr>
+              <tr><td>López, J.</td><td class="xp xpending">...</td><td class="xp xpending">...</td><td class="xp xpending">...</td></tr>
+              <tr><td>Sánchez, P.</td><td class="xp">✓</td><td class="xp xpending">...</td><td class="xp xpending">...</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 1: Papeles y whatsapp noche -->
+      <div *ngIf="currentSlide === 1" class="scene scene--papers">
+        <div class="scene__photo-bg" [style.backgroundImage]="'url(assets/images/entrenadores/entrenador-hombre-2.jpg)'"></div>
+        <div class="scene__overlay"></div>
+        <div class="scene__content">
+          <!-- Stack de papeles -->
+          <div class="papers-stack">
+            <div class="paper" style="--r:-4deg; --d:0.2s">
+              <i class="fas fa-file-invoice-dollar"></i>
+              <span>Recibo Octubre 2024<br><small>Sin firmar</small></span>
+            </div>
+            <div class="paper" style="--r: 2deg; --d:0.5s">
+              <i class="fas fa-file-medical"></i>
+              <span>Autorización médica<br><small>Pendiente 6 jugadores</small></span>
+            </div>
+            <div class="paper" style="--r:-2deg; --d:0.8s">
+              <i class="fas fa-file-contract"></i>
+              <span>Inscripción Torneo Nov.<br><small>Plazo: mañana</small></span>
+            </div>
+            <div class="paper" style="--r: 3deg; --d:1.1s">
+              <i class="fas fa-receipt"></i>
+              <span>Cuota Nov pendiente<br><small>8 familias</small></span>
+            </div>
+            <div class="paper" style="--r:-1deg; --d:1.4s">
+              <i class="fas fa-file-alt"></i>
+              <span>Seguro deportivo<br><small>Renovar antes del 30</small></span>
+            </div>
+          </div>
+          <!-- Notificaciones -->
+          <div class="notif-stack">
+            <div class="notif" style="--d:0.4s">
+              <i class="fab fa-whatsapp"></i> WhatsApp <span class="nbadge">47</span>
+            </div>
+            <div class="notif" style="--d:0.9s">
+              <i class="fas fa-phone-missed"></i> Sin contestar <span class="nbadge nbadge--r">12</span>
+            </div>
+            <div class="notif" style="--d:1.4s">
+              <i class="fas fa-euro-sign"></i> Pagos pendientes <span class="nbadge nbadge--y">8</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 2: Empatía — foto prominente del entrenador -->
+      <div *ngIf="currentSlide === 2" class="scene scene--empathy">
+        <div class="scene__photo-bg scene__photo-bg--full" [style.backgroundImage]="'url(assets/images/entrenadores/entrenador-hombre-3.jpg)'"></div>
+        <div class="scene__overlay scene__overlay--light"></div>
+          <div class="empathy-badge">
+          <i class="fas fa-heart"></i>
+          <span [innerHTML]="'DEMO_INTRO.EMPATHY_BADGE' | translate"></span>
+        </div>
+      </div>
+
+      <!-- SLIDE 3: Reveal de Sphaira -->
+      <div *ngIf="currentSlide === 3" class="scene scene--reveal">
+        <div class="reveal-bg"></div>
+        <div class="reveal-content">
+          <div class="reveal-logo-wrap">
+            <div class="reveal-glow"></div>
+            <img [src]="logoSrc" alt="Sphaira" class="reveal-logo">
+          </div>
+          <div class="reveal-stats">
+            <div class="rstat"><span class="rstat__n">200+</span><span class="rstat__l">{{ 'DEMO_INTRO.STAT_CLUBS' | translate }}</span></div>
+            <div class="rstat__sep"></div>
+            <div class="rstat"><span class="rstat__n">10K+</span><span class="rstat__l">{{ 'DEMO_INTRO.STAT_PLAYERS' | translate }}</span></div>
+            <div class="rstat__sep"></div>
+            <div class="rstat"><span class="rstat__n">50+</span><span class="rstat__l">{{ 'DEMO_INTRO.STAT_FEATURES' | translate }}</span></div>
+          </div>
+          <div class="reveal-screenshots">
+            <img src="assets/images/asistente-ia.jpg"   alt="Asistente IA"   class="reveal-ss reveal-ss--1">
+            <img src="assets/images/estadisticas1.jpg"  alt="Estadísticas"   class="reveal-ss reveal-ss--2">
+            <img src="assets/images/video-analysis.jpg" alt="Vídeo análisis" class="reveal-ss reveal-ss--3">
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 4: CTA — features que verá -->
+      <div *ngIf="currentSlide === 4" class="scene scene--cta">
+        <div class="cta-bg"></div>
+        <div class="cta-content">
+          <p class="cta-eyebrow">{{ 'DEMO_INTRO.CTA_EYEBROW' | translate }}</p>
+          <div class="cta-features">
+            <div class="cta-feat" style="--d:0.2s"><i class="fas fa-euro-sign"></i><span>{{ 'DEMO_INTRO.CTA_F1' | translate }}</span></div>
+            <div class="cta-feat" style="--d:0.5s"><i class="fas fa-users"></i><span>{{ 'DEMO_INTRO.CTA_F2' | translate }}</span></div>
+            <div class="cta-feat" style="--d:0.8s"><i class="fas fa-bullhorn"></i><span>{{ 'DEMO_INTRO.CTA_F3' | translate }}</span></div>
+            <div class="cta-feat" style="--d:1.1s"><i class="fas fa-robot"></i><span>{{ 'DEMO_INTRO.CTA_F4' | translate }}</span></div>
+            <div class="cta-feat" style="--d:1.4s"><i class="fas fa-film"></i><span>{{ 'DEMO_INTRO.CTA_F5' | translate }}</span></div>
+            <div class="cta-feat" style="--d:1.7s"><i class="fas fa-chart-line"></i><span>{{ 'DEMO_INTRO.CTA_F6' | translate }}</span></div>
+          </div>
+          <div class="cta-screenshots">
+            <img src="assets/images/scouting.jpg"  alt="Scouting"    class="ctas-img">
+            <img src="assets/images/tareas.jpg"    alt="Tareas"      class="ctas-img">
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- /intro__scene -->
+
+    <!-- RIGHT: Narración de texto -->
+    <div class="intro__narration">
+
+      <div class="narration__lines">
+        <p *ngFor="let line of currentSlideData.lines; let i = index; trackBy: trackByIndex"
+           class="narration__line"
+           [class.narration__line--visible]="i < visibleLineCount"
+           [class.narration__line--active]="i === visibleLineCount - 1 && visibleLineCount > 0">
+          {{ line }}
+        </p>
+      </div>
+
+      <!-- Foto de la entrenadora en slide 2 (contexto humano adicional) -->
+      <div class="narration__photo" *ngIf="currentSlide === 2">
+        <img src="assets/images/entrenadores/entrenadora-mujer-1.jpg" alt="Entrenadora">
+      </div>
+
+      <!-- Acción en el último slide -->
+      <div class="narration__cta-row" *ngIf="isLastSlide && visibleLineCount >= currentSlideData.lines.length">
+        <button class="btn-ver-demo" (click)="goToStep2()" type="button">
+          {{ 'DEMO_INTRO.CTA_BUTTON' | translate }} <i class="fas fa-arrow-right"></i>
+        </button>
+        <p class="narration__guarantee">
+          <i class="fas fa-shield-alt"></i>
+          {{ 'DEMO_INTRO.GUARANTEE' | translate }}
+        </p>
+      </div>
+
+      <!-- Puntos de navegación por slide -->
+      <div class="narration__dots">
+        <button *ngFor="let s of introSlides; let i = index; trackBy: trackByIndex"
+                class="ndot"
+                [class.ndot--done]="i < currentSlide"
+                [class.ndot--active]="i === currentSlide"
+                (click)="seekToSlide(i)"
+                [title]="'Slide ' + (i+1)"
+                type="button">
+        </button>
+      </div>
+
+      <!-- Flechas de navegación -->
+      <div class="narration__nav">
+        <button class="btn-nav btn-nav--prev" (click)="prevSlide()" [disabled]="currentSlide === 0" type="button">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="btn-nav btn-nav--next" (click)="nextSlide()" [disabled]="isLastSlide" type="button">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+
+    </div>
+    <!-- /intro__narration -->
+
+  </div>
+  <!-- /intro__body -->
+
+</div>
+<!-- /intro -->
+
+
+<!-- ════════════════════════════════════════════════════════════
+     STEP 2 — SELECCIÓN DE ROL
+════════════════════════════════════════════════════════════ -->
+<div class="demo-role-page" *ngIf="step === 2">
+
   <div class="demo-role-bg" aria-hidden="true">
     <div class="demo-role-bg-gradient"></div>
     <div class="demo-role-bg-pattern"></div>
   </div>
 
   <div class="demo-role-container">
+
     <header class="demo-role-header" data-tutorial="dr-header">
       <span class="demo-role-badge">{{ 'DEMO_ROLE.BADGE' | translate }}</span>
-      <img [src]="logoSrc" alt="Sphaira Tech" class="demo-role-logo" />
+      <img [src]="logoSrc" alt="Sphaira Tech" class="demo-role-logo">
       <h1 class="demo-role-title">{{ 'DEMO_ROLE.TITLE' | translate }}</h1>
       <p class="demo-role-subtitle">{{ 'DEMO_ROLE.SUBTITLE' | translate }}</p>
-      <button type="button" class="demo-role-tutorial-btn" (click)="openTutorial()" [attr.aria-label]="'DEMO_ROLE.TUTORIAL_BTN' | translate">
+      <button type="button" class="demo-role-tutorial-btn" (click)="openTutorial()"
+              [attr.aria-label]="'DEMO_ROLE.TUTORIAL_BTN' | translate">
         <i class="bi bi-play-circle"></i> {{ 'DEMO_ROLE.TUTORIAL_BTN' | translate }}
       </button>
     </header>
 
     <div class="demo-role-cards" data-tutorial="dr-cards">
-      <button type="button" class="demo-role-card demo-role-card-1" (click)="selectRole('club')" [attr.aria-label]="'DEMO_ROLE.CLUB_CTA' | translate" data-tutorial="dr-club">
+
+      <button *ngFor="let card of roleCards; trackBy: trackByIndex"
+              type="button"
+              class="demo-role-card"
+              [class]="card.cardClass"
+              (click)="onRoleCardClick(card.role)"
+              [attr.aria-label]="card.ctaKey | translate"
+              [attr.data-tutorial]="'dr-' + card.role">
+
         <span class="demo-role-card-accent" aria-hidden="true"></span>
+
         <span class="demo-role-icon" aria-hidden="true">
-          <i class="bi bi-building"></i>
+          <i [class]="card.icon"></i>
         </span>
-        <h2 class="demo-role-card-title">{{ 'DEMO_ROLE.CLUB_TITLE' | translate }}</h2>
-        <p class="demo-role-card-desc">{{ 'DEMO_ROLE.CLUB_DESC' | translate }}</p>
-        <span class="demo-role-card-cta">{{ 'DEMO_ROLE.CLUB_CTA' | translate }}</span>
+
+        <h2 class="demo-role-card-title">{{ card.titleKey | translate }}</h2>
+        <p class="demo-role-card-desc">{{ card.descKey | translate }}</p>
+
+        <!-- Features del rol -->
+        <ul class="role-features">
+          <li *ngFor="let key of card.featureKeys; trackBy: trackByIndex">
+            <i class="fas fa-check"></i> {{ key | translate }}
+          </li>
+        </ul>
+
+        <span class="demo-role-card-cta">{{ card.ctaKey | translate }}</span>
       </button>
 
-      <button type="button" class="demo-role-card demo-role-card-2" (click)="selectRole('coach')" [attr.aria-label]="'DEMO_ROLE.COACH_CTA' | translate" data-tutorial="dr-coach">
-        <span class="demo-role-card-accent" aria-hidden="true"></span>
-        <span class="demo-role-icon" aria-hidden="true">
-          <i class="bi bi-person-badge"></i>
-        </span>
-        <h2 class="demo-role-card-title">{{ 'DEMO_ROLE.COACH_TITLE' | translate }}</h2>
-        <p class="demo-role-card-desc">{{ 'DEMO_ROLE.COACH_DESC' | translate }}</p>
-        <span class="demo-role-card-cta">{{ 'DEMO_ROLE.COACH_CTA' | translate }}</span>
-      </button>
-
-      <button type="button" class="demo-role-card demo-role-card-3" (click)="selectRole('player')" [attr.aria-label]="'DEMO_ROLE.PLAYER_CTA' | translate" data-tutorial="dr-player">
-        <span class="demo-role-card-accent" aria-hidden="true"></span>
-        <span class="demo-role-icon" aria-hidden="true">
-          <i class="bi bi-person"></i>
-        </span>
-        <h2 class="demo-role-card-title">{{ 'DEMO_ROLE.PLAYER_TITLE' | translate }}</h2>
-        <p class="demo-role-card-desc">{{ 'DEMO_ROLE.PLAYER_DESC' | translate }}</p>
-        <span class="demo-role-card-cta">{{ 'DEMO_ROLE.PLAYER_CTA' | translate }}</span>
-      </button>
     </div>
+
+  </div>
+
+</div>
+<!-- /step 2 -->
+
+
+<!-- ════════════════════════════════════════════════════════════
+     MODAL — Captura de email
+════════════════════════════════════════════════════════════ -->
+<div class="email-modal" *ngIf="showEmailModal" (click)="closeEmailModal($event)">
+  <div class="email-modal__card">
+
+    <!-- Cabecera con rol seleccionado -->
+    <div class="email-modal__role" *ngIf="selectedRoleCard">
+      <div class="emr__ico-wrap">
+        <i [class]="selectedRoleCard.icon" class="emr__ico"></i>
+      </div>
+      <div>
+        <span class="emr__label">{{ 'DEMO_INTRO.EMAIL_AS' | translate }}</span>
+        <strong class="emr__name">{{ selectedRoleCard.titleKey | translate }}</strong>
+      </div>
+    </div>
+
+    <h3 class="email-modal__title">{{ 'DEMO_INTRO.EMAIL_TITLE' | translate }}</h3>
+    <p class="email-modal__sub" [innerHTML]="'DEMO_INTRO.EMAIL_SUB' | translate"></p>
+
+    <input
+      #emailInput
+      type="email"
+      [(ngModel)]="emailValue"
+      [placeholder]="'DEMO_INTRO.EMAIL_PLACEHOLDER' | translate"
+      class="email-modal__input"
+      [class.email-modal__input--error]="emailError"
+      (keydown.enter)="confirmDemoAccess()"
+      autocomplete="email">
+
+    <p class="email-modal__error" *ngIf="emailError">
+      <i class="fas fa-exclamation-circle"></i> {{ emailError }}
+    </p>
+
+    <button class="email-modal__btn" (click)="confirmDemoAccess()" [disabled]="isLoading || !isValidEmail" type="button">
+      <span *ngIf="!isLoading">
+        {{ 'DEMO_INTRO.EMAIL_BTN' | translate }} &nbsp;<i class="fas fa-arrow-right"></i>
+      </span>
+      <span *ngIf="isLoading">
+        <i class="fas fa-spinner fa-spin"></i> &nbsp;{{ 'DEMO_INTRO.LOADING' | translate }}
+      </span>
+    </button>
+
+    <p class="email-modal__guarantee">
+      <i class="fas fa-shield-alt"></i>
+      {{ 'DEMO_INTRO.EMAIL_GUARANTEE' | translate }}
+    </p>
+
+    <button class="email-modal__close" (click)="closeEmailModal()" type="button"
+            [attr.aria-label]="'COMMON.CLOSE' | translate">
+      <i class="fas fa-times"></i>
+    </button>
+
   </div>
 </div>
+<!-- /modal -->

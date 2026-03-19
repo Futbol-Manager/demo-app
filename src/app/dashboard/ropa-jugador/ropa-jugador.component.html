@@ -3,12 +3,12 @@
   <div class="back-container" data-tutorial="rj-volver">
     <button class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
-      <span>Volver</span>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
     </button>
   </div>
   <div class="header-center">
-    <h2 class="page-title"><i class="bi bi-bag me-2"></i>Mis tallas de ropa</h2>
-    <p class="header-subtitle">Selecciona tu talla para cada prenda · {{ temporada }}</p>
+    <h2 class="page-title"><i class="bi bi-bag me-2"></i>{{ 'RJ.PAGE_TITLE' | translate }}</h2>
+    <p class="header-subtitle">{{ 'RJ.PAGE_SUBTITLE' | translate }} · {{ temporada }}</p>
   </div>
   <div class="header-spacer"></div>
 </div>
@@ -20,7 +20,7 @@
     <div class="spinner-border text-success" role="status">
       <span class="visually-hidden">Cargando...</span>
     </div>
-    <p class="text-muted mt-2">Cargando catálogo de ropa...</p>
+    <p class="text-muted mt-2">{{ 'RJ.LOADING' | translate }}</p>
   </div>
 
   <!-- ERROR -->
@@ -31,7 +31,7 @@
   <!-- SIN PRENDAS -->
   <div *ngIf="!cargando && !error && prendas.length === 0" class="empty-state" data-tutorial="rj-grid">
     <i class="bi bi-bag-x"></i>
-    <p>El club aún no ha configurado el catálogo de ropa para este equipo.</p>
+    <p>{{ 'RJ.EMPTY' | translate }}</p>
   </div>
 
   <!-- GRID DE PRENDAS -->
@@ -53,13 +53,13 @@
 
         <!-- Selector de talla -->
         <div class="talla-selector-row">
-          <label class="talla-label">Talla:</label>
+          <label class="talla-label">{{ 'RJ.LABEL_SIZE' | translate }}</label>
           <select
             class="form-select form-select-sm talla-select"
             [ngModel]="getTallaSeleccionada(prenda.prendaId)"
             (ngModelChange)="onTallaChange(prenda, $event)"
             [disabled]="guardando[prenda.prendaId]">
-            <option [value]="0">— Sin seleccionar —</option>
+            <option [value]="0">{{ 'RJ.NO_SIZE' | translate }}</option>
             <option *ngFor="let talla of prenda.tallas" [value]="talla.tallaId">
               {{ talla.nombreTalla }}
             </option>
@@ -72,7 +72,7 @@
         <!-- Estado -->
         <div class="estado-row" *ngIf="selecciones[prenda.prendaId]">
           <span [class]="getEstadoBadgeClass(prenda.prendaId)">
-            {{ getEstadoLabel(prenda.prendaId) }}
+            {{ ('RJ.STATUS_' + getEstadoLabel(prenda.prendaId).toUpperCase()) | translate }}
           </span>
         </div>
       </div>

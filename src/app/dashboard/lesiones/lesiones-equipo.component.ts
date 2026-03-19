@@ -22,14 +22,14 @@ import { User } from 'src/app/core/models/users/user.model';
         <div class="back-container" data-tutorial="les-volver">
           <button class="btn-back-clean" (click)="goBack()">
             <i class="bi bi-arrow-left"></i>
-            <span>Volver</span>
-          </button>
+          <span>{{ 'COMMON.BACK' | translate }}</span>
+        </button>
         </div>
         <div class="header-center">
           <h2 class="table-title">
-            <i class="bi bi-heart-pulse me-2"></i>{{ soloJugador ? 'Mis Lesiones' : 'Lesiones del Equipo' }}
+            <i class="bi bi-heart-pulse me-2"></i>{{ (soloJugador ? 'LES.TITLE_PLAYER' : 'LES.TITLE_TEAM') | translate }}
           </h2>
-          <p class="header-subtitle">{{ soloJugador ? 'Historial de tus lesiones' : 'Gestiona las lesiones de todos los jugadores' }}</p>
+          <p class="header-subtitle">{{ (soloJugador ? 'LES.SUBTITLE_PLAYER' : 'LES.SUBTITLE_TEAM') | translate }}</p>
         </div>
         <div class="page-header-spacer"></div>
       </div>
@@ -38,7 +38,7 @@ import { User } from 'src/app/core/models/users/user.model';
 
         <!-- Player selector: solo visible cuando no es vista "solo jugador" -->
         <div class="player-selector-card" *ngIf="!soloJugador" data-tutorial="les-selector-jugador">
-          <label class="selector-label">Selecciona un jugador:</label>
+          <label class="selector-label">{{ 'LES.SELECTOR_LABEL' | translate }}</label>
           <div class="player-chips">
             <button *ngFor="let p of players" class="player-chip"
                     [class.active]="selectedPlayerId === p.playerId"
@@ -65,11 +65,11 @@ import { User } from 'src/app/core/models/users/user.model';
 
         <div *ngIf="selectedPlayerId === 0 && !soloJugador" class="empty-state-select">
           <i class="bi bi-person-check display-4 opacity-50"></i>
-          <p>Selecciona un jugador para gestionar sus lesiones</p>
+          <p>{{ 'LES.SELECTOR_EMPTY' | translate }}</p>
         </div>
         <div *ngIf="selectedPlayerId === 0 && soloJugador" class="empty-state-select">
           <i class="bi bi-heart-pulse display-4 opacity-50"></i>
-          <p>Cargando tus lesiones...</p>
+          <p>{{ 'LES.LOADING_PLAYER' | translate }}</p>
         </div>
       </div>
     </div>

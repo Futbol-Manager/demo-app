@@ -1,4 +1,4 @@
-﻿
+
 <ng-container *ngIf="!embedded">
   <div class="page-header">
 
@@ -236,10 +236,10 @@
     <div class="bodymap-tooltip" *ngIf="hoveredZone">
       <div class="tooltip-zone-name">{{ getZoneLabel(hoveredZone) }}</div>
       <span *ngIf="hasInjuryInZone(hoveredZone.id)" class="tooltip-injury-badge">
-        {{ getZoneInjuryCount(hoveredZone.id) }} lesión{{ getZoneInjuryCount(hoveredZone.id) > 1 ? 'es' : '' }} activa{{ getZoneInjuryCount(hoveredZone.id) > 1 ? 's' : '' }}
+        {{ getZoneInjuryCount(hoveredZone.id) }} {{ (getZoneInjuryCount(hoveredZone.id) > 1 ? 'LES.TOOLTIP_INJURY_MANY' : 'LES.TOOLTIP_INJURY_ONE') | translate }}
       </span>
       <span *ngIf="!readOnly && !hasInjuryInZone(hoveredZone.id)" class="tooltip-hint">
-        Clic para registrar lesión
+        {{ 'LES.TOOLTIP_CLICK' | translate }}
       </span>
     </div>
 
@@ -254,7 +254,7 @@
       <div class="legend-col legend-col-status">
         <span class="legend-title">{{ 'LES.LEGEND_STATUS' | translate }}</span>
         <span class="legend-item"><span class="legend-dot dot-critical pulse-dot"></span>{{ 'LES.LEGEND_STATUS_OFF' | translate }}</span>
-        <span class="legend-item"><span class="legend-dot dot-readap"></span>Readaptación</span>
+        <span class="legend-item"><span class="legend-dot dot-readap"></span>{{ 'LES.LEGEND_STATUS_READAP' | translate }}</span>
         <span class="legend-item"><span class="legend-dot dot-condic"></span>{{ 'LES.LEGEND_STATUS_COND' | translate }}</span>
       </div>
     </div>
@@ -266,15 +266,15 @@
     <!-- ════ NEW / EDIT FORM ════ -->
     <div class="lesiones-form-card" *ngIf="showForm">
       <div class="form-card-header">
-        <h4><i class="bi bi-pencil-square me-2"></i>{{ editingInjury ? 'Editar Lesión' : 'Registrar Nueva Lesión' }}</h4>
-        <button class="btn-close-panel" aria-label="Cerrar" (click)="cancelForm()"><i class="bi bi-x-lg"></i></button>
+        <h4><i class="bi bi-pencil-square me-2"></i>{{ editingInjury ? ('LES.FORM_EDIT' | translate) : ('LES.FORM_NEW' | translate) }}</h4>
+        <button class="btn-close-panel" [attr.aria-label]="'LES.BTN_CANCEL' | translate" (click)="cancelForm()"><i class="bi bi-x-lg"></i></button>
       </div>
       <div class="form-card-body">
         <div class="row g-3">
           <div class="col-12">
             <label class="form-label">{{ 'LES.FORM_ZONE' | translate }}</label>
             <select class="form-select form-select-sphaira" [(ngModel)]="formData.zone" (change)="onZoneSelected($event)">
-              <option value="">-- Selecciona zona --</option>
+              <option value="">{{ 'LES.FORM_ZONE_PLACEHOLDER' | translate }}</option>
               <optgroup [label]="'LES.FORM_VIEW_FRONT' | translate">
                 <option *ngFor="let z of getZonesForView('front')" [value]="z.id">{{ getZoneLabel(z) }}</option>
               </optgroup>
@@ -284,9 +284,9 @@
             </select>
           </div>
           <div class="col-md-6">
-            <label class="form-label">Tipo de lesión</label>
+            <label class="form-label">{{ 'LES.FORM_TYPE' | translate }}</label>
             <select class="form-select form-select-sphaira" [(ngModel)]="formData.type">
-              <option value="">-- Tipo --</option>
+              <option value="">{{ 'LES.FORM_TYPE_PLACEHOLDER' | translate }}</option>
               <option *ngFor="let t of injuryTypes" [value]="t">{{ t }}</option>
             </select>
           </div>
@@ -297,7 +297,7 @@
             </select>
           </div>
           <div class="col-md-6">
-            <label class="form-label">Fecha de la lesión</label>
+            <label class="form-label">{{ 'LES.FORM_DATE_INJURY' | translate }}</label>
             <input type="date" class="form-control form-control-sphaira" [(ngModel)]="formData.dateInjury">
           </div>
           <div class="col-md-6">
@@ -306,7 +306,7 @@
           </div>
           <div class="col-12">
             <div class="ai-field-label-row">
-              <label class="form-label">Mecanismo de lesión</label>
+              <label class="form-label">{{ 'LES.FORM_MECHANISM' | translate }}</label>
               <button class="btn-ai-rewrite" type="button"
                       *ngIf="formData.mechanism?.trim()"
                       [disabled]="aiRewrite.loading && aiRewrite.field === 'mechanism'"
@@ -319,20 +319,20 @@
                 </span>
               </button>
             </div>
-            <input type="text" class="form-control form-control-sphaira" [(ngModel)]="formData.mechanism" placeholder="Ej: Sprint, entrada, giro brusco...">
+            <input type="text" class="form-control form-control-sphaira" [(ngModel)]="formData.mechanism" [placeholder]="'LES.FORM_MECH_PLACEHOLDER' | translate">
             <div class="ai-suggestion-panel" *ngIf="aiRewrite.field === 'mechanism' && (aiRewrite.suggestion || aiRewrite.error)">
               <div class="ai-suggestion-label"><i class="bi bi-stars me-1"></i>{{ 'LES.AI_SUGGESTION' | translate }}</div>
               <div class="ai-suggestion-error" *ngIf="aiRewrite.error"><i class="bi bi-exclamation-triangle-fill me-1"></i>{{ aiRewrite.error }}</div>
               <div class="ai-suggestion-text" *ngIf="aiRewrite.suggestion">{{ aiRewrite.suggestion }}</div>
               <div class="ai-suggestion-actions">
-                <button class="btn-ai-accept" *ngIf="aiRewrite.suggestion" (click)="acceptAiRewrite()"><i class="bi bi-check-lg me-1"></i>Usar esta versión</button>
+                <button class="btn-ai-accept" *ngIf="aiRewrite.suggestion" (click)="acceptAiRewrite()"><i class="bi bi-check-lg me-1"></i>{{ 'LES.BTN_AI_ACCEPT' | translate }}</button>
                 <button class="btn-ai-discard" (click)="discardAiRewrite()"><i class="bi bi-x-lg me-1"></i>{{ 'LES.BTN_AI_DISCARD' | translate }}</button>
               </div>
             </div>
           </div>
           <div class="col-12">
             <div class="ai-field-label-row">
-              <label class="form-label">Descripción</label>
+              <label class="form-label">{{ 'LES.FORM_DESCRIPTION' | translate }}</label>
               <button class="btn-ai-rewrite" type="button"
                       *ngIf="formData.description?.trim()"
                       [disabled]="aiRewrite.loading && aiRewrite.field === 'description'"
@@ -345,13 +345,13 @@
                 </span>
               </button>
             </div>
-            <textarea class="form-control form-control-sphaira" rows="3" [(ngModel)]="formData.description" placeholder="Descripción detallada de la lesión..."></textarea>
+            <textarea class="form-control form-control-sphaira" rows="3" [(ngModel)]="formData.description" [placeholder]="'LES.FORM_DESC_PLACEHOLDER' | translate"></textarea>
             <div class="ai-suggestion-panel" *ngIf="aiRewrite.field === 'description' && (aiRewrite.suggestion || aiRewrite.error)">
               <div class="ai-suggestion-label"><i class="bi bi-stars me-1"></i>{{ 'LES.AI_SUGGESTION' | translate }}</div>
               <div class="ai-suggestion-error" *ngIf="aiRewrite.error"><i class="bi bi-exclamation-triangle-fill me-1"></i>{{ aiRewrite.error }}</div>
               <div class="ai-suggestion-text" *ngIf="aiRewrite.suggestion">{{ aiRewrite.suggestion }}</div>
               <div class="ai-suggestion-actions">
-                <button class="btn-ai-accept" *ngIf="aiRewrite.suggestion" (click)="acceptAiRewrite()"><i class="bi bi-check-lg me-1"></i>Usar esta versión</button>
+                <button class="btn-ai-accept" *ngIf="aiRewrite.suggestion" (click)="acceptAiRewrite()"><i class="bi bi-check-lg me-1"></i>{{ 'LES.BTN_AI_ACCEPT' | translate }}</button>
                 <button class="btn-ai-discard" (click)="discardAiRewrite()"><i class="bi bi-x-lg me-1"></i>{{ 'LES.BTN_AI_DISCARD' | translate }}</button>
               </div>
             </div>
@@ -371,20 +371,20 @@
                 </span>
               </button>
             </div>
-            <textarea class="form-control form-control-sphaira" rows="2" [(ngModel)]="formData.treatment" placeholder="Tratamiento indicado..."></textarea>
+            <textarea class="form-control form-control-sphaira" rows="2" [(ngModel)]="formData.treatment" [placeholder]="'LES.FORM_TREATMENT_PLACEHOLDER' | translate"></textarea>
             <div class="ai-suggestion-panel" *ngIf="aiRewrite.field === 'treatment' && (aiRewrite.suggestion || aiRewrite.error)">
               <div class="ai-suggestion-label"><i class="bi bi-stars me-1"></i>{{ 'LES.AI_SUGGESTION' | translate }}</div>
               <div class="ai-suggestion-error" *ngIf="aiRewrite.error"><i class="bi bi-exclamation-triangle-fill me-1"></i>{{ aiRewrite.error }}</div>
               <div class="ai-suggestion-text" *ngIf="aiRewrite.suggestion">{{ aiRewrite.suggestion }}</div>
               <div class="ai-suggestion-actions">
-                <button class="btn-ai-accept" *ngIf="aiRewrite.suggestion" (click)="acceptAiRewrite()"><i class="bi bi-check-lg me-1"></i>Usar esta versión</button>
+                <button class="btn-ai-accept" *ngIf="aiRewrite.suggestion" (click)="acceptAiRewrite()"><i class="bi bi-check-lg me-1"></i>{{ 'LES.BTN_AI_ACCEPT' | translate }}</button>
                 <button class="btn-ai-discard" (click)="discardAiRewrite()"><i class="bi bi-x-lg me-1"></i>{{ 'LES.BTN_AI_DISCARD' | translate }}</button>
               </div>
             </div>
           </div>
           <div class="col-12" *ngIf="isPro">
             <div class="ai-field-label-row">
-              <label class="form-label">Notas médicas <span class="badge-pro-field">PRO</span></label>
+              <label class="form-label">{{ 'LES.FORM_NOTES' | translate }} <span class="badge-pro-field">PRO</span></label>
               <button class="btn-ai-rewrite" type="button"
                       *ngIf="formData.notes?.trim()"
                       [disabled]="aiRewrite.loading && aiRewrite.field === 'notes'"
@@ -397,20 +397,20 @@
                 </span>
               </button>
             </div>
-            <textarea class="form-control form-control-sphaira" rows="2" [(ngModel)]="formData.notes" placeholder="Notas adicionales..."></textarea>
+            <textarea class="form-control form-control-sphaira" rows="2" [(ngModel)]="formData.notes" [placeholder]="'LES.FORM_NOTES_PLACEHOLDER' | translate"></textarea>
             <div class="ai-suggestion-panel" *ngIf="aiRewrite.field === 'notes' && (aiRewrite.suggestion || aiRewrite.error)">
               <div class="ai-suggestion-label"><i class="bi bi-stars me-1"></i>{{ 'LES.AI_SUGGESTION' | translate }}</div>
               <div class="ai-suggestion-error" *ngIf="aiRewrite.error"><i class="bi bi-exclamation-triangle-fill me-1"></i>{{ aiRewrite.error }}</div>
               <div class="ai-suggestion-text" *ngIf="aiRewrite.suggestion">{{ aiRewrite.suggestion }}</div>
               <div class="ai-suggestion-actions">
-                <button class="btn-ai-accept" *ngIf="aiRewrite.suggestion" (click)="acceptAiRewrite()"><i class="bi bi-check-lg me-1"></i>Usar esta versión</button>
+                <button class="btn-ai-accept" *ngIf="aiRewrite.suggestion" (click)="acceptAiRewrite()"><i class="bi bi-check-lg me-1"></i>{{ 'LES.BTN_AI_ACCEPT' | translate }}</button>
                 <button class="btn-ai-discard" (click)="discardAiRewrite()"><i class="bi bi-x-lg me-1"></i>{{ 'LES.BTN_AI_DISCARD' | translate }}</button>
               </div>
             </div>
           </div>
           <!-- Estado — 5 nuevos estados clínicos -->
           <div class="col-md-6">
-            <label class="form-label">Estado clínico</label>
+            <label class="form-label">{{ 'LES.FORM_STATUS' | translate }}</label>
             <select class="form-select form-select-sphaira" [(ngModel)]="formData.status">
               <option *ngFor="let s of injuryStatuses" [value]="s.code">
                 {{ s.label }}
@@ -419,7 +419,7 @@
             <!-- Availability badge -->
             <div class="status-availability-hint" *ngIf="formData.status">
               <i class="bi me-1" [ngClass]="isAvailableForMatch(formData.status!) ? 'bi-check-circle-fill text-success' : 'bi-x-circle-fill text-danger'"></i>
-              <span>{{ isAvailableForMatch(formData.status!) ? 'Disponible para convocatoria' : 'No disponible para convocatoria' }}</span>
+              <span>{{ (isAvailableForMatch(formData.status!) ? 'LES.FORM_AVAIL_YES' : 'LES.FORM_AVAIL_NO') | translate }}</span>
             </div>
           </div>
           <div class="col-md-6" *ngIf="isPro">
@@ -428,7 +428,7 @@
               <option *ngFor="let p of rtpPhases" [ngValue]="p.phase">{{ p.phase }}. {{ p.label }}</option>
             </select>
             <div class="rtp-status-hint" *ngIf="formData.rtpPhase">
-              <small class="text-muted">Sugiere: <strong>{{ getSuggestedStatusLabel(formData.rtpPhase) }}</strong></small>
+              <small class="text-muted">{{ 'LES.FORM_RTP_HINT' | translate }} <strong>{{ getSuggestedStatusLabel(formData.rtpPhase) }}</strong></small>
             </div>
           </div>
         </div>
@@ -444,8 +444,8 @@
     <!-- ════ DETAIL VIEW ════ -->
     <div class="lesiones-detail-card" *ngIf="showDetail && detailInjury">
       <div class="detail-card-header">
-        <h4><i class="bi bi-info-circle me-2"></i>Detalle de Lesión</h4>
-        <button class="btn-close-panel" aria-label="Cerrar" (click)="closeDetail()"><i class="bi bi-x-lg"></i></button>
+        <h4><i class="bi bi-info-circle me-2"></i>{{ 'LES.DETAIL_TITLE' | translate }}</h4>
+        <button class="btn-close-panel" [attr.aria-label]="'LES.BTN_CANCEL' | translate" (click)="closeDetail()"><i class="bi bi-x-lg"></i></button>
       </div>
       <div class="detail-card-body">
         <div class="detail-severity-bar" [style.background]="getSeverityColor(detailInjury.severity)">
@@ -458,50 +458,50 @@
           <div class="detail-status-info">
             <span class="detail-status-label" [style.color]="getStatusColor(detailInjury.status)">{{ getStatusLabel(detailInjury.status) }}</span>
             <span class="detail-status-availability" *ngIf="isAvailableForMatch(detailInjury.status)">
-              <i class="bi bi-check-circle-fill text-success me-1"></i>Convocable
+              <i class="bi bi-check-circle-fill text-success me-1"></i>{{ 'LES.AVAILABLE' | translate }}
             </span>
           </div>
         </div>
 
         <div class="detail-grid">
           <div class="detail-field">
-            <span class="detail-label">Zona</span>
+            <span class="detail-label">{{ 'LES.DETAIL_ZONE' | translate }}</span>
             <span class="detail-value">{{ detailInjury.zoneLabel }}</span>
           </div>
           <div class="detail-field">
-            <span class="detail-label">Tipo</span>
+            <span class="detail-label">{{ 'LES.DETAIL_TYPE' | translate }}</span>
             <span class="detail-value">{{ detailInjury.type }}</span>
           </div>
           <div class="detail-field">
-            <span class="detail-label">Fecha lesión</span>
+            <span class="detail-label">{{ 'LES.DETAIL_DATE_INJURY' | translate }}</span>
             <span class="detail-value">{{ detailInjury.dateInjury }}</span>
           </div>
           <div class="detail-field">
-            <span class="detail-label">Retorno estimado</span>
+            <span class="detail-label">{{ 'LES.DETAIL_DATE_RETURN' | translate }}</span>
             <span class="detail-value">{{ detailInjury.dateReturn || '—' }}</span>
           </div>
           <div class="detail-field" *ngIf="detailInjury.dateActualReturn">
-            <span class="detail-label">Retorno real</span>
+            <span class="detail-label">{{ 'LES.DETAIL_DATE_ACTUAL' | translate }}</span>
             <span class="detail-value">{{ detailInjury.dateActualReturn }}</span>
           </div>
           <div class="detail-field">
-            <span class="detail-label">Días desde lesión</span>
-            <span class="detail-value">{{ getDaysSinceInjury(detailInjury.dateInjury) }} días</span>
+            <span class="detail-label">{{ 'LES.DETAIL_DAYS' | translate }}</span>
+            <span class="detail-value">{{ getDaysSinceInjury(detailInjury.dateInjury) }} {{ 'LES.DETAIL_DAYS_UNIT' | translate }}</span>
           </div>
           <div class="detail-field detail-full" *ngIf="detailInjury.mechanism">
-            <span class="detail-label">Mecanismo</span>
+            <span class="detail-label">{{ 'LES.DETAIL_MECHANISM' | translate }}</span>
             <span class="detail-value">{{ detailInjury.mechanism }}</span>
           </div>
           <div class="detail-field detail-full">
-            <span class="detail-label">Descripción</span>
+            <span class="detail-label">{{ 'LES.FORM_DESCRIPTION' | translate }}</span>
             <span class="detail-value">{{ detailInjury.description }}</span>
           </div>
           <div class="detail-field detail-full" *ngIf="detailInjury.treatment">
-            <span class="detail-label">Tratamiento</span>
+            <span class="detail-label">{{ 'LES.FORM_TREATMENT' | translate }}</span>
             <span class="detail-value">{{ detailInjury.treatment }}</span>
           </div>
           <div class="detail-field detail-full" *ngIf="detailInjury.notes && isPro">
-            <span class="detail-label">Notas médicas</span>
+            <span class="detail-label">{{ 'LES.FORM_NOTES' | translate }}</span>
             <span class="detail-value">{{ detailInjury.notes }}</span>
           </div>
         </div>
@@ -526,17 +526,17 @@
         <!-- MEDICAL DOCUMENTS -->
         <div class="detail-documents-section">
           <div class="documents-header">
-            <h5 class="documents-title"><i class="bi bi-folder2-open me-2"></i>Documentos médicos</h5>
+            <h5 class="documents-title"><i class="bi bi-folder2-open me-2"></i>{{ 'LES.DOCS_TITLE' | translate }}</h5>
             <button class="btn btn-sphaira-primary btn-sm" *ngIf="!readOnly" (click)="toggleUploadForm()">
               <i class="bi" [ngClass]="showUploadForm ? 'bi-x-lg' : 'bi-plus-lg'"></i>
-              <span class="ms-1">{{ showUploadForm ? 'Cancelar' : 'Adjuntar' }}</span>
+              <span class="ms-1">{{ (showUploadForm ? 'LES.BTN_CANCEL' : 'LES.DOCS_BTN_ATTACH') | translate }}</span>
             </button>
           </div>
           <div class="documents-upload-form" *ngIf="showUploadForm">
             <div class="upload-drop-area" (click)="fileInput.click()">
               <i class="bi bi-cloud-arrow-up display-6 opacity-50"></i>
-              <p class="mb-1">Haz clic para seleccionar archivo</p>
-              <small class="text-muted">PDF, JPG, PNG (máx. 10 MB)</small>
+              <p class="mb-1">{{ 'LES.DOCS_UPLOAD_CLICK' | translate }}</p>
+              <small class="text-muted">{{ 'LES.DOCS_UPLOAD_HINT' | translate }}</small>
               <input #fileInput type="file" accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp" hidden (change)="onFileSelected($event)">
             </div>
             <div class="upload-file-info" *ngIf="selectedFile">
@@ -545,21 +545,21 @@
             </div>
             <div class="mt-2">
               <select class="form-select form-select-sphaira form-select-sm" [(ngModel)]="uploadDocumentCategory">
-                <option value="">-- Categoría del documento --</option>
+                <option value="">{{ 'LES.DOCS_CAT_PLACEHOLDER' | translate }}</option>
                 <option *ngFor="let cat of documentCategories" [value]="cat.code">{{ cat.label }}</option>
               </select>
             </div>
             <div class="mt-2">
-              <input type="text" class="form-control form-control-sphaira form-control-sm" [(ngModel)]="uploadDescription" placeholder="Descripción adicional (opcional)">
+              <input type="text" class="form-control form-control-sphaira form-control-sm" [(ngModel)]="uploadDescription" [placeholder]="'LES.DOCS_DESC_PLACEHOLDER' | translate">
             </div>
             <button class="btn btn-sphaira-primary btn-sm mt-2" [disabled]="!selectedFile || uploadingDocument" (click)="uploadDocument()">
-              <i class="bi bi-upload me-1"></i>{{ uploadingDocument ? 'Subiendo...' : 'Subir documento' }}
+              <i class="bi bi-upload me-1"></i>{{ (uploadingDocument ? 'LES.DOCS_BTN_UPLOADING' : 'LES.DOCS_BTN_UPLOAD') | translate }}
             </button>
           </div>
           <div class="documents-list" *ngIf="!loadingDocuments">
             <div *ngIf="detailDocuments.length === 0 && !showUploadForm" class="documents-empty">
               <i class="bi bi-file-earmark-medical opacity-50"></i>
-              <span>Sin documentos adjuntos</span>
+              <span>{{ 'LES.DOCS_EMPTY' | translate }}</span>
             </div>
             <div *ngFor="let doc of detailDocuments" class="document-item">
               <div class="document-item-icon">
@@ -583,16 +583,16 @@
           </div>
           <div *ngIf="loadingDocuments" class="documents-loading">
             <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-            <span class="ms-2">Cargando documentos...</span>
+            <span class="ms-2">{{ 'LES.DOCS_LOADING' | translate }}</span>
           </div>
         </div>
 
         <!-- NOTAS DE EVOLUCIÓN -->
         <div class="detail-notes-section">
           <div class="notes-header">
-            <h5 class="notes-title"><i class="bi bi-journal-text me-2"></i>Notas de evolución</h5>
+            <h5 class="notes-title"><i class="bi bi-journal-text me-2"></i>{{ 'LES.NOTES_TITLE' | translate }}</h5>
             <button class="btn btn-sphaira-primary btn-sm" *ngIf="!readOnly" (click)="openNewNoteForm()">
-              <i class="bi bi-plus-lg me-1"></i>Nueva nota
+              <i class="bi bi-plus-lg me-1"></i>{{ 'LES.NOTES_BTN_NEW' | translate }}
             </button>
           </div>
           <div class="note-form-card" *ngIf="showNoteForm">
@@ -624,19 +624,19 @@
                   </button>
                 </div>
                 <textarea class="form-control form-control-sphaira" rows="4" [(ngModel)]="noteFormData.content"
-                  placeholder="Describe la evolución, observaciones del tratamiento..."></textarea>
+                  [placeholder]="'LES.NOTES_CONTENT_PLACEHOLDER' | translate"></textarea>
                 <div class="ai-suggestion-panel" *ngIf="aiRewrite.field === 'noteContent' && (aiRewrite.suggestion || aiRewrite.error)">
                   <div class="ai-suggestion-label"><i class="bi bi-stars me-1"></i>{{ 'LES.AI_SUGGESTION' | translate }}</div>
                   <div class="ai-suggestion-error" *ngIf="aiRewrite.error"><i class="bi bi-exclamation-triangle-fill me-1"></i>{{ aiRewrite.error }}</div>
                   <div class="ai-suggestion-text" *ngIf="aiRewrite.suggestion">{{ aiRewrite.suggestion }}</div>
                   <div class="ai-suggestion-actions">
-                    <button class="btn-ai-accept" *ngIf="aiRewrite.suggestion" (click)="acceptAiRewrite()"><i class="bi bi-check-lg me-1"></i>Usar esta versión</button>
-                    <button class="btn-ai-discard" (click)="discardAiRewrite()"><i class="bi bi-x-lg me-1"></i>{{ 'LES.BTN_AI_DISCARD' | translate }}</button>
-                  </div>
-                </div>
+                <button class="btn-ai-accept" *ngIf="aiRewrite.suggestion" (click)="acceptAiRewrite()"><i class="bi bi-check-lg me-1"></i>{{ 'LES.BTN_AI_ACCEPT' | translate }}</button>
+                <button class="btn-ai-discard" (click)="discardAiRewrite()"><i class="bi bi-x-lg me-1"></i>{{ 'LES.BTN_AI_DISCARD' | translate }}</button>
               </div>
             </div>
-            <div class="note-form-actions mt-2">
+          </div>
+        </div>
+        <div class="note-form-actions mt-2">
               <button class="btn btn-outline-secondary btn-sm" (click)="cancelNoteForm()">{{ 'LES.BTN_CANCEL' | translate }}</button>
               <button class="btn btn-sphaira-primary btn-sm" [disabled]="!noteFormData.content || savingNote" (click)="saveNote()">
                 <i class="bi bi-check-lg me-1"></i>{{ savingNote ? ('LES.BTN_SAVING' | translate) : (editingNote ? ('LES.BTN_UPDATE_NOTE' | translate) : ('LES.BTN_SAVE_NOTE' | translate)) }}
@@ -650,7 +650,7 @@
           <div *ngIf="!loadingNotes">
             <div *ngIf="detailNotes.length === 0 && !showNoteForm" class="notes-empty">
               <i class="bi bi-journal opacity-50"></i>
-              <span>Sin notas de evolución registradas</span>
+              <span>{{ 'LES.NOTES_TITLE_EMPTY' | translate }}</span>
             </div>
             <div *ngFor="let note of detailNotes" class="note-item">
               <div class="note-item-header">
@@ -673,7 +673,7 @@
           <button class="btn btn-outline-secondary btn-sm btn-export-evolution"
                   (click)="exportEvolutionReport(detailInjury)"
                   [disabled]="isExportingEvolution">
-            <span *ngIf="!isExportingEvolution"><i class="bi bi-file-earmark-pdf-fill me-1"></i>Exportar informe de evolución</span>
+            <span *ngIf="!isExportingEvolution"><i class="bi bi-file-earmark-pdf-fill me-1"></i>{{ 'LES.BTN_EXPORT_EVOLUTION' | translate }}</span>
             <span *ngIf="isExportingEvolution"><span class="spinner-border spinner-border-sm me-1" role="status"></span>{{ 'LES.BTN_GENERATING_PDF' | translate }}</span>
           </button>
         </div>
@@ -691,8 +691,8 @@
     <!-- ════ RTP PANEL ════ -->
     <div class="lesiones-rtp-card" *ngIf="showRtpPanel && rtpInjury && isPro">
       <div class="rtp-card-header">
-        <h4><i class="bi bi-graph-up-arrow me-2"></i>Return to Play – Progreso</h4>
-        <button class="btn-close-panel" aria-label="Cerrar" (click)="closeRtp()"><i class="bi bi-x-lg"></i></button>
+        <h4><i class="bi bi-graph-up-arrow me-2"></i>{{ 'LES.RTP_TITLE' | translate }}</h4>
+        <button class="btn-close-panel" [attr.aria-label]="'LES.BTN_CANCEL' | translate" (click)="closeRtp()"><i class="bi bi-x-lg"></i></button>
       </div>
       <div class="rtp-card-body">
         <p class="rtp-injury-ref">
@@ -765,7 +765,7 @@
       <div class="injury-list-items">
         <div *ngIf="filteredInjuries.length === 0" class="injury-empty-state">
           <i class="bi bi-shield-check display-5 opacity-50"></i>
-          <p>No hay lesiones registradas{{ filterStatus !== 'all' ? ' con este filtro' : '' }}.</p>
+          <p>{{ filterStatus !== 'all' ? ('LES.EMPTY_STATE_FILTER' | translate) : ('LES.EMPTY_STATE' | translate) }}</p>
         </div>
 
         <div *ngFor="let injury of filteredInjuries" class="injury-list-item" (click)="viewDetail(injury)">
@@ -816,7 +816,7 @@
   <div class="timeline-container">
     <div *ngIf="timelineEntries.length === 0" class="timeline-empty">
       <i class="bi bi-clock-history display-5 opacity-50"></i>
-      <p>No hay lesiones registradas para mostrar en la línea temporal.</p>
+      <p>{{ 'LES.TIMELINE_EMPTY' | translate }}</p>
     </div>
     <div class="timeline-track" *ngIf="timelineEntries.length > 0">
       <ng-container *ngFor="let entry of timelineEntries; let idx = index">
@@ -866,34 +866,34 @@
       <div class="kpi-icon kpi-total"><i class="bi bi-clipboard2-pulse"></i></div>
       <div class="kpi-info">
         <span class="kpi-number">{{ totalInjuries }}</span>
-        <span class="kpi-label">Total lesiones</span>
+        <span class="kpi-label">{{ 'LES.STATS_KPI_TOTAL' | translate }}</span>
       </div>
     </div>
     <div class="kpi-card">
       <div class="kpi-icon kpi-recovery"><i class="bi bi-calendar2-check"></i></div>
       <div class="kpi-info">
         <span class="kpi-number">{{ avgRecoveryDays }}<small>d</small></span>
-        <span class="kpi-label">Recuperación media</span>
+        <span class="kpi-label">{{ 'LES.STATS_KPI_RECOVERY' | translate }}</span>
       </div>
     </div>
     <div class="kpi-card">
       <div class="kpi-icon kpi-zone"><i class="bi bi-geo-alt"></i></div>
       <div class="kpi-info">
         <span class="kpi-number kpi-text">{{ mostAffectedZone }}</span>
-        <span class="kpi-label">Zona más afectada</span>
+        <span class="kpi-label">{{ 'LES.STATS_KPI_ZONE' | translate }}</span>
       </div>
     </div>
     <div class="kpi-card">
       <div class="kpi-icon kpi-recurrence"><i class="bi bi-arrow-repeat"></i></div>
       <div class="kpi-info">
         <span class="kpi-number">{{ recurrenceRate }}<small>%</small></span>
-        <span class="kpi-label">Tasa recurrencia</span>
+        <span class="kpi-label">{{ 'LES.STATS_KPI_RECURRENCE' | translate }}</span>
       </div>
     </div>
   </div>
   <div class="stats-charts-grid">
     <div class="chart-card chart-card-wide">
-      <h5 class="chart-title"><i class="bi bi-graph-up me-2"></i>Tendencia mensual (12 meses)</h5>
+      <h5 class="chart-title"><i class="bi bi-graph-up me-2"></i>{{ 'LES.STATS_TREND_TITLE' | translate }}</h5>
       <div class="trend-chart">
         <div class="trend-bars">
           <div *ngFor="let m of monthTrend" class="trend-bar-col">
@@ -909,7 +909,7 @@
       </div>
     </div>
     <div class="chart-card">
-      <h5 class="chart-title"><i class="bi bi-pie-chart me-2"></i>Gravedad</h5>
+      <h5 class="chart-title"><i class="bi bi-pie-chart me-2"></i>{{ 'LES.LEGEND_SEVERITY' | translate }}</h5>
       <div class="donut-chart-wrap">
         <div class="donut-chart"
              [style.background]="'conic-gradient(' +
@@ -932,7 +932,7 @@
       </div>
     </div>
     <div class="chart-card">
-      <h5 class="chart-title"><i class="bi bi-body-text me-2"></i>Zonas afectadas</h5>
+      <h5 class="chart-title"><i class="bi bi-body-text me-2"></i>{{ 'LES.STATS_KPI_ZONE' | translate }}</h5>
       <div class="horizontal-bars">
         <div *ngFor="let z of zoneStats" class="hbar-row">
           <span class="hbar-label">{{ z.label }}</span>
@@ -941,11 +941,11 @@
           </div>
           <span class="hbar-value">{{ z.count }}</span>
         </div>
-        <div *ngIf="zoneStats.length === 0" class="chart-empty">Sin datos</div>
+        <div *ngIf="zoneStats.length === 0" class="chart-empty">{{ 'LES.STATS_NO_DATA' | translate }}</div>
       </div>
     </div>
     <div class="chart-card">
-      <h5 class="chart-title"><i class="bi bi-tags me-2"></i>Tipos de lesión</h5>
+      <h5 class="chart-title"><i class="bi bi-tags me-2"></i>{{ 'LES.TAB_STATS' | translate }}</h5>
       <div class="horizontal-bars">
         <div *ngFor="let t of typeStats" class="hbar-row">
           <span class="hbar-label">{{ t.type }}</span>
@@ -954,7 +954,7 @@
           </div>
           <span class="hbar-value">{{ t.count }}</span>
         </div>
-        <div *ngIf="typeStats.length === 0" class="chart-empty">Sin datos</div>
+        <div *ngIf="typeStats.length === 0" class="chart-empty">{{ 'LES.STATS_NO_DATA' | translate }}</div>
       </div>
     </div>
   </div>
@@ -968,7 +968,7 @@
 <div class="notify-overlay" *ngIf="showNotifyDialog" (click)="cancelNotification()" appModalBackdrop>
   <div class="notify-dialog" (click)="$event.stopPropagation()">
     <div class="notify-dialog-icon"><i class="bi bi-bell-fill"></i></div>
-    <h4 class="notify-dialog-title">¿Enviar notificación?</h4>
+    <h4 class="notify-dialog-title">{{ 'LES.NOTIFY_TITLE' | translate }}</h4>
     <p class="notify-dialog-text" *ngIf="pendingNotificationType === 'created'">
       Se ha registrado una nueva lesión para <strong>{{ pendingNotifyInjury?.playerName }}</strong>. ¿Deseas notificar?
     </p>
@@ -982,12 +982,12 @@
       El estado de la lesión de <strong>{{ pendingNotifyInjury?.playerName }}</strong> ha cambiado. ¿Enviar notificación?
     </p>
     <div class="notify-dialog-actions">
-      <button class="btn btn-outline-secondary" (click)="cancelNotification()"><i class="bi bi-x-lg me-1"></i>No enviar</button>
-      <button class="btn btn-sphaira-primary" (click)="confirmSendNotification()"><i class="bi bi-send me-1"></i>Enviar</button>
+      <button class="btn btn-outline-secondary" (click)="cancelNotification()"><i class="bi bi-x-lg me-1"></i>{{ 'LES.NOTIFY_BTN_SKIP' | translate }}</button>
+      <button class="btn btn-sphaira-primary" (click)="confirmSendNotification()"><i class="bi bi-send me-1"></i>{{ 'LES.NOTIFY_BTN_SEND' | translate }}</button>
     </div>
     <label class="notify-auto-hint">
       <input type="checkbox" [(ngModel)]="notificationConfig.autoNotify" (change)="saveNotifySettings()">
-      <span>Enviar automáticamente sin preguntar en el futuro</span>
+      <span>{{ 'LES.NOTIFY_AUTO' | translate }}</span>
     </label>
   </div>
 </div>
@@ -996,42 +996,42 @@
 <div class="notify-settings-overlay" *ngIf="showNotifySettings" (click)="showNotifySettings = false" appModalBackdrop>
   <div class="notify-settings-panel" (click)="$event.stopPropagation()">
     <div class="notify-settings-header">
-      <h4><i class="bi bi-bell-fill me-2"></i>Notificaciones de lesiones</h4>
-      <button class="btn-close-panel" aria-label="Cerrar" (click)="showNotifySettings = false"><i class="bi bi-x-lg"></i></button>
+      <h4><i class="bi bi-bell-fill me-2"></i>{{ 'LES.SETTINGS_TITLE' | translate }}</h4>
+      <button class="btn-close-panel" [attr.aria-label]="'LES.BTN_CANCEL' | translate" (click)="showNotifySettings = false"><i class="bi bi-x-lg"></i></button>
     </div>
     <div class="notify-settings-body">
       <div class="notify-setting-row">
         <div class="notify-setting-info">
-          <span class="notify-setting-label">Envío automático</span>
-          <span class="notify-setting-desc">Enviar notificaciones sin pedir confirmación</span>
+          <span class="notify-setting-label">{{ 'LES.SETTINGS_AUTO_LABEL' | translate }}</span>
+          <span class="notify-setting-desc">{{ 'LES.SETTINGS_AUTO_DESC' | translate }}</span>
         </div>
         <label class="mode-toggle"><input type="checkbox" [(ngModel)]="notificationConfig.autoNotify"><span class="mode-slider"></span></label>
       </div>
       <div class="notify-setting-row">
         <div class="notify-setting-info">
-          <span class="notify-setting-label">Al crear lesión</span>
-          <span class="notify-setting-desc">Notificar cuando se registra una nueva lesión</span>
+          <span class="notify-setting-label">{{ 'LES.SETTINGS_CREATE_LABEL' | translate }}</span>
+          <span class="notify-setting-desc">{{ 'LES.SETTINGS_CREATE_DESC' | translate }}</span>
         </div>
         <label class="mode-toggle"><input type="checkbox" [(ngModel)]="notificationConfig.notifyOnCreate"><span class="mode-slider"></span></label>
       </div>
       <div class="notify-setting-row">
         <div class="notify-setting-info">
-          <span class="notify-setting-label">Al cambiar estado</span>
-          <span class="notify-setting-desc">Notificar cuando cambia el estado de una lesión</span>
+          <span class="notify-setting-label">{{ 'LES.SETTINGS_STATUS_LABEL' | translate }}</span>
+          <span class="notify-setting-desc">{{ 'LES.SETTINGS_STATUS_DESC' | translate }}</span>
         </div>
         <label class="mode-toggle"><input type="checkbox" [(ngModel)]="notificationConfig.notifyOnStatusChange"><span class="mode-slider"></span></label>
       </div>
       <div class="notify-setting-row">
         <div class="notify-setting-info">
-          <span class="notify-setting-label">Al avanzar RTP</span>
-          <span class="notify-setting-desc">Notificar al cambiar la fase de Return to Play</span>
+          <span class="notify-setting-label">{{ 'LES.SETTINGS_RTP_LABEL' | translate }}</span>
+          <span class="notify-setting-desc">{{ 'LES.SETTINGS_RTP_DESC' | translate }}</span>
         </div>
         <label class="mode-toggle"><input type="checkbox" [(ngModel)]="notificationConfig.notifyOnRtpChange"><span class="mode-slider"></span></label>
       </div>
     </div>
     <div class="notify-settings-footer">
       <button class="btn btn-sphaira-primary" (click)="saveNotifySettings()">
-        <i class="bi bi-check-lg me-1"></i>Guardar configuración
+        <i class="bi bi-check-lg me-1"></i>{{ 'LES.SETTINGS_BTN_SAVE' | translate }}
       </button>
     </div>
   </div>
@@ -1039,7 +1039,7 @@
 
 <!-- ═══════ NOTIFICATION TOAST ═══════ -->
 <div class="notify-toast" [class.notify-toast-visible]="notificationSent">
-  <i class="bi bi-check-circle-fill me-2"></i>Notificación enviada correctamente
+  <i class="bi bi-check-circle-fill me-2"></i>{{ 'LES.TOAST_SENT' | translate }}
 </div>
 
 <!-- ═══════ HIDDEN EVOLUTION PDF AREA ═══════ -->

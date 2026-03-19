@@ -10,7 +10,7 @@
 
   <div class="header-center">
     <h2 class="table-title">
-      <i class="bi bi-credit-card-2-front me-2"></i>Pagar cuotas
+      <i class="bi bi-credit-card-2-front me-2"></i>{{ 'CQ.PAGE_TITLE' | translate }}
     </h2>
     <p class="header-subtitle" *ngIf="nameClub">{{ nameClub }}</p>
   </div>
@@ -22,7 +22,7 @@
 <div class="cuotas-page" *ngIf="!datosCargados">
   <div class="cuotas-loading">
     <div class="cuotas-spinner"></div>
-    <p>Cargando cuotas...</p>
+    <p>{{ 'CQ.LOADING' | translate }}</p>
   </div>
 </div>
 
@@ -35,14 +35,14 @@
         <div class="estado-card-icon">
           <i class="bi bi-check-circle-fill"></i>
         </div>
-        <span class="estado-card-label">Pagado</span>
+        <span class="estado-card-label">{{ 'CQ.LABEL_PAID' | translate }}</span>
         <span class="estado-card-value">{{ pagado }} €</span>
       </div>
       <div class="estado-card estado-card--pendiente">
         <div class="estado-card-icon">
           <i class="bi bi-clock-history"></i>
         </div>
-        <span class="estado-card-label">Pendiente</span>
+        <span class="estado-card-label">{{ 'CQ.LABEL_PENDING' | translate }}</span>
         <span class="estado-card-value">{{ pdte }} €</span>
       </div>
       <div class="shortcut-card shortcut-card--tarjetas"
@@ -57,7 +57,7 @@
           </div>
           <div class="shortcut-card-text">
             <span class="shortcut-card-title">Sphaira Pay</span>
-            <span class="shortcut-card-subtitle">Verificando...</span>
+            <span class="shortcut-card-subtitle">{{ 'CQ.SP_VERIFYING' | translate }}</span>
           </div>
         </ng-container>
 
@@ -67,9 +67,9 @@
             <i class="bi bi-credit-card-2-front"></i>
           </div>
           <div class="shortcut-card-text">
-            <span class="shortcut-card-title">Vincular tarjeta</span>
+            <span class="shortcut-card-title">{{ 'CQ.SP_LINK_CARD' | translate }}</span>
             <span class="shortcut-card-subtitle shortcut-card-subtitle--warning">
-              <i class="bi bi-exclamation-circle-fill me-1"></i>Sin tarjeta asociada
+              <i class="bi bi-exclamation-circle-fill me-1"></i>{{ 'CQ.SP_NO_CARD' | translate }}
             </span>
           </div>
           <i class="bi bi-chevron-right shortcut-card-arrow"></i>
@@ -101,15 +101,11 @@
         <i class="bi bi-exclamation-triangle-fill"></i>
       </div>
       <div class="cq-sphaira-banner-body">
-        <span class="cq-sphaira-banner-title">
-          Tienes cuotas con <strong>Sphaira Pay</strong> que requieren una tarjeta vinculada
-        </span>
-        <span class="cq-sphaira-banner-sub">
-          Vincula una tarjeta para activar el cobro automático. Una vez vinculada, los pagos se procesarán de forma recurrente.
-        </span>
+        <span class="cq-sphaira-banner-title" [innerHTML]="'CQ.BANNER_NEED_CARD_TITLE' | translate"></span>
+        <span class="cq-sphaira-banner-sub">{{ 'CQ.BANNER_NEED_CARD_SUB' | translate }}</span>
       </div>
       <button class="cq-sphaira-banner-btn" (click)="openModalTarjetas()">
-        <i class="bi bi-plus-circle-fill me-1"></i>Vincular tarjeta
+        <i class="bi bi-plus-circle-fill me-1"></i>{{ 'CQ.SP_LINK_CARD' | translate }}
       </button>
     </div>
 
@@ -121,11 +117,9 @@
       </div>
       <div class="cq-sphaira-banner-body">
         <span class="cq-sphaira-banner-title">
-          <strong>{{ nameClub }}</strong> ha configurado cobros automáticos con Sphaira Pay
+          <strong>{{ nameClub }}</strong> {{ 'CQ.BANNER_AUTO_TITLE' | translate }}
         </span>
-        <span class="cq-sphaira-banner-sub">
-          Tu tarjeta vinculada será cargada automáticamente en la fecha indicada en cada cuota.
-        </span>
+        <span class="cq-sphaira-banner-sub">{{ 'CQ.BANNER_AUTO_SUB' | translate }}</span>
       </div>
     </div>
 
@@ -135,23 +129,23 @@
         <div class="cq-selection-info">
           <i class="bi bi-check2-square"></i>
           <span class="cq-selection-count">
-            {{ selectedCuotas.length }} cuota{{ selectedCuotas.length !== 1 ? 's' : '' }} seleccionada{{ selectedCuotas.length !== 1 ? 's' : '' }}
+            {{ selectedCuotas.length }} {{ selectedCuotas.length !== 1 ? ('CQ.SEL_COUNT_MANY' | translate) : ('CQ.SEL_COUNT_ONE' | translate) }}
           </span>
           <span class="cq-selection-sep">·</span>
-          <span class="cq-selection-total">Total: {{ selectedCuotasGrossTotal }} €</span>
+          <span class="cq-selection-total">{{ 'CQ.SEL_TOTAL' | translate }} {{ selectedCuotasGrossTotal }} €</span>
         </div>
         <div class="cq-selection-actions">
           <button class="cq-btn-clear" (click)="clearSelection()">
-            <i class="bi bi-x-lg"></i> Limpiar
+            <i class="bi bi-x-lg"></i> {{ 'CQ.BTN_CLEAR' | translate }}
           </button>
           <button class="cq-btn-pay" (click)="openMultiPayModal()">
             <i class="bi bi-lightning-charge-fill"></i>
-            Pagar {{ selectedCuotasGrossTotal }} €
+            {{ 'CQ.BTN_PAY' | translate }} {{ selectedCuotasGrossTotal }} €
           </button>
         </div>
       </div>
       <p *ngIf="!(stripeBtoShow && selectedCuotas.length > 0)" class="cq-selection-bar-placeholder">
-        <i class="bi bi-check2-square"></i> Al marcar cuotas puntuales arriba aparecerá aquí la barra con el total y los botones Limpiar y Pagar.
+        <i class="bi bi-check2-square"></i> {{ 'CQ.SEL_BAR_PLACEHOLDER' | translate }}
       </p>
     </div>
 
@@ -161,11 +155,11 @@
         <div class="cq-panel-header cq-panel-header--obligatorias">
           <div class="cq-panel-title">
             <i class="bi bi-shield-check-fill"></i>
-            <span>Cuotas obligatorias</span>
+            <span>{{ 'CQ.SECTION_MANDATORY' | translate }}</span>
           </div>
           <div class="cq-panel-header-right">
             <button *ngIf="hayFiltrosActivos" class="cq-filter-clear-btn" (click)="resetFiltros()">
-              <i class="bi bi-x-lg"></i> Limpiar filtros
+              <i class="bi bi-x-lg"></i> {{ 'CQ.BTN_CLEAR_FILTERS' | translate }}
             </button>
             <span class="cq-badge cq-badge--primary">{{ cuotasObligatoriasFiltered.length }}</span>
           </div>
@@ -174,13 +168,13 @@
         <div class="cq-list">
           <div class="cq-list-header">
             <span class="cq-col-check" *ngIf="stripeBtoShow"></span>
-            <span class="cq-col-name">Concepto</span>
-            <span class="cq-col-tipo">Tipo de pago</span>
-            <span class="cq-col-num">Importe</span>
-            <span class="cq-col-num">Pagado</span>
-            <span class="cq-col-fecha">Vencimiento</span>
-            <span class="cq-col-fecha">Fecha pago</span>
-            <span class="cq-col-action cq-col-action--header">Acciones</span>
+            <span class="cq-col-name">{{ 'CQ.COL_CONCEPT' | translate }}</span>
+            <span class="cq-col-tipo">{{ 'CQ.COL_PAYMENT_TYPE' | translate }}</span>
+            <span class="cq-col-num">{{ 'CQ.COL_AMOUNT' | translate }}</span>
+            <span class="cq-col-num">{{ 'CQ.COL_PAID' | translate }}</span>
+            <span class="cq-col-fecha">{{ 'CQ.COL_DUE_DATE' | translate }}</span>
+            <span class="cq-col-fecha">{{ 'CQ.COL_PAYMENT_DATE' | translate }}</span>
+            <span class="cq-col-action cq-col-action--header">{{ 'CQ.COL_ACTIONS' | translate }}</span>
           </div>
 
           <!-- Fila de filtros por columna -->
@@ -189,17 +183,17 @@
             <div class="cq-col-name">
               <input class="cq-filter-input" type="text"
                      [(ngModel)]="filtroConcepto"
-                     placeholder="Buscar concepto..."
+                     [placeholder]="'CQ.PLACEHOLDER_CONCEPT' | translate"
                      [class.cq-filter-active]="filtroConcepto" />
             </div>
             <div class="cq-col-tipo">
               <select class="cq-filter-select"
                       [(ngModel)]="filtroTipoPago"
                       [class.cq-filter-active]="filtroTipoPago">
-                <option value="">Todos</option>
-                <option value="0">Puntual</option>
+                <option value="">{{ 'CQ.FILTER_ALL' | translate }}</option>
+                <option value="0">{{ 'CQ.FILTER_ONETIME' | translate }}</option>
                 <option value="1">Sphaira Pay</option>
-                <option value="2">Manual</option>
+                <option value="2">{{ 'CQ.FILTER_MANUAL' | translate }}</option>
               </select>
             </div>
             <div class="cq-col-num">
@@ -209,10 +203,10 @@
               <select class="cq-filter-select"
                       [(ngModel)]="filtroEstadoPago"
                       [class.cq-filter-active]="filtroEstadoPago">
-                <option value="">Todos</option>
-                <option value="pagado">Pagado</option>
-                <option value="parcial">Parcial</option>
-                <option value="pendiente">Pendiente</option>
+                <option value="">{{ 'CQ.FILTER_ALL' | translate }}</option>
+                <option value="pagado">{{ 'CQ.FILTER_PAID' | translate }}</option>
+                <option value="parcial">{{ 'CQ.FILTER_PARTIAL' | translate }}</option>
+                <option value="pendiente">{{ 'CQ.FILTER_PENDING' | translate }}</option>
               </select>
             </div>
             <div class="cq-col-fecha">
@@ -224,9 +218,9 @@
               <select class="cq-filter-select"
                       [(ngModel)]="filtroFechaPago"
                       [class.cq-filter-active]="filtroFechaPago">
-                <option value="">Todos</option>
-                <option value="conFecha">Con fecha</option>
-                <option value="pendiente">Pendiente</option>
+                <option value="">{{ 'CQ.FILTER_ALL' | translate }}</option>
+                <option value="conFecha">{{ 'CQ.FILTER_WITH_DATE' | translate }}</option>
+                <option value="pendiente">{{ 'CQ.FILTER_PENDING' | translate }}</option>
               </select>
             </div>
             <span class="cq-col-action"></span>
@@ -283,7 +277,7 @@
             </div>
 
             <div class="cq-col-num">
-              <span class="cq-label-mobile">Importe</span>
+              <span class="cq-label-mobile">{{ 'CQ.MOB_AMOUNT' | translate }}</span>
               <!-- Puntual: muestra solo el importe base. Sphaira Pay: importe total con comisiones. -->
               <span class="cq-amount" *ngIf="!isSphaira(cuota)">
                 {{ parseFloatHelper(cuota.importe) }} €
@@ -294,7 +288,7 @@
               </span>
             </div>
             <div class="cq-col-num">
-              <span class="cq-label-mobile">Pagado</span>
+              <span class="cq-label-mobile">{{ 'CQ.MOB_PAID' | translate }}</span>
               <span class="cq-amount cq-amount--paid"
                     [title]="(+cuota.pagado) > 0 ? 'Base registrada: ' + cuota.pagado + ' €' : ''">
                 {{ getPagadoVisible(cuota) }} €
@@ -302,11 +296,11 @@
             </div>
 
             <div class="cq-col-fecha">
-              <span class="cq-label-mobile">Vence</span>
+              <span class="cq-label-mobile">{{ 'CQ.MOB_DUE' | translate }}</span>
               <span class="cq-fecha">{{ cuota.plazo || '-' }}</span>
             </div>
             <div class="cq-col-fecha">
-              <span class="cq-label-mobile">F. pago</span>
+              <span class="cq-label-mobile">{{ 'CQ.MOB_PAY_DATE' | translate }}</span>
               <span class="cq-fecha">{{ cuota.fechaPago || '-' }}</span>
             </div>
 
@@ -315,19 +309,19 @@
                 <span *ngIf="isSphaira(cuota) && savedCards.length > 0"
                       class="cq-action-btn cq-action-btn--sphaira-auto">
                   <i class="bi bi-patch-check-fill"></i>
-                  <span class="cq-action-tooltip cq-action-tooltip--left">Cobro automático con Sphaira Pay</span>
+                  <span class="cq-action-tooltip cq-action-tooltip--left">{{ 'CQ.TT_AUTO_CHARGE' | translate }}</span>
                 </span>
                 <button *ngIf="isSphaira(cuota) && stripeBtoShow && savedCards.length === 0"
                         class="cq-action-btn cq-action-btn--subscribe"
                         (click)="openModalStripeParaCuota(cuota)">
                   <i class="bi bi-lightning-charge-fill"></i>
-                  <span class="cq-action-tooltip cq-action-tooltip--left">Vincular tarjeta</span>
+                  <span class="cq-action-tooltip cq-action-tooltip--left">{{ 'CQ.TT_LINK_CARD' | translate }}</span>
                 </button>
                 <button *ngIf="canCancelCuota(cuota)"
                         class="cq-action-btn cq-action-btn--cancel"
                         (click)="requestCancelCuota(cuota)">
                   <i class="bi bi-x-lg"></i>
-                  <span class="cq-action-tooltip cq-action-tooltip--left">Cancelar</span>
+                  <span class="cq-action-tooltip cq-action-tooltip--left">{{ 'CQ.TT_CANCEL' | translate }}</span>
                 </button>
               </ng-container>
             </div>
@@ -335,7 +329,7 @@
 
           <div class="cq-empty" *ngIf="!cuotasObligatoriasFiltered.length">
             <i class="bi bi-inbox"></i>
-            <span>Sin cuotas obligatorias asignadas</span>
+            <span>{{ 'CQ.EMPTY_MANDATORY' | translate }}</span>
           </div>
         </div>
 
@@ -433,11 +427,11 @@
         <div class="cq-panel-header cq-panel-header--opcionales">
           <div class="cq-panel-title">
             <i class="bi bi-bookmark-star-fill"></i>
-            <span>Cuotas opcionales</span>
+            <span>{{ 'CQ.SECTION_OPTIONAL' | translate }}</span>
           </div>
           <div class="cq-panel-header-right">
             <button *ngIf="hayFiltrosActivos" class="cq-filter-clear-btn" (click)="resetFiltros()">
-              <i class="bi bi-x-lg"></i> Limpiar filtros
+              <i class="bi bi-x-lg"></i> {{ 'CQ.BTN_CLEAR_FILTERS' | translate }}
             </button>
             <span class="cq-badge cq-badge--secondary">{{ cuotasNoObligatoriasFiltered.length }}</span>
           </div>
@@ -446,13 +440,13 @@
         <div class="cq-list">
           <div class="cq-list-header">
             <span class="cq-col-check" *ngIf="stripeBtoShow"></span>
-            <span class="cq-col-name">Concepto</span>
-            <span class="cq-col-tipo">Tipo de pago</span>
-            <span class="cq-col-num">Importe</span>
-            <span class="cq-col-num">Pagado</span>
-            <span class="cq-col-fecha">Vencimiento</span>
-            <span class="cq-col-fecha">Fecha pago</span>
-            <span class="cq-col-action cq-col-action--header">Acciones</span>
+            <span class="cq-col-name">{{ 'CQ.COL_CONCEPT' | translate }}</span>
+            <span class="cq-col-tipo">{{ 'CQ.COL_PAYMENT_TYPE' | translate }}</span>
+            <span class="cq-col-num">{{ 'CQ.COL_AMOUNT' | translate }}</span>
+            <span class="cq-col-num">{{ 'CQ.COL_PAID' | translate }}</span>
+            <span class="cq-col-fecha">{{ 'CQ.COL_DUE_DATE' | translate }}</span>
+            <span class="cq-col-fecha">{{ 'CQ.COL_PAYMENT_DATE' | translate }}</span>
+            <span class="cq-col-action cq-col-action--header">{{ 'CQ.COL_ACTIONS' | translate }}</span>
           </div>
 
           <!-- Fila de filtros por columna -->
@@ -461,17 +455,17 @@
             <div class="cq-col-name">
               <input class="cq-filter-input" type="text"
                      [(ngModel)]="filtroConcepto"
-                     placeholder="Buscar concepto..."
+                     [placeholder]="'CQ.PLACEHOLDER_CONCEPT' | translate"
                      [class.cq-filter-active]="filtroConcepto" />
             </div>
             <div class="cq-col-tipo">
               <select class="cq-filter-select"
                       [(ngModel)]="filtroTipoPago"
                       [class.cq-filter-active]="filtroTipoPago">
-                <option value="">Todos</option>
-                <option value="0">Puntual</option>
+                <option value="">{{ 'CQ.FILTER_ALL' | translate }}</option>
+                <option value="0">{{ 'CQ.FILTER_ONETIME' | translate }}</option>
                 <option value="1">Sphaira Pay</option>
-                <option value="2">Manual</option>
+                <option value="2">{{ 'CQ.FILTER_MANUAL' | translate }}</option>
               </select>
             </div>
             <div class="cq-col-num"></div>
@@ -479,10 +473,10 @@
               <select class="cq-filter-select"
                       [(ngModel)]="filtroEstadoPago"
                       [class.cq-filter-active]="filtroEstadoPago">
-                <option value="">Todos</option>
-                <option value="pagado">Pagado</option>
-                <option value="parcial">Parcial</option>
-                <option value="pendiente">Pendiente</option>
+                <option value="">{{ 'CQ.FILTER_ALL' | translate }}</option>
+                <option value="pagado">{{ 'CQ.FILTER_PAID' | translate }}</option>
+                <option value="parcial">{{ 'CQ.FILTER_PARTIAL' | translate }}</option>
+                <option value="pendiente">{{ 'CQ.FILTER_PENDING' | translate }}</option>
               </select>
             </div>
             <div class="cq-col-fecha">
@@ -494,9 +488,9 @@
               <select class="cq-filter-select"
                       [(ngModel)]="filtroFechaPago"
                       [class.cq-filter-active]="filtroFechaPago">
-                <option value="">Todos</option>
-                <option value="conFecha">Con fecha</option>
-                <option value="pendiente">Pendiente</option>
+                <option value="">{{ 'CQ.FILTER_ALL' | translate }}</option>
+                <option value="conFecha">{{ 'CQ.FILTER_WITH_DATE' | translate }}</option>
+                <option value="pendiente">{{ 'CQ.FILTER_PENDING' | translate }}</option>
               </select>
             </div>
             <span class="cq-col-action"></span>
@@ -552,7 +546,7 @@
             </div>
 
             <div class="cq-col-num">
-              <span class="cq-label-mobile">Importe</span>
+              <span class="cq-label-mobile">{{ 'CQ.MOB_AMOUNT' | translate }}</span>
               <!-- Puntual: muestra solo el importe base. Sphaira Pay: importe total con comisiones. -->
               <span class="cq-amount" *ngIf="!isSphaira(cuota)">
                 {{ parseFloatHelper(cuota.importe) }} €
@@ -563,18 +557,18 @@
               </span>
             </div>
             <div class="cq-col-num">
-              <span class="cq-label-mobile">Pagado</span>
+              <span class="cq-label-mobile">{{ 'CQ.MOB_PAID' | translate }}</span>
               <span class="cq-amount cq-amount--paid"
                     [title]="(+cuota.pagado) > 0 ? 'Base registrada: ' + cuota.pagado + ' €' : ''">
                 {{ getPagadoVisible(cuota) }} €
               </span>
             </div>
             <div class="cq-col-fecha">
-              <span class="cq-label-mobile">Vence</span>
+              <span class="cq-label-mobile">{{ 'CQ.MOB_DUE' | translate }}</span>
               <span class="cq-fecha">{{ cuota.plazo || '-' }}</span>
             </div>
             <div class="cq-col-fecha">
-              <span class="cq-label-mobile">F. pago</span>
+              <span class="cq-label-mobile">{{ 'CQ.MOB_PAY_DATE' | translate }}</span>
               <span class="cq-fecha">{{ cuota.fechaPago || '-' }}</span>
             </div>
             <div class="cq-col-action cq-action-group" (click)="$event.stopPropagation()">
@@ -582,19 +576,19 @@
                 <span *ngIf="isSphaira(cuota) && savedCards.length > 0"
                       class="cq-action-btn cq-action-btn--sphaira-auto">
                   <i class="bi bi-patch-check-fill"></i>
-                  <span class="cq-action-tooltip cq-action-tooltip--left">Cobro automático con Sphaira Pay</span>
+                  <span class="cq-action-tooltip cq-action-tooltip--left">{{ 'CQ.TT_AUTO_CHARGE' | translate }}</span>
                 </span>
                 <button *ngIf="isSphaira(cuota) && stripeBtoShow && savedCards.length === 0"
                         class="cq-action-btn cq-action-btn--subscribe"
                         (click)="openModalStripeParaCuota(cuota)">
                   <i class="bi bi-lightning-charge-fill"></i>
-                  <span class="cq-action-tooltip cq-action-tooltip--left">Vincular tarjeta</span>
+                  <span class="cq-action-tooltip cq-action-tooltip--left">{{ 'CQ.TT_LINK_CARD' | translate }}</span>
                 </button>
                 <button *ngIf="canCancelCuota(cuota)"
                         class="cq-action-btn cq-action-btn--cancel"
                         (click)="requestCancelCuota(cuota)">
                   <i class="bi bi-x-lg"></i>
-                  <span class="cq-action-tooltip cq-action-tooltip--left">Cancelar</span>
+                  <span class="cq-action-tooltip cq-action-tooltip--left">{{ 'CQ.TT_CANCEL' | translate }}</span>
                 </button>
               </ng-container>
             </div>
@@ -602,7 +596,7 @@
 
           <div class="cq-empty" *ngIf="!cuotasNoObligatoriasFiltered.length">
             <i class="bi bi-inbox"></i>
-            <span>Sin cuotas opcionales asignadas</span>
+            <span>{{ 'CQ.EMPTY_OPTIONAL' | translate }}</span>
           </div>
         </div>
 
@@ -698,30 +692,30 @@
     <section class="cuotas-section cuotas-transfer" *ngIf="banco || asunto || contacto || bizum" data-tutorial="cq-transfer">
       <h2 class="section-title">
         <i class="bi bi-bank2"></i>
-        Pago por transferencia
+        {{ 'CQ.TRANSFER_TITLE' | translate }}
       </h2>
-      <p class="transfer-disclaimer">Solo si tu club lo permite. Indica el concepto y notifica al club una vez realizado.</p>
+      <p class="transfer-disclaimer">{{ 'CQ.TRANSFER_DISCLAIMER' | translate }}</p>
       <div class="transfer-card">
         <div class="transfer-row">
-          <span class="transfer-label">IBAN / Cuenta</span>
+          <span class="transfer-label">{{ 'CQ.TRANSFER_IBAN' | translate }}</span>
           <span class="transfer-value">{{ banco }}</span>
         </div>
         <div class="transfer-row">
-          <span class="transfer-label">Concepto / Asunto</span>
+          <span class="transfer-label">{{ 'CQ.TRANSFER_CONCEPT' | translate }}</span>
           <span class="transfer-value">{{ asunto }}</span>
         </div>
         <div class="transfer-row">
-          <span class="transfer-label">Contacto</span>
+          <span class="transfer-label">{{ 'CQ.TRANSFER_CONTACT' | translate }}</span>
           <span class="transfer-value">{{ contacto }}</span>
         </div>
         <div class="transfer-row" *ngIf="bizum">
-          <span class="transfer-label">Bizum</span>
+          <span class="transfer-label">{{ 'CQ.TRANSFER_BIZUM' | translate }}</span>
           <span class="transfer-value">{{ bizum }}</span>
         </div>
       </div>
       <div class="transfer-tip">
         <i class="bi bi-info-circle"></i>
-        Notifica al club cuando hayas realizado la transferencia para que registre el pago.
+        {{ 'CQ.TRANSFER_TIP' | translate }}
       </div>
     </section>
 
@@ -741,8 +735,8 @@
           <i class="bi bi-lightning-charge-fill"></i>
         </div>
         <div>
-          <h2 class="premium-modal-title">Sphaira Pay</h2>
-          <p class="premium-modal-subtitle">Introduce tus datos de pago para gestionar tus cuotas del club</p>
+          <h2 class="premium-modal-title">{{ 'CQ.MODAL_SP_TITLE' | translate }}</h2>
+          <p class="premium-modal-subtitle">{{ 'CQ.MODAL_SP_SUBTITLE' | translate }}</p>
         </div>
       </div>
       <button class="premium-modal-close" (click)="closeModalTarjetas()">
@@ -774,7 +768,7 @@
               <span>{{ c.brand | titlecase }}</span>
             </div>
             <div class="pcv-exp">
-              <small>Vence</small>
+              <small>{{ 'CQ.CARD_EXPIRES' | translate }}</small>
               <span>{{ c.expMonth < 10 ? '0' + c.expMonth : c.expMonth }}/{{ c.expYear }}</span>
             </div>
             <button class="pcv-delete" (click)="requestDeleteCard(c)" title="Eliminar tarjeta">
@@ -789,15 +783,15 @@
         <div class="tarjetas-empty-icon">
           <i class="bi bi-credit-card"></i>
         </div>
-        <h3>No tienes tarjetas guardadas</h3>
-        <p>Guarda una tarjeta para pagar tus cuotas de forma rápida y segura.</p>
+        <h3>{{ 'CQ.CARD_EMPTY_TITLE' | translate }}</h3>
+        <p>{{ 'CQ.CARD_EMPTY_DESC' | translate }}</p>
       </div>
 
       <!-- Botón añadir -->
       <div class="modal-add-action" *ngIf="!showSaveCardSection && !savedCardsLoading">
         <button class="btn-add-card" (click)="openSaveCardSection()">
           <i class="bi bi-plus-lg"></i>
-          <span>Añadir tarjeta</span>
+          <span>{{ 'CQ.BTN_ADD_CARD' | translate }}</span>
         </button>
       </div>
 
@@ -805,44 +799,39 @@
       <div class="save-card-panel" *ngIf="showSaveCardSection">
         <div class="scp-security-badge">
           <i class="bi bi-shield-lock-fill"></i>
-          <span>Pago seguro con cifrado SSL — Procesado por <strong>Stripe</strong></span>
+          <span [innerHTML]="'CQ.SECURE_BADGE' | translate"></span>
         </div>
 
         <div class="scp-auth-box">
           <div class="scp-auth-header">
             <i class="bi bi-file-earmark-text-fill"></i>
-            <strong>Autorización de cobro</strong>
+            <strong>{{ 'CQ.AUTH_HEADER' | translate }}</strong>
           </div>
-          <p class="scp-auth-text">
-            Autorizo a <strong>Sphaira Tech</strong> a realizar cargos en mi tarjeta de crédito/débito
-            por los importes correspondientes a las cuotas y pagos del club
-            <strong>{{ nameClub }}</strong>. He leído y acepto los Términos y Condiciones.
-            Soy mayor de edad o tutor legal del jugador.
-          </p>
+          <p class="scp-auth-text" [innerHTML]="'CQ.AUTH_TEXT' | translate:{ club: nameClub }"></p>
           <label class="scp-check-label">
             <input type="checkbox" class="scp-check-input" [(ngModel)]="cardAuthAccepted" [ngModelOptions]="{standalone: true}">
             <span class="scp-check-box">
               <i class="bi bi-check-lg"></i>
             </span>
-            <span>Acepto la autorización de cobro y los Términos y Condiciones.</span>
+            <span>{{ 'CQ.AUTH_ACCEPT' | translate }}</span>
           </label>
         </div>
 
         <div class="scp-card-input-wrap" [class.scp-card-input-wrap--disabled]="!cardAuthAccepted">
           <label class="scp-card-label">
-            <i class="bi bi-credit-card me-2"></i>Datos de la tarjeta
+            <i class="bi bi-credit-card me-2"></i>{{ 'CQ.CARD_LABEL' | translate }}
           </label>
           <div id="save-card-element" class="stripe-card-wrap stripe-card-wrap--premium"></div>
           <p class="scp-card-hint">
             <i class="bi bi-lock-fill"></i>
-            Tu información está cifrada y protegida. Nunca almacenamos tu CVV.
+            {{ 'CQ.CARD_HINT' | translate }}
           </p>
         </div>
 
         <div class="scp-feedback scp-feedback--error" *ngIf="saveCardError">
           <i class="bi bi-exclamation-triangle-fill"></i>
           <div class="scp-feedback-body">
-            <strong>No se pudo guardar la tarjeta</strong>
+            <strong>{{ 'CQ.CARD_SAVE_ERROR' | translate }}</strong>
             <p>{{ saveCardError }}</p>
           </div>
           <button class="scp-feedback-close" (click)="saveCardError = ''" title="Cerrar">
@@ -860,14 +849,14 @@
         <div class="scp-actions">
           <button class="btn-save-card-primary" [disabled]="!cardAuthAccepted || saveCardLoading" (click)="startSaveCard()">
             <span *ngIf="!saveCardLoading">
-              <i class="bi bi-shield-check me-2"></i>Guardar tarjeta de forma segura
+              <i class="bi bi-shield-check me-2"></i>{{ 'CQ.BTN_SAVE_CARD' | translate }}
             </span>
             <span *ngIf="saveCardLoading" class="btn-loading">
-              <span class="btn-spinner"></span>Guardando...
+              <span class="btn-spinner"></span>{{ 'CQ.BTN_SAVING' | translate }}
             </span>
           </button>
           <button class="btn-cancel-card" (click)="closeSaveCardSection()">
-            <i class="bi bi-x-lg me-1"></i>Cancelar
+            <i class="bi bi-x-lg me-1"></i>{{ 'CQ.BTN_CANCEL' | translate }}
           </button>
         </div>
       </div><!-- /save-card-panel -->
@@ -878,12 +867,9 @@
           <i class="bi bi-exclamation-triangle-fill"></i>
         </div>
         <h3 class="delete-card-dialog-title">
-          {{ cardToDelete?.shared ? '¿Eliminar tarjeta compartida?' : '¿Eliminar tarjeta?' }}
+          {{ cardToDelete?.shared ? ('CQ.DELETE_SHARED_TITLE' | translate) : ('CQ.DELETE_TITLE' | translate) }}
         </h3>
-        <p class="delete-card-dialog-text" *ngIf="cardToDelete?.shared">
-          Esta tarjeta está asociada a <strong>todos tus jugadores</strong> del club.
-          Al eliminarla dejará de estar disponible para todos ellos.
-        </p>
+        <p class="delete-card-dialog-text" *ngIf="cardToDelete?.shared" [innerHTML]="'CQ.DELETE_SHARED_MSG' | translate"></p>
         <p class="delete-card-dialog-text" *ngIf="!cardToDelete?.shared">
           Se eliminará la tarjeta terminada en <strong>{{ cardToDelete?.last4 }}</strong>.
           Esta acción no se puede deshacer.
@@ -919,7 +905,7 @@
         </p>
         <div class="link-all-players-actions">
           <button class="btn-link-yes" (click)="confirmLinkAllPlayers(true)" [disabled]="saveCardLoading">
-            <i class="bi bi-check-lg me-1"></i>Sí, asociar a todos
+            <i class="bi bi-check-lg me-1"></i>{{ 'CQ.DELETE_CONFIRM_ALL' | translate }}
           </button>
           <button class="btn-link-no" (click)="confirmLinkAllPlayers(false)" [disabled]="saveCardLoading">
             Solo este jugador
@@ -944,8 +930,8 @@
           <i class="bi bi-x-circle-fill"></i>
         </div>
         <div>
-          <h2 class="premium-modal-title">Cancelar couta</h2>
-          <p class="premium-modal-subtitle">Solicitar el desistimiento de esta cuota al club</p>
+          <h2 class="premium-modal-title">{{ 'CQ.MODAL_CANCEL_TITLE' | translate }}</h2>
+          <p class="premium-modal-subtitle">{{ 'CQ.MODAL_CANCEL_SUBTITLE' | translate }}</p>
         </div>
       </div>
       <button class="premium-modal-close" (click)="dismissCancelCuota()">
@@ -995,14 +981,14 @@
                 [disabled]="cancelCuotaLoading"
                 (click)="confirmCancelCuota()">
           <span *ngIf="!cancelCuotaLoading">
-            <i class="bi bi-x-circle me-1"></i>Confirmar cancelación
+            <i class="bi bi-x-circle me-1"></i>{{ 'CQ.BTN_CONFIRM_CANCEL' | translate }}
           </span>
           <span *ngIf="cancelCuotaLoading" class="btn-loading">
-            <span class="btn-spinner btn-spinner--danger"></span>Procesando...
+            <span class="btn-spinner btn-spinner--danger"></span>{{ 'CQ.BTN_PROCESSING' | translate }}
           </span>
         </button>
         <button class="btn-cancel-cuota-dismiss" [disabled]="cancelCuotaLoading" (click)="dismissCancelCuota()">
-          <i class="bi bi-arrow-left me-1"></i>Volver
+          <i class="bi bi-arrow-left me-1"></i>{{ 'CQ.BTN_BACK' | translate }}
         </button>
       </div>
     </div>
