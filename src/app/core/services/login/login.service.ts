@@ -178,6 +178,11 @@ export class LoginService {
       this.demoService.clearDemoRole();
     }
 
+    // En demo siempre volver a /demo-role (entrada natural de la demo)
+    if (this.demoService.isDemoMode()) {
+      this.router.navigate(['/demo-role']);
+      return;
+    }
     const route = byInactivity ? ['/login'] : ['/home'];
     this.router.navigate(route, byInactivity ? { queryParams: { reason: 'inactivity' } } : {});
   }
@@ -253,9 +258,9 @@ export class LoginService {
    * Combina loginDemoLocal + setDemoUserAndNavigate en un solo paso, sin
    * intermediar por /demo-role. Pensado para el flujo de intro storytelling.
    */
-  loginDemoAndSetRole(email: string, role: DemoRole): void {
+  loginDemoAndSetRole(email: string, role: DemoRole): Promise<boolean> {
     const trimmed = (email || '').trim();
-    if (!trimmed) return;
+    if (!trimmed) return Promise.resolve(false);
     const profileId: 1 | 2 | 3 = role === 'club' ? 1 : role === 'coach' ? 2 : 3;
     const profileNames: Record<DemoRole, string> = { club: 'Club', coach: 'Entrenador', player: 'Jugador' };
     const demoAvatars: Record<DemoRole, string> = {
@@ -288,7 +293,7 @@ export class LoginService {
     localStorage.setItem('token', token);
     this['usuarioAutenticado'].next(new User(plain));
     this.demoService.setDemoRole(role);
-    this.router.navigate(['/dashboard/inicio']);
+    return this.router.navigate(['/dashboard/inicio']).catch(() => false);
   }
 
   /**

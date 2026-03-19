@@ -13,8 +13,8 @@ import { DemoRoleSelectionComponent } from './pages/demo-role/demo-role.componen
 
 const appRoutes: Routes = [
   { path: '', redirectTo: '/demo-role', pathMatch: 'full' },
-  { path: 'home', component: HomeComponent, canActivate: [AlreadyAuthGuard] },
-  { path: 'login', redirectTo: '/home', pathMatch: 'full' },
+  { path: 'home', redirectTo: '/demo-role', pathMatch: 'full' },
+  { path: 'login', redirectTo: '/demo-role', pathMatch: 'full' },
   { path: 'login/:token', component: LoginComponent },
   { path: 'demo-role', component: DemoRoleSelectionComponent },
   { path: 'registro', component: RegisterComponent },

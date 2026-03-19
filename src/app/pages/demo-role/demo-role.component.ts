@@ -328,6 +328,8 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
   private currentLang = 'es';
   private audioPlayer?: HTMLAudioElement;
   private timeupdateHandler?: () => void;
+  /** Evita actualizaciones de estado después de que el componente se destruya (post-navegación). */
+  private destroyed = false;
 
   /** Cues con timestamps calculados una vez conocida la duración del audio. */
   private activeCues: Array<{ time: number; slideIdx: number; lineCount: number }> = [];
@@ -417,6 +419,7 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
     this.stopAudio();
   }
 
@@ -604,6 +607,7 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
   }
 
   goToStep2(): void {
+    this.stopAudio();   // detener narración al entrar a la selección de rol
     this.step = 2;
     this.cdr.markForCheck();
     setTimeout(() => {
@@ -620,9 +624,10 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
   // ═══════════════════════════════════════════════════════════════════════════
 
   onRoleCardClick(role: DemoRole): void {
-    this.selectedRole = role;
-    this.emailValue   = '';
-    this.emailError   = '';
+    this.selectedRole   = role;
+    this.emailValue     = '';
+    this.emailError     = '';
+    this.isLoading      = false;   // reset por si quedó sucio de un intento anterior
     this.showEmailModal = true;
     setTimeout(() => this.emailInputRef?.nativeElement.focus(), 80);
   }
@@ -631,6 +636,9 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     if (event && (event.target as HTMLElement).closest('.email-modal__card')) return;
     this.showEmailModal = false;
     this.selectedRole   = null;
+    this.isLoading      = false;   // siempre resetear al cerrar
+    this.emailError     = '';
+    this.cdr.markForCheck();
   }
 
   confirmDemoAccess(): void {
@@ -638,13 +646,33 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
       this.emailError = this.translate.instant('DEMO_INTRO.EMAIL_ERROR');
       return;
     }
-    if (!this.selectedRole) return;
+    if (!this.selectedRole || this.isLoading) return;
+
+    const role  = this.selectedRole;
+    const email = this.emailValue.trim();
+
     this.isLoading  = true;
     this.emailError = '';
     this.cdr.markForCheck();
-    setTimeout(() => {
-      this.loginService.loginDemoAndSetRole(this.emailValue.trim(), this.selectedRole!);
-    }, 400);
+
+    // Llamar directamente (sin setTimeout largo) y manejar el resultado de la navegación.
+    // Si router.navigate devuelve false o lanza, el componente no se destruye → resetear estado.
+    this.loginService.loginDemoAndSetRole(email, role)
+      .then((navigated) => {
+        if (this.destroyed) return; // navegación OK → componente destruido
+        if (!navigated) {
+          // La navegación fue bloqueada (guard devolvió false)
+          this.isLoading  = false;
+          this.emailError = this.translate.instant('DEMO_INTRO.EMAIL_ERROR');
+          this.cdr.markForCheck();
+        }
+      })
+      .catch(() => {
+        if (this.destroyed) return;
+        this.isLoading  = false;
+        this.emailError = this.translate.instant('DEMO_INTRO.EMAIL_ERROR');
+        this.cdr.markForCheck();
+      });
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
