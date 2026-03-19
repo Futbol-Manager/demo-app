@@ -11,7 +11,7 @@
     <h2>
       {{ 'INFO_EQUIPO.TITLE' | translate }}
     </h2>
-    <p class="header-subtitle">Configura los datos y la información general del equipo</p>
+    <p class="header-subtitle">{{ 'INFO_EQUIPO.SUBTITLE' | translate }}</p>
   </div>
 
   <div class="page-header-spacer"></div>
@@ -44,7 +44,7 @@
             </div>
             <div *ngIf="logoUploading" class="logo-loading">
               <div class="logo-spinner"></div>
-              <span>Subiendo...</span>
+              <span>{{ 'INFO_EQUIPO.UPLOADING' | translate }}</span>
             </div>
           </div>
 
@@ -84,7 +84,7 @@
 
           <div class="form-section-header">
             <span class="form-section-icon"><i class="bi bi-pencil-square"></i></span>
-            <span class="form-section-label">Datos del equipo</span>
+            <span class="form-section-label">{{ 'INFO_EQUIPO.TEAM_DATA_TITLE' | translate }}</span>
           </div>
 
           <div data-tutorial="ie-form-datos">
@@ -150,7 +150,7 @@
 
           <div class="form-section-header mt-form" data-tutorial="ie-form-objetivos">
             <span class="form-section-icon"><i class="bi bi-chat-left-text"></i></span>
-            <span class="form-section-label">Objetivos y opiniones</span>
+            <span class="form-section-label">{{ 'INFO_EQUIPO.OBJECTIVES_TITLE' | translate }}</span>
           </div>
 
           <div class="form-row">
@@ -193,7 +193,7 @@
       <div class="staff-card">
         <div class="staff-header">
           <i class="bi bi-people-fill staff-icon"></i>
-          <h3 class="staff-title">Staff del equipo</h3>
+          <h3 class="staff-title">{{ 'INFO_EQUIPO.STAFF_TITLE' | translate }}</h3>
           <ng-container *ngIf="coaches.length < 4 && (team.userId == usuarioActual?.userId || usuarioActual?.profileType?.profileId == 1)">
             <button type="button" class="btn-invite" (click)="abrirModalInvitarEntenador()">
               <i class="bi bi-person-plus-fill"></i>
@@ -230,7 +230,7 @@
         </div>
         <p class="staff-empty" *ngIf="!hasStaffCoaches">
           <i class="bi bi-people"></i>
-          Aún no hay staff asignado.
+          {{ 'INFO_EQUIPO.STAFF_EMPTY' | translate }}
         </p>
       </div>
     </aside>

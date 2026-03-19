@@ -241,6 +241,7 @@ export class DemoDataService {
           playerId: p.playerId, nombre: p.nombre, apellido: p.apellido, dorsal: p.dorsal, numero: p.dorsal, nameTeam: meta.name,
           fechaDeNacimiento: p.fechaDeNacimiento, piernaNatural: p.piernaNatural,
           telefono: p.telefono, dni: p.dni, emailPadre: p.emailPadre,
+          picturePlayer: p.picturePlayer,
         })),
       };
     });
@@ -918,33 +919,35 @@ export class DemoDataService {
     const anteayer = new Date(now);
     anteayer.setDate(anteayer.getDate() - 2);
 
-    const avatar = (i: number) => `notif-avatar-${((i - 1) % DemoDataService.DEMO_NOTIF_AVATARS) + 1}.jpg`;
-
+    // Avatares confirmados por screenshot: M=3,5,7 | F=1,2,4,6,8
+    // Avatares asumidos (impares=M, pares=F): M=9,11,13,15 | F=10,12,14,16
+    // Hay 9 nombres masculinos y 7 femeninos → se usan los 7 avatares M para los más visibles
+    // Francisco Martín y Daniel Torres (posiciones 14 y 16, menos visibles) usan avatar 1 y 6 (F) inevitablemente
     const recibidosBase = [
-      { remitente: 'Carlos García', asunto: 'Consulta sobre horarios', body: '<p>Buenos días, quisiera consultar los horarios de la próxima semana.</p>', fecha: now, leido: 0 },
-      { remitente: 'Miguel López', asunto: 'Documentación actualizada', body: '<p>Adjunto la documentación solicitada.</p>', fecha: ayer, leido: 1 },
-      { remitente: 'Ana Martínez', asunto: 'Confirmación convocatoria', body: '<p>Confirmo mi asistencia al partido del sábado. Gracias.</p>', fecha: now, leido: 0 },
-      { remitente: 'David Sánchez', asunto: 'Duda sobre equipación', body: '<p>¿Podéis indicar dónde recoger la equipación nueva? Gracias.</p>', fecha: ayer, leido: 1 },
-      { remitente: 'Laura Fernández', asunto: 'Re: Entrenamiento de porteros', body: '<p>El entrenamiento de porteros queda confirmado para el jueves a las 18:00.</p>', fecha: now, leido: 0 },
-      { remitente: 'Pablo Ruiz', asunto: 'Baja por lesión', body: '<p>Comunico que no podré asistir esta semana por una pequeña lesión. Os mantendré informados.</p>', fecha: anteayer, leido: 1 },
-      { remitente: 'Elena Gómez', asunto: 'Horario de la próxima jornada', body: '<p>¿A qué hora es la concentración del próximo partido?</p>', fecha: now, leido: 0 },
-      { remitente: 'Javier Pérez', asunto: 'Cuota de temporada', body: '<p>He realizado el pago de la cuota. ¿Podéis confirmar que ha llegado?</p>', fecha: ayer, leido: 1 },
-      { remitente: 'Sara Díaz', asunto: 'Felicidades por el resultado', body: '<p>Enhorabuena por la victoria del domingo. ¡Seguimos así!</p>', fecha: now, leido: 0 },
-      { remitente: 'Roberto Moreno', asunto: 'Cambio de dorsal', body: '<p>Solicito cambio de dorsal para la próxima temporada si es posible.</p>', fecha: ayer, leido: 1 },
-      { remitente: 'Carmen López', asunto: 'Reunión de padres', body: '<p>¿La reunión de padres sigue siendo el viernes a las 19:00?</p>', fecha: now, leido: 0 },
-      { remitente: 'Antonio González', asunto: 'Material de entrenamiento', body: '<p>¿Necesitamos llevar algo especial al entrenamiento de mañana?</p>', fecha: anteayer, leido: 1 },
-      { remitente: 'Isabel Rodríguez', asunto: 'Cumpleaños del equipo', body: '<p>Propongo organizar una merienda para el cumple del equipo. ¿Qué os parece?</p>', fecha: now, leido: 0 },
-      { remitente: 'Francisco Martín', asunto: 'Acta del último partido', body: '<p>Cuando podáis, ¿me enviáis el acta del último partido? Gracias.</p>', fecha: ayer, leido: 1 },
-      { remitente: 'Patricia Jiménez', asunto: 'Vacaciones del entrenador', body: '<p>¿Quién cubre los entrenamientos la próxima semana?</p>', fecha: now, leido: 0 },
-      { remitente: 'Daniel Torres', asunto: 'Inscripción torneo verano', body: '<p>¿El club va a inscribir equipos en el torneo de verano? Estaríamos interesados.</p>', fecha: ayer, leido: 1 },
+      { remitente: 'Carlos García',   asunto: 'Consulta sobre horarios',         body: '<p>Buenos días, quisiera consultar los horarios de la próxima semana.</p>',                         fecha: now,      leido: 0, avatar: 'notif-avatar-3.jpg'  }, // M ✓
+      { remitente: 'Miguel López',    asunto: 'Documentación actualizada',        body: '<p>Adjunto la documentación solicitada.</p>',                                                        fecha: ayer,     leido: 1, avatar: 'notif-avatar-5.jpg'  }, // M ✓
+      { remitente: 'Ana Martínez',    asunto: 'Confirmación convocatoria',        body: '<p>Confirmo mi asistencia al partido del sábado. Gracias.</p>',                                     fecha: now,      leido: 0, avatar: 'notif-avatar-2.jpg'  }, // F ✓
+      { remitente: 'David Sánchez',   asunto: 'Duda sobre equipación',            body: '<p>¿Podéis indicar dónde recoger la equipación nueva? Gracias.</p>',                                fecha: ayer,     leido: 1, avatar: 'notif-avatar-7.jpg'  }, // M ✓
+      { remitente: 'Laura Fernández', asunto: 'Re: Entrenamiento de porteros',    body: '<p>El entrenamiento de porteros queda confirmado para el jueves a las 18:00.</p>',                  fecha: now,      leido: 0, avatar: 'notif-avatar-4.jpg'  }, // F ✓
+      { remitente: 'Pablo Ruiz',      asunto: 'Baja por lesión',                  body: '<p>Comunico que no podré asistir esta semana por una pequeña lesión. Os mantendré informados.</p>', fecha: anteayer, leido: 1, avatar: 'notif-avatar-9.jpg'  }, // M ✓
+      { remitente: 'Elena Gómez',     asunto: 'Horario de la próxima jornada',    body: '<p>¿A qué hora es la concentración del próximo partido?</p>',                                      fecha: now,      leido: 0, avatar: 'notif-avatar-8.jpg'  }, // F ✓
+      { remitente: 'Javier Pérez',    asunto: 'Cuota de temporada',               body: '<p>He realizado el pago de la cuota. ¿Podéis confirmar que ha llegado?</p>',                       fecha: ayer,     leido: 1, avatar: 'notif-avatar-11.jpg' }, // M ✓
+      { remitente: 'Sara Díaz',       asunto: 'Felicidades por el resultado',     body: '<p>Enhorabuena por la victoria del domingo. ¡Seguimos así!</p>',                                    fecha: now,      leido: 0, avatar: 'notif-avatar-10.jpg' }, // F ✓
+      { remitente: 'Roberto Moreno',  asunto: 'Cambio de dorsal',                 body: '<p>Solicito cambio de dorsal para la próxima temporada si es posible.</p>',                         fecha: ayer,     leido: 1, avatar: 'notif-avatar-13.jpg' }, // M ✓
+      { remitente: 'Carmen López',    asunto: 'Reunión de padres',                body: '<p>¿La reunión de padres sigue siendo el viernes a las 19:00?</p>',                                fecha: now,      leido: 0, avatar: 'notif-avatar-12.jpg' }, // F ✓
+      { remitente: 'Antonio González',asunto: 'Material de entrenamiento',        body: '<p>¿Necesitamos llevar algo especial al entrenamiento de mañana?</p>',                             fecha: anteayer, leido: 1, avatar: 'notif-avatar-15.jpg' }, // M ✓
+      { remitente: 'Isabel Rodríguez',asunto: 'Cumpleaños del equipo',            body: '<p>Propongo organizar una merienda para el cumple del equipo. ¿Qué os parece?</p>',                fecha: now,      leido: 0, avatar: 'notif-avatar-14.jpg' }, // F ✓
+      { remitente: 'Francisco Martín',asunto: 'Acta del último partido',          body: '<p>Cuando podáis, ¿me enviáis el acta del último partido? Gracias.</p>',                           fecha: ayer,     leido: 1, avatar: 'notif-avatar-1.jpg'  }, // (M sin avatar M disponible)
+      { remitente: 'Patricia Jiménez',asunto: 'Vacaciones del entrenador',        body: '<p>¿Quién cubre los entrenamientos la próxima semana?</p>',                                        fecha: now,      leido: 0, avatar: 'notif-avatar-16.jpg' }, // F ✓
+      { remitente: 'Daniel Torres',   asunto: 'Inscripción torneo verano',        body: '<p>¿El club va a inscribir equipos en el torneo de verano? Estaríamos interesados.</p>',           fecha: ayer,     leido: 1, avatar: 'notif-avatar-6.jpg'  }, // (M sin avatar M disponible)
     ];
 
     const enviadosBase = [
-      { asunto: 'Recordatorio: entrenamiento de mañana', destinatario: 'Equipo Demo Senior', body: '<p>Hola, os recordamos el entrenamiento de mañana a las 18:00.</p>', fecha: ayer },
-      { asunto: 'Convocatoria partido domingo', destinatario: 'Equipo Demo Juvenil', body: '<p>Convocatoria para el partido del domingo. Confirmar asistencia.</p>', fecha: now },
-      { asunto: 'Cambio de horario entrenamiento', destinatario: 'Equipo Cadete Demo', body: '<p>Os informamos del cambio de horario del miércoles a las 18:30.</p>', fecha: now },
-      { asunto: 'Documentación obligatoria', destinatario: 'Todos los equipos', body: '<p>Recordatorio: enviar documentación actualizada antes del 15.</p>', fecha: anteayer },
-      { asunto: 'Fotos oficiales', destinatario: 'Equipo Infantil Demo', body: '<p>Las fotos oficiales serán el sábado a las 10:00 en las instalaciones.</p>', fecha: ayer },
+      { asunto: 'Recordatorio: entrenamiento de mañana', destinatario: 'Equipo Demo Senior',  body: '<p>Hola, os recordamos el entrenamiento de mañana a las 18:00.</p>',           fecha: ayer     },
+      { asunto: 'Convocatoria partido domingo',          destinatario: 'Equipo Demo Juvenil', body: '<p>Convocatoria para el partido del domingo. Confirmar asistencia.</p>',        fecha: now      },
+      { asunto: 'Cambio de horario entrenamiento',       destinatario: 'Equipo Cadete Demo',  body: '<p>Os informamos del cambio de horario del miércoles a las 18:30.</p>',        fecha: now      },
+      { asunto: 'Documentación obligatoria',             destinatario: 'Todos los equipos',   body: '<p>Recordatorio: enviar documentación actualizada antes del 15.</p>',          fecha: anteayer },
+      { asunto: 'Fotos oficiales',                       destinatario: 'Equipo Infantil Demo',body: '<p>Las fotos oficiales serán el sábado a las 10:00 en las instalaciones.</p>', fecha: ayer     },
     ];
 
     const recibidos = recibidosBase.map((r, i) => ({
@@ -955,7 +958,7 @@ export class DemoDataService {
       body: btoa(unescape(encodeURIComponent(r.body))),
       fechaCreate: r.fecha.toISOString(),
       leido: r.leido,
-      remitentePhotoUrl: avatar(i + 1),
+      remitentePhotoUrl: r.avatar,
     }));
 
     const enviados = enviadosBase.map((e, i) => ({
@@ -971,9 +974,53 @@ export class DemoDataService {
     return { enviados, recibidos };
   }
 
-  /** Correos programados. response.data (array) */
+  /** Correos programados. response.data (array). Fechas relativas a hoy para que siempre sean futuras. */
   static getDemoCorreosProgramados(): any[] {
-    return [];
+    const now = new Date();
+
+    const future = (days: number, hour: number, min = 0): string => {
+      const d = new Date(now);
+      d.setDate(d.getDate() + days);
+      d.setHours(hour, min, 0, 0);
+      return d.toISOString();
+    };
+
+    const body = (html: string) => btoa(unescape(encodeURIComponent(html)));
+
+    return [
+      {
+        correoEnviadoId: 9001,
+        asunto: 'Convocatoria partido del sábado',
+        destinatario: 'Equipo Senior Demo',
+        body: body('<p>Hola a todos,</p><p>Os convocamos para el partido del sábado a las <strong>10:00 h</strong> en el campo municipal. Confirmad asistencia antes del viernes.</p><p>¡Ánimo!</p>'),
+        scheduledAt: future(1, 9, 0),
+        leido: 0,
+      },
+      {
+        correoEnviadoId: 9002,
+        asunto: 'Recordatorio: pago de cuotas de marzo',
+        destinatario: 'Todos los equipos',
+        body: body('<p>Estimados miembros,</p><p>Os recordamos que el plazo de pago de la cuota de marzo finaliza el próximo <strong>día 31</strong>. Por favor, realizad el ingreso con antelación para evitar incidencias.</p><p>Gracias por vuestra colaboración.</p>'),
+        scheduledAt: future(3, 8, 30),
+        leido: 0,
+      },
+      {
+        correoEnviadoId: 9003,
+        asunto: 'Fotos oficiales de la temporada',
+        destinatario: 'Equipo Juvenil Demo',
+        body: body('<p>Buenos días,</p><p>Las fotos oficiales de equipo se realizarán el <strong>próximo sábado a las 11:00 h</strong> en las instalaciones del club.</p><p>Rogamos acudáis con la equipación completa (camiseta, pantalón y medias). La puntualidad es imprescindible.</p>'),
+        scheduledAt: future(5, 11, 0),
+        leido: 0,
+      },
+      {
+        correoEnviadoId: 9004,
+        asunto: 'Reunión de padres — fin de temporada',
+        destinatario: 'Familias Equipo Infantil',
+        body: body('<p>Estimadas familias,</p><p>Os convocamos a la reunión de fin de temporada el <strong>próximo martes a las 19:30 h</strong> en el salón de actos del club.</p><p>Trataremos los temas de inscripciones para la temporada 2025/26 y la gala de entrega de trofeos.</p><p>Vuestra asistencia es muy importante.</p>'),
+        scheduledAt: future(7, 19, 30),
+        leido: 0,
+      },
+    ];
   }
 
   // ─── Scouting (ScoutingClubComponent) ───────────────────────────────────────

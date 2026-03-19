@@ -40,31 +40,31 @@ export class StaffClubComponent implements OnInit {
   // ── Definiciones de permisos ─────────────────────────────────────────────
   readonly PERMISSION_GROUPS: PermissionGroup[] = [
     {
-      groupLabel: 'Cuadro de mando',
+      groupLabel: 'STAFF.PERM_GROUP_DASHBOARD',
       groupIcon: 'bi-grid-1x2-fill',
       children: [
-        { key: 'DASHBOARD_PLAYERS',    label: 'Jugadores',              icon: 'bi-people-fill' },
-        { key: 'DASHBOARD_COACHES',    label: 'Entrenadores',           icon: 'bi-person-video3' },
-        { key: 'DASHBOARD_STATS_PLR',  label: 'Estad. de jugador',     icon: 'bi-bar-chart-fill' },
-        { key: 'DASHBOARD_STATS_TEAM', label: 'Estad. de equipo',      icon: 'bi-graph-up' },
-        { key: 'DASHBOARD_CALENDAR',   label: 'Calendario',             icon: 'bi-calendar4-week' },
-        { key: 'DASHBOARD_INJURIES',   label: 'Lesiones',               icon: 'bi-bandaid' },
+        { key: 'DASHBOARD_PLAYERS',    label: 'STAFF.PERM_PLAYERS',    icon: 'bi-people-fill' },
+        { key: 'DASHBOARD_COACHES',    label: 'STAFF.PERM_COACHES',    icon: 'bi-person-video3' },
+        { key: 'DASHBOARD_STATS_PLR',  label: 'STAFF.PERM_STATS_PLR',  icon: 'bi-bar-chart-fill' },
+        { key: 'DASHBOARD_STATS_TEAM', label: 'STAFF.PERM_STATS_TEAM', icon: 'bi-graph-up' },
+        { key: 'DASHBOARD_CALENDAR',   label: 'STAFF.PERM_CALENDAR',   icon: 'bi-calendar4-week' },
+        { key: 'DASHBOARD_INJURIES',   label: 'STAFF.PERM_INJURIES',   icon: 'bi-bandaid' },
       ],
     },
   ];
 
   readonly PERMISSION_STANDALONE: PermissionItem[] = [
-    { key: 'TEAMS',          label: 'Equipos',               icon: 'bi-shield-fill' },
-    { key: 'DOCUMENTS',      label: 'Documentos',            icon: 'bi-folder2-fill' },
-    { key: 'PAYMENTS',       label: 'Pagos',                 icon: 'bi-cash-coin' },
-    { key: 'CLOTHING',       label: 'Ropa',                  icon: 'bi-bag-fill' },
-    { key: 'SPONSORS',       label: 'Patrocinadores',        icon: 'bi-building' },
-    { key: 'NOTIFICATIONS',  label: 'Notificaciones',        icon: 'bi-bell-fill' },
-    { key: 'VIDEO_LIBRARY',  label: 'Biblioteca de Vídeos', icon: 'bi-camera-video-fill' },
-    { key: 'SCOUTING',       label: 'Scouting',              icon: 'bi-binoculars-fill' },
-    { key: 'AI_ASSISTANT',   label: 'Asistente de IA',       icon: 'bi-robot' },
-    { key: 'VIDEO_ANALYSIS', label: 'Análisis de vídeo',    icon: 'bi-play-circle-fill' },
-    { key: 'ERP',            label: 'Gestión / ERP',         icon: 'bi-gear-fill' },
+    { key: 'TEAMS',          label: 'STAFF.PERM_TEAMS',            icon: 'bi-shield-fill' },
+    { key: 'DOCUMENTS',      label: 'STAFF.PERM_DOCUMENTS',        icon: 'bi-folder2-fill' },
+    { key: 'PAYMENTS',       label: 'STAFF.PERM_PAYMENTS',         icon: 'bi-cash-coin' },
+    { key: 'CLOTHING',       label: 'STAFF.PERM_CLOTHING',         icon: 'bi-bag-fill' },
+    { key: 'SPONSORS',       label: 'STAFF.PERM_SPONSORS',         icon: 'bi-building' },
+    { key: 'NOTIFICATIONS',  label: 'STAFF.PERM_NOTIFICATIONS',    icon: 'bi-bell-fill' },
+    { key: 'VIDEO_LIBRARY',  label: 'STAFF.PERM_VIDEO_LIBRARY',    icon: 'bi-camera-video-fill' },
+    { key: 'SCOUTING',       label: 'STAFF.PERM_SCOUTING',         icon: 'bi-binoculars-fill' },
+    { key: 'AI_ASSISTANT',   label: 'STAFF.PERM_AI_ASSISTANT',     icon: 'bi-robot' },
+    { key: 'VIDEO_ANALYSIS', label: 'STAFF.PERM_VIDEO_ANALYSIS',   icon: 'bi-play-circle-fill' },
+    { key: 'ERP',            label: 'STAFF.PERM_ERP',              icon: 'bi-gear-fill' },
   ];
 
   // ── Estado del componente ────────────────────────────────────────────────

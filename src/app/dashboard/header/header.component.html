@@ -120,12 +120,12 @@
 
         <!-- ===== VER TUTORIAL (premium: circular + pulso, según pantalla actual) ===== -->
         <button type="button" class="header-tutorial-btn" data-tutorial="header-tutorial-btn" (click)="openTutorial()"
-          [attr.aria-label]="'Ver tutorial de esta pantalla'">
+          [attr.aria-label]="'TUTORIAL.ARIA_TUTORIAL_BTN' | translate">
           <span class="header-tutorial-btn__pulse" aria-hidden="true"></span>
           <span class="header-tutorial-btn__circle">
             <i class="bi bi-play-fill" aria-hidden="true"></i>
           </span>
-          <span class="header-tutorial-btn__label d-none d-md-inline">Ver tutorial</span>
+          <span class="header-tutorial-btn__label d-none d-md-inline">{{ 'TUTORIAL.BTN_OPEN' | translate }}</span>
         </button>
 
         <!-- ===== DESCARGAR APP ===== -->

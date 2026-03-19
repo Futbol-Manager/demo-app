@@ -65,7 +65,7 @@
         <div class="task-used-date" *ngIf="tarea.lastUsedAt">
           <i class="bi bi-calendar-check"></i>
           {{ formatDate(tarea.lastUsedAt) }}
-          <span *ngIf="(tarea.usageCount || 0) > 1"> · {{ tarea.usageCount }} veces</span>
+          <span *ngIf="(tarea.usageCount || 0) > 1"> · {{ tarea.usageCount }} {{ 'TAREAS_HIST.TIMES' | translate }}</span>
         </div>
       </div>
     </div>

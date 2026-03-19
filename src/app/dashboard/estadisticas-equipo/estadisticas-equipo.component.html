@@ -10,7 +10,7 @@
 
   <div class="header-center">
     <h2 class="table-title">{{ nombreEquipo }} – {{ 'ESTADIS_EQUIPO.PAGE_TITLE' | translate }}</h2>
-    <p class="header-subtitle">Análisis estadístico del rendimiento del equipo</p>
+    <p class="header-subtitle">{{ 'ESTADIS_EQUIPO.SUBTITLE' | translate }}</p>
   </div>
 
   <div class="header-spacer"></div>
@@ -173,7 +173,7 @@
         <!-- Col 2: Puntos por partido (línea) -->
         <div class="card-pro chart-card report-card report-card--half">
           <div class="card-pro-header report-card-header">
-            <h2 class="card-pro-title">Puntos por partido</h2>
+            <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.POINTS_PER_MATCH' | translate }}</h2>
           </div>
           <div class="chart-container chart-container--compact">
             <canvas id="myChart"></canvas>

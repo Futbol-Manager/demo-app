@@ -9,8 +9,8 @@
   </div>
 
   <div class="header-center">
-    <h2 class="page-title">Gestión de Notificaciones</h2>
-    <p class="header-subtitle">Envía y gestiona notificaciones a los miembros del club</p>
+    <h2 class="page-title">{{ 'NOTIFICATIONS.PAGE_TITLE' | translate }}</h2>
+    <p class="header-subtitle">{{ 'NOTIFICATIONS.PAGE_SUBTITLE' | translate }}</p>
   </div>
 
   <div class="header-spacer"></div>
@@ -76,7 +76,7 @@
           <div class="mail-main">
             <span class="from">
               <i class="bi bi-clock-fill me-1 text-warning"></i>
-              {{ prog.destinatario || 'Destinatario' }}
+              {{ prog.destinatario || ('NOTIFICATIONS.RECIPIENT_FALLBACK' | translate) }}
             </span>
             <span class="subject">{{ prog.asunto }}</span>
           </div>
@@ -364,14 +364,14 @@
                     <span class="suggestion-name">{{ s.label }}</span>
                     <span class="suggestion-sub">{{ s.sublabel }}</span>
                     <span *ngIf="s.hasAccount === false" class="suggestion-no-account">
-                      <i class="bi bi-exclamation-circle-fill"></i> No tiene usuario registrado en la app
+                      <i class="bi bi-exclamation-circle-fill"></i> {{ 'NOTIFICATIONS.NO_USER_APP' | translate }}
                     </span>
                   </div>
                   <ng-container *ngIf="s.hasAccount === false; else normalBadge">
                     <button type="button" class="btn-invite-player"
                             (mousedown)="openInviteModal(s, $event)">
                       <i class="bi bi-send-plus"></i>
-                      Invitar
+                      {{ 'NOTIFICATIONS.INVITE_BTN' | translate }}
                     </button>
                   </ng-container>
                   <ng-template #normalBadge>
@@ -379,13 +379,13 @@
                           [class.badge--coach]="s.role === 'COACH'"
                           [class.badge--player]="s.role === 'PLAYER'"
                           [class.badge--team]="s.type === 'team'">
-                      {{ s.type === 'team' ? 'Equipo' : (s.role === 'COACH' ? 'Coach' : 'Jugador') }}
+                      {{ s.type === 'team' ? ('NOTIFICATIONS.ROLE_TEAM' | translate) : (s.role === 'COACH' ? ('NOTIFICATIONS.ROLE_COACH' | translate) : ('NOTIFICATIONS.ROLE_PLAYER' | translate)) }}
                     </span>
                   </ng-template>
                 </div>
                 <div class="suggestions-loading" *ngIf="isSearchingRecipients && recipientSuggestions.length === 0">
                   <span class="spinner-border spinner-border-sm me-2"></span>
-                  <span>Buscando...</span>
+                  <span>{{ 'NOTIFICATIONS.SEARCHING' | translate }}</span>
                 </div>
               </div>
             </div>
@@ -410,7 +410,7 @@
                      class="form-control schedule-input"
                      [(ngModel)]="scheduledAt"
                      [min]="minScheduledAt" />
-              <button type="button" class="btn-cancel-schedule" (click)="disableScheduleMode()" title="Cancelar programación">
+              <button type="button" class="btn-cancel-schedule" (click)="disableScheduleMode()" title="{{ 'NOTIFICATIONS.CANCEL_SCHEDULE_TOOLTIP' | translate }}">
                 <i class="bi bi-x-lg"></i>
               </button>
             </div>
@@ -463,35 +463,35 @@
       <div class="modal-confirm-icon invite-modal-icon">
         <i class="bi bi-person-plus-fill"></i>
       </div>
-      <h3 class="modal-confirm-title">Invitar a Sphaira Player</h3>
+      <h3 class="modal-confirm-title">{{ 'NOTIFICATIONS.INVITE_TITLE' | translate }}</h3>
       <p class="modal-confirm-message">
-        Envía una invitación a <strong>{{ inviteModal.player?.label }}</strong> para que se una a la app.
-        Introduce el email del jugador o de su padre/tutor.
+        {{ 'NOTIFICATIONS.INVITE_MSG_BEFORE' | translate }} <strong>{{ inviteModal.player?.label }}</strong>
+        {{ 'NOTIFICATIONS.INVITE_MSG_AFTER' | translate }}
       </p>
 
       <ng-container *ngIf="inviteModal.result !== 'success'; else inviteSuccess">
         <div class="invite-input-group">
           <input type="email"
                  class="form-control invite-email-input"
-                 placeholder="Email del jugador o tutor"
+                 placeholder="{{ 'NOTIFICATIONS.INVITE_EMAIL_PLACEHOLDER' | translate }}"
                  [(ngModel)]="inviteModal.email"
                  (keydown.enter)="sendInvitation()"
                  [disabled]="inviteModal.sending" />
         </div>
         <div class="invite-error" *ngIf="inviteModal.result === 'error'">
           <i class="bi bi-exclamation-triangle-fill"></i>
-          No se pudo enviar la invitación. Verifica el email e inténtalo de nuevo.
+          {{ 'NOTIFICATIONS.INVITE_ERROR' | translate }}
         </div>
         <div class="modal-confirm-actions">
           <button type="button" class="btn-cancel-pro" (click)="closeInviteModal()" [disabled]="inviteModal.sending">
-            Cancelar
+            {{ 'NOTIFICATIONS.CANCEL' | translate }}
           </button>
           <button type="button" class="btn-invite-send"
                   (click)="sendInvitation()"
                   [disabled]="!inviteModal.email.trim() || inviteModal.sending">
             <span *ngIf="inviteModal.sending" class="spinner-border spinner-border-sm me-1"></span>
             <i class="bi bi-send-fill me-1" *ngIf="!inviteModal.sending"></i>
-            {{ inviteModal.sending ? 'Enviando...' : 'Enviar invitación' }}
+            {{ inviteModal.sending ? ('NOTIFICATIONS.INVITE_SENDING' | translate) : ('NOTIFICATIONS.INVITE_SEND' | translate) }}
           </button>
         </div>
       </ng-container>
@@ -499,7 +499,7 @@
       <ng-template #inviteSuccess>
         <div class="invite-success">
           <i class="bi bi-check-circle-fill"></i>
-          <p>¡Invitación enviada correctamente!</p>
+          <p>{{ 'NOTIFICATIONS.INVITE_SUCCESS' | translate }}</p>
         </div>
       </ng-template>
     </div>

@@ -7,8 +7,8 @@
     </button>
   </div>
   <div class="staff-header-center">
-    <h1 class="staff-header-title">Gestión de Staff</h1>
-    <p class="staff-header-subtitle">Crea usuarios con acceso personalizado a los módulos del club.</p>
+    <h1 class="staff-header-title">{{ 'STAFF.TITLE' | translate }}</h1>
+    <p class="staff-header-subtitle">{{ 'STAFF.SUBTITLE' | translate }}</p>
   </div>
   <div class="staff-header-spacer"></div>
 </header>
@@ -18,18 +18,18 @@
   <div class="staff-toolbar" data-tutorial="staff-toolbar">
     <p class="staff-toolbar-count" *ngIf="!loading && staffList.length > 0">
       <i class="bi bi-people-fill"></i>
-      <span>{{ staffList.length }} usuario{{ staffList.length !== 1 ? 's' : '' }}</span>
+      <span>{{ staffList.length }} {{ staffList.length !== 1 ? ('STAFF.USER_PLURAL' | translate) : ('STAFF.USER_SINGULAR' | translate) }}</span>
     </p>
     <button type="button" class="staff-btn-primary" (click)="openCreateModal()">
       <i class="bi bi-plus-lg"></i>
-      Nuevo Staff
+      {{ 'STAFF.NEW_BTN' | translate }}
     </button>
   </div>
 
   <!-- Loading -->
   <div class="staff-loading" *ngIf="loading">
     <app-logo-spinner></app-logo-spinner>
-    <p>Cargando staff…</p>
+    <p>{{ 'STAFF.LOADING' | translate }}</p>
   </div>
 
   <!-- Empty state -->
@@ -37,11 +37,11 @@
     <div class="staff-empty-icon">
       <i class="bi bi-person-badge"></i>
     </div>
-    <h3>Sin usuarios Staff</h3>
-    <p>Todavía no hay usuarios. Crea el primero para dar acceso a los módulos del club.</p>
+    <h3>{{ 'STAFF.EMPTY_TITLE' | translate }}</h3>
+    <p>{{ 'STAFF.EMPTY_MSG' | translate }}</p>
     <button type="button" class="staff-btn-primary" (click)="openCreateModal()">
       <i class="bi bi-plus-lg"></i>
-      Nuevo Staff
+      {{ 'STAFF.NEW_BTN' | translate }}
     </button>
   </div>
 
@@ -62,13 +62,13 @@
                 <span>{{ user.mail }}</span>
               </p>
               <span class="staff-badge" [class.staff-badge--active]="user.enabled" [class.staff-badge--inactive]="!user.enabled">
-                {{ user.enabled ? 'Activo' : 'Inhabilitado' }}
+                {{ user.enabled ? ('STAFF.ACTIVE' | translate) : ('STAFF.DISABLED' | translate) }}
               </span>
             </div>
           </div>
           <div class="staff-card-actions">
-            <div class="staff-action-group" title="Habilitar o deshabilitar acceso">
-              <span class="staff-action-label">Acceso</span>
+            <div class="staff-action-group" title="{{ 'STAFF.ACCESS_TITLE' | translate }}">
+              <span class="staff-action-label">{{ 'STAFF.ACCESS_LABEL' | translate }}</span>
               <label class="staff-toggle-wrap">
                 <input
                   type="checkbox"
@@ -80,10 +80,10 @@
               </label>
             </div>
             <div class="staff-action-btns">
-              <button type="button" class="staff-btn-icon staff-btn-edit" title="Editar permisos" (click)="openEditModal(user)">
+              <button type="button" class="staff-btn-icon staff-btn-edit" title="{{ 'STAFF.EDIT_TITLE' | translate }}" (click)="openEditModal(user)">
                 <i class="bi bi-pencil"></i>
               </button>
-              <button type="button" class="staff-btn-icon staff-btn-delete" title="Eliminar usuario" (click)="deleteStaff(user)">
+              <button type="button" class="staff-btn-icon staff-btn-delete" title="{{ 'STAFF.DELETE_TITLE' | translate }}" (click)="deleteStaff(user)">
                 <i class="bi bi-trash3"></i>
               </button>
             </div>
@@ -93,14 +93,14 @@
         <div class="staff-card-perms-wrap">
           <p class="staff-perms-title">
             <i class="bi bi-shield-lock"></i>
-            Permisos
+            {{ 'STAFF.PERMISSIONS' | translate }}
           </p>
           <div class="staff-card-perms">
             <span class="staff-perm-chip" *ngFor="let perm of user.permissions">
-              {{ permissionLabel(perm) }}
+              {{ permissionLabel(perm) | translate }}
             </span>
             <span class="staff-perm-chip staff-perm-chip--none" *ngIf="user.permissions.length === 0">
-              Sin permisos
+              {{ 'STAFF.NO_PERMISSIONS' | translate }}
             </span>
           </div>
         </div>
@@ -115,9 +115,9 @@
     <div class="staff-modal-header">
       <h2 class="staff-modal-title">
         <i class="bi" [ngClass]="editingUser ? 'bi-pencil-square' : 'bi-person-plus-fill'"></i>
-        {{ editingUser ? 'Editar permisos' : 'Nuevo usuario Staff' }}
+        {{ editingUser ? ('STAFF.MODAL_TITLE_EDIT' | translate) : ('STAFF.MODAL_TITLE_NEW' | translate) }}
       </h2>
-      <button type="button" class="staff-modal-close" (click)="closeModal()" aria-label="Cerrar">
+      <button type="button" class="staff-modal-close" (click)="closeModal()" [attr.aria-label]="'COMMON.CLOSE' | translate">
         <i class="bi bi-x-lg"></i>
       </button>
     </div>
@@ -125,27 +125,27 @@
     <div class="staff-modal-body">
       <ng-container *ngIf="!editingUser">
         <section class="staff-form-section">
-          <h4 class="staff-form-section-title">Datos del usuario</h4>
+          <h4 class="staff-form-section-title">{{ 'STAFF.FORM_USER_DATA' | translate }}</h4>
           <div class="staff-form-grid">
             <div class="staff-field">
-              <label>Nombre</label>
-              <input type="text" [(ngModel)]="form.firstName" placeholder="Nombre" class="staff-input" />
+              <label>{{ 'STAFF.FORM_FIRST_NAME' | translate }}</label>
+              <input type="text" [(ngModel)]="form.firstName" placeholder="{{ 'STAFF.FORM_FIRST_NAME' | translate }}" class="staff-input" />
             </div>
             <div class="staff-field">
-              <label>Apellidos</label>
-              <input type="text" [(ngModel)]="form.secondName" placeholder="Apellidos" class="staff-input" />
+              <label>{{ 'STAFF.FORM_LAST_NAME' | translate }}</label>
+              <input type="text" [(ngModel)]="form.secondName" placeholder="{{ 'STAFF.FORM_LAST_NAME' | translate }}" class="staff-input" />
             </div>
             <div class="staff-field staff-field--full">
-              <label>Email <span class="required">*</span></label>
-              <input type="email" [(ngModel)]="form.mail" placeholder="email@ejemplo.com" class="staff-input" />
+              <label>{{ 'STAFF.FORM_EMAIL' | translate }} <span class="required">*</span></label>
+              <input type="email" [(ngModel)]="form.mail" placeholder="{{ 'STAFF.FORM_EMAIL_HINT' | translate }}" class="staff-input" />
             </div>
             <div class="staff-field staff-field--full">
-              <label>Contraseña <span class="required">*</span></label>
+              <label>{{ 'STAFF.FORM_PASSWORD' | translate }} <span class="required">*</span></label>
               <div class="staff-input-wrap-pw">
                 <input
                   [type]="showPassword ? 'text' : 'password'"
                   [(ngModel)]="form.password"
-                  placeholder="Contraseña de acceso"
+                  placeholder="{{ 'STAFF.FORM_PASSWORD_HINT' | translate }}"
                   class="staff-input"
                 />
                 <button type="button" class="staff-btn-pw-toggle" (click)="showPassword = !showPassword" tabindex="-1">
@@ -160,16 +160,16 @@
       <section class="staff-form-section staff-form-section--perms">
         <h4 class="staff-form-section-title">
           <i class="bi bi-shield-lock"></i>
-          Módulos con acceso
+          {{ 'STAFF.MODULES_TITLE' | translate }}
         </h4>
 
         <div class="staff-perm-group" *ngFor="let group of PERMISSION_GROUPS">
           <div class="staff-perm-group-head">
             <span class="staff-perm-group-label">
               <i class="bi {{ group.groupIcon }}"></i>
-              {{ group.groupLabel }}
+              {{ group.groupLabel | translate }}
             </span>
-            <label class="staff-toggle-wrap staff-toggle-wrap--sm" [title]="isGroupAllChecked(group) ? 'Quitar todos' : 'Seleccionar todos'">
+            <label class="staff-toggle-wrap staff-toggle-wrap--sm" [title]="isGroupAllChecked(group) ? ('STAFF.DESELECT_ALL' | translate) : ('STAFF.SELECT_ALL' | translate)">
               <input
                 type="checkbox"
                 [checked]="isGroupAllChecked(group)"
@@ -183,7 +183,7 @@
             <div class="staff-perm-row" *ngFor="let item of group.children">
               <label class="staff-perm-row-label">
                 <i class="bi {{ item.icon }}"></i>
-                {{ item.label }}
+                {{ item.label | translate }}
               </label>
               <label class="staff-toggle-wrap staff-toggle-wrap--sm">
                 <input type="checkbox" [(ngModel)]="form.permissionsMap![item.key]" />
@@ -196,7 +196,7 @@
         <div class="staff-perm-standalone" *ngFor="let item of PERMISSION_STANDALONE">
           <label class="staff-perm-row-label">
             <i class="bi {{ item.icon }}"></i>
-            {{ item.label }}
+            {{ item.label | translate }}
           </label>
           <label class="staff-toggle-wrap staff-toggle-wrap--sm">
             <input type="checkbox" [(ngModel)]="form.permissionsMap![item.key]" />
@@ -217,12 +217,12 @@
 
     <div class="staff-modal-footer">
       <button type="button" class="staff-btn-secondary" (click)="closeModal()" [disabled]="saving">
-        Cancelar
+        {{ 'STAFF.CANCEL' | translate }}
       </button>
       <button type="button" class="staff-btn-primary" (click)="saveStaff()" [disabled]="saving">
         <i class="bi bi-check-lg" *ngIf="!saving"></i>
-        <span *ngIf="!saving">{{ editingUser ? 'Guardar permisos' : 'Crear usuario' }}</span>
-        <span *ngIf="saving" class="staff-spinner-text">Guardando…</span>
+        <span *ngIf="!saving">{{ editingUser ? ('STAFF.SAVE_PERMISSIONS' | translate) : ('STAFF.CREATE_USER' | translate) }}</span>
+        <span *ngIf="saving" class="staff-spinner-text">{{ 'STAFF.SAVING' | translate }}</span>
       </button>
     </div>
   </div>
@@ -234,18 +234,18 @@
     <div class="staff-confirm-icon staff-confirm-icon--danger">
       <i class="bi bi-trash3"></i>
     </div>
-    <h3 class="staff-confirm-title">¿Eliminar usuario?</h3>
+    <h3 class="staff-confirm-title">{{ 'STAFF.CONFIRM_DELETE_TITLE' | translate }}</h3>
     <p class="staff-confirm-text" *ngIf="userToDelete">
-      Se eliminará a <strong>{{ getFullName(userToDelete) }}</strong>. Esta acción no se puede deshacer.
+      {{ 'STAFF.CONFIRM_DELETE_BEFORE' | translate }} <strong>{{ getFullName(userToDelete) }}</strong>{{ 'STAFF.CONFIRM_DELETE_AFTER' | translate }}
     </p>
     <div class="staff-confirm-actions">
       <button type="button" class="staff-btn-secondary" (click)="closeDeleteConfirm()" [disabled]="deleting">
-        Cancelar
+        {{ 'STAFF.CANCEL' | translate }}
       </button>
       <button type="button" class="staff-btn-danger" (click)="confirmDelete()" [disabled]="deleting">
         <i class="bi bi-trash3" *ngIf="!deleting"></i>
-        <span *ngIf="!deleting">Eliminar</span>
-        <span *ngIf="deleting" class="staff-spinner-text">Eliminando…</span>
+        <span *ngIf="!deleting">{{ 'STAFF.DELETE_BTN' | translate }}</span>
+        <span *ngIf="deleting" class="staff-spinner-text">{{ 'STAFF.DELETING' | translate }}</span>
       </button>
     </div>
   </div>
@@ -258,20 +258,20 @@
       <i class="bi" [ngClass]="pendingEnableState ? 'bi-person-check' : 'bi-person-x'"></i>
     </div>
     <h3 class="staff-confirm-title">
-      {{ pendingEnableState ? '¿Habilitar acceso?' : '¿Deshabilitar acceso?' }}
+      {{ pendingEnableState ? ('STAFF.CONFIRM_ENABLE_TITLE' | translate) : ('STAFF.CONFIRM_DISABLE_TITLE' | translate) }}
     </h3>
     <p class="staff-confirm-text" *ngIf="userToToggle">
-      {{ pendingEnableState ? 'Se habilitará el acceso al panel para' : 'Se revocará el acceso al panel de' }}
+      {{ pendingEnableState ? ('STAFF.CONFIRM_ENABLE_BEFORE' | translate) : ('STAFF.CONFIRM_DISABLE_BEFORE' | translate) }}
       <strong>{{ getFullName(userToToggle) }}</strong>.
     </p>
     <div class="staff-confirm-actions">
       <button type="button" class="staff-btn-secondary" (click)="closeToggleConfirm()" [disabled]="togglingConfirm">
-        Cancelar
+        {{ 'STAFF.CANCEL' | translate }}
       </button>
       <button type="button" class="staff-btn-primary" (click)="confirmToggle()" [disabled]="togglingConfirm">
         <i class="bi bi-check-lg" *ngIf="!togglingConfirm"></i>
-        <span *ngIf="!togglingConfirm">{{ pendingEnableState ? 'Habilitar' : 'Deshabilitar' }}</span>
-        <span *ngIf="togglingConfirm" class="staff-spinner-text">Guardando…</span>
+        <span *ngIf="!togglingConfirm">{{ pendingEnableState ? ('STAFF.ENABLE' | translate) : ('STAFF.DISABLE' | translate) }}</span>
+        <span *ngIf="togglingConfirm" class="staff-spinner-text">{{ 'STAFF.SAVING' | translate }}</span>
       </button>
     </div>
   </div>

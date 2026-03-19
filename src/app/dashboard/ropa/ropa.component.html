@@ -8,8 +8,8 @@
   </div>
 
   <div class="header-center">
-    <h2 class="page-title">Gestión de Ropa</h2>
-    <p class="header-subtitle">Gestiona los pedidos y el catálogo de ropa deportiva</p>
+    <h2 class="page-title">{{ 'ROPA.TITLE' | translate }}</h2>
+    <p class="header-subtitle">{{ 'ROPA.SUBTITLE' | translate }}</p>
   </div>
 
   <div class="header-spacer"></div>
@@ -29,14 +29,14 @@
 <!-- ═══════════════════ PESTAÑAS ═══════════════════ -->
 <div class="ropa-tabs" data-tutorial="ropa-tabs">
   <button class="ropa-tab" [class.active]="activeRopaTab === 'tablaTallas'" (click)="activeRopaTab = 'tablaTallas'">
-    <i class="fas fa-table"></i> Tallas catálogo
+    <i class="fas fa-table"></i> {{ 'ROPA.TAB_TALLAS' | translate }}
   </button>
   <button class="ropa-tab" [class.active]="activeRopaTab === 'catalogo'" (click)="activeRopaTab = 'catalogo'" data-tutorial="ropa-tab-catalogo">
-    <i class="fas fa-tshirt"></i> Catálogo de prendas
+    <i class="fas fa-tshirt"></i> {{ 'ROPA.TAB_CATALOGO' | translate }}
   </button>
   <button class="ropa-tab ropa-tab-legacy" [class.active]="activeRopaTab === 'tallas'" (click)="activeRopaTab = 'tallas'">
-    <i class="fas fa-ruler-horizontal"></i> Tallas jugadores
-    <span class="legacy-badge">Antiguo</span>
+    <i class="fas fa-ruler-horizontal"></i> {{ 'ROPA.TAB_TALLAS_JUGADORES' | translate }}
+    <span class="legacy-badge">{{ 'ROPA.LEGACY_BADGE' | translate }}</span>
   </button>
 </div>
 
@@ -55,13 +55,9 @@
 
 <div class="legacy-warning-banner">
   <i class="fas fa-exclamation-triangle"></i>
-  <div>
-    <strong>Esta sección desaparecerá el 01/05/2026.</strong>
-    Descarga los datos que necesites antes de esa fecha para no perderlos.
-    El nuevo sistema de tallas está disponible en la pestaña <strong>Tallas catálogo</strong>.
-  </div>
+  <div>{{ 'ROPA.LEGACY_WARNING' | translate }}</div>
   <button class="action-btn excel legacy-export-btn" (click)="exportTableToExcel()">
-    <i class="bi bi-file-earmark-spreadsheet-fill"></i> Descargar datos
+    <i class="bi bi-file-earmark-spreadsheet-fill"></i> {{ 'ROPA.LEGACY_DOWNLOAD' | translate }}
   </button>
 </div>
 
@@ -225,7 +221,7 @@
               </select>
               <button class="delivery-chip" [class.delivered]="ropa.camisetaJuegoOk === 1" [class.pending]="ropa.camisetaJuegoOk === 0" (click)="togglePrendaOk(ropa, 2)">
                 <i class="bi" [ngClass]="ropa.camisetaJuegoOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
-                <span>{{ ropa.camisetaJuegoOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+                <span>{{ ropa.camisetaJuegoOk === 1 ? ('ROPA.DELIVERED' | translate) : ('ROPA.PENDING' | translate) }}</span>
               </button>
             </div>
           </td>
@@ -238,7 +234,7 @@
               </select>
               <button class="delivery-chip" [class.delivered]="ropa.pantalonJuegoOk === 1" [class.pending]="ropa.pantalonJuegoOk === 0" (click)="togglePrendaOk(ropa, 3)">
                 <i class="bi" [ngClass]="ropa.pantalonJuegoOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
-                <span>{{ ropa.pantalonJuegoOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+                <span>{{ ropa.pantalonJuegoOk === 1 ? ('ROPA.DELIVERED' | translate) : ('ROPA.PENDING' | translate) }}</span>
               </button>
             </div>
           </td>
@@ -251,7 +247,7 @@
               </select>
               <button class="delivery-chip" [class.delivered]="ropa.mediasOk === 1" [class.pending]="ropa.mediasOk === 0" (click)="togglePrendaOk(ropa, 11)">
                 <i class="bi" [ngClass]="ropa.mediasOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
-                <span>{{ ropa.mediasOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+                <span>{{ ropa.mediasOk === 1 ? ('ROPA.DELIVERED' | translate) : ('ROPA.PENDING' | translate) }}</span>
               </button>
             </div>
           </td>
@@ -264,7 +260,7 @@
               </select>
               <button class="delivery-chip" [class.delivered]="ropa.camisetaJuegoDosOk === 1" [class.pending]="ropa.camisetaJuegoDosOk === 0" (click)="togglePrendaOk(ropa, 14)">
                 <i class="bi" [ngClass]="ropa.camisetaJuegoDosOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
-                <span>{{ ropa.camisetaJuegoDosOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+                <span>{{ ropa.camisetaJuegoDosOk === 1 ? ('ROPA.DELIVERED' | translate) : ('ROPA.PENDING' | translate) }}</span>
               </button>
             </div>
           </td>
@@ -277,7 +273,7 @@
               </select>
               <button class="delivery-chip" [class.delivered]="ropa.pantalonJuegoDosOk === 1" [class.pending]="ropa.pantalonJuegoDosOk === 0" (click)="togglePrendaOk(ropa, 15)">
                 <i class="bi" [ngClass]="ropa.pantalonJuegoDosOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
-                <span>{{ ropa.pantalonJuegoDosOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+                <span>{{ ropa.pantalonJuegoDosOk === 1 ? ('ROPA.DELIVERED' | translate) : ('ROPA.PENDING' | translate) }}</span>
               </button>
             </div>
           </td>
@@ -290,7 +286,7 @@
               </select>
               <button class="delivery-chip" [class.delivered]="ropa.mediasDosOk === 1" [class.pending]="ropa.mediasDosOk === 0" (click)="togglePrendaOk(ropa, 16)">
                 <i class="bi" [ngClass]="ropa.mediasDosOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
-                <span>{{ ropa.mediasDosOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+                <span>{{ ropa.mediasDosOk === 1 ? ('ROPA.DELIVERED' | translate) : ('ROPA.PENDING' | translate) }}</span>
               </button>
             </div>
           </td>
@@ -303,7 +299,7 @@
               </select>
               <button class="delivery-chip" [class.delivered]="ropa.camisetaEntrenoOk === 1" [class.pending]="ropa.camisetaEntrenoOk === 0" (click)="togglePrendaOk(ropa, 4)">
                 <i class="bi" [ngClass]="ropa.camisetaEntrenoOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
-                <span>{{ ropa.camisetaEntrenoOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+                <span>{{ ropa.camisetaEntrenoOk === 1 ? ('ROPA.DELIVERED' | translate) : ('ROPA.PENDING' | translate) }}</span>
               </button>
             </div>
           </td>
@@ -316,7 +312,7 @@
               </select>
               <button class="delivery-chip" [class.delivered]="ropa.pantalonEntrenoOk === 1" [class.pending]="ropa.pantalonEntrenoOk === 0" (click)="togglePrendaOk(ropa, 5)">
                 <i class="bi" [ngClass]="ropa.pantalonEntrenoOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
-                <span>{{ ropa.pantalonEntrenoOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+                <span>{{ ropa.pantalonEntrenoOk === 1 ? ('ROPA.DELIVERED' | translate) : ('ROPA.PENDING' | translate) }}</span>
               </button>
             </div>
           </td>
@@ -329,7 +325,7 @@
               </select>
               <button class="delivery-chip" [class.delivered]="ropa.mediasTresOk === 1" [class.pending]="ropa.mediasTresOk === 0" (click)="togglePrendaOk(ropa, 17)">
                 <i class="bi" [ngClass]="ropa.mediasTresOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
-                <span>{{ ropa.mediasTresOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+                <span>{{ ropa.mediasTresOk === 1 ? ('ROPA.DELIVERED' | translate) : ('ROPA.PENDING' | translate) }}</span>
               </button>
             </div>
           </td>
@@ -342,7 +338,7 @@
               </select>
               <button class="delivery-chip" [class.delivered]="ropa.sudaderaEntrenoOk === 1" [class.pending]="ropa.sudaderaEntrenoOk === 0" (click)="togglePrendaOk(ropa, 6)">
                 <i class="bi" [ngClass]="ropa.sudaderaEntrenoOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
-                <span>{{ ropa.sudaderaEntrenoOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+                <span>{{ ropa.sudaderaEntrenoOk === 1 ? ('ROPA.DELIVERED' | translate) : ('ROPA.PENDING' | translate) }}</span>
               </button>
             </div>
           </td>
@@ -355,7 +351,7 @@
               </select>
               <button class="delivery-chip" [class.delivered]="ropa.chaquetaChandalOk === 1" [class.pending]="ropa.chaquetaChandalOk === 0" (click)="togglePrendaOk(ropa, 7)">
                 <i class="bi" [ngClass]="ropa.chaquetaChandalOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
-                <span>{{ ropa.chaquetaChandalOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+                <span>{{ ropa.chaquetaChandalOk === 1 ? ('ROPA.DELIVERED' | translate) : ('ROPA.PENDING' | translate) }}</span>
               </button>
             </div>
           </td>
@@ -368,7 +364,7 @@
               </select>
               <button class="delivery-chip" [class.delivered]="ropa.pantalonChandalOk === 1" [class.pending]="ropa.pantalonChandalOk === 0" (click)="togglePrendaOk(ropa, 8)">
                 <i class="bi" [ngClass]="ropa.pantalonChandalOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
-                <span>{{ ropa.pantalonChandalOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+                <span>{{ ropa.pantalonChandalOk === 1 ? ('ROPA.DELIVERED' | translate) : ('ROPA.PENDING' | translate) }}</span>
               </button>
             </div>
           </td>
@@ -381,7 +377,7 @@
               </select>
               <button class="delivery-chip" [class.delivered]="ropa.poloPaseoOk === 1" [class.pending]="ropa.poloPaseoOk === 0" (click)="togglePrendaOk(ropa, 9)">
                 <i class="bi" [ngClass]="ropa.poloPaseoOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
-                <span>{{ ropa.poloPaseoOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+                <span>{{ ropa.poloPaseoOk === 1 ? ('ROPA.DELIVERED' | translate) : ('ROPA.PENDING' | translate) }}</span>
               </button>
             </div>
           </td>
@@ -394,7 +390,7 @@
               </select>
               <button class="delivery-chip" [class.delivered]="ropa.pantalonPaseoOk === 1" [class.pending]="ropa.pantalonPaseoOk === 0" (click)="togglePrendaOk(ropa, 10)">
                 <i class="bi" [ngClass]="ropa.pantalonPaseoOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
-                <span>{{ ropa.pantalonPaseoOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+                <span>{{ ropa.pantalonPaseoOk === 1 ? ('ROPA.DELIVERED' | translate) : ('ROPA.PENDING' | translate) }}</span>
               </button>
             </div>
           </td>
@@ -407,7 +403,7 @@
               </select>
               <button class="delivery-chip" [class.delivered]="ropa.abrigoOk === 1" [class.pending]="ropa.abrigoOk === 0" (click)="togglePrendaOk(ropa, 1)">
                 <i class="bi" [ngClass]="ropa.abrigoOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
-                <span>{{ ropa.abrigoOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+                <span>{{ ropa.abrigoOk === 1 ? ('ROPA.DELIVERED' | translate) : ('ROPA.PENDING' | translate) }}</span>
               </button>
             </div>
           </td>
@@ -420,7 +416,7 @@
               </select>
               <button class="delivery-chip" [class.delivered]="ropa.chubasqueroOk === 1" [class.pending]="ropa.chubasqueroOk === 0" (click)="togglePrendaOk(ropa, 12)">
                 <i class="bi" [ngClass]="ropa.chubasqueroOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
-                <span>{{ ropa.chubasqueroOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+                <span>{{ ropa.chubasqueroOk === 1 ? ('ROPA.DELIVERED' | translate) : ('ROPA.PENDING' | translate) }}</span>
               </button>
             </div>
           </td>
@@ -430,7 +426,7 @@
             <div class="clothing-cell clothing-cell--only-delivery">
               <button class="delivery-chip" [class.delivered]="ropa.mochilaOk === 1" [class.pending]="ropa.mochilaOk === 0" (click)="togglePrendaOk(ropa, 13)">
                 <i class="bi" [ngClass]="ropa.mochilaOk === 1 ? 'bi-box-seam-fill' : 'bi-clock-history'"></i>
-                <span>{{ ropa.mochilaOk === 1 ? 'Entregado' : 'Pendiente' }}</span>
+                <span>{{ ropa.mochilaOk === 1 ? ('ROPA.DELIVERED' | translate) : ('ROPA.PENDING' | translate) }}</span>
               </button>
             </div>
           </td>
@@ -489,7 +485,7 @@
         </div>
         <span class="badge-status" [ngClass]="ropa.estado === 'OK' ? 'status-ok' : 'status-pending'">
           <i class="bi" [ngClass]="ropa.estado === 'OK' ? 'bi-check-circle-fill' : 'bi-clock-history'"></i>
-          {{ ropa.estado === 'OK' ? 'Listo' : 'Pendiente' }}
+          {{ ropa.estado === 'OK' ? ('ROPA.READY' | translate) : ('ROPA.PENDING' | translate) }}
         </span>
       </div>
       <div class="player-team">{{ ropa.team.category }} {{ ropa.team.name }} {{ ropa.team.levelLeague }}</div>

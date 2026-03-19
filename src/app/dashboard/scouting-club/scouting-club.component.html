@@ -56,9 +56,9 @@
       <button *ngIf="compareEnabled" class="btn-compare-toggle"
         [class.active]="compareMode"
         (click)="toggleCompareMode()"
-        title="Modo comparación">
+        [title]="'SCOUTING_CLUB.COMPARE.MODE' | translate">
         <i class="bi bi-bar-chart-steps"></i>
-        <span>{{ compareMode ? 'Salir de comparación' : 'Comparar jugadores' }}</span>
+        <span>{{ compareMode ? ('SCOUTING_CLUB.COMPARE.EXIT' | translate) : ('SCOUTING_CLUB.COMPARE.BTN' | translate) }}</span>
       </button>
     </div>
 
@@ -66,15 +66,15 @@
     <div *ngIf="compareMode && compareSelected.length > 0" class="compare-bar">
       <div class="compare-bar-info">
         <i class="bi bi-bar-chart-steps"></i>
-        <span>{{ compareSelected.length }} jugador{{ compareSelected.length > 1 ? 'es' : '' }} seleccionado{{ compareSelected.length > 1 ? 's' : '' }}</span>
-        <span class="compare-hint">(máx. 4)</span>
+        <span>{{ compareSelected.length }} {{ 'SCOUTING_CLUB.PLAYER_FALLBACK' | translate }}{{ compareSelected.length > 1 ? 's' : '' }}</span>
+        <span class="compare-hint">{{ 'SCOUTING_CLUB.COMPARE.MAX' | translate }}</span>
       </div>
       <div class="compare-bar-actions">
         <button class="btn-compare-clear" (click)="compareSelected = []">
-          <i class="bi bi-x"></i> Limpiar
+          <i class="bi bi-x"></i> {{ 'SCOUTING_CLUB.COMPARE.CLEAR' | translate }}
         </button>
         <button class="btn-compare-run" [disabled]="compareSelected.length < 2" (click)="openCompareModal()">
-          <i class="bi bi-eye"></i> Ver comparativa
+          <i class="bi bi-eye"></i> {{ 'SCOUTING_CLUB.COMPARE.VIEW' | translate }}
         </button>
       </div>
     </div>
@@ -98,9 +98,9 @@
           <tr>
             <th *ngIf="compareMode && compareEnabled" class="col-check"></th>
             <th>{{ 'SCOUTING_CLUB.TABLE.NAME' | translate }}</th>
-            <th class="col-age">Edad</th>
+            <th class="col-age">{{ 'SCOUTING_CLUB.TABLE.AGE' | translate }}</th>
             <th>{{ 'SCOUTING_CLUB.TABLE.POSITION' | translate }}</th>
-            <th class="col-team">Equipo</th>
+            <th class="col-team">{{ 'SCOUTING_CLUB.TABLE.TEAM' | translate }}</th>
             <th class="col-status text-center">{{ 'SCOUTING_CLUB.TABLE.STATUS' | translate }}</th>
             <th class="col-rating text-center">{{ 'SCOUTING_CLUB.TABLE.RATING' | translate }}</th>
             <th>{{ 'SCOUTING_CLUB.TABLE.ACTIONS' | translate }}</th>
@@ -123,7 +123,7 @@
                   alt="" class="avatar-img-mini">
                 <i *ngIf="!item?.scoutingProfile?.imagenPerfil && !item?.watchlist?.externalPlayerPhoto" class="bi bi-person-circle avatar-icon-mini"></i>
               </div>
-              <span>{{ item?.scoutingProfile?.nombre || item?.watchlist?.externalPlayerName || 'Jugador' }}</span>
+              <span>{{ item?.scoutingProfile?.nombre || item?.watchlist?.externalPlayerName || ('SCOUTING_CLUB.PLAYER_FALLBACK' | translate) }}</span>
               <span *ngIf="!item?.scoutingProfile" class="badge-external">EXT</span>
             </td>
             <td class="col-age text-center">
@@ -147,7 +147,7 @@
                 <i class="bi bi-star-fill"></i> {{ item?.avgRating | number:'1.1-1' }}
               </span>
               <span *ngIf="!item?.avgRating && item?.evaluationCount > 0" class="text-muted small">–</span>
-              <span *ngIf="!item?.avgRating && !item?.evaluationCount" class="no-evals">Sin eval.</span>
+              <span *ngIf="!item?.avgRating && !item?.evaluationCount" class="no-evals">{{ 'SCOUTING_CLUB.NO_EVAL' | translate }}</span>
             </td>
             <td class="actions-cell">
               <button class="btn-icon" title="{{ 'SCOUTING_CLUB.DETAIL.TITLE' | translate }}" (click)="openDetail(item?.watchlist?.id)">
@@ -191,23 +191,23 @@
                 class="bi bi-person-circle pipeline-card-icon"></i>
             </div>
             <div class="pipeline-card-name">
-              {{ item?.scoutingProfile?.nombre || item?.watchlist?.externalPlayerName || 'Sin nombre' }}
+              {{ item?.scoutingProfile?.nombre || item?.watchlist?.externalPlayerName || ('SCOUTING_CLUB.NO_NAME' | translate) }}
             </div>
             <div class="pipeline-card-position">
               {{ item?.scoutingProfile?.posicionPrincipal || item?.scoutingProfile?.posicion || item?.watchlist?.externalPlayerPosition || '-' }}
             </div>
             <div class="pipeline-card-actions">
               <button *ngIf="getStageIndex(stage) > 0"
-                class="btn-move" title="Mover a {{ stageLabel(pipelineStages[getStageIndex(stage) - 1]) }}"
+                class="btn-move" [title]="('SCOUTING_CLUB.PIPELINE.MOVE_TO' | translate) + ' ' + stageLabel(pipelineStages[getStageIndex(stage) - 1])"
                 (click)="$event.stopPropagation(); moveInPipeline(item?.watchlist?.id, pipelineStages[getStageIndex(stage) - 1])">
                 <i class="bi bi-arrow-left"></i>
               </button>
               <button *ngIf="getStageIndex(stage) < pipelineStages.length - 1"
-                class="btn-move" title="Mover a {{ stageLabel(pipelineStages[getStageIndex(stage) + 1]) }}"
+                class="btn-move" [title]="('SCOUTING_CLUB.PIPELINE.MOVE_TO' | translate) + ' ' + stageLabel(pipelineStages[getStageIndex(stage) + 1])"
                 (click)="$event.stopPropagation(); moveInPipeline(item?.watchlist?.id, pipelineStages[getStageIndex(stage) + 1])">
                 <i class="bi bi-arrow-right"></i>
               </button>
-              <button class="btn-discard" title="Descartar jugador"
+              <button class="btn-discard" [title]="'SCOUTING_CLUB.PIPELINE.DISCARD' | translate"
                 (click)="$event.stopPropagation(); moveInPipeline(item?.watchlist?.id, 'DISCARDED')">
                 <i class="bi bi-x-circle"></i>
               </button>
@@ -224,7 +224,7 @@
     <div class="discarded-section" *ngIf="getDiscardedItems().length > 0">
       <button class="discarded-toggle" (click)="showDiscarded = !showDiscarded">
         <i class="bi bi-x-circle-fill"></i>
-        <span>Descartados ({{ getDiscardedItems().length }})</span>
+        <span>{{ 'SCOUTING_CLUB.PIPELINE.DISCARDED' | translate }} ({{ getDiscardedItems().length }})</span>
         <i [class]="'bi ' + (showDiscarded ? 'bi-chevron-up' : 'bi-chevron-down')"></i>
       </button>
       <div class="discarded-list" *ngIf="showDiscarded">
@@ -238,12 +238,12 @@
               class="bi bi-person-circle pipeline-card-icon"></i>
           </div>
           <div class="discarded-card-info">
-            <div class="pipeline-card-name">{{ item?.scoutingProfile?.nombre || item?.watchlist?.externalPlayerName || 'Sin nombre' }}</div>
+            <div class="pipeline-card-name">{{ item?.scoutingProfile?.nombre || item?.watchlist?.externalPlayerName || ('SCOUTING_CLUB.NO_NAME' | translate) }}</div>
             <div class="pipeline-card-position">{{ item?.scoutingProfile?.posicionPrincipal || item?.watchlist?.externalPlayerPosition || '-' }}</div>
           </div>
-          <button class="btn-restore" title="Volver a pipeline"
+          <button class="btn-restore" [title]="'SCOUTING_CLUB.PIPELINE.RESTORE_TITLE' | translate"
             (click)="$event.stopPropagation(); restoreFromDiscarded(item?.watchlist?.id)">
-            <i class="bi bi-arrow-counterclockwise"></i> Restaurar
+            <i class="bi bi-arrow-counterclockwise"></i> {{ 'SCOUTING_CLUB.PIPELINE.RESTORE_BTN' | translate }}
           </button>
         </div>
       </div>
@@ -380,7 +380,7 @@
               <img *ngIf="getPlayerPhoto(detailData)" [src]="getPlayerPhoto(detailData)" alt="" class="detail-avatar-img">
               <i *ngIf="!getPlayerPhoto(detailData)" class="bi bi-person-circle"></i>
             </div>
-            <button class="btn-avatar-edit" (click)="startEditPhoto()" title="Cambiar foto">
+            <button class="btn-avatar-edit" (click)="startEditPhoto()" [title]="'SCOUTING_CLUB.DETAIL.CHANGE_PHOTO' | translate">
               <i class="bi bi-camera-fill"></i>
             </button>
           </div>
@@ -430,7 +430,7 @@
 
           <!-- Status select mejorado -->
           <div class="detail-status-wrap" *ngIf="detailData?.watchlist?.status">
-            <label class="status-label-sm">Estado del jugador</label>
+            <label class="status-label-sm">{{ 'SCOUTING_CLUB.DETAIL.STATUS_LABEL' | translate }}</label>
             <div class="status-pill-select-wrap">
               <select class="status-pill-select"
                 [value]="detailData.watchlist.status"
@@ -447,7 +447,7 @@
         <!-- Botón editar datos del jugador -->
         <div class="edit-data-btn-row" *ngIf="!showEditDataPanel && !editingPlayerPhoto">
           <button class="btn-edit-data" (click)="openEditDataPanel()">
-            <i class="bi bi-pencil-square"></i> Editar datos del jugador
+            <i class="bi bi-pencil-square"></i> {{ 'SCOUTING_CLUB.DETAIL.EDIT_BTN' | translate }}
           </button>
         </div>
 
@@ -455,69 +455,69 @@
         <div *ngIf="showEditDataPanel" class="edit-data-panel">
           <div class="edit-data-header">
             <i class="bi bi-pencil-square"></i>
-            <span>Editar datos del jugador</span>
+            <span>{{ 'SCOUTING_CLUB.DETAIL.EDIT_TITLE' | translate }}</span>
           </div>
           <div class="edit-data-grid">
             <div class="edit-data-field">
-              <label>Nombre</label>
-              <input type="text" class="form-control form-control-sm" [(ngModel)]="editDataName" placeholder="Nombre del jugador">
+              <label>{{ 'SCOUTING_CLUB.DETAIL.FIELD_NAME' | translate }}</label>
+              <input type="text" class="form-control form-control-sm" [(ngModel)]="editDataName" [placeholder]="'SCOUTING_CLUB.DETAIL.FIELD_NAME' | translate">
             </div>
             <div class="edit-data-field">
-              <label>Posición</label>
+              <label>{{ 'SCOUTING_CLUB.DETAIL.FIELD_POSITION' | translate }}</label>
               <select class="form-control form-control-sm" [(ngModel)]="editDataPosition">
-                <option value="">-- Sin especificar --</option>
+                <option value="">{{ 'SCOUTING_CLUB.DETAIL.UNSPECIFIED' | translate }}</option>
                 <option *ngFor="let pos of positions" [value]="pos">{{ pos }}</option>
               </select>
             </div>
             <div class="edit-data-field">
-              <label>Equipo actual</label>
-              <input type="text" class="form-control form-control-sm" [(ngModel)]="editDataTeam" placeholder="Club o equipo">
+              <label>{{ 'SCOUTING_CLUB.DETAIL.FIELD_TEAM' | translate }}</label>
+              <input type="text" class="form-control form-control-sm" [(ngModel)]="editDataTeam" [placeholder]="'SCOUTING_CLUB.DETAIL.FIELD_TEAM_PH' | translate">
             </div>
             <ng-container *ngIf="!detailData?.scoutingProfile">
               <div class="edit-data-field">
-                <label>Edad</label>
-                <input type="number" class="form-control form-control-sm" [(ngModel)]="editDataAge" placeholder="Años" min="10" max="50">
+                <label>{{ 'SCOUTING_CLUB.DETAIL.FIELD_AGE' | translate }}</label>
+                <input type="number" class="form-control form-control-sm" [(ngModel)]="editDataAge" [placeholder]="'SCOUTING_CLUB.DETAIL.FIELD_AGE_PH' | translate" min="10" max="50">
               </div>
             </ng-container>
             <ng-container *ngIf="detailData?.scoutingProfile">
               <div class="edit-data-field">
-                <label>Fecha de nacimiento</label>
+                <label>{{ 'SCOUTING_CLUB.DETAIL.FIELD_BIRTHDATE' | translate }}</label>
                 <input type="date" class="form-control form-control-sm" [(ngModel)]="editDataBirthdate">
               </div>
               <div class="edit-data-field">
-                <label>Nacionalidad</label>
-                <input type="text" class="form-control form-control-sm" [(ngModel)]="editDataNationality" placeholder="País">
+                <label>{{ 'SCOUTING_CLUB.DETAIL.FIELD_NATIONALITY' | translate }}</label>
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="editDataNationality" [placeholder]="'SCOUTING_CLUB.DETAIL.FIELD_NATIONALITY_PH' | translate">
               </div>
               <div class="edit-data-field">
-                <label>Liga actual</label>
-                <input type="text" class="form-control form-control-sm" [(ngModel)]="editDataLeague" placeholder="Liga">
+                <label>{{ 'SCOUTING_CLUB.DETAIL.FIELD_LEAGUE' | translate }}</label>
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="editDataLeague" [placeholder]="'SCOUTING_CLUB.DETAIL.FIELD_LEAGUE_PH' | translate">
               </div>
               <div class="edit-data-field">
-                <label>Pierna natural</label>
+                <label>{{ 'SCOUTING_CLUB.DETAIL.FIELD_FOOT' | translate }}</label>
                 <select class="form-control form-control-sm" [(ngModel)]="editDataFoot">
-                  <option value="">-- Sin especificar --</option>
+                  <option value="">{{ 'SCOUTING_CLUB.DETAIL.UNSPECIFIED' | translate }}</option>
                   <option *ngFor="let f of feet" [value]="f">{{ f }}</option>
                 </select>
               </div>
             </ng-container>
             <div class="edit-data-field edit-data-field--full">
-              <label>Notas del scouting</label>
-              <textarea class="form-control form-control-sm" [(ngModel)]="editDataNotes" rows="2" placeholder="Observaciones, aspectos a seguir..."></textarea>
+              <label>{{ 'SCOUTING_CLUB.DETAIL.FIELD_SCOUT_NOTES' | translate }}</label>
+              <textarea class="form-control form-control-sm" [(ngModel)]="editDataNotes" rows="2" [placeholder]="'SCOUTING_CLUB.DETAIL.FIELD_NOTES_PH' | translate"></textarea>
             </div>
           </div>
           <div *ngIf="editDataError" class="edit-data-msg edit-data-msg--error">
             <i class="bi bi-exclamation-circle-fill"></i> {{ editDataError }}
           </div>
           <div *ngIf="editDataSuccess" class="edit-data-msg edit-data-msg--success">
-            <i class="bi bi-check-circle-fill"></i> Datos guardados correctamente
+            <i class="bi bi-check-circle-fill"></i> {{ 'SCOUTING_CLUB.DETAIL.DATA_SAVED' | translate }}
           </div>
           <div class="edit-data-actions">
             <button class="btn-save-inline" [disabled]="savingEditData" (click)="saveEditData()">
               <i class="bi" [class.bi-check-lg]="!savingEditData" [class.bi-arrow-repeat]="savingEditData"></i>
-              {{ savingEditData ? 'Guardando...' : 'Guardar cambios' }}
+              {{ savingEditData ? ('SCOUTING_CLUB.DETAIL.SAVING' | translate) : ('SCOUTING_CLUB.DETAIL.SAVE_CHANGES' | translate) }}
             </button>
             <button class="btn-cancel-inline" [disabled]="savingEditData" (click)="showEditDataPanel = false">
-              <i class="bi bi-x-lg"></i> Cancelar
+              <i class="bi bi-x-lg"></i> {{ 'SCOUTING_CLUB.CANCEL' | translate }}
             </button>
           </div>
         </div>
@@ -533,16 +533,16 @@
             </div>
             <div class="photo-upload-controls">
               <label class="btn-upload-photo">
-                <i class="bi bi-upload"></i> Elegir foto
+                <i class="bi bi-upload"></i> {{ 'SCOUTING_CLUB.DETAIL.PHOTO_UPLOAD' | translate }}
                 <input type="file" accept="image/*" class="d-none" (change)="onPhotoFileSelected($event)">
               </label>
-              <span class="photo-hint">JPG, PNG o WEBP. Máx. 5 MB.</span>
+              <span class="photo-hint">{{ 'SCOUTING_CLUB.DETAIL.PHOTO_HINT' | translate }}</span>
               <div class="d-flex gap-2 mt-2">
                 <button class="btn-save-inline" [disabled]="savingPlayerEdit || !editPlayerPhotoFile" (click)="savePlayerPhoto()">
-                  <i class="bi bi-check-lg"></i> {{ savingPlayerEdit ? 'Subiendo...' : 'Guardar' }}
+                  <i class="bi bi-check-lg"></i> {{ savingPlayerEdit ? ('SCOUTING_CLUB.DETAIL.UPLOADING' | translate) : ('SCOUTING_CLUB.SAVE' | translate) }}
                 </button>
                 <button class="btn-cancel-inline" (click)="editingPlayerPhoto=false">
-                  <i class="bi bi-x-lg"></i> Cancelar
+                  <i class="bi bi-x-lg"></i> {{ 'SCOUTING_CLUB.CANCEL' | translate }}
                 </button>
               </div>
             </div>
@@ -555,55 +555,55 @@
               || detailData?.scoutingProfile?.fechaDeNacimiento || detailData?.scoutingProfile?.rrss
               || detailData?.scoutingProfile?.clubesAnteriores || detailData?.scoutingProfile?.ligaActual
               || detailData?.scoutingProfile?.descripcion">
-          <h4><i class="bi bi-person-vcard"></i> Datos del jugador</h4>
+          <h4><i class="bi bi-person-vcard"></i> {{ 'SCOUTING_CLUB.DETAIL.PLAYER_DATA_TITLE' | translate }}</h4>
           <div class="personal-data-grid">
             <div *ngIf="detailData?.scoutingProfile?.fechaDeNacimiento" class="data-item">
-              <span class="data-label"><i class="bi bi-calendar3"></i> Nacimiento</span>
+              <span class="data-label"><i class="bi bi-calendar3"></i> {{ 'SCOUTING_CLUB.DETAIL.DATA_BIRTH' | translate }}</span>
               <span class="data-value">{{ detailData.scoutingProfile.fechaDeNacimiento }}</span>
             </div>
             <div *ngIf="detailData?.scoutingProfile?.equipoActual" class="data-item">
-              <span class="data-label"><i class="bi bi-shield-fill"></i> Equipo actual</span>
+              <span class="data-label"><i class="bi bi-shield-fill"></i> {{ 'SCOUTING_CLUB.DETAIL.DATA_CURRENT_TEAM' | translate }}</span>
               <span class="data-value">{{ detailData.scoutingProfile.equipoActual }}</span>
             </div>
             <div *ngIf="detailData?.scoutingProfile?.ligaActual" class="data-item">
-              <span class="data-label"><i class="bi bi-trophy"></i> Liga</span>
+              <span class="data-label"><i class="bi bi-trophy"></i> {{ 'SCOUTING_CLUB.DETAIL.DATA_LEAGUE' | translate }}</span>
               <span class="data-value">{{ detailData.scoutingProfile.ligaActual }}</span>
             </div>
             <div *ngIf="detailData?.scoutingProfile?.mailContacto" class="data-item">
-              <span class="data-label"><i class="bi bi-envelope"></i> Email</span>
+              <span class="data-label"><i class="bi bi-envelope"></i> {{ 'SCOUTING_CLUB.DETAIL.DATA_EMAIL' | translate }}</span>
               <a class="data-value link" [href]="'mailto:' + detailData.scoutingProfile.mailContacto">
                 {{ detailData.scoutingProfile.mailContacto }}
               </a>
             </div>
             <div *ngIf="detailData?.scoutingProfile?.telefonoContacto" class="data-item">
-              <span class="data-label"><i class="bi bi-telephone"></i> Teléfono</span>
+              <span class="data-label"><i class="bi bi-telephone"></i> {{ 'SCOUTING_CLUB.DETAIL.DATA_PHONE' | translate }}</span>
               <a class="data-value link" [href]="'tel:' + detailData.scoutingProfile.telefonoContacto">
                 {{ detailData.scoutingProfile.telefonoContacto }}
               </a>
             </div>
             <div *ngIf="detailData?.scoutingProfile?.disponibilidad" class="data-item">
-              <span class="data-label"><i class="bi bi-briefcase"></i> Disponibilidad</span>
+              <span class="data-label"><i class="bi bi-briefcase"></i> {{ 'SCOUTING_CLUB.DETAIL.DATA_AVAILABILITY' | translate }}</span>
               <span class="data-value">{{ detailData.scoutingProfile.disponibilidad }}</span>
             </div>
           </div>
           <div *ngIf="detailData?.scoutingProfile?.rrss" class="data-rrss">
-            <span class="data-label"><i class="bi bi-share"></i> Redes sociales</span>
+            <span class="data-label"><i class="bi bi-share"></i> {{ 'SCOUTING_CLUB.DETAIL.DATA_SOCIAL' | translate }}</span>
             <p class="data-value mt-1">{{ detailData.scoutingProfile.rrss }}</p>
           </div>
           <div *ngIf="detailData?.scoutingProfile?.clubesAnteriores" class="data-item-full mt-2">
-            <span class="data-label"><i class="bi bi-clock-history"></i> Historial de clubes</span>
+            <span class="data-label"><i class="bi bi-clock-history"></i> {{ 'SCOUTING_CLUB.DETAIL.DATA_CLUBS_HISTORY' | translate }}</span>
             <p class="data-value mt-1 text-sm">{{ detailData.scoutingProfile.clubesAnteriores }}</p>
           </div>
           <div *ngIf="detailData?.scoutingProfile?.descripcion" class="data-item-full mt-2">
-            <span class="data-label"><i class="bi bi-file-text"></i> Descripción</span>
+            <span class="data-label"><i class="bi bi-file-text"></i> {{ 'SCOUTING_CLUB.DETAIL.DATA_DESCRIPTION' | translate }}</span>
             <p class="data-value mt-1 text-sm">{{ detailData.scoutingProfile.descripcion }}</p>
           </div>
           <div *ngIf="detailData?.scoutingProfile?.fortalezas" class="data-item-full mt-2">
-            <span class="data-label"><i class="bi bi-lightning-charge"></i> Fortalezas</span>
+            <span class="data-label"><i class="bi bi-lightning-charge"></i> {{ 'SCOUTING_CLUB.DETAIL.DATA_STRENGTHS' | translate }}</span>
             <p class="data-value mt-1 text-sm">{{ detailData.scoutingProfile.fortalezas }}</p>
           </div>
           <div *ngIf="detailData?.scoutingProfile?.areasMejora" class="data-item-full mt-2">
-            <span class="data-label"><i class="bi bi-graph-up-arrow"></i> Áreas de mejora</span>
+            <span class="data-label"><i class="bi bi-graph-up-arrow"></i> {{ 'SCOUTING_CLUB.DETAIL.DATA_IMPROVEMENT' | translate }}</span>
             <p class="data-value mt-1 text-sm">{{ detailData.scoutingProfile.areasMejora }}</p>
           </div>
         </div>
@@ -683,16 +683,16 @@
         <!-- ═══════ VÍDEOS ═══════ -->
         <div class="detail-section">
           <div class="detail-section-header">
-            <h4><i class="bi bi-play-circle-fill"></i> Vídeos del jugador</h4>
+            <h4><i class="bi bi-play-circle-fill"></i> {{ 'SCOUTING_CLUB.DETAIL.VIDEOS_TITLE' | translate }}</h4>
             <div class="video-action-btns">
               <button class="btn-sm-outline" (click)="showAddLinkForm = !showAddLinkForm; addLinkError = ''">
-                <i class="bi bi-link-45deg"></i> Añadir enlace
+                <i class="bi bi-link-45deg"></i> {{ 'SCOUTING_CLUB.DETAIL.ADD_LINK_BTN' | translate }}
               </button>
-              <button class="btn-sm-primary" (click)="showVideoUploadModal = true" *ngIf="hasPlanForVideos" title="Subir vídeo desde tu dispositivo">
-                <i class="bi bi-cloud-upload"></i> Subir vídeo
+              <button class="btn-sm-primary" (click)="showVideoUploadModal = true" *ngIf="hasPlanForVideos">
+                <i class="bi bi-cloud-upload"></i> {{ 'SCOUTING_CLUB.DETAIL.UPLOAD_BTN' | translate }}
               </button>
-              <button class="btn-sm-plan" (click)="showVideoUploadModal = true" *ngIf="!hasPlanForVideos" title="Requiere plan de almacenamiento">
-                <i class="bi bi-lock-fill"></i> Subir vídeo
+              <button class="btn-sm-plan" (click)="showVideoUploadModal = true" *ngIf="!hasPlanForVideos">
+                <i class="bi bi-lock-fill"></i> {{ 'SCOUTING_CLUB.DETAIL.UPLOAD_BTN' | translate }}
                 <span class="badge-plan">Plan</span>
               </button>
             </div>
@@ -708,10 +708,10 @@
             </div>
             <div class="add-link-actions">
               <span *ngIf="addLinkError" class="error-inline"><i class="bi bi-exclamation-circle"></i> {{ addLinkError }}</span>
-              <button class="btn-sm-outline" (click)="showAddLinkForm = false">Cancelar</button>
+              <button class="btn-sm-outline" (click)="showAddLinkForm = false">{{ 'SCOUTING_CLUB.CANCEL' | translate }}</button>
               <button class="btn-sm-primary" (click)="addSocialLink()" [disabled]="addLinkSaving || !addLinkUrl.trim()">
                 <span *ngIf="addLinkSaving" class="spinner-xs"></span>
-                <i *ngIf="!addLinkSaving" class="bi bi-check-lg"></i> Guardar
+                <i *ngIf="!addLinkSaving" class="bi bi-check-lg"></i> {{ 'SCOUTING_CLUB.SAVE' | translate }}
               </button>
             </div>
           </div>
@@ -742,7 +742,7 @@
                 <span class="video-platform-icon" [style.color]="platformColor('UPLOAD')">
                   <i class="bi bi-cloud-fill"></i>
                 </span>
-                <span class="video-title">{{ v.title || 'Vídeo subido' }}</span>
+                <span class="video-title">{{ v.title || ('SCOUTING_CLUB.DETAIL.VIDEO_DEFAULT' | translate) }}</span>
                 <span class="video-size text-muted small">{{ (v.fileSizeBytes / 1048576) | number:'1.0-1' }} MB</span>
               </button>
               <button class="btn-icon-danger" (click)="deleteClubVideo(v.id)" title="Eliminar vídeo">
@@ -753,15 +753,15 @@
             <!-- Sin vídeos -->
             <div *ngIf="playerVideos.length === 0 && clubVideos.length === 0" class="empty-state-sm">
               <i class="bi bi-play-circle"></i>
-              <span>Aún no hay vídeos. Añade un enlace de YouTube, Instagram o TikTok (gratis), o sube vídeos directamente con tu plan de almacenamiento.</span>
+              <span>{{ 'SCOUTING_CLUB.DETAIL.NO_VIDEOS' | translate }}</span>
             </div>
           </div>
 
           <!-- Aviso sin plan -->
           <div *ngIf="!hasPlanForVideos" class="plan-notice">
             <i class="bi bi-info-circle"></i>
-            <span>Las subidas desde dispositivo requieren un <strong>plan de vídeo</strong>. Los enlaces de redes sociales son siempre gratuitos.</span>
-            <a routerLink="/dashboard/club-videos/{{ clubId }}" class="btn-link-plan">Ver planes</a>
+            <span>{{ 'SCOUTING_CLUB.DETAIL.PLAN_NOTICE' | translate }}</span>
+            <a routerLink="/dashboard/club-videos/{{ clubId }}" class="btn-link-plan">{{ 'SCOUTING_CLUB.DETAIL.VIEW_PLANS' | translate }}</a>
           </div>
         </div>
 
@@ -870,7 +870,7 @@
 <div class="modal-backdrop compare-backdrop" *ngIf="showCompareModal" (click)="closeCompareModal()" appModalBackdrop>
   <div class="modal-card compare-modal" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3><i class="bi bi-bar-chart-steps"></i> Comparativa de jugadores</h3>
+      <h3><i class="bi bi-bar-chart-steps"></i> {{ 'SCOUTING_CLUB.COMPARE.TITLE' | translate }}</h3>
       <button class="btn-close-modal" (click)="closeCompareModal()"><i class="bi bi-x-lg"></i></button>
     </div>
     <div class="modal-body compare-body">
@@ -893,7 +893,7 @@
             </div>
             <div class="compare-player-team">
               <i class="bi bi-shield-fill"></i>
-              {{ p?.scoutingProfile?.equipoActual || p?.watchlist?.externalPlayerTeam || 'Sin equipo' }}
+              {{ p?.scoutingProfile?.equipoActual || p?.watchlist?.externalPlayerTeam || ('SCOUTING_CLUB.COMPARE.NO_TEAM' | translate) }}
             </div>
             <div class="compare-overall" [style.background]="compareScoreColor(getCompareOverall(p))">
               {{ getCompareOverall(p) || '–' }}
@@ -904,17 +904,17 @@
         <!-- Filas de métricas -->
         <div class="compare-metrics">
           <ng-container *ngFor="let metric of [
-            {key: 'technicalScore',  label: 'Técnica',    icon: 'bi-star'},
-            {key: 'tacticalScore',   label: 'Táctica',    icon: 'bi-diagram-3'},
-            {key: 'physicalScore',   label: 'Físico',     icon: 'bi-lightning'},
-            {key: 'mentalScore',     label: 'Mental',     icon: 'bi-brain'},
-            {key: 'potentialScore',  label: 'Potencial',  icon: 'bi-graph-up-arrow'},
-            {key: 'attitudeScore',   label: 'Actitud',    icon: 'bi-emoji-smile'}
+            {key: 'technicalScore',  scoreKey: 'TECHNICAL',  icon: 'bi-star'},
+            {key: 'tacticalScore',   scoreKey: 'TACTICAL',   icon: 'bi-diagram-3'},
+            {key: 'physicalScore',   scoreKey: 'PHYSICAL',   icon: 'bi-lightning'},
+            {key: 'mentalScore',     scoreKey: 'MENTAL',     icon: 'bi-brain'},
+            {key: 'potentialScore',  scoreKey: 'POTENTIAL',  icon: 'bi-graph-up-arrow'},
+            {key: 'attitudeScore',   scoreKey: 'ATTITUDE',   icon: 'bi-emoji-smile'}
           ]">
             <div class="compare-row" [style.grid-template-columns]="'140px repeat(' + comparePlayersData.length + ', 1fr)'">
               <div class="compare-metric-label">
                 <i [class]="'bi ' + metric.icon"></i>
-                {{ metric.label }}
+                {{ ('SCOUTING_CLUB.SCORES.' + metric.scoreKey) | translate }}
               </div>
               <div class="compare-metric-val" *ngFor="let p of comparePlayersData">
                 <div class="compare-bar-wrap">
@@ -935,19 +935,19 @@
         </div>
 
         <!-- Notas de evaluaciones recientes -->
-        <div class="compare-notes-section">
-          <h5><i class="bi bi-journal-text"></i> Observaciones recientes</h5>
+          <div class="compare-notes-section">
+          <h5><i class="bi bi-journal-text"></i> {{ 'SCOUTING_CLUB.COMPARE.RECENT_OBS' | translate }}</h5>
           <div class="compare-notes-grid" [style.grid-template-columns]="'repeat(' + comparePlayersData.length + ', 1fr)'">
             <div class="compare-notes-col" *ngFor="let p of comparePlayersData">
               <div class="compare-notes-name">{{ getPlayerName(p) }}</div>
               <div *ngIf="p?.evaluations?.length > 0">
                 <div class="compare-note-item" *ngFor="let ev of ($any(p?.evaluations) | slice:0:2)">
                   <span *ngIf="$any(ev)?.notes" class="compare-note-text">{{ $any(ev).notes }}</span>
-                  <span *ngIf="!$any(ev)?.notes" class="compare-note-empty">Sin notas en esta evaluación</span>
+                  <span *ngIf="!$any(ev)?.notes" class="compare-note-empty">{{ 'SCOUTING_CLUB.COMPARE.NO_NOTES' | translate }}</span>
                 </div>
               </div>
               <div *ngIf="!p?.evaluations?.length" class="compare-no-evals">
-                <i class="bi bi-clipboard-x"></i> Sin evaluaciones
+                <i class="bi bi-clipboard-x"></i> {{ 'SCOUTING_CLUB.COMPARE.NO_EVALS' | translate }}
               </div>
             </div>
           </div>
@@ -958,12 +958,12 @@
           <div class="ai-compare-header">
             <div class="ai-compare-badge">
               <i class="bi bi-stars"></i>
-              <span>Análisis de la IA</span>
+              <span>{{ 'SCOUTING_CLUB.COMPARE.AI_TITLE' | translate }}</span>
             </div>
             <div class="ai-compare-actions" *ngIf="!aiCompareLoading">
               <!-- Indicador de guardado -->
               <span class="ai-compare-saved-badge" *ngIf="aiCompareSaved">
-                <i class="bi bi-check-circle-fill"></i> Guardado
+                <i class="bi bi-check-circle-fill"></i> {{ 'SCOUTING_CLUB.COMPARE.AI_SAVED' | translate }}
               </span>
               <!-- Botón PDF -->
               <button class="btn-ai-pdf" *ngIf="aiCompareResult" (click)="downloadComparisonPdf()" title="Descargar como PDF">
@@ -980,7 +980,7 @@
             <div class="ai-compare-dots">
               <span></span><span></span><span></span>
             </div>
-            <p>La IA está analizando a los jugadores...</p>
+            <p>{{ 'SCOUTING_CLUB.COMPARE.AI_ANALYZING' | translate }}</p>
           </div>
 
           <div *ngIf="aiCompareError && !aiCompareLoading" class="ai-compare-error">
@@ -994,17 +994,17 @@
 
       <div *ngIf="!compareLoading && comparePlayersData.length === 0" class="empty-state">
         <i class="bi bi-bar-chart"></i>
-        <p>No se pudieron cargar los datos de los jugadores.</p>
+        <p>{{ 'SCOUTING_CLUB.COMPARE.NO_DATA' | translate }}</p>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn-outline" (click)="closeCompareModal()">Cerrar</button>
+      <button class="btn-outline" (click)="closeCompareModal()">{{ 'SCOUTING_CLUB.COMPARE.CLOSE' | translate }}</button>
       <button class="btn-ai-compare"
         *ngIf="!compareLoading && comparePlayersData.length >= 2"
         [disabled]="aiCompareLoading"
         (click)="generateAiComparison()">
         <i class="bi bi-stars"></i>
-        {{ aiCompareLoading ? 'Analizando...' : 'Comparar con IA' }}
+        {{ aiCompareLoading ? ('SCOUTING_CLUB.COMPARE.ANALYZING' | translate) : ('SCOUTING_CLUB.COMPARE.AI_BTN' | translate) }}
       </button>
     </div>
   </div>

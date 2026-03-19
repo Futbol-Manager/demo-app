@@ -12,9 +12,9 @@
         <div class="header-center">
             <h2 class="table-title">
                 <i class="bi bi-person-vcard table-title-icon"></i>
-                Datos personales
+                {{ 'JUG.TITLE_PERSONAL' | translate }}
             </h2>
-            <p class="header-subtitle">Consulta y edita la información del jugador</p>
+            <p class="header-subtitle">{{ 'JUG.SUBTITLE_PERSONAL' | translate }}</p>
         </div>
         <div class="page-header-spacer"></div>
     </ng-container>
@@ -22,17 +22,17 @@
     <ng-container *ngIf="!soloPlayerMode">
         <div class="page-header-title">
             <h2 *ngIf="(usuarioActual?.profileType?.profileId ?? 0) < 3">
-                <i class="bi bi-people me-2"></i>Listado de Jugadores
+                <i class="bi bi-people me-2"></i>{{ 'JUG.TITLE_LIST' | translate }}
             </h2>
             <h2 *ngIf="(usuarioActual?.profileType?.profileId ?? 0) > 2">
-                <i class="bi bi-person me-2"></i>Información
+                <i class="bi bi-person me-2"></i>{{ 'JUG.TITLE_INFO' | translate }}
             </h2>
-            <p class="header-subtitle">Consulta el listado y perfiles detallados de los jugadores</p>
+            <p class="header-subtitle">{{ 'JUG.SUBTITLE_LIST' | translate }}</p>
         </div>
         <div *ngIf="(usuarioActual?.profileType?.profileId ?? 0) < 3" class="players-header-actions" data-tutorial="jug-crear">
             <button type="button" class="btn-crear-jugador" (click)="abrirModalCrearJugador()">
                 <i class="bi bi-plus-lg"></i>
-                <span>Crear jugador</span>
+                <span>{{ 'JUG.BTN_CREAR' | translate }}</span>
             </button>
         </div>
         <div *ngIf="(usuarioActual?.profileType?.profileId ?? 0) >= 3" class="page-header-spacer"></div>
@@ -45,14 +45,12 @@
             <li class="nav-item" role="presentation">
                 <button class="nav-link" [class.active]="playersViewTab === 'cards'" id="card-tab"
                     type="button" role="tab" aria-controls="card-content" [attr.aria-selected]="playersViewTab === 'cards'"
-                    (click)="playersViewTab = 'cards'">Vista de
-                    tarjetas</button>
+                    (click)="playersViewTab = 'cards'">{{ 'JUG.TAB_CARDS' | translate }}</button>
             </li>
             <li class="nav-item" role="presentation" *ngIf="(usuarioActual?.profileType?.profileId ?? 0) < 3">
                 <button class="nav-link" [class.active]="playersViewTab === 'table'" id="table-tab"
                     type="button" role="tab" aria-controls="table-content" [attr.aria-selected]="playersViewTab === 'table'"
-                    (click)="playersViewTab = 'table'">Vista de
-                    tabla</button>
+                    (click)="playersViewTab = 'table'">{{ 'JUG.TAB_TABLE' | translate }}</button>
             </li>
         </ul>
         <div class="tab-content players-tab-content" id="myTabContent">
@@ -110,31 +108,31 @@
                                         <i class="bi bi-heart-pulse-fill"></i>
                                       </span>
                                     </h5>
-                                    <p class="player-subtitle">Nacimiento: {{ player.fechaDeNacimiento | date }}</p>
+                                    <p class="player-subtitle">{{ 'JUG.BIRTH' | translate }}: {{ player.fechaDeNacimiento | date }}</p>
 
                                     <div class="player-mini-stats">
                                         <div class="mini-stat">
-                                            <span class="label">Habilidad</span>
+                                            <span class="label">{{ 'JUG.STAT_SKILL' | translate }}</span>
                                             <span class="value">{{ getStatValue(player.habilidadConBalon) }}</span>
                                         </div>
                                         <div class="mini-stat">
-                                            <span class="label">Pase</span>
+                                            <span class="label">{{ 'JUG.STAT_PASS' | translate }}</span>
                                             <span class="value">{{ getStatValue(player.pase) }}</span>
                                         </div>
                                         <div class="mini-stat">
-                                            <span class="label">Tiro</span>
+                                            <span class="label">{{ 'JUG.STAT_SHOT' | translate }}</span>
                                             <span class="value">{{ getStatValue(player.tiro) }}</span>
                                         </div>
                                         <div class="mini-stat">
-                                            <span class="label">Defensa</span>
+                                            <span class="label">{{ 'JUG.STAT_DEFENSE' | translate }}</span>
                                             <span class="value">{{ getStatValue(player.defensa) }}</span>
                                         </div>
                                         <div class="mini-stat">
-                                            <span class="label">Físico</span>
+                                            <span class="label">{{ 'JUG.STAT_PHYSICAL' | translate }}</span>
                                             <span class="value">{{ getStatValue(player.fisico) }}</span>
                                         </div>
                                         <div class="mini-stat">
-                                            <span class="label">Mentalidad</span>
+                                            <span class="label">{{ 'JUG.STAT_MENTAL' | translate }}</span>
                                             <span class="value">{{ getStatValue(player.mentalidad) }}</span>
                                         </div>
                                     </div>
@@ -169,18 +167,18 @@
                     <!-- Barra de controles (búsqueda + Export Excel) -->
                     <div class="players-table-toolbar" data-tutorial="jug-toolbar">
                         <div class="filter-group search-group">
-                            <label for="playerSearchTable" class="filter-label">Buscar</label>
+                            <label for="playerSearchTable" class="filter-label">{{ 'JUG.SEARCH_LABEL' | translate }}</label>
                             <div class="search-input">
                                 <i class="bi bi-search"></i>
                                 <input id="playerSearchTable" type="text" class="form-control" [(ngModel)]="playerSearch"
-                                    (input)="applyFilter()" placeholder="Buscar..." />
+                                    (input)="applyFilter()" [placeholder]="'JUG.SEARCH_PLACEHOLDER' | translate" />
                             </div>
                         </div>
                         <div class="filter-group">
                             <label class="filter-label invisible-label">Excel</label>
                             <button type="button" class="btn btn-excel" (click)="exportTableToExcel()">
                                 <i class="bi bi-file-earmark-spreadsheet-fill"></i>
-                                Exportar Excel
+                                {{ 'JUG.BTN_EXPORT' | translate }}
                             </button>
                         </div>
                     </div>
@@ -188,19 +186,19 @@
                         <table id="playersDataTable" class="modern-table players-modern-table players-table-fifa text-center">
                             <thead>
                                 <tr>
-                                    <th class="th-img">IMAGEN</th>
-                                    <th>NOMBRE</th>
-                                    <th>FECHA</th>
-                                    <th>PIE</th>
-                                    <th>POSICIÓN</th>
-                                    <th>HABILIDAD</th>
-                                    <th>PASE</th>
-                                    <th>TIRO</th>
-                                    <th>DEFENSA</th>
-                                    <th>FÍSICO</th>
-                                    <th>MENTALIDAD</th>
-                                    <th>PORTERO</th>
-                                    <th class="th-actions">ACCIONES</th>
+                                    <th class="th-img">{{ 'JUG.TH_IMAGE' | translate }}</th>
+                                    <th>{{ 'JUG.TH_NAME' | translate }}</th>
+                                    <th>{{ 'JUG.TH_DATE' | translate }}</th>
+                                    <th>{{ 'JUG.TH_FOOT' | translate }}</th>
+                                    <th>{{ 'JUG.TH_POSITION' | translate }}</th>
+                                    <th>{{ 'JUG.TH_SKILL' | translate }}</th>
+                                    <th>{{ 'JUG.TH_PASS' | translate }}</th>
+                                    <th>{{ 'JUG.TH_SHOT' | translate }}</th>
+                                    <th>{{ 'JUG.TH_DEFENSE' | translate }}</th>
+                                    <th>{{ 'JUG.TH_PHYSICAL' | translate }}</th>
+                                    <th>{{ 'JUG.TH_MENTAL' | translate }}</th>
+                                    <th>{{ 'JUG.TH_KEEPER' | translate }}</th>
+                                    <th class="th-actions">{{ 'JUG.TH_ACTIONS' | translate }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -292,7 +290,7 @@
     <div class="modal-dialog modal-xl modal-dialog-scrollable" [ngClass]="{'modal-fullscreen': soloPlayerMode}" role="document">
         <div class="modal-content modal-content-fifa" [ngClass]="{'modal-content--page': soloPlayerMode}">
             <div class="modal-header modal-header-fifa" *ngIf="!soloPlayerMode">
-                <h5 class="modal-title">{{ isEditing ? 'Editar Jugador' : 'Nuevo jugador' }}</h5>
+                <h5 class="modal-title">{{ isEditing ? ('JUG.MODAL_EDIT_TITLE' | translate) : ('JUG.MODAL_NEW_TITLE' | translate) }}</h5>
                 <button type="button" class="btn-close btn-close-white" aria-label="Cerrar" (click)="cerrarModal()"></button>
             </div>
             <div class="modal-body modal-body-fifa" [ngClass]="{'jugador-datos-page-body': soloPlayerMode}">
@@ -312,16 +310,16 @@
                                 <ng-container *ngIf="showPreview">
                                     <img [src]="imagePreviewUrl" alt="Vista previa" class="player-modal-avatar player-modal-avatar-preview">
                                 </ng-container>
-                                <h4 class="modal-section-title">Sube la foto del jugador</h4>
-                                <p class="text-muted small mb-1">JPG o PNG. Al crear, la foto se sube al guardar.</p>
+                                <h4 class="modal-section-title">{{ 'JUG.PHOTO_TITLE' | translate }}</h4>
+                                <p class="text-muted small mb-1">{{ 'JUG.PHOTO_HINT' | translate }}</p>
                                 <input type="file" id="image" accept="image/jpeg,image/png" (change)="onFileSelected($event)" class="form-control form-control-sm w-auto mx-auto">
                                 <div *ngIf="showPreview" class="mt-3">
                                     <div class="d-flex gap-2 justify-content-center flex-wrap">
                                         <button (click)="rotateImage()" type="button" class="btn btn-fifa btn-fifa-secondary">
-                                            <i class="bi bi-arrow-repeat"></i> Rotar
+                                            <i class="bi bi-arrow-repeat"></i> {{ 'JUG.BTN_ROTATE' | translate }}
                                         </button>
                                         <button *ngIf="player.playerId !== 0 && showbtnupimg" type="button" class="btn btn-fifa btn-fifa-primary" (click)="onSubmit(player.playerId)">
-                                            <i class="bi bi-cloud-upload"></i> Subir foto
+                                            <i class="bi bi-cloud-upload"></i> {{ 'JUG.BTN_UPLOAD_PHOTO' | translate }}
                                         </button>
                                     </div>
                                 </div>
@@ -333,19 +331,19 @@
                     <ul class="nav nav-tabs form-modal-tabs" role="tablist" data-tutorial="jd-tabs">
                         <li class="nav-item" role="presentation">
                             <button type="button" class="nav-link" [class.active]="formModalActiveTab === 'personal'" (click)="setFormModalTab('personal')">
-                                <i class="bi bi-person-vcard me-1"></i> Información personal
+                                <i class="bi bi-person-vcard me-1"></i> {{ 'JUG.TAB_PERSONAL' | translate }}
                             </button>
                         </li>
                         <li class="nav-item" role="presentation" *ngIf="(usuarioActual?.profileType?.profileId ?? 0) < 3">
                             <button type="button" class="nav-link" [class.active]="formModalActiveTab === 'deportiva'" (click)="setFormModalTab('deportiva')">
-                                <i class="bi bi-graph-up-arrow me-1"></i> Información deportiva
+                                <i class="bi bi-graph-up-arrow me-1"></i> {{ 'JUG.TAB_DEPORTIVA' | translate }}
                             </button>
                         </li>
                     </ul>
                     <div class="tab-content form-modal-tab-content">
                         <!-- Pestaña: Información personal -->
                         <div class="tab-pane" [class.active]="formModalActiveTab === 'personal'" role="tabpanel" data-tutorial="jd-datos">
-                            <h2 class="form-modal-section-heading">Datos del jugador</h2>
+                            <h2 class="form-modal-section-heading">{{ 'JUG.FORM_PLAYER_DATA' | translate }}</h2>
                             <div class="row g-3 form-modal-fields">
                                 <div class="col-12 col-md-6">
                                     <label class="form-modal-label">Nombre</label>

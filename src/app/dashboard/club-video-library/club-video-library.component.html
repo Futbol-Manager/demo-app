@@ -7,22 +7,22 @@
       <button class="btn-back" (click)="goBack()" data-tutorial="videos-volver"><i class="bi bi-arrow-left"></i></button>
     </div>
     <div class="header-center">
-      <h2><i class="bi bi-collection-play-fill"></i> Biblioteca de Vídeos</h2>
-      <p class="header-sub">Gestiona los vídeos de scouting de tu club</p>
+      <h2><i class="bi bi-collection-play-fill"></i> {{ 'VIDEOS.TITLE' | translate }}</h2>
+      <p class="header-sub">{{ 'VIDEOS.SUBTITLE' | translate }}</p>
     </div>
     <div class="header-actions" data-tutorial="videos-header-acciones">
       <button class="btn-manage-plan" (click)="showPlansModal = true">
         <i class="bi bi-hdd-network"></i>
-        {{ hasPlan ? 'Gestionar plan' : 'Contratar almacenamiento' }}
+        {{ hasPlan ? ('VIDEOS.MANAGE_PLAN' | translate) : ('VIDEOS.GET_STORAGE' | translate) }}
       </button>
       <button class="btn-upload" *ngIf="hasPlan" (click)="showUploadModal = true">
-        <i class="bi bi-cloud-upload"></i> Subir vídeo
+        <i class="bi bi-cloud-upload"></i> {{ 'VIDEOS.UPLOAD_BTN' | translate }}
       </button>
       <button class="btn-drive-import" *ngIf="hasPlan" (click)="importFromDrive()" [disabled]="driveImporting">
-        <i class="bi bi-google"></i> Importar desde Drive
+        <i class="bi bi-google"></i> {{ 'VIDEOS.IMPORT_DRIVE' | translate }}
       </button>
-      <button class="btn-add-link" (click)="showLinkModal = true" title="Añadir enlace de YouTube, Vimeo, VEO…">
-        <i class="bi bi-link-45deg"></i> Añadir enlace
+      <button class="btn-add-link" (click)="showLinkModal = true">
+        <i class="bi bi-link-45deg"></i> {{ 'VIDEOS.ADD_LINK' | translate }}
       </button>
     </div>
   </div>
@@ -42,17 +42,17 @@
         [style.background]="barColor()"></div>
     </div>
     <span class="plan-pct">{{ usedPercent() | number:'1.0-1' }}%</span>
-    <span class="total-videos">{{ videos.length }} vídeos</span>
+    <span class="total-videos">{{ videos.length }} {{ 'VIDEOS.VIDEO_COUNT' | translate }}</span>
   </div>
 
   <!-- Sin plan -->
   <div *ngIf="!planLoading && !hasPlan" class="no-plan-banner" data-tutorial="videos-plan-bar">
     <i class="bi bi-camera-video-off"></i>
     <div>
-      <strong>Sin almacenamiento de vídeo</strong>
-      <p>Contrata un plan para subir y gestionar vídeos de tus jugadores.</p>
+      <strong>{{ 'VIDEOS.NO_PLAN_TITLE' | translate }}</strong>
+      <p>{{ 'VIDEOS.NO_PLAN_DESC' | translate }}</p>
     </div>
-    <button class="btn-cta" (click)="showPlansModal = true">Ver planes desde €24,99/mes</button>
+    <button class="btn-cta" (click)="showPlansModal = true">{{ 'VIDEOS.NO_PLAN_CTA' | translate }}</button>
   </div>
 
   <!-- DRIVE IMPORT PROGRESS -->
@@ -77,7 +77,7 @@
     <!-- SIDEBAR CARPETAS -->
     <div class="folders-sidebar" data-tutorial="videos-sidebar">
       <div class="folders-header">
-        <span class="folders-title"><i class="bi bi-folder2"></i> Carpetas</span>
+        <span class="folders-title"><i class="bi bi-folder2"></i> {{ 'VIDEOS.FOLDERS_TITLE' | translate }}</span>
         <div class="folders-header-actions">
           <button class="btn-sync-teams" (click)="manualSyncFolders()" [disabled]="syncingFolders" title="Crear carpetas de equipos">
             <i *ngIf="!syncingFolders" class="bi bi-people-fill"></i>
@@ -101,7 +101,7 @@
 
       <!-- Formulario nueva carpeta -->
       <div class="new-folder-form" *ngIf="showCreateFolder">
-        <input type="text" [(ngModel)]="newFolderName" placeholder="Nombre de la carpeta" maxlength="40"
+        <input type="text" [(ngModel)]="newFolderName" [placeholder]="'VIDEOS.FOLDER_NAME_PH' | translate" maxlength="40"
           (keydown.enter)="createFolder()" class="folder-name-input">
         <div class="color-picker">
           <span *ngFor="let c of folderColors" class="color-dot"
@@ -110,9 +110,9 @@
             (click)="newFolderColor = c"></span>
         </div>
         <div class="new-folder-actions">
-          <button class="btn-cancel-folder" (click)="showCreateFolder = false">Cancelar</button>
+          <button class="btn-cancel-folder" (click)="showCreateFolder = false">{{ 'VIDEOS.CANCEL' | translate }}</button>
           <button class="btn-save-folder" (click)="createFolder()" [disabled]="folderSaving || !newFolderName.trim()">
-            {{ folderSaving ? 'Creando…' : 'Crear' }}
+            {{ folderSaving ? ('VIDEOS.CREATING' | translate) : ('VIDEOS.CREATE_BTN' | translate) }}
           </button>
         </div>
         <p class="folder-error" *ngIf="folderError">{{ folderError }}</p>
@@ -122,12 +122,12 @@
       <ul class="folder-list">
         <li class="folder-item" [class.active]="activeFolderId === null" (click)="selectFolder(null)">
           <i class="bi bi-grid-fill"></i>
-          <span>Todos los vídeos</span>
+          <span>{{ 'VIDEOS.ALL_VIDEOS' | translate }}</span>
           <span class="folder-count">{{ videoCountInFolder(null) }}</span>
         </li>
         <li class="folder-item" [class.active]="activeFolderId === 'uncategorized'" (click)="selectFolder('uncategorized')">
           <i class="bi bi-folder2-open folder-icon-muted"></i>
-          <span>Sin carpeta</span>
+          <span>{{ 'VIDEOS.NO_FOLDER' | translate }}</span>
           <span class="folder-count">{{ videoCountInFolder('uncategorized') }}</span>
         </li>
 
@@ -173,11 +173,11 @@
       <div class="search-bar" data-tutorial="videos-busqueda">
         <i class="bi bi-search"></i>
         <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="applyFilter()"
-          placeholder="Buscar por título, jugador o etiqueta…" class="search-input">
+          [placeholder]="'VIDEOS.SEARCH_PH' | translate" class="search-input">
         <span class="folder-breadcrumb" *ngIf="activeFolderId !== null">
           <i class="bi bi-folder-fill" *ngIf="activeFolderId !== 'uncategorized'"
             [style.color]="getFolderProp(activeFolderId, 'color')"></i>
-          {{ activeFolderId === 'uncategorized' ? 'Sin carpeta' : (getFolderProp(activeFolderId, 'name') || 'Carpeta') }}
+          {{ activeFolderId === 'uncategorized' ? ('VIDEOS.NO_FOLDER' | translate) : (getFolderProp(activeFolderId, 'name') || ('VIDEOS.BREADCRUMB_DEFAULT' | translate)) }}
           <button class="btn-clear-folder" (click)="selectFolder(null)"><i class="bi bi-x"></i></button>
         </span>
       </div>
@@ -188,12 +188,12 @@
       <!-- EMPTY -->
       <div *ngIf="!loading && filteredVideos.length === 0" class="empty-state">
         <i class="bi bi-film"></i>
-        <p>{{ searchQuery ? 'No se encontraron vídeos.' : activeFolderId !== null ? 'Esta carpeta está vacía.' : hasPlan ? 'Aún no has subido ningún vídeo.' : 'No tienes vídeos. Contrata un plan para empezar a subir.' }}</p>
+        <p>{{ searchQuery ? ('VIDEOS.EMPTY_SEARCH' | translate) : activeFolderId !== null ? ('VIDEOS.EMPTY_FOLDER' | translate) : hasPlan ? ('VIDEOS.EMPTY_HAS_PLAN' | translate) : ('VIDEOS.EMPTY_NO_PLAN' | translate) }}</p>
         <button class="btn-upload-lg" *ngIf="hasPlan && !searchQuery && activeFolderId === null" (click)="showUploadModal = true">
-          <i class="bi bi-cloud-upload"></i> Subir primer vídeo
+          <i class="bi bi-cloud-upload"></i> {{ 'VIDEOS.UPLOAD_FIRST' | translate }}
         </button>
         <button class="btn-cta" *ngIf="!hasPlan && !searchQuery" (click)="showPlansModal = true">
-          Ver planes de almacenamiento
+          {{ 'VIDEOS.VIEW_PLANS_BTN' | translate }}
         </button>
       </div>
 
@@ -226,7 +226,7 @@
           </div>
           <div class="video-actions">
             <button class="btn-play" (click)="playVideo(video)" [disabled]="videoUrlLoading && !isExternal(video)">
-              <i class="bi bi-play-fill"></i> Ver
+              <i class="bi bi-play-fill"></i> {{ 'VIDEOS.PLAY_BTN' | translate }}
             </button>
             <button class="btn-drive-export" *ngIf="!isExternal(video)" (click)="exportToDrive(video)"
               [disabled]="driveExporting" title="Exportar a Google Drive">
@@ -259,7 +259,7 @@
       <!-- Vídeo nativo -->
       <video *ngIf="activeVideoUrl && !activeIframeUrl" class="video-player" controls autoplay>
         <source [src]="activeVideoUrl" [type]="activeVideo.contentType || 'video/mp4'">
-        Tu navegador no soporta vídeo HTML5.
+        {{ 'VIDEOS.NO_HTML5' | translate }}
       </video>
       <!-- Vídeo externo (YouTube, Vimeo, VEO) -->
       <iframe *ngIf="activeIframeUrl"
@@ -282,12 +282,12 @@
       <div class="veo-modal-body">
         <i class="bi bi-info-circle-fill veo-info-icon"></i>
         <p>
-          <strong>VEO</strong> no permite reproducir sus vídeos embebidos en otras aplicaciones.<br>
-          Pulsa el botón para verlo directamente en VEO en una nueva pestaña.
+          <strong>VEO</strong> {{ 'VIDEOS.VEO_TITLE' | translate }}<br>
+          {{ 'VIDEOS.VEO_DESC' | translate }}
         </p>
         <a class="btn-open-veo" [href]="veoPreviewVideo.externalUrl" target="_blank" rel="noopener noreferrer"
            (click)="veoPreviewVideo = null">
-          <i class="bi bi-box-arrow-up-right"></i> Abrir vídeo en VEO
+          <i class="bi bi-box-arrow-up-right"></i> {{ 'VIDEOS.VEO_OPEN' | translate }}
         </a>
       </div>
     </div>
@@ -297,24 +297,21 @@
   <div class="modal-backdrop" *ngIf="showLinkModal" (click)="showLinkModal = false" appModalBackdrop>
     <div class="link-modal" (click)="$event.stopPropagation()">
       <div class="move-modal-header">
-        <h4><i class="bi bi-link-45deg"></i> Añadir enlace de vídeo</h4>
+        <h4><i class="bi bi-link-45deg"></i> {{ 'VIDEOS.LINK_MODAL_TITLE' | translate }}</h4>
         <button class="btn-close-player" (click)="showLinkModal = false"><i class="bi bi-x-lg"></i></button>
       </div>
-      <p class="link-modal-hint">
-        Pega un enlace de <strong>YouTube</strong>, <strong>Vimeo</strong>, <strong>VEO</strong> u otro servicio.
-        El vídeo se añadirá a tu biblioteca sin consumir almacenamiento.
-      </p>
+      <p class="link-modal-hint">{{ 'VIDEOS.LINK_MODAL_HINT' | translate }}</p>
       <div class="link-form">
-        <label class="link-label">URL del vídeo <span class="required">*</span></label>
+        <label class="link-label">{{ 'VIDEOS.LINK_URL' | translate }} <span class="required">*</span></label>
         <input type="url" [(ngModel)]="newLinkUrl" placeholder="https://www.youtube.com/watch?v=…"
           class="folder-name-input" (keydown.enter)="addExternalLink()">
 
-        <label class="link-label" style="margin-top:12px">Título (opcional)</label>
-        <input type="text" [(ngModel)]="newLinkTitle" placeholder="Título del vídeo"
+        <label class="link-label" style="margin-top:12px">{{ 'VIDEOS.LINK_TITLE_FIELD' | translate }}</label>
+        <input type="text" [(ngModel)]="newLinkTitle" [placeholder]="'VIDEOS.LINK_TITLE_FIELD' | translate"
           class="folder-name-input" maxlength="120">
 
-        <label class="link-label" style="margin-top:12px">Etiquetas (opcional)</label>
-        <input type="text" [(ngModel)]="newLinkTags" placeholder="defensa, partido, juvenil"
+        <label class="link-label" style="margin-top:12px">{{ 'VIDEOS.LINK_TAGS_FIELD' | translate }}</label>
+        <input type="text" [(ngModel)]="newLinkTags" [placeholder]="'VIDEOS.LINK_TAGS_FIELD' | translate"
           class="folder-name-input">
       </div>
 
@@ -326,18 +323,18 @@
           'bi-camera-video-fill text-veo': detectSourceType(newLinkUrl) === 'veo',
           'bi-link-45deg': detectSourceType(newLinkUrl) === 'external'
         }"></i>
-        {{ detectSourceType(newLinkUrl) === 'youtube' ? 'Enlace de YouTube detectado' :
-           detectSourceType(newLinkUrl) === 'vimeo'   ? 'Enlace de Vimeo detectado'   :
-           detectSourceType(newLinkUrl) === 'veo'     ? 'Enlace de VEO detectado'     : 'Enlace externo' }}
+        {{ detectSourceType(newLinkUrl) === 'youtube' ? ('VIDEOS.LINK_TYPE_YT' | translate) :
+           detectSourceType(newLinkUrl) === 'vimeo'   ? ('VIDEOS.LINK_TYPE_VIMEO' | translate)   :
+           detectSourceType(newLinkUrl) === 'veo'     ? ('VIDEOS.LINK_TYPE_VEO' | translate)     : ('VIDEOS.LINK_TYPE_EXT' | translate) }}
       </p>
 
       <p class="folder-error" *ngIf="linkError">{{ linkError }}</p>
 
       <div class="new-folder-actions" style="margin-top:16px">
-        <button class="btn-cancel-folder" (click)="showLinkModal = false; linkError = ''">Cancelar</button>
+        <button class="btn-cancel-folder" (click)="showLinkModal = false; linkError = ''">{{ 'VIDEOS.CANCEL' | translate }}</button>
         <button class="btn-save-folder" (click)="addExternalLink()"
           [disabled]="linkSaving || !newLinkUrl.trim()">
-          {{ linkSaving ? 'Guardando…' : 'Añadir vídeo' }}
+          {{ linkSaving ? ('VIDEOS.LINK_SAVING' | translate) : ('VIDEOS.LINK_ADD_BTN' | translate) }}
         </button>
       </div>
     </div>
@@ -347,11 +344,11 @@
   <div class="modal-backdrop" *ngIf="deleteConfirmId" (click)="deleteConfirmId = null" appModalBackdrop>
     <div class="confirm-modal" (click)="$event.stopPropagation()">
       <i class="bi bi-exclamation-triangle-fill warn-icon"></i>
-      <h4>¿Eliminar este vídeo?</h4>
-      <p>Esta acción no se puede deshacer. El espacio se liberará en tu plan.</p>
+      <h4>{{ 'VIDEOS.DELETE_TITLE' | translate }}</h4>
+      <p>{{ 'VIDEOS.DELETE_DESC' | translate }}</p>
       <div class="confirm-btns">
-        <button class="btn-outline" (click)="deleteConfirmId = null">Cancelar</button>
-        <button class="btn-danger" (click)="deleteVideo()">Eliminar</button>
+        <button class="btn-outline" (click)="deleteConfirmId = null">{{ 'VIDEOS.CANCEL' | translate }}</button>
+        <button class="btn-danger" (click)="deleteVideo()">{{ 'VIDEOS.DELETE_BTN' | translate }}</button>
       </div>
     </div>
   </div>
@@ -360,13 +357,13 @@
   <div class="modal-backdrop" *ngIf="movingVideo" (click)="movingVideo = null" appModalBackdrop>
     <div class="move-folder-modal" (click)="$event.stopPropagation()">
       <div class="move-modal-header">
-        <h4><i class="bi bi-folder-symlink"></i> Mover a carpeta</h4>
+        <h4><i class="bi bi-folder-symlink"></i> {{ 'VIDEOS.MOVE_TITLE' | translate }}</h4>
         <button class="btn-close-player" (click)="movingVideo = null"><i class="bi bi-x-lg"></i></button>
       </div>
-      <p class="move-modal-sub">Vídeo: <strong>{{ movingVideo?.title }}</strong></p>
+      <p class="move-modal-sub">{{ 'VIDEOS.MOVE_VIDEO_LABEL' | translate }} <strong>{{ movingVideo?.title }}</strong></p>
       <ul class="move-folder-list">
         <li (click)="moveVideoToFolder(movingVideo, null)" [class.selected]="!movingVideo?.folderId">
-          <i class="bi bi-folder2-open folder-icon-muted"></i> Sin carpeta
+          <i class="bi bi-folder2-open folder-icon-muted"></i> {{ 'VIDEOS.NO_FOLDER' | translate }}
         </li>
         <li *ngFor="let folder of folders"
           (click)="moveVideoToFolder(movingVideo, folder.id)"
@@ -382,7 +379,7 @@
   <div class="modal-backdrop" *ngIf="analyzeConfirmVideo" (click)="!analyzeDownloading && (analyzeConfirmVideo = null)" appModalBackdrop>
     <div class="analyze-confirm-modal" (click)="$event.stopPropagation()">
       <div class="move-modal-header">
-        <h4><i class="bi bi-camera-reels"></i> Analizar vídeo</h4>
+        <h4><i class="bi bi-camera-reels"></i> {{ 'VIDEOS.ANALYZE_TITLE' | translate }}</h4>
         <button class="btn-close-player" *ngIf="!analyzeDownloading" (click)="analyzeConfirmVideo = null">
           <i class="bi bi-x-lg"></i>
         </button>
@@ -390,35 +387,33 @@
 
       <ng-container *ngIf="!analyzeDownloading">
         <p class="analyze-modal-desc">
-          Para analizar <strong>{{ analyzeConfirmVideo?.title }}</strong>, el vídeo se descargará
-          de tu almacenamiento cloud a tu navegador.
+          Para analizar <strong>{{ analyzeConfirmVideo?.title }}</strong>, {{ 'VIDEOS.ANALYZE_DESC_AFTER' | translate }}
         </p>
         <p class="analyze-modal-size" *ngIf="analyzeConfirmVideo?.fileSizeHuman">
-          <i class="bi bi-hdd"></i> Tamaño: <strong>{{ analyzeConfirmVideo.fileSizeHuman }}</strong>
+          <i class="bi bi-hdd"></i> {{ 'VIDEOS.ANALYZE_SIZE_LABEL' | translate }} <strong>{{ analyzeConfirmVideo.fileSizeHuman }}</strong>
         </p>
         <p class="analyze-modal-note">
           <i class="bi bi-info-circle"></i>
-          Una vez descargado, el análisis es completamente local: sin tráfico adicional de red
-          hasta que cierres el proyecto.
+          {{ 'VIDEOS.ANALYZE_NOTE' | translate }}
         </p>
         <p class="folder-error" *ngIf="analyzeDownloadError">{{ analyzeDownloadError }}</p>
         <div class="new-folder-actions" style="margin-top:16px">
-          <button class="btn-cancel-folder" (click)="analyzeConfirmVideo = null">Cancelar</button>
+          <button class="btn-cancel-folder" (click)="analyzeConfirmVideo = null">{{ 'VIDEOS.CANCEL' | translate }}</button>
           <button class="btn-save-folder" (click)="confirmAnalyzeDownload()">
-            <i class="bi bi-download"></i> Descargar y analizar
+            <i class="bi bi-download"></i> {{ 'VIDEOS.ANALYZE_BTN' | translate }}
           </button>
         </div>
       </ng-container>
 
       <ng-container *ngIf="analyzeDownloading">
-        <p class="analyze-modal-desc">Descargando vídeo…</p>
+        <p class="analyze-modal-desc">{{ 'VIDEOS.ANALYZING' | translate }}</p>
         <div class="analyze-progress-track">
           <div class="analyze-progress-fill" [style.width.%]="analyzeDownloadProgress"></div>
         </div>
         <p class="analyze-progress-pct">{{ analyzeDownloadProgress }}%</p>
         <p class="analyze-modal-note" *ngIf="analyzeDownloadProgress === 100">
           <i class="bi bi-check-circle-fill text-success-sphaira"></i>
-          Procesando vídeo… redirigiendo al análisis.
+          {{ 'VIDEOS.ANALYZE_PROCESSING' | translate }}
         </p>
         <p class="folder-error" *ngIf="analyzeDownloadError">{{ analyzeDownloadError }}</p>
       </ng-container>

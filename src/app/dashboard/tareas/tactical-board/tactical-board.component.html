@@ -3,14 +3,14 @@
   <div class="back-container" data-tutorial="tboard-volver">
     <button type="button" class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
-      <span>{{ taskMode ? 'Cerrar' : ('COMMON.BACK' | translate) }}</span>
+      <span>{{ taskMode ? ('TBOARD.CLOSE' | translate) : ('COMMON.BACK' | translate) }}</span>
     </button>
   </div>
 
   <div class="header-center">
     <h2 class="table-title">
       <i class="bi bi-easel2"></i>
-      {{ taskMode ? 'Pizarra táctica' : ('TBOARD.TITLE' | translate) }}
+      {{ 'TBOARD.TITLE' | translate }}
     </h2>
     <p class="header-subtitle">{{ 'TBOARD.SUBTITLE' | translate }}</p>
   </div>
@@ -18,14 +18,14 @@
   <!-- Botón guardar en tarea (solo en modo tarea) -->
   <div class="task-save-area" *ngIf="taskMode" data-tutorial="tboard-guardar-tarea">
     <span class="task-save-success" *ngIf="saveTaskSuccess">
-      <i class="bi bi-check-circle-fill me-1"></i>Imagen guardada en la tarea
+      <i class="bi bi-check-circle-fill me-1"></i>{{ 'TBOARD.IMAGE_SAVED' | translate }}
     </span>
     <span class="task-save-error" *ngIf="saveTaskError">
       <i class="bi bi-exclamation-triangle-fill me-1"></i>{{ saveTaskError }}
     </span>
     <button type="button" class="btn-save-task" (click)="guardarEnTarea()" [disabled]="savingTask">
-      <span *ngIf="!savingTask"><i class="bi bi-floppy me-1"></i>{{ keyframes.length >= 2 ? 'Guardar GIF en tarea' : 'Guardar imagen en tarea' }}</span>
-      <span *ngIf="savingTask"><span class="spinner-border spinner-border-sm me-1"></span>Guardando...</span>
+      <span *ngIf="!savingTask"><i class="bi bi-floppy me-1"></i>{{ keyframes.length >= 2 ? ('TBOARD.SAVE_GIF' | translate) : ('TBOARD.SAVE_IMAGE' | translate) }}</span>
+      <span *ngIf="savingTask"><span class="spinner-border spinner-border-sm me-1"></span>{{ 'TBOARD.SAVING' | translate }}</span>
     </button>
   </div>
 </header>

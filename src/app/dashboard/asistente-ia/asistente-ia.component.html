@@ -20,7 +20,7 @@
   <aside class="history-sidebar" *ngIf="showHistory" data-tutorial="asistente-sidebar">
     <div class="sidebar-header">
       <h6><i class="bi bi-clock-history me-2"></i>{{ 'AI_ASSISTANT.HISTORY_TITLE' | translate }}</h6>
-      <button class="btn-new-chat" (click)="startNewConversation()" title="Nueva conversación">
+      <button class="btn-new-chat" (click)="startNewConversation()" [title]="'AI_ASSISTANT.NEW_CONVERSATION' | translate">
         <i class="bi bi-plus-lg"></i>
       </button>
     </div>
@@ -34,7 +34,7 @@
             <span class="history-item-title">{{ conv.title }}</span>
             <span class="history-item-meta">{{ formatDate(conv.date) }}</span>
           </div>
-          <button class="btn-delete-conv" (click)="deleteConversation($event, conv.id)" title="Eliminar">
+          <button class="btn-delete-conv" (click)="deleteConversation($event, conv.id)" [title]="'AI_ASSISTANT.DELETE_HISTORY' | translate">
             <i class="bi bi-trash"></i>
           </button>
         </div>
@@ -50,7 +50,7 @@
   <div class="chat-page">
 
     <!-- BOTÓN TOGGLE SIDEBAR -->
-    <button class="sidebar-toggle-btn" (click)="toggleHistory()" [title]="showHistory ? 'Ocultar historial' : 'Mostrar historial'" data-tutorial="asistente-toggle">
+    <button class="sidebar-toggle-btn" (click)="toggleHistory()" [title]="showHistory ? ('AI_ASSISTANT.HIDE_HISTORY' | translate) : ('AI_ASSISTANT.SHOW_HISTORY' | translate)" data-tutorial="asistente-toggle">
       <i class="bi" [class.bi-chevron-left]="showHistory" [class.bi-chevron-right]="!showHistory"></i>
     </button>
 
@@ -68,9 +68,9 @@
       </div>
       <div class="chat-header-actions">
         <span class="credits-badge credits-clickable" (click)="openCreditsModal()">
-          <i class="bi bi-coin"></i> {{ creditsAvailable }} créditos
+          <i class="bi bi-coin"></i> {{ creditsAvailable }} {{ 'AI_ASSISTANT.CREDITS_LABEL' | translate }}
         </span>
-        <button class="header-action-btn" (click)="startNewConversation()" title="Nueva conversación">
+        <button class="header-action-btn" (click)="startNewConversation()" [title]="'AI_ASSISTANT.NEW_CONVERSATION' | translate">
           <i class="bi bi-plus-lg"></i>
         </button>
       </div>
@@ -159,14 +159,14 @@
         class="ai-mic"
         [class.recording]="isRecording"
         (click)="toggleVoiceRecognition()"
-        aria-label="Reconocimiento de voz"
-        [title]="isRecording ? 'Detener grabación' : 'Usar micrófono'">
+        [attr.aria-label]="'AI_ASSISTANT.VOICE_RECOGNITION' | translate"
+        [title]="isRecording ? ('AI_ASSISTANT.STOP_RECORDING' | translate) : ('AI_ASSISTANT.USE_MIC' | translate)">
         <i class="bi" [ngClass]="isRecording ? 'bi-mic-fill' : 'bi-mic'"></i>
       </button>
       <button *ngIf="isResponding"
         class="chat-cancel-btn"
         (click)="cancelPendingRequest()"
-        title="Cancelar peticion">
+        [title]="'AI_ASSISTANT.CANCEL_REQUEST' | translate">
         <i class="bi bi-x-circle-fill"></i>
       </button>
       <button *ngIf="!isResponding"
@@ -196,10 +196,10 @@
 <!-- MODAL DE CONFIRMACIÓN DE ELIMINACIÓN -->
 <app-confirm-dialog
   [show]="showDeleteConfirm"
-  [title]="'¿Eliminar conversación?'"
-  [message]="'Esta acción no se puede deshacer. ¿Estás seguro de que quieres eliminar esta conversación?'"
-  [confirmText]="'Eliminar'"
-  [cancelText]="'Cancelar'"
+  [title]="'AI_ASSISTANT.DELETE_CONV_TITLE' | translate"
+  [message]="'AI_ASSISTANT.DELETE_CONV_MSG' | translate"
+  [confirmText]="'AI_ASSISTANT.DELETE_CONV_BTN' | translate"
+  [cancelText]="'AI_ASSISTANT.CANCEL' | translate"
   [danger]="true"
   (confirmed)="confirmDeleteConversation()"
   (cancelled)="cancelDeleteConversation()">

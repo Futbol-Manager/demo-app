@@ -6,8 +6,8 @@
      (mousedown)="onWrapMouseDown($event)"
      (touchstart)="onWrapTouchStart($event)"
      role="group"
-     [attr.aria-label]="'Botón Ver tutorial. Arrastra para mover.'">
-  <span class="tutorial-trigger__drag" aria-hidden="true" title="Arrastra para mover">
+     [attr.aria-label]="'TUTORIAL.ARIA_DRAG' | translate">
+  <span class="tutorial-trigger__drag" aria-hidden="true" [title]="'TUTORIAL.DRAG_TITLE' | translate">
     <i class="bi bi-grip-vertical" aria-hidden="true"></i>
   </span>
   <button
@@ -28,17 +28,17 @@
             (click)="onDropdownToggle($event)"
             aria-haspopup="true"
             [attr.aria-expanded]="dropdownOpen"
-            aria-label="Opciones del tutorial">
+            [attr.aria-label]="'TUTORIAL.ARIA_OPTIONS' | translate">
       <i class="bi bi-chevron-down" aria-hidden="true"></i>
     </button>
     <div *ngIf="dropdownOpen" class="tutorial-trigger__menu" (click)="$event.stopPropagation()" role="menu">
       <button type="button" class="tutorial-trigger__menu-item" (click)="openTutorial()" role="menuitem">
         <i class="bi bi-play-circle" aria-hidden="true"></i>
-        <span>Ver tutorial</span>
+        <span>{{ 'TUTORIAL.BTN_OPEN' | translate }}</span>
       </button>
       <button type="button" class="tutorial-trigger__menu-item tutorial-trigger__menu-item--muted" (click)="dontShowAgain()" role="menuitem">
         <i class="bi bi-eye-slash" aria-hidden="true"></i>
-        <span>No mostrar de nuevo aquí</span>
+        <span>{{ 'TUTORIAL.BTN_DONT_SHOW' | translate }}</span>
       </button>
     </div>
   </div>

@@ -9,19 +9,19 @@
   </div>
 
   <div class="header-center">
-    <h2 class="table-title">Galería de Partidos</h2>
-    <p class="header-subtitle">Galería de fotos y vídeos de los partidos del equipo</p>
+    <h2 class="table-title">{{ 'PE.TITLE' | translate }}</h2>
+    <p class="header-subtitle">{{ 'PE.SUBTITLE' | translate }}</p>
   </div>
 
   <div class="page-header-stats" data-tutorial="pe-stats">
     <div class="stat-pill">
-      <i class="bi bi-image"></i> {{ totalFotosGlobal }} fotos
+      <i class="bi bi-image"></i> {{ totalFotosGlobal }} {{ 'PE.PHOTOS' | translate }}
     </div>
     <div class="stat-pill">
-      <i class="bi bi-play-circle"></i> {{ totalVideosGlobal }} vídeos
+      <i class="bi bi-play-circle"></i> {{ totalVideosGlobal }} {{ 'PE.VIDEOS' | translate }}
     </div>
     <div class="stat-pill">
-      <i class="bi bi-calendar-event"></i> {{ partidos.length }} partidos
+      <i class="bi bi-calendar-event"></i> {{ partidos.length }} {{ 'PE.MATCHES' | translate }}
     </div>
   </div>
 </div>
@@ -31,7 +31,7 @@
   <section class="match-selector" data-tutorial="pe-carousel">
     <div class="section-label">
       <i class="bi bi-calendar-event"></i>
-      <span>Selecciona un partido</span>
+      <span>{{ 'PE.SELECT_MATCH' | translate }}</span>
     </div>
     <div class="match-carousel" #carouselContainer>
       <button class="carousel-arrow" *ngIf="showArrows" (click)="prev()" [disabled]="currentIndex === 0">
@@ -83,8 +83,8 @@
     <div class="no-match-prompt-icon">
       <i class="bi bi-collection-play-fill"></i>
     </div>
-    <h3 class="no-match-prompt-title">Elige un partido</h3>
-    <p class="no-match-prompt-text">Selecciona un partido del carrusel para ver las fotos y vídeos del encuentro</p>
+    <h3 class="no-match-prompt-title">{{ 'PE.CHOOSE_MATCH' | translate }}</h3>
+    <p class="no-match-prompt-text">{{ 'PE.CHOOSE_MATCH_TEXT' | translate }}</p>
   </div>
 
   <!-- ════════ GALLERY CONTENT ════════ -->
@@ -96,17 +96,17 @@
         <button class="gallery-tab" [class.gallery-tab--active]="activeTab === 'fotos'" (click)="setTab('fotos')">
           <div class="tab-icon-wrap"><i class="bi bi-image-fill"></i></div>
           <div class="tab-text">
-            <span class="tab-label">Fotos</span>
-            <span class="tab-sublabel" *ngIf="fotos.length">{{ fotos.length }} elementos</span>
-            <span class="tab-sublabel" *ngIf="!fotos.length">Sin fotos aún</span>
+            <span class="tab-label">{{ 'PE.TAB_PHOTOS' | translate }}</span>
+            <span class="tab-sublabel" *ngIf="fotos.length">{{ fotos.length }} {{ 'PE.ITEMS' | translate }}</span>
+            <span class="tab-sublabel" *ngIf="!fotos.length">{{ 'PE.NO_PHOTOS_YET' | translate }}</span>
           </div>
         </button>
         <button class="gallery-tab" [class.gallery-tab--active]="activeTab === 'videos'" (click)="setTab('videos')">
           <div class="tab-icon-wrap"><i class="bi bi-play-btn-fill"></i></div>
           <div class="tab-text">
-            <span class="tab-label">Vídeos</span>
-            <span class="tab-sublabel" *ngIf="videos.length">{{ videos.length }} elementos</span>
-            <span class="tab-sublabel" *ngIf="!videos.length">Sin vídeos aún</span>
+            <span class="tab-label">{{ 'PE.TAB_VIDEOS' | translate }}</span>
+            <span class="tab-sublabel" *ngIf="videos.length">{{ videos.length }} {{ 'PE.ITEMS' | translate }}</span>
+            <span class="tab-sublabel" *ngIf="!videos.length">{{ 'PE.NO_VIDEOS_YET' | translate }}</span>
           </div>
         </button>
       </div>
@@ -119,7 +119,7 @@
       <div class="content-action-bar" data-tutorial="pe-upload">
         <button class="btn-new-content" (click)="showUploadPanel = !showUploadPanel">
           <i class="bi" [ngClass]="showUploadPanel ? 'bi-x-lg' : 'bi-plus-lg'"></i>
-          {{ showUploadPanel ? 'Cerrar' : 'Nueva imagen' }}
+          {{ showUploadPanel ? ('PE.BTN_CLOSE' | translate) : ('PE.BTN_NEW_IMAGE' | translate) }}
         </button>
       </div>
 
@@ -133,8 +133,8 @@
           <div class="upload-icon-ring">
             <i class="bi bi-cloud-arrow-up-fill"></i>
           </div>
-          <h3 class="upload-title">Sube tus fotos</h3>
-          <p class="upload-desc">Arrastra y suelta o elige un método</p>
+          <h3 class="upload-title">{{ 'PE.UPLOAD_PHOTO_TITLE' | translate }}</h3>
+          <p class="upload-desc">{{ 'PE.UPLOAD_PHOTO_DESC' | translate }}</p>
           <div class="upload-formats">
             <span class="format-tag">JPG</span>
             <span class="format-tag">PNG</span>
@@ -144,12 +144,12 @@
           <div class="upload-buttons">
             <label class="btn-upload-primary">
               <i class="bi bi-folder2-open"></i>
-              <span>Seleccionar archivo</span>
+               <span>{{ 'PE.BTN_SELECT_FILE' | translate }}</span>
               <input type="file" accept="image/png,image/jpeg" (change)="onFileSelected($event)" hidden>
             </label>
             <button class="btn-upload-secondary" (click)="openUrlModal('image')">
               <i class="bi bi-link-45deg"></i>
-              <span>Añadir por URL</span>
+              <span>{{ 'PE.BTN_ADD_URL' | translate }}</span>
             </button>
           </div>
         </div>
@@ -160,13 +160,13 @@
           </div>
           <div class="preview-controls">
             <button class="ctrl-btn" (click)="rotateImage()">
-              <i class="bi bi-arrow-clockwise"></i> Rotar
+              <i class="bi bi-arrow-clockwise"></i> {{ 'PE.BTN_ROTATE' | translate }}
             </button>
             <button class="ctrl-btn ctrl-btn--upload" *ngIf="showbtnupimg" (click)="onSubmit()">
-              <i class="bi bi-cloud-upload-fill"></i> Subir foto
+              <i class="bi bi-cloud-upload-fill"></i> {{ 'PE.BTN_UPLOAD_PHOTO' | translate }}
             </button>
             <button class="ctrl-btn ctrl-btn--cancel" (click)="resetUpload()">
-              <i class="bi bi-x-lg"></i> Cancelar
+              <i class="bi bi-x-lg"></i> {{ 'PE.BTN_CANCEL' | translate }}
             </button>
           </div>
         </div>
@@ -192,8 +192,8 @@
         <div class="empty-illustration">
           <i class="bi bi-camera"></i>
         </div>
-        <h3>Aún no hay fotos</h3>
-        <p>Pulsa "Nueva imagen" para subir la primera foto de este partido</p>
+        <h3>{{ 'PE.EMPTY_PHOTOS' | translate }}</h3>
+        <p>{{ 'PE.EMPTY_PHOTOS_TEXT' | translate }}</p>
       </div>
     </div>
 
@@ -204,14 +204,14 @@
       <div class="content-action-bar" data-tutorial="pe-upload">
         <button class="btn-new-content btn-new-content--video"
                 (click)="hasVideoSubscription ? openUrlModal('video') : openVideoPlansModal()">
-          <i class="bi bi-link-45deg"></i> Añadir por URL
+          <i class="bi bi-link-45deg"></i> {{ 'PE.BTN_ADD_URL' | translate }}
           <span class="btn-pro-tag" *ngIf="!hasVideoSubscription && !planLoading">
             <i class="bi bi-lock-fill"></i>
           </span>
         </button>
         <button class="btn-new-content btn-new-content--pro"
                 (click)="hasVideoSubscription ? triggerVideoFileUpload() : openVideoPlansModal()">
-          <i class="bi bi-upload"></i> Subir desde dispositivo
+          <i class="bi bi-upload"></i> {{ 'PE.BTN_UPLOAD_DEVICE' | translate }}
           <span class="btn-pro-tag" *ngIf="!hasVideoSubscription && !planLoading">
             <i class="bi bi-lock-fill"></i>
           </span>
@@ -225,8 +225,8 @@
           <div class="upload-icon-ring upload-icon-ring--video">
             <i class="bi bi-camera-video-fill"></i>
           </div>
-          <h3 class="upload-title">Sube tu vídeo</h3>
-          <p class="upload-desc">Formatos soportados: MP4, MOV, WebM</p>
+          <h3 class="upload-title">{{ 'PE.UPLOAD_VIDEO_TITLE' | translate }}</h3>
+          <p class="upload-desc">{{ 'PE.UPLOAD_VIDEO_DESC' | translate }}</p>
           <div class="upload-formats">
             <span class="format-tag">MP4</span>
             <span class="format-tag">MOV</span>
@@ -237,12 +237,12 @@
           <div class="upload-buttons">
             <label class="btn-upload-primary btn-upload-primary--video">
               <i class="bi bi-camera-video"></i>
-              <span>Seleccionar vídeo</span>
+              <span>{{ 'PE.BTN_SELECT_VIDEO' | translate }}</span>
               <input #videoFileInput type="file" accept="video/mp4,video/quicktime,video/webm" (change)="onVideoFileSelected($event)" hidden>
             </label>
             <button class="btn-upload-secondary" (click)="showVideoUploadPanel = false">
               <i class="bi bi-x-lg"></i>
-              <span>Cancelar</span>
+              <span>{{ 'PE.BTN_CANCEL' | translate }}</span>
             </button>
           </div>
         </div>
@@ -254,10 +254,10 @@
           </div>
           <div class="preview-controls">
             <button class="ctrl-btn ctrl-btn--upload" (click)="onSubmitVideo()">
-              <i class="bi bi-cloud-upload-fill"></i> Subir vídeo
+              <i class="bi bi-cloud-upload-fill"></i> {{ 'PE.BTN_UPLOAD_VIDEO' | translate }}
             </button>
             <button class="ctrl-btn ctrl-btn--cancel" (click)="resetVideoUpload()">
-              <i class="bi bi-x-lg"></i> Cancelar
+              <i class="bi bi-x-lg"></i> {{ 'PE.BTN_CANCEL' | translate }}
             </button>
           </div>
         </div>
@@ -291,8 +291,8 @@
         <div class="empty-illustration">
           <i class="bi bi-film"></i>
         </div>
-        <h3>Sin vídeos aún</h3>
-        <p>Añade un vídeo por URL o sube uno desde tu dispositivo</p>
+        <h3>{{ 'PE.EMPTY_VIDEOS' | translate }}</h3>
+        <p>{{ 'PE.EMPTY_VIDEOS_TEXT' | translate }}</p>
       </div>
     </div>
 
@@ -314,8 +314,8 @@
         <i class="bi" [ngClass]="urlModalType === 'video' ? 'bi-play-circle-fill' : 'bi-image-fill'"></i>
       </div>
       <div>
-        <h3 class="modal-title">{{ urlModalType === 'video' ? 'Añadir vídeo' : 'Añadir imagen' }}</h3>
-        <p class="modal-subtitle">Pega la URL del recurso</p>
+        <h3 class="modal-title">{{ urlModalType === 'video' ? ('PE.MODAL_ADD_VIDEO' | translate) : ('PE.MODAL_ADD_IMAGE' | translate) }}</h3>
+        <p class="modal-subtitle">{{ 'PE.MODAL_URL_SUBTITLE' | translate }}</p>
       </div>
       <button class="modal-close" (click)="closeUrlModal()"><i class="bi bi-x-lg"></i></button>
     </div>
@@ -323,14 +323,14 @@
     <div class="modal-body">
       <div class="modal-info" *ngIf="urlModalType === 'video'">
         <i class="bi bi-youtube" style="color: #dc2626"></i>
-        Pega un enlace de <strong>YouTube</strong> en cualquier formato (watch, shorts, embed, live...)
+        {{ 'PE.MODAL_YOUTUBE_HINT' | translate }}
       </div>
       <div class="modal-info" *ngIf="urlModalType === 'image'">
         <i class="bi bi-lightbulb"></i>
-        Pega la URL directa de una imagen <strong>JPG, PNG o WebP</strong>
+        {{ 'PE.MODAL_IMAGE_HINT' | translate }}
       </div>
 
-      <label class="input-label">URL del recurso</label>
+      <label class="input-label">{{ 'PE.MODAL_URL_LABEL' | translate }}</label>
       <div class="input-group-pro">
         <div class="input-prefix"><i class="bi bi-link-45deg"></i></div>
         <input type="url" [(ngModel)]="urlInput" placeholder="https://www.youtube.com/watch?v=..."
@@ -342,9 +342,9 @@
     </div>
 
     <div class="modal-footer-bar">
-      <button class="btn-modal-cancel" (click)="closeUrlModal()">Cancelar</button>
+      <button class="btn-modal-cancel" (click)="closeUrlModal()">{{ 'PE.BTN_CANCEL' | translate }}</button>
       <button class="btn-modal-confirm" (click)="submitUrl()">
-        <i class="bi bi-plus-lg"></i> Añadir
+        <i class="bi bi-plus-lg"></i> {{ 'PE.BTN_ADD' | translate }}
       </button>
     </div>
   </div>
@@ -364,10 +364,10 @@
         <i class="bi bi-camera-video-fill"></i>
       </div>
       <div class="modal-pro-badge modal-pro-badge--locked">
-        <i class="bi bi-lock-fill"></i> Función no disponible
+        <i class="bi bi-lock-fill"></i> {{ 'PE.FUNC_LOCKED' | translate }}
       </div>
-      <h2 class="modal-pro-title">Vídeos no activados</h2>
-      <p class="modal-pro-subtitle">Tu club aún no tiene activa la suscripción de vídeos. Solo el administrador del club puede activarla.</p>
+      <h2 class="modal-pro-title">{{ 'PE.VIDEO_LOCKED_TITLE' | translate }}</h2>
+      <p class="modal-pro-subtitle">{{ 'PE.VIDEO_LOCKED_TEXT' | translate }}</p>
     </div>
 
     <div class="modal-pro-divider"></div>
@@ -379,8 +379,8 @@
           <i class="bi bi-cloud-upload-fill"></i>
         </div>
         <div class="feature-content">
-          <h4>Sube vídeos desde el dispositivo</h4>
-          <p>Con la suscripción activa podrás subir grabaciones de partidos directamente desde tu móvil</p>
+          <h4>{{ 'PE.VIDEO_FEATURE1_TITLE' | translate }}</h4>
+          <p>{{ 'PE.VIDEO_FEATURE1_TEXT' | translate }}</p>
         </div>
       </div>
       <div class="modal-pro-feature">
@@ -388,8 +388,8 @@
           <i class="bi bi-folder2-open"></i>
         </div>
         <div class="feature-content">
-          <h4>Organizados por equipo y partido</h4>
-          <p>Los vídeos se guardan automáticamente en la biblioteca del club, clasificados por equipo y partido</p>
+          <h4>{{ 'PE.VIDEO_FEATURE2_TITLE' | translate }}</h4>
+          <p>{{ 'PE.VIDEO_FEATURE2_TEXT' | translate }}</p>
         </div>
       </div>
     </div>
@@ -399,21 +399,21 @@
       <ng-container *ngIf="!requestPlanSent; else planSentTpl">
         <button class="btn-request-plan" [disabled]="requestPlanLoading" (click)="sendPlanRequest()">
           <ng-container *ngIf="!requestPlanLoading">
-            <i class="bi bi-send-fill"></i> Pedir al club que lo active
+            <i class="bi bi-send-fill"></i> {{ 'PE.BTN_REQUEST_PLAN' | translate }}
           </ng-container>
           <ng-container *ngIf="requestPlanLoading">
-            <i class="bi bi-arrow-repeat spin-icon"></i> Enviando solicitud...
+            <i class="bi bi-arrow-repeat spin-icon"></i> {{ 'PE.SENDING_REQUEST' | translate }}
           </ng-container>
         </button>
-        <p class="modal-pro-note">Se enviará una notificación push al administrador del club</p>
+        <p class="modal-pro-note">{{ 'PE.REQUEST_NOTE' | translate }}</p>
       </ng-container>
       <ng-template #planSentTpl>
         <div class="request-sent-msg">
           <i class="bi bi-check-circle-fill"></i>
-          <p>¡Solicitud enviada! El administrador del club recibirá una notificación para activar los vídeos.</p>
+          <p>{{ 'PE.REQUEST_SENT_MSG' | translate }}</p>
         </div>
         <button class="btn-upload-secondary" (click)="showVideoPlansModal = false">
-          <i class="bi bi-x-lg"></i> Cerrar
+          <i class="bi bi-x-lg"></i> {{ 'PE.BTN_CLOSE' | translate }}
         </button>
       </ng-template>
     </div>

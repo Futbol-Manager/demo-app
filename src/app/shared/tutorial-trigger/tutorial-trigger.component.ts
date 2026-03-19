@@ -8,6 +8,7 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { TutorialService } from '../../core/services/tutorial/tutorial.service';
+import { TranslateService } from '@ngx-translate/core';
 
 const STORAGE_KEY_PREFIX = 'sphaira_tutorial_trigger_pos_';
 const STORAGE_KEY_HIDDEN_PREFIX = 'sphaira_tutorial_trigger_hidden_';
@@ -23,7 +24,9 @@ const TRIGGER_HEIGHT = 48;
 })
 export class TutorialTriggerComponent implements OnInit, OnDestroy {
   @Input() screenId!: string;
-  @Input() label = 'Ver tutorial';
+  @Input() set label(val: string) { this._label = val; }
+  get label(): string { return this._label || this.translate.instant('TUTORIAL.BTN_OPEN'); }
+  private _label = '';
 
   position = { left: 0, top: 12 };
   isDragging = false;
@@ -35,7 +38,8 @@ export class TutorialTriggerComponent implements OnInit, OnDestroy {
 
   constructor(
     private tutorial: TutorialService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {

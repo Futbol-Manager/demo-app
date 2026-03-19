@@ -12,6 +12,7 @@ import { TeamService } from 'src/app/core/services/team/team.service';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 import { Response } from 'src/app/core/services/models/response.model';
 import { environment } from 'src/environments/environment';
+import { TranslateService } from '@ngx-translate/core';
 
 interface CeldaTabla {
   seleccionId: number | null;
@@ -55,7 +56,8 @@ export class RopaTablaCartalogComponent implements OnInit, OnDestroy, OnChanges 
 
   constructor(
     private ropaCatalogoService: RopaCatalogoService,
-    private teamService: TeamService
+    private teamService: TeamService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -82,7 +84,7 @@ export class RopaTablaCartalogComponent implements OnInit, OnDestroy, OnChanges 
         next: (res: Response) => {
           const raw = (res.data as Array<{ value?: number; name?: string; teamId?: number }>) || [];
           this.equipos = [
-            { value: 0, name: 'Todos los equipos' },
+            { value: 0, name: this.translate.instant('ROPA.ALL_TEAMS') },
             ...raw.map((e: any) => ({ value: Number(e.value ?? e.teamId ?? 0), name: String(e.name ?? '') })),
           ];
           this.cargandoEquipos = false;

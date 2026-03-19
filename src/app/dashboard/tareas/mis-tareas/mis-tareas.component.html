@@ -41,7 +41,7 @@
   <div class="modal-create-task" *ngIf="showForm" (click)="$event.stopPropagation()">
     <div class="form-panel-header">
       <h3>{{ editingId ? ('TAREAS_MIS.EDIT_TITLE' | translate) : ('TAREAS_MIS.CREATE_TITLE' | translate) }}</h3>
-      <button type="button" class="form-close" (click)="cancelForm()" aria-label="Cerrar">
+      <button type="button" class="form-close" (click)="cancelForm()" [attr.aria-label]="'COMMON.CLOSE' | translate">
         <i class="bi bi-x-lg"></i>
       </button>
     </div>

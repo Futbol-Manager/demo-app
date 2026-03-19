@@ -73,7 +73,7 @@
         <span class="tutorial-progress-text">{{ stepIndex }} / {{ stepTotal }}</span>
         <div class="tutorial-progress-bar tutorial-progress-bar--clickable" role="progressbar"
           [attr.aria-valuenow]="stepIndex" [attr.aria-valuemin]="1" [attr.aria-valuemax]="stepTotal"
-          [attr.title]="stepTotal > 1 ? 'Clic para ir a un paso' : null"
+          [attr.title]="stepTotal > 1 ? ('TUTORIAL.PROGRESS_CLICK' | translate) : null"
           (click)="stepTotal > 1 && onProgressBarClick($event)">
           <div class="tutorial-progress-fill" [style.width.%]="stepTotal ? (stepIndex / stepTotal) * 100 : 0"></div>
         </div>
@@ -83,7 +83,7 @@
         <!-- Play / Pause del paso actual -->
         <button type="button" class="tutorial-audio-btn"
           (click)="togglePlayPause()"
-          [title]="audioPlaying ? 'Pausar audio' : 'Reproducir audio'"
+          [title]="audioPlaying ? ('TUTORIAL.AUDIO_PAUSE' | translate) : ('TUTORIAL.AUDIO_PLAY' | translate)"
           [class.is-playing]="audioPlaying"
           [disabled]="!audioEnabled">
           <i class="fas" [class.fa-pause]="audioPlaying" [class.fa-play]="!audioPlaying"></i>
@@ -91,12 +91,12 @@
         <!-- Activar / silenciar audio para todo el tutorial -->
         <button type="button" class="tutorial-audio-btn tutorial-audio-mute"
           (click)="toggleAudio()"
-          [title]="audioEnabled ? 'Silenciar tutorial' : 'Activar audio del tutorial'">
+          [title]="audioEnabled ? ('TUTORIAL.AUDIO_MUTE' | translate) : ('TUTORIAL.AUDIO_UNMUTE' | translate)">
           <i class="fas" [class.fa-volume-up]="audioEnabled" [class.fa-volume-mute]="!audioEnabled"></i>
         </button>
       </div>
 
-      <button type="button" class="tutorial-close" (click)="onClose()" aria-label="Cerrar tutorial">
+      <button type="button" class="tutorial-close" (click)="onClose()" [attr.aria-label]="'TUTORIAL.ARIA_CLOSE' | translate">
         <i class="fas fa-times"></i>
       </button>
     </div>
@@ -124,7 +124,7 @@
       </ng-container>
       <ng-template #bodyDefault>
         <p *ngIf="audioPlayBlocked && currentStepAudioFile" class="tutorial-audio-hint">
-          <i class="fas fa-volume-up"></i> Pulsa el botón <i class="fas fa-play"></i> para escuchar el audio.
+          <i class="fas fa-volume-up"></i> {{ 'TUTORIAL.AUDIO_HINT' | translate }}
         </p>
         <h2 id="tutorial-title" class="tutorial-title">{{ title }}</h2>
         <p id="tutorial-desc" class="tutorial-text">{{ text }}</p>
@@ -136,16 +136,16 @@
     <div class="tutorial-card-footer">
       <div class="tutorial-actions">
         <button *ngIf="isFirst" type="button" class="tutorial-btn tutorial-btn-skip" (click)="onSkipTutorial()">
-          Ver más tarde
+          {{ 'TUTORIAL.BTN_SKIP' | translate }}
         </button>
         <button *ngIf="!isFirst" type="button" class="tutorial-btn tutorial-btn-secondary" (click)="onPrevious()">
-          <i class="fas fa-arrow-left"></i> Anterior
+          <i class="fas fa-arrow-left"></i> {{ 'TUTORIAL.BTN_PREV' | translate }}
         </button>
         <button *ngIf="isLast" type="button" class="tutorial-btn tutorial-btn-secondary" (click)="onRepeatTutorial()">
-          <i class="fas fa-redo"></i> Repetir tutorial
+          <i class="fas fa-redo"></i> {{ 'TUTORIAL.BTN_REPEAT' | translate }}
         </button>
         <button type="button" class="tutorial-btn tutorial-btn-primary" (click)="onNext()">
-          {{ isLast ? 'Entendido' : 'Siguiente' }} <i class="fas" [class.fa-check]="isLast" [class.fa-arrow-right]="!isLast"></i>
+          {{ isLast ? ('TUTORIAL.BTN_DONE' | translate) : ('TUTORIAL.BTN_NEXT' | translate) }} <i class="fas" [class.fa-check]="isLast" [class.fa-arrow-right]="!isLast"></i>
         </button>
       </div>
     </div>

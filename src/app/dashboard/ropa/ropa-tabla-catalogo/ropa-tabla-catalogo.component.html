@@ -7,7 +7,7 @@
           <div class="filtro-block filtro-equipo">
             <label class="filtro-label">
               <i class="fas fa-users"></i>
-              <span>Equipo</span>
+              <span>{{ 'ROPA.FILTER_TEAM' | translate }}</span>
             </label>
             <select
               [(ngModel)]="teamIdSeleccionado"
@@ -23,7 +23,7 @@
           <div class="filtro-block filtro-jugador">
             <label class="filtro-label">
               <i class="fas fa-search"></i>
-              <span>Buscar jugador</span>
+              <span>{{ 'ROPA.FILTER_PLAYER' | translate }}</span>
             </label>
             <div class="filtro-input-wrap">
               <i class="fas fa-user filtro-input-icon"></i>
@@ -31,7 +31,7 @@
                 type="text"
                 class="filtro-input-premium"
                 [(ngModel)]="filtroNombreJugador"
-                placeholder="Nombre, apellido o nick..."
+                [placeholder]="'ROPA.FILTER_PLACEHOLDER' | translate"
                 [disabled]="cargandoTabla || jugadores.length === 0"
               />
               <button
@@ -50,12 +50,12 @@
           <div class="stat-card stat-jugadores">
             <i class="fas fa-user-friends"></i>
             <span class="stat-value">{{ jugadores.length }}</span>
-            <span class="stat-label">Jugadores</span>
+            <span class="stat-label">{{ 'ROPA.PLAYERS_COUNT' | translate }}</span>
           </div>
           <div class="stat-card stat-prendas">
             <i class="fas fa-tshirt"></i>
             <span class="stat-value">{{ prendas.length }}</span>
-            <span class="stat-label">Prendas</span>
+            <span class="stat-label">{{ 'ROPA.GARMENTS_COUNT' | translate }}</span>
           </div>
           <span class="filtro-hint" *ngIf="filtroNombreJugador.trim()">
             {{ jugadoresFiltrados.length }}/{{ jugadores.length }}
@@ -68,7 +68,7 @@
   <!-- Loading -->
   <div class="tabla-loading" *ngIf="cargandoTabla">
     <span class="spinner"></span>
-    <span>Cargando datos…</span>
+    <span>{{ 'ROPA.LOADING' | translate }}</span>
   </div>
 
   <!-- Error -->
@@ -80,8 +80,8 @@
   <!-- Sin datos -->
   <div class="tabla-empty" *ngIf="!cargandoTabla && !errorTabla && (prendas.length === 0 || jugadores.length === 0)">
     <i class="fas fa-tshirt"></i>
-    <p *ngIf="prendas.length === 0">No hay prendas en el catálogo para este equipo y temporada.</p>
-    <p *ngIf="prendas.length > 0 && jugadores.length === 0">No hay jugadores en este equipo.</p>
+    <p *ngIf="prendas.length === 0">{{ 'ROPA.NO_PRENDAS' | translate }}</p>
+    <p *ngIf="prendas.length > 0 && jugadores.length === 0">{{ 'ROPA.NO_JUGADORES' | translate }}</p>
   </div>
 
   <!-- Tabla -->
@@ -90,10 +90,10 @@
       <thead>
         <tr>
           <th class="col-jugador">
-            <span class="th-label">Jugador</span>
+            <span class="th-label">{{ 'ROPA.COL_PLAYER' | translate }}</span>
           </th>
           <th class="col-equipo">
-            <span class="th-label">Equipo</span>
+            <span class="th-label">{{ 'ROPA.COL_TEAM' | translate }}</span>
           </th>
           <th *ngFor="let prenda of prendas" class="col-prenda">
             <div class="prenda-header">
@@ -125,7 +125,7 @@
           <td [attr.colspan]="prendas.length + 2">
             <div class="sin-resultados-msg">
               <i class="fas fa-search"></i>
-              <span>Ningún jugador coincide con "{{ filtroNombreJugador.trim() }}"</span>
+              <span>{{ 'ROPA.NO_MATCH' | translate }} "{{ filtroNombreJugador.trim() }}"</span>
             </div>
           </td>
         </tr>

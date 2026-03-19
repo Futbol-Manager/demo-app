@@ -21,7 +21,7 @@ export const demoenvironment = {
     coachAnnual: 'price_1Q5x7uHzMBDrutQnCnc54UjO'
   },
   /** ElevenLabs TTS para voces del tutorial demo. Voice ID: cambia en elevenlabs.io si quieres otra voz. */
-  elevenLabsApiKey: 'sk_f7c4288883b554c1650b4bd1aec01f082aaca09258796c52',
+  elevenLabsApiKey: 'sk_fa63b8c6808921291db5eab60b443f115d484fda7eef6f36',
   elevenLabsVoiceId: '21m00Tcm4TlvDq8ikWAM' // Rachel (multilingual). Puedes usar otro voice_id desde tu cuenta ElevenLabs.
 };
 

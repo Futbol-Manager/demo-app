@@ -7,25 +7,25 @@
     <div class="section-header">
       <div class="section-title">
         <i class="fas fa-tshirt"></i>
-        <h3>Catálogo de Prendas</h3>
+        <h3>{{ 'ROPA.CATALOGO.TITLE' | translate }}</h3>
         <span class="temporada-badge">{{ temporadaLabel }}</span>
       </div>
       <button class="btn-primary" (click)="abrirFormNuevaPrenda()">
-        <i class="fas fa-plus"></i> Nueva Prenda
+        <i class="fas fa-plus"></i> {{ 'ROPA.CATALOGO.NEW_BTN' | translate }}
       </button>
     </div>
 
     <!-- Loading -->
     <div *ngIf="cargandoPrendas" class="loading-state">
-      <i class="fas fa-spinner fa-spin"></i> Cargando prendas...
+      <i class="fas fa-spinner fa-spin"></i> {{ 'ROPA.CATALOGO.LOADING' | translate }}
     </div>
 
     <!-- Empty state -->
     <div *ngIf="!cargandoPrendas && prendas.length === 0" class="empty-state">
       <i class="fas fa-tshirt empty-icon"></i>
-      <p>No hay prendas en el catálogo de esta temporada.</p>
+      <p>{{ 'ROPA.CATALOGO.EMPTY' | translate }}</p>
       <button class="btn-primary" (click)="abrirFormNuevaPrenda()">
-        <i class="fas fa-plus"></i> Añadir primera prenda
+        <i class="fas fa-plus"></i> {{ 'ROPA.CATALOGO.ADD_FIRST' | translate }}
       </button>
     </div>
 
@@ -57,13 +57,13 @@
             <span class="talla-tag" *ngFor="let talla of prenda.tallas">{{ talla.nombreTalla }}</span>
           </div>
           <p class="sin-tallas" *ngIf="!prenda.tallas || prenda.tallas.length === 0">
-            Sin tallas configuradas
+            {{ 'ROPA.CATALOGO.NO_SIZES' | translate }}
           </p>
 
           <!-- Respuestas de jugadores -->
           <button class="btn-selecciones" (click)="abrirModalSelecciones(prenda)">
             <i class="fas fa-users"></i>
-            <span>Ver respuestas de jugadores</span>
+            <span>{{ 'ROPA.CATALOGO.VIEW_RESPONSES' | translate }}</span>
             <span class="selecciones-count" *ngIf="seleccionesPorPrenda[prenda.prendaId]">
               {{ seleccionesPorPrenda[prenda.prendaId].length }}
             </span>
@@ -80,10 +80,10 @@
     <div class="section-header">
       <div class="section-title">
         <i class="fas fa-folder-open"></i>
-        <h3>Documentos de Ropa</h3>
+        <h3>{{ 'ROPA.CATALOGO.DOCS_TITLE' | translate }}</h3>
       </div>
       <button class="btn-secondary" (click)="mostrarFormDocumento = !mostrarFormDocumento">
-        <i class="fas fa-upload"></i> Subir Documento
+        <i class="fas fa-upload"></i> {{ 'ROPA.CATALOGO.DOCS_UPLOAD' | translate }}
       </button>
     </div>
 
@@ -91,17 +91,17 @@
     <div class="form-documento" *ngIf="mostrarFormDocumento">
       <div class="form-row">
         <div class="form-group">
-          <label>Nombre del documento *</label>
-          <input type="text" [(ngModel)]="docNombre" placeholder="Ej: Catálogo equipación 2025/26" />
+          <label>{{ 'ROPA.CATALOGO.DOCS_NAME_LABEL' | translate }}</label>
+          <input type="text" [(ngModel)]="docNombre" [placeholder]="'ROPA.CATALOGO.DOCS_NAME_HINT' | translate" />
         </div>
         <div class="form-group">
-          <label>Descripción (opcional)</label>
-          <input type="text" [(ngModel)]="docDescripcion" placeholder="Descripción breve" />
+          <label>{{ 'ROPA.CATALOGO.DOCS_DESC_LABEL' | translate }}</label>
+          <input type="text" [(ngModel)]="docDescripcion" [placeholder]="'ROPA.CATALOGO.DOCS_DESC_HINT' | translate" />
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>Archivo (PDF, Word, imagen) *</label>
+          <label>{{ 'ROPA.CATALOGO.DOCS_FILE_LABEL' | translate }}</label>
           <input type="file" (change)="onArchivoSeleccionado($event)"
             accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.webp" />
           <span class="file-name" *ngIf="archivoSeleccionado">{{ archivoSeleccionado.name }}</span>
@@ -114,20 +114,20 @@
         <button class="btn-primary" (click)="subirDocumento()" [disabled]="guardando">
           <i class="fas fa-spinner fa-spin" *ngIf="guardando"></i>
           <i class="fas fa-upload" *ngIf="!guardando"></i>
-          {{ guardando ? 'Subiendo...' : 'Subir' }}
+          {{ guardando ? ('ROPA.CATALOGO.UPLOADING' | translate) : ('ROPA.CATALOGO.UPLOAD_BTN' | translate) }}
         </button>
-        <button class="btn-outline" (click)="mostrarFormDocumento = false; errorDoc = ''" [disabled]="guardando">Cancelar</button>
+        <button class="btn-outline" (click)="mostrarFormDocumento = false; errorDoc = ''" [disabled]="guardando">{{ 'ROPA.CATALOGO.CANCEL' | translate }}</button>
       </div>
     </div>
 
     <!-- Lista de documentos -->
     <div *ngIf="cargandoDocumentos" class="loading-state">
-      <i class="fas fa-spinner fa-spin"></i> Cargando documentos...
+      <i class="fas fa-spinner fa-spin"></i> {{ 'ROPA.CATALOGO.DOCS_LOADING' | translate }}
     </div>
 
     <div *ngIf="!cargandoDocumentos && documentos.length === 0" class="empty-state-small">
       <i class="fas fa-folder-open"></i>
-      <p>No hay documentos subidos para esta temporada.</p>
+      <p>{{ 'ROPA.CATALOGO.DOCS_EMPTY' | translate }}</p>
     </div>
 
     <div class="documentos-list" *ngIf="!cargandoDocumentos && documentos.length > 0">
@@ -165,7 +165,7 @@
         <i *ngIf="!getPrendaImageUrl(prendaEnModal)" class="fas fa-tshirt modal-prenda-icon"></i>
         <div>
           <h3>{{ prendaEnModal?.nombre }}</h3>
-          <span class="modal-selecciones-subtitle">Respuestas de jugadores</span>
+          <span class="modal-selecciones-subtitle">{{ 'ROPA.CATALOGO.MODAL_SUBTITLE' | translate }}</span>
         </div>
       </div>
       <button class="btn-close" (click)="cerrarModalSelecciones()"><i class="fas fa-times"></i></button>
@@ -174,14 +174,14 @@
     <div class="modal-body modal-selecciones-body">
       <!-- Cargando -->
       <div *ngIf="cargandoSeleccionesModal" class="loading-state">
-        <i class="fas fa-spinner fa-spin"></i> Cargando respuestas...
+        <i class="fas fa-spinner fa-spin"></i> {{ 'ROPA.CATALOGO.MODAL_LOADING' | translate }}
       </div>
 
       <!-- Sin respuestas -->
       <div *ngIf="!cargandoSeleccionesModal && prendaEnModal && seleccionesPorPrenda[prendaEnModal.prendaId]?.length === 0"
            class="sin-respuestas-modal">
         <i class="fas fa-inbox"></i>
-        <p>Ningún jugador ha seleccionado talla aún</p>
+        <p>{{ 'ROPA.CATALOGO.MODAL_EMPTY' | translate }}</p>
       </div>
 
       <!-- Tabla de respuestas -->
@@ -190,9 +190,9 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Jugador</th>
-            <th>Talla</th>
-            <th>Estado</th>
+            <th>{{ 'ROPA.CATALOGO.MODAL_COL_PLAYER' | translate }}</th>
+            <th>{{ 'ROPA.CATALOGO.MODAL_COL_TALLA' | translate }}</th>
+            <th>{{ 'ROPA.CATALOGO.MODAL_COL_STATUS' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -213,9 +213,9 @@
 
     <div class="modal-footer">
       <span class="selecciones-resumen" *ngIf="prendaEnModal && seleccionesPorPrenda[prendaEnModal.prendaId]">
-        {{ seleccionesPorPrenda[prendaEnModal.prendaId].length }} respuesta(s)
+        {{ seleccionesPorPrenda[prendaEnModal.prendaId].length }} {{ 'ROPA.CATALOGO.MODAL_RESPONSES' | translate }}
       </span>
-      <button class="btn-outline" (click)="cerrarModalSelecciones()">Cerrar</button>
+      <button class="btn-outline" (click)="cerrarModalSelecciones()">{{ 'ROPA.CATALOGO.MODAL_CLOSE' | translate }}</button>
     </div>
   </div>
 </div>
@@ -230,8 +230,8 @@
         <i class="fas fa-tshirt"></i>
       </div>
       <div class="modal-prenda-header-text">
-        <h3>{{ editandoPrenda?.prendaId ? 'Editar Prenda' : 'Nueva Prenda' }}</h3>
-        <p class="modal-prenda-subtitle">{{ editandoPrenda?.prendaId ? 'Actualiza los datos de la prenda' : 'Añade una prenda al catálogo de la temporada' }}</p>
+        <h3>{{ editandoPrenda?.prendaId ? ('ROPA.CATALOGO.PRENDA_TITLE_EDIT' | translate) : ('ROPA.CATALOGO.PRENDA_TITLE_NEW' | translate) }}</h3>
+        <p class="modal-prenda-subtitle">{{ editandoPrenda?.prendaId ? ('ROPA.CATALOGO.PRENDA_SUBTITLE_EDIT' | translate) : ('ROPA.CATALOGO.PRENDA_SUBTITLE_NEW' | translate) }}</p>
       </div>
       <button type="button" class="modal-prenda-close" (click)="cerrarFormPrenda()" aria-label="Cerrar">
         <i class="fas fa-times"></i>
@@ -243,7 +243,7 @@
       <div class="modal-prenda-section">
         <div class="modal-prenda-section-title">
           <i class="fas fa-image"></i>
-          <span>Imagen</span>
+          <span>{{ 'ROPA.CATALOGO.PRENDA_IMG' | translate }}</span>
         </div>
         <div class="modal-prenda-upload" (click)="imagenInput.click()">
           <img *ngIf="imagenPreview" [src]="imagenPreview" class="modal-prenda-preview" alt="Vista previa" />
@@ -251,8 +251,8 @@
             <div class="modal-prenda-upload-icon">
               <i class="fas fa-camera"></i>
             </div>
-            <span class="modal-prenda-upload-text">Arrastra una imagen o haz clic</span>
-            <span class="modal-prenda-upload-hint">JPG, PNG o WebP. Recomendado 800×800 px</span>
+            <span class="modal-prenda-upload-text">{{ 'ROPA.CATALOGO.PRENDA_IMG_DRAG' | translate }}</span>
+            <span class="modal-prenda-upload-hint">{{ 'ROPA.CATALOGO.PRENDA_IMG_HINT' | translate }}</span>
           </div>
           <input #imagenInput type="file" accept=".jpg,.jpeg,.png,.webp"
             (change)="onImagenSeleccionada($event)" style="display:none" />
@@ -263,35 +263,35 @@
       <div class="modal-prenda-section">
         <div class="modal-prenda-section-title">
           <i class="fas fa-info-circle"></i>
-          <span>Datos básicos</span>
+          <span>{{ 'ROPA.CATALOGO.PRENDA_BASIC' | translate }}</span>
         </div>
         <div class="modal-prenda-form">
           <div class="modal-prenda-field modal-prenda-field--full">
-            <label class="modal-prenda-label">Nombre <span class="required">*</span></label>
+            <label class="modal-prenda-label">{{ 'ROPA.CATALOGO.PRENDA_NAME' | translate }} <span class="required">*</span></label>
             <input type="text" class="modal-prenda-input" [(ngModel)]="editandoPrenda!.nombre"
-              placeholder="Ej: Camiseta titular 2025/26" />
+              [placeholder]="'ROPA.CATALOGO.PRENDA_NAME_HINT' | translate" />
           </div>
           <div class="modal-prenda-field modal-prenda-field--full">
-            <label class="modal-prenda-label">Descripción</label>
+            <label class="modal-prenda-label">{{ 'ROPA.CATALOGO.PRENDA_DESC' | translate }}</label>
             <textarea class="modal-prenda-textarea" rows="2" [(ngModel)]="editandoPrenda!.descripcion"
-              placeholder="Descripción opcional de la prenda"></textarea>
+              [placeholder]="'ROPA.CATALOGO.PRENDA_DESC_HINT' | translate"></textarea>
           </div>
           <div class="modal-prenda-row">
             <div class="modal-prenda-field">
-              <label class="modal-prenda-label">Categoría</label>
+              <label class="modal-prenda-label">{{ 'ROPA.CATALOGO.PRENDA_CAT' | translate }}</label>
               <select class="modal-prenda-select" [(ngModel)]="editandoPrenda!.categoria">
-                <option value="">Sin categoría</option>
-                <option value="Juego">Juego</option>
-                <option value="Entreno">Entreno</option>
-                <option value="Chándal">Chándal</option>
-                <option value="Paseo">Paseo</option>
-                <option value="Accesorios">Accesorios</option>
+                <option value="">{{ 'ROPA.CATALOGO.PRENDA_CAT_NONE' | translate }}</option>
+                <option value="Juego">{{ 'ROPA.CATALOGO.PRENDA_CAT_GAME' | translate }}</option>
+                <option value="Entreno">{{ 'ROPA.CATALOGO.PRENDA_CAT_TRAINING' | translate }}</option>
+                <option value="Chándal">{{ 'ROPA.CATALOGO.PRENDA_CAT_TRACKSUIT' | translate }}</option>
+                <option value="Paseo">{{ 'ROPA.CATALOGO.PRENDA_CAT_CASUAL' | translate }}</option>
+                <option value="Accesorios">{{ 'ROPA.CATALOGO.PRENDA_CAT_ACCESSORIES' | translate }}</option>
               </select>
             </div>
             <div class="modal-prenda-field">
-              <label class="modal-prenda-label">Visibilidad</label>
+              <label class="modal-prenda-label">{{ 'ROPA.CATALOGO.PRENDA_VIS' | translate }}</label>
               <select class="modal-prenda-select" [(ngModel)]="editandoPrenda!.teamId">
-                <option [ngValue]="null">Todo el club (global)</option>
+                <option [ngValue]="null">{{ 'ROPA.CATALOGO.PRENDA_VIS_GLOBAL' | translate }}</option>
                 <option *ngFor="let equipo of equipos" [ngValue]="equipo.value">
                   {{ equipo.name }}
                 </option>
@@ -305,15 +305,15 @@
       <div class="modal-prenda-section">
         <div class="modal-prenda-section-title">
           <i class="fas fa-ruler-combined"></i>
-          <span>Tallas disponibles</span>
+          <span>{{ 'ROPA.CATALOGO.PRENDA_SIZES' | translate }}</span>
         </div>
         <div class="modal-prenda-tallas-row">
           <input type="text" class="modal-prenda-input modal-prenda-talla-input"
-            [(ngModel)]="nuevaTalla" placeholder="Ej: S, M, L, XL, 42..."
+            [(ngModel)]="nuevaTalla" [placeholder]="'ROPA.CATALOGO.PRENDA_SIZE_HINT' | translate"
             (keyup.enter)="agregarTallaForm()" />
           <button type="button" class="modal-prenda-btn-add" (click)="agregarTallaForm()">
             <i class="fas fa-plus"></i>
-            <span>Añadir</span>
+            <span>{{ 'ROPA.CATALOGO.PRENDA_ADD_SIZE' | translate }}</span>
           </button>
         </div>
         <div class="modal-prenda-chips" *ngIf="tallasForm.length > 0">
@@ -326,7 +326,7 @@
         </div>
         <p class="modal-prenda-hint" *ngIf="tallasForm.length === 0">
           <i class="fas fa-info-circle"></i>
-          Añade al menos una talla para que los jugadores puedan seleccionar
+          {{ 'ROPA.CATALOGO.PRENDA_SIZES_HINT' | translate }}
         </p>
       </div>
     </div>
@@ -338,12 +338,12 @@
 
     <div class="modal-prenda-footer">
       <button type="button" class="modal-prenda-btn modal-prenda-btn--secondary" (click)="cerrarFormPrenda()" [disabled]="guardando">
-        Cancelar
+        {{ 'ROPA.CATALOGO.CANCEL' | translate }}
       </button>
       <button type="button" class="modal-prenda-btn modal-prenda-btn--primary" (click)="guardarPrenda()" [disabled]="guardando">
         <i class="fas fa-spinner fa-spin" *ngIf="guardando"></i>
         <i class="fas fa-check" *ngIf="!guardando"></i>
-        <span>{{ guardando ? 'Guardando...' : 'Guardar' }}</span>
+        <span>{{ guardando ? ('ROPA.CATALOGO.PRENDA_SAVING' | translate) : ('ROPA.CATALOGO.SAVE' | translate) }}</span>
       </button>
     </div>
   </div>
@@ -360,11 +360,11 @@
       <p>{{ confirmacionMensaje }}</p>
     </div>
     <div class="modal-confirm-footer">
-      <button type="button" class="btn-outline" (click)="cerrarConfirmacion()" [disabled]="confirmando">Cancelar</button>
+      <button type="button" class="btn-outline" (click)="cerrarConfirmacion()" [disabled]="confirmando">{{ 'ROPA.CATALOGO.CANCEL' | translate }}</button>
       <button type="button" class="btn-danger" (click)="confirmarEliminacion()" [disabled]="confirmando">
         <i class="fas fa-spinner fa-spin" *ngIf="confirmando"></i>
         <i class="fas fa-trash-alt" *ngIf="!confirmando"></i>
-        {{ confirmando ? 'Eliminando...' : 'Eliminar' }}
+        {{ confirmando ? ('ROPA.CATALOGO.PRENDA_DELETING' | translate) : ('COMMON.DELETE' | translate) }}
       </button>
     </div>
   </div>
