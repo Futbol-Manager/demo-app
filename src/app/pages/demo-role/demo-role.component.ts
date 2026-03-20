@@ -63,6 +63,10 @@ const NARRATION_CUES: Record<string, NarrationCue[]> = {
     { text: 'En esta demo vas a ver exactamente cómo funciona.',                                                           slideIdx: 4, lineCount: 1 },
     { text: 'Cobros automáticos, gestión de jugadores, convocatorias, comunicación con familias, todo en un solo sitio.', slideIdx: 4, lineCount: 2 },
     { text: 'Es gratis. No hace falta tarjeta. En cinco minutos sabes si esto es lo que tu club necesita.',               slideIdx: 4, lineCount: 3 },
+    { text: 'Y si estás pensando en dar el paso, ahora es el mejor momento.',                                             slideIdx: 5, lineCount: 1 },
+    { text: 'Con el Plan Club Pro, solo cinco euros por jugador y año — mitad de precio por tiempo limitado.',            slideIdx: 5, lineCount: 2 },
+    { text: 'Jugadores ilimitados, cobros automáticos, inteligencia artificial, estadísticas y análisis de vídeo, todo sin comisiones.', slideIdx: 5, lineCount: 3 },
+    { text: 'Más de doscientos clubes ya confían en Sphaira. ¿El tuyo va a ser el siguiente?',                           slideIdx: 5, lineCount: 4 },
   ],
   en: [
     { text: 'If you manage a football club, you probably know this all too well.',                                         slideIdx: 0, lineCount: 0 },
@@ -77,6 +81,10 @@ const NARRATION_CUES: Record<string, NarrationCue[]> = {
     { text: "In this demo you'll see exactly how it works.",                                                               slideIdx: 4, lineCount: 1 },
     { text: 'Automatic payments, player management, squad calls, family communication, all in one place.',                 slideIdx: 4, lineCount: 2 },
     { text: "Free. No card needed. In five minutes you'll know if this is what your club needs.",                          slideIdx: 4, lineCount: 3 },
+    { text: "And if you're thinking about making the leap, now is the perfect moment.",                                    slideIdx: 5, lineCount: 1 },
+    { text: 'With the Club Pro Plan, just five euros per player per year — half price, for a limited time.',               slideIdx: 5, lineCount: 2 },
+    { text: 'Unlimited players, automatic payments, AI, statistics and video analysis, all included with no commissions.', slideIdx: 5, lineCount: 3 },
+    { text: 'Over two hundred clubs already trust Sphaira. Will yours be the next?',                                      slideIdx: 5, lineCount: 4 },
   ],
   fr: [
     { text: 'Si vous gérez un club de football, vous connaissez sûrement cela.',                                          slideIdx: 0, lineCount: 0 },
@@ -91,6 +99,10 @@ const NARRATION_CUES: Record<string, NarrationCue[]> = {
     { text: 'Dans cette démo, vous verrez exactement comment ça fonctionne.',                                              slideIdx: 4, lineCount: 1 },
     { text: 'Paiements automatiques, joueurs, convocations, communication avec les familles, tout en un seul endroit.',   slideIdx: 4, lineCount: 2 },
     { text: "Gratuit. Sans carte. En cinq minutes vous saurez si c'est ce dont votre club a besoin.",                     slideIdx: 4, lineCount: 3 },
+    { text: "Et si vous pensez à franchir le pas, c'est le moment idéal.",                                                slideIdx: 5, lineCount: 1 },
+    { text: 'Avec le Plan Club Pro, seulement cinq euros par joueur et par an — moitié prix, pour une durée limitée.',   slideIdx: 5, lineCount: 2 },
+    { text: 'Joueurs illimités, paiements automatiques, intelligence artificielle, statistiques et analyse vidéo, sans commissions.', slideIdx: 5, lineCount: 3 },
+    { text: 'Plus de deux cents clubs font déjà confiance à Sphaira. Le vôtre sera-t-il le prochain ?',                  slideIdx: 5, lineCount: 4 },
   ],
   de: [
     { text: 'Wenn Sie einen Fußballverein leiten, kennen Sie das sicher nur zu gut.',                                      slideIdx: 0, lineCount: 0 },
@@ -105,6 +117,10 @@ const NARRATION_CUES: Record<string, NarrationCue[]> = {
     { text: 'In dieser Demo sehen Sie genau, wie es funktioniert.',                                                        slideIdx: 4, lineCount: 1 },
     { text: 'Automatische Zahlungen, Spielerverwaltung, Kaderaufrufe, Kommunikation, alles an einem Ort.',                slideIdx: 4, lineCount: 2 },
     { text: 'Kostenlos. Ohne Karte. In fünf Minuten wissen Sie, ob das das Richtige für Ihren Verein ist.',               slideIdx: 4, lineCount: 3 },
+    { text: 'Und wenn Sie über den nächsten Schritt nachdenken, jetzt ist der perfekte Moment.',                          slideIdx: 5, lineCount: 1 },
+    { text: 'Mit dem Club Pro Plan nur fünf Euro pro Spieler und Jahr — halber Preis, für begrenzte Zeit.',               slideIdx: 5, lineCount: 2 },
+    { text: 'Unbegrenzte Spieler, automatische Zahlungen, KI, Statistiken und Videoanalyse, alles inklusive ohne Provisionen.', slideIdx: 5, lineCount: 3 },
+    { text: 'Über zweihundert Vereine vertrauen bereits Sphaira. Wird Ihres der nächste sein?',                          slideIdx: 5, lineCount: 4 },
   ],
   pt: [
     { text: 'Se administra um clube de futebol, provavelmente conhece bem esta situação.',                                 slideIdx: 0, lineCount: 0 },
@@ -119,6 +135,10 @@ const NARRATION_CUES: Record<string, NarrationCue[]> = {
     { text: 'Nesta demo vai ver exatamente como funciona.',                                                                slideIdx: 4, lineCount: 1 },
     { text: 'Cobranças automáticas, gestão de jogadores, convocatórias, comunicação com as famílias, tudo num só lugar.', slideIdx: 4, lineCount: 2 },
     { text: 'É gratuito, não precisa de cartão, e em cinco minutos saberá se é isto que o seu clube precisa.',            slideIdx: 4, lineCount: 3 },
+    { text: 'E se está a pensar em dar o passo, agora é o momento perfeito.',                                             slideIdx: 5, lineCount: 1 },
+    { text: 'Com o Plano Club Pro, apenas cinco euros por jogador e por ano — metade do preço, por tempo limitado.',      slideIdx: 5, lineCount: 2 },
+    { text: 'Jogadores ilimitados, cobranças automáticas, IA, estatísticas e análise de vídeo, tudo incluído sem comissões.', slideIdx: 5, lineCount: 3 },
+    { text: 'Mais de duzentos clubes já confiam no Sphaira. O seu clube vai ser o próximo?',                              slideIdx: 5, lineCount: 4 },
   ],
   it: [
     { text: 'Se gestisci una squadra di calcio, probabilmente conosci bene questa situazione.',                            slideIdx: 0, lineCount: 0 },
@@ -133,6 +153,10 @@ const NARRATION_CUES: Record<string, NarrationCue[]> = {
     { text: 'In questa demo vedrai esattamente come funziona.',                                                            slideIdx: 4, lineCount: 1 },
     { text: 'Pagamenti automatici, giocatori, convocazioni, comunicazione con le famiglie, tutto in un unico posto.',     slideIdx: 4, lineCount: 2 },
     { text: 'Gratuito. Senza carta. In cinque minuti saprai se è quello di cui il tuo club ha bisogno.',                  slideIdx: 4, lineCount: 3 },
+    { text: 'E se stai pensando di fare il passo, ora è il momento perfetto.',                                            slideIdx: 5, lineCount: 1 },
+    { text: "Con il Piano Club Pro, solo cinque euro per giocatore all'anno — metà prezzo, per un periodo limitato.",     slideIdx: 5, lineCount: 2 },
+    { text: 'Giocatori illimitati, pagamenti automatici, intelligenza artificiale, statistiche e analisi video, tutto senza commissioni.', slideIdx: 5, lineCount: 3 },
+    { text: 'Oltre duecento club si fidano già di Sphaira. Il tuo sarà il prossimo?',                                    slideIdx: 5, lineCount: 4 },
   ],
 };
 
@@ -165,6 +189,11 @@ const INTRO_SLIDES: Record<string, IntroSlide[]> = {
       lines: ['En esta demo vas a ver exactamente cómo funciona.', 'Cobros automáticos, gestión de jugadores, convocatorias, comunicación con familias, todo en un solo sitio.', 'Es gratis. No hace falta tarjeta. En cinco minutos sabes si esto es lo que tu club necesita.'],
       lineInterval: 0, duration: 0,
     },
+    {
+      id: 'promo-club',
+      lines: ['Y si estás pensando en dar el paso, ahora es el mejor momento.', 'Plan Club Pro — 5 € / jugador / año · Mitad de precio por tiempo limitado.', 'Ilimitado · Automático · Inteligente · Sin comisiones.', '¿Tu club será el siguiente? Deja tu email y compruébalo.'],
+      lineInterval: 0, duration: 0,
+    },
   ],
   en: [
     {
@@ -190,6 +219,11 @@ const INTRO_SLIDES: Record<string, IntroSlide[]> = {
     {
       id: 'cta',
       lines: ["In this demo you'll see exactly how it works.", 'Automatic payments, player management, squad calls, family communication, all in one place.', "Free. No card needed. In five minutes you'll know if this is what your club needs."],
+      lineInterval: 0, duration: 0,
+    },
+    {
+      id: 'promo-club',
+      lines: ["Ready to make the leap? Now is the perfect moment.", "Club Pro Plan — 5€ / player / year · Half price, limited time.", "Unlimited · Automatic · Intelligent · Zero commissions.", "Will your club be next? Leave your email and find out."],
       lineInterval: 0, duration: 0,
     },
   ],
@@ -219,6 +253,11 @@ const INTRO_SLIDES: Record<string, IntroSlide[]> = {
       lines: ['Dans cette démo, vous verrez exactement comment ça fonctionne.', 'Paiements automatiques, joueurs, convocations, communication avec les familles, tout en un seul endroit.', "Gratuit. Sans carte. En cinq minutes vous saurez si c'est ce dont votre club a besoin."],
       lineInterval: 0, duration: 0,
     },
+    {
+      id: 'promo-club',
+      lines: ["Prêt à franchir le pas ? C'est le moment idéal.", "Plan Club Pro — 5€ / joueur / an · Moitié prix, durée limitée.", "Illimité · Automatique · Intelligent · Sans commissions.", "Votre club sera-t-il le prochain ? Laissez votre email."],
+      lineInterval: 0, duration: 0,
+    },
   ],
   de: [
     {
@@ -244,6 +283,11 @@ const INTRO_SLIDES: Record<string, IntroSlide[]> = {
     {
       id: 'cta',
       lines: ['In dieser Demo sehen Sie genau, wie es funktioniert.', 'Automatische Zahlungen, Spielerverwaltung, Kaderaufrufe, Kommunikation, alles an einem Ort.', 'Kostenlos. Ohne Karte. In fünf Minuten wissen Sie, ob das das Richtige für Ihren Verein ist.'],
+      lineInterval: 0, duration: 0,
+    },
+    {
+      id: 'promo-club',
+      lines: ['Bereit für den nächsten Schritt? Jetzt ist der perfekte Moment.', 'Club Pro Plan — 5€ / Spieler / Jahr · Halber Preis, begrenzte Zeit.', 'Unbegrenzt · Automatisch · Intelligent · Ohne Provisionen.', 'Wird Ihr Verein der nächste sein? Hinterlassen Sie Ihre E-Mail.'],
       lineInterval: 0, duration: 0,
     },
   ],
@@ -273,6 +317,11 @@ const INTRO_SLIDES: Record<string, IntroSlide[]> = {
       lines: ['Nesta demo vai ver exatamente como funciona.', 'Cobranças automáticas, gestão de jogadores, convocatórias, comunicação com as famílias, tudo num só lugar.', 'É gratuito, não precisa de cartão, e em cinco minutos saberá se é isto que o seu clube precisa.'],
       lineInterval: 0, duration: 0,
     },
+    {
+      id: 'promo-club',
+      lines: ['Pronto para dar o passo? Agora é o momento perfeito.', 'Plano Club Pro — 5€ / jogador / ano · Metade do preço, tempo limitado.', 'Ilimitado · Automático · Inteligente · Sem comissões.', 'O seu clube será o próximo? Deixe o seu email e comprove.'],
+      lineInterval: 0, duration: 0,
+    },
   ],
   it: [
     {
@@ -300,6 +349,11 @@ const INTRO_SLIDES: Record<string, IntroSlide[]> = {
       lines: ['In questa demo vedrai esattamente come funziona.', 'Pagamenti automatici, giocatori, convocazioni, comunicazione con le famiglie, tutto in un unico posto.', 'Gratuito. Senza carta. In cinque minuti saprai se è quello di cui il tuo club ha bisogno.'],
       lineInterval: 0, duration: 0,
     },
+    {
+      id: 'promo-club',
+      lines: ['Pronto a fare il passo? Ora è il momento perfetto.', "Piano Club Pro — 5€ / giocatore / anno · Metà prezzo, tempo limitato.", 'Illimitato · Automatico · Intelligente · Senza commissioni.', 'Il tuo club sarà il prossimo? Lascia la tua email e scoprilo.'],
+      lineInterval: 0, duration: 0,
+    },
   ],
 };
 
@@ -322,8 +376,18 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
   visibleLineCount = 0;
   isAudioLoading = false;
   audioMuted = false;
-  /** true cuando el audio está listo pero el autoplay está bloqueado */
-  audioPending = false;
+  /**
+   * true  → mostrar splash "Toca para iniciar" (estado inicial y fallback).
+   * false → el audio ya está corriendo con sonido (autoplay tuvo éxito).
+   */
+  audioPending = true;
+  /** true cuando el usuario ha pausado manualmente la narración */
+  audioPausedByUser = false;
+
+  /** El audio está reproduciéndose activamente (no pausado, no pendiente, no loading). */
+  get isAudioPlaying(): boolean {
+    return !!this.audioPlayer && !this.audioPlayer.paused && !this.audioPending;
+  }
   introSlides: IntroSlide[] = [];
   private currentLang = 'es';
   private audioPlayer?: HTMLAudioElement;
@@ -412,10 +476,18 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     const full = this.translate.currentLang ?? this.translate.defaultLang ?? 'es';
     this.currentLang = full.split('-')[0].toLowerCase();
     this.introSlides = INTRO_SLIDES[this.currentLang] ?? INTRO_SLIDES['es'];
+
+    // Iniciamos el audio en ngOnInit para estar lo más cerca posible del
+    // gesture de navegación del usuario y maximizar la probabilidad de autoplay.
+    this.loadNarrationAudio();
   }
 
   ngAfterViewInit(): void {
-    this.loadNarrationAudio();
+    // El audio ya se inicializó en ngOnInit; aquí solo relanzamos play()
+    // por si el renderizado de la vista añade una segunda oportunidad de gesture.
+    if (this.audioPending && this.audioPlayer?.paused) {
+      this.audioPlayer.play().catch(() => {});
+    }
   }
 
   ngOnDestroy(): void {
@@ -430,7 +502,7 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
   private loadNarrationAudio(): void {
     const localPath = `assets/audio/narration-${this.currentLang}.mp3`;
     this.audioPlayer         = new Audio(localPath);
-    this.audioPlayer.volume  = this.audioMuted ? 0 : 1;
+    this.audioPlayer.volume  = 1;
     this.audioPlayer.preload = 'auto';
 
     // Cue-timestamps para el teleprónter
@@ -447,37 +519,33 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
       this.cdr.markForCheck();
     }, { once: true });
 
-    // ── Reproducción INMEDIATA ─────────────────────────────────────────────
-    // Llamar play() sin esperar canplaythrough maximiza la posibilidad de éxito
-    // dentro del token de activación del usuario que generó la navegación a /demo-role.
-    // El navegador bufferiza y arranca en cuanto tiene datos suficientes.
+    // ── Intento de autoplay con sonido (bonus — no garantizado) ───────────
+    // Si el navegador lo permite (desktop, usuario con historial de interacción),
+    // el splash se descarta automáticamente y la narración arranca sin gestos.
+    // Si no (iOS Safari, política estricta), el splash sigue visible y el usuario
+    // toca UNA vez → play() dentro del gesture handler → siempre funciona.
     this.audioPlayer.play()
       .then(() => {
+        // ¡Autoplay con sonido conseguido! Ocultar el splash.
         this.isAudioLoading = false;
         this.audioPending   = false;
         this.cdr.markForCheck();
       })
       .catch((err: unknown) => {
         const name = err instanceof DOMException ? err.name : '';
-        if (name === 'AbortError') return; // play() interrumpido por load() — ignorar
+        if (name === 'AbortError') return;
 
-        // NotAllowedError: autoplay bloqueado. Fallback: reproducir silenciado para
-        // que el audio esté en curso cuando el usuario pulse el botón de activación.
+        // Autoplay bloqueado: intentar en silencio para que el teleprónter
+        // sincronice mientras el splash espera el gesto del usuario.
         if (this.audioPlayer) {
           this.audioPlayer.muted = true;
-          this.audioPlayer.play()
-            .then(() => {
-              // Está corriendo en mute → marcar pending para que el usuario lo active
-              this.audioPending   = true;
-              this.isAudioLoading = false;
-              this.cdr.markForCheck();
-            })
-            .catch(() => {
-              this.audioPending   = true;
-              this.isAudioLoading = false;
-              this.cdr.markForCheck();
-            });
+          this.audioPlayer.play().catch(() => {
+            // Incluso muted falla (iOS estricto) → el tap arrancará desde 0.
+          });
         }
+        // El splash ya está visible (audioPending = true por defecto).
+        this.isAudioLoading = false;
+        this.cdr.markForCheck();
       });
   }
 
@@ -537,30 +605,62 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
   @HostListener('touchstart')
   onUserInteraction(): void {
     if (!this.audioPending || !this.audioPlayer) return;
-    this.audioPending        = false;
-    this.audioPlayer.muted   = false;
-    this.audioPlayer.volume  = this.audioMuted ? 0 : 1;
-    // Si el audio no está corriendo aún, arrancarlo
+
+    this.audioPending      = false;
+    this.audioPausedByUser = false;
+    this.audioMuted        = false;
+
+    // Siempre desmutear primero
+    this.audioPlayer.muted  = false;
+    this.audioPlayer.volume = 1;
+
+    // Si el audio ya corría en silencio (muted autoplay funcionó) → solo desmutear.
+    // Si estaba parado (muted también bloqueado) → arrancar desde el inicio.
+    // play() llamado DIRECTAMENTE desde el event handler → el navegador lo permite siempre.
     if (this.audioPlayer.paused) {
+      this.audioPlayer.currentTime = 0;
       this.audioPlayer.play().catch(() => {});
     }
+
     this.cdr.markForCheck();
   }
 
-  toggleAudio(): void {
-    this.audioMuted = !this.audioMuted;
-    if (this.audioPlayer) {
-      if (this.audioPending && !this.audioMuted) {
-        // El usuario activó el sonido: aprovechar la interacción para desbloquear
-        this.audioPending      = false;
-        this.audioPlayer.muted = false;
-        this.audioPlayer.volume = 1;
-        if (this.audioPlayer.paused) this.audioPlayer.play().catch(() => {});
-      } else {
-        this.audioPlayer.muted  = false;
-        this.audioPlayer.volume = this.audioMuted ? 0 : 1;
+  /** Alterna Play/Pause. Si el audio estaba bloqueado, lo desbloquea primero. */
+  togglePlayPause(): void {
+    if (!this.audioPlayer) return;
+
+    // Caso 1: el autoplay fue bloqueado → primer toque del usuario, desbloquear
+    if (this.audioPending) {
+      this.audioPending      = false;
+      this.audioPausedByUser = false;
+      this.audioMuted        = false;
+      this.audioPlayer.muted  = false;
+      this.audioPlayer.volume = 1;
+      if (this.audioPlayer.paused) {
+        this.audioPlayer.currentTime = 0;
+        this.audioPlayer.play().catch(() => {});
       }
+      this.cdr.markForCheck();
+      return;
     }
+
+    // Caso 2: está reproduciendo → pausar
+    if (!this.audioPlayer.paused) {
+      this.audioPlayer.pause();
+      this.audioPausedByUser = true;
+      this.cdr.markForCheck();
+      return;
+    }
+
+    // Caso 3: está pausado → reanudar
+    this.audioPausedByUser = false;
+    this.audioPlayer.play().catch(() => {});
+    this.cdr.markForCheck();
+  }
+
+  /** Mantiene compatibilidad con llamadas existentes a toggleAudio() */
+  toggleAudio(): void {
+    this.togglePlayPause();
   }
 
   private stopAudio(): void {
@@ -571,7 +671,8 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
       this.audioPlayer.pause();
       this.audioPlayer = undefined;
     }
-    this.audioPending = false;
+    this.audioPending      = false;
+    this.audioPausedByUser = false;
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -584,7 +685,9 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     const targetTime = this.slideStartTimes[slideIdx] ?? 0;
     if (this.audioPlayer) {
       this.audioPlayer.currentTime = targetTime;
+      // Al navegar por dots/flechas, reanudar siempre (el usuario interactuó)
       if (this.audioPlayer.paused && !this.audioPending) {
+        this.audioPausedByUser = false;
         this.audioPlayer.play().catch(() => {});
       }
     }

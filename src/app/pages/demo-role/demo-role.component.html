@@ -10,14 +10,19 @@
       <div class="intro__progress-fill" [style.width.%]="slideProgress"></div>
     </div>
     <div class="intro__topbar-actions">
-      <button class="btn-mute"
-              [class.btn-mute--pending]="audioPending"
-              [class.btn-mute--loading]="isAudioLoading"
-              (click)="toggleAudio()"
-              [title]="(audioPending ? 'DEMO_INTRO.AUDIO_PENDING' : audioMuted ? 'DEMO_INTRO.UNMUTE' : 'DEMO_INTRO.MUTE') | translate"
+      <button class="btn-play-pause"
+              [class.btn-play-pause--playing]="isAudioPlaying"
+              [class.btn-play-pause--paused]="audioPausedByUser"
+              [class.btn-play-pause--pending]="audioPending"
+              [class.btn-play-pause--loading]="isAudioLoading"
+              (click)="togglePlayPause()"
+              [attr.title]="(isAudioLoading ? 'DEMO_INTRO.AUDIO_LOADING' : audioPending ? 'DEMO_INTRO.AUDIO_PENDING' : isAudioPlaying ? 'DEMO_INTRO.PAUSE' : 'DEMO_INTRO.PLAY') | translate"
               type="button">
-        <i [class]="isAudioLoading ? 'fas fa-spinner fa-spin' : (audioMuted ? 'fas fa-volume-mute' : audioPending ? 'fas fa-play' : 'fas fa-volume-up')"></i>
-        <span *ngIf="audioPending" class="audio-pending-ring"></span>
+        <span class="btn-play-pause__ring" *ngIf="isAudioPlaying"></span>
+        <i [class]="isAudioLoading ? 'fas fa-spinner fa-spin'
+                  : audioPending    ? 'fas fa-play'
+                  : isAudioPlaying  ? 'fas fa-pause'
+                                    : 'fas fa-play'"></i>
       </button>
       <button class="btn-skip" (click)="skipIntro()" type="button">
         {{ 'DEMO_INTRO.SKIP' | translate }} <i class="fas fa-forward"></i>
@@ -25,8 +30,45 @@
     </div>
   </div>
 
+  <!-- ── Splash de inicio (se oculta en cuanto el usuario toca o el autoplay funciona) ── -->
+  <div class="audio-start-splash"
+       *ngIf="audioPending"
+       (click)="onUserInteraction()"
+       (touchstart)="$event.preventDefault(); onUserInteraction()"
+       role="button"
+       [attr.aria-label]="'DEMO_INTRO.AUDIO_PENDING' | translate">
+
+    <!-- Grano de fondo -->
+    <div class="splash__grain"></div>
+
+    <!-- Logo -->
+    <img [src]="logoSrc" alt="Sphaira Tech" class="splash__logo">
+
+    <!-- Botón central animado -->
+    <div class="splash__play-wrap">
+      <span class="splash__ring splash__ring--1"></span>
+      <span class="splash__ring splash__ring--2"></span>
+      <span class="splash__ring splash__ring--3"></span>
+      <button class="splash__play-btn" type="button" tabindex="-1">
+        <i class="fas fa-play"></i>
+      </button>
+    </div>
+
+    <!-- Texto -->
+    <div class="splash__copy">
+      <p class="splash__headline">{{ 'DEMO_INTRO.SPLASH_HEADLINE' | translate }}</p>
+      <p class="splash__sub">{{ 'DEMO_INTRO.SPLASH_SUB' | translate }}</p>
+    </div>
+
+    <!-- Indicador de scroll -->
+    <div class="splash__hint">
+      <i class="fas fa-hand-pointer"></i>
+      <span>{{ 'DEMO_INTRO.SPLASH_HINT' | translate }}</span>
+    </div>
+  </div>
+
   <!-- ── Layout principal: escena (izq) + narración (der) ── -->
-  <div class="intro__body">
+  <div class="intro__body" [class.intro__body--promo]="currentSlide === 5">
 
     <!-- LEFT: Escena visual -->
     <div class="intro__scene">
@@ -167,6 +209,68 @@
             <img src="assets/images/scouting.jpg"  alt="Scouting"    class="ctas-img">
             <img src="assets/images/tareas.jpg"    alt="Tareas"      class="ctas-img">
           </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 5: Promo — Plan Club Pro -->
+      <div *ngIf="currentSlide === 5" class="scene scene--promo">
+        <div class="promo-bg"></div>
+        <div class="promo-content">
+
+          <div class="promo-card">
+            <div class="promo-card__badge">
+              <i class="fas fa-star"></i>
+              {{ 'DEMO_INTRO.PROMO_BADGE' | translate }}
+            </div>
+
+            <div class="promo-card__header">
+              <div class="promo-card__icon"><i class="bi bi-building"></i></div>
+              <div>
+                <h3 class="promo-card__title">{{ 'DEMO_INTRO.PROMO_TITLE' | translate }}</h3>
+                <p class="promo-card__desc">{{ 'DEMO_INTRO.PROMO_DESC' | translate }}</p>
+              </div>
+            </div>
+
+            <div class="promo-card__pricing">
+              <span class="promo-tag">{{ 'DEMO_INTRO.PROMO_LIMITED' | translate }}</span>
+              <span class="promo-original">{{ 'DEMO_INTRO.PROMO_ORIGINAL' | translate }}</span>
+              <span class="promo-discount">{{ 'DEMO_INTRO.PROMO_DISCOUNT' | translate }}</span>
+            </div>
+            <div class="promo-card__price">
+              <span class="promo-amount">{{ 'DEMO_INTRO.PROMO_PRICE' | translate }}</span>
+              <span class="promo-unit">{{ 'DEMO_INTRO.PROMO_UNIT' | translate }}</span>
+            </div>
+            <p class="promo-card__min">{{ 'DEMO_INTRO.PROMO_MIN' | translate }}</p>
+
+            <ul class="promo-features">
+              <li><i class="fas fa-check-circle"></i> {{ 'DEMO_INTRO.PROMO_F1' | translate }}</li>
+              <li><i class="fas fa-check-circle"></i> {{ 'DEMO_INTRO.PROMO_F2' | translate }}</li>
+              <li><i class="fas fa-check-circle"></i> {{ 'DEMO_INTRO.PROMO_F3' | translate }}</li>
+              <li><i class="fas fa-check-circle"></i> {{ 'DEMO_INTRO.PROMO_F4' | translate }}</li>
+              <li><i class="fas fa-check-circle"></i> {{ 'DEMO_INTRO.PROMO_F5' | translate }}</li>
+              <li><i class="fas fa-check-circle"></i> {{ 'DEMO_INTRO.PROMO_F6' | translate }}</li>
+              <li><i class="fas fa-check-circle"></i> {{ 'DEMO_INTRO.PROMO_F7' | translate }}</li>
+              <li><i class="fas fa-check-circle"></i> {{ 'DEMO_INTRO.PROMO_F8' | translate }}</li>
+            </ul>
+
+            <a class="promo-cta"
+               href="https://appsphairatech.com/suscripcion-club/wizard?planType=club"
+               target="_blank" rel="noopener noreferrer">
+              {{ 'DEMO_INTRO.PROMO_CTA' | translate }}
+            </a>
+
+            <!-- Botón "Ver la demo" — aparece al terminar el audio del último slide -->
+            <div class="promo-ver-demo-wrap" *ngIf="visibleLineCount >= currentSlideData.lines.length">
+              <button class="promo-ver-demo" (click)="goToStep2()" type="button">
+                {{ 'DEMO_INTRO.CTA_BUTTON' | translate }} <i class="fas fa-arrow-right"></i>
+              </button>
+              <p class="promo-guarantee">
+                <i class="fas fa-shield-alt"></i>
+                {{ 'DEMO_INTRO.GUARANTEE' | translate }}
+              </p>
+            </div>
+          </div>
+
         </div>
       </div>
 

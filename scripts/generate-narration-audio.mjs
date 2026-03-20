@@ -68,7 +68,8 @@ const VOICE_SETTINGS = {
 // ── Segmentos de narración — alineados 1:1 con las líneas de cada slide ───────
 // Orden: intro-overture | slide0-L1 | slide0-L2 | slide1-L1 | slide1-L2 |
 //        slide2-L1 | slide2-L2 | slide3-L1 | slide3-L2 |
-//        slide4-L1 | slide4-L2 | slide4-L3
+//        slide4-L1 | slide4-L2 | slide4-L3 |
+//        slide5-L1 | slide5-L2 | slide5-L3 | slide5-L4  ← PROMO CLUB PRO
 // Este orden es el que usa el teleprónter en el componente Angular.
 const NARRATION_TEXTS = {
   es: [
@@ -84,6 +85,10 @@ const NARRATION_TEXTS = {
     'En esta demo vas a ver exactamente cómo funciona.',
     'Cobros automáticos, gestión de jugadores, convocatorias, comunicación con familias, todo en un solo sitio.',
     'Es gratis. No hace falta tarjeta. En cinco minutos sabes si esto es lo que tu club necesita.',
+    'Y si estás pensando en dar el paso, ahora es el mejor momento.',
+    'Con el Plan Club Pro, solo cinco euros por jugador y año — mitad de precio por tiempo limitado.',
+    'Jugadores ilimitados, cobros automáticos, inteligencia artificial, estadísticas y análisis de vídeo, todo sin comisiones.',
+    'Más de doscientos clubes ya confían en Sphaira. ¿El tuyo va a ser el siguiente?',
   ].join('\n'),
 
   en: [
@@ -99,6 +104,10 @@ const NARRATION_TEXTS = {
     "In this demo you'll see exactly how it works.",
     'Automatic payments, player management, squad calls, family communication, all in one place.',
     "Free. No card needed. In five minutes you'll know if this is what your club needs.",
+    "And if you're thinking about making the leap, now is the perfect moment.",
+    'With the Club Pro Plan, just five euros per player per year — half price, for a limited time.',
+    'Unlimited players, automatic payments, AI, statistics and video analysis, all included with no commissions.',
+    'Over two hundred clubs already trust Sphaira. Will yours be the next?',
   ].join('\n'),
 
   fr: [
@@ -114,6 +123,10 @@ const NARRATION_TEXTS = {
     'Dans cette démo, vous verrez exactement comment ça fonctionne.',
     'Paiements automatiques, joueurs, convocations, communication avec les familles, tout en un seul endroit.',
     "Gratuit. Sans carte. En cinq minutes vous saurez si c'est ce dont votre club a besoin.",
+    "Et si vous pensez à franchir le pas, c'est le moment idéal.",
+    'Avec le Plan Club Pro, seulement cinq euros par joueur et par an — moitié prix, pour une durée limitée.',
+    'Joueurs illimités, paiements automatiques, intelligence artificielle, statistiques et analyse vidéo, sans commissions.',
+    'Plus de deux cents clubs font déjà confiance à Sphaira. Le vôtre sera-t-il le prochain ?',
   ].join('\n'),
 
   de: [
@@ -129,6 +142,10 @@ const NARRATION_TEXTS = {
     'In dieser Demo sehen Sie genau, wie es funktioniert.',
     'Automatische Zahlungen, Spielerverwaltung, Kaderaufrufe, Kommunikation, alles an einem Ort.',
     'Kostenlos. Ohne Karte. In fünf Minuten wissen Sie, ob das das Richtige für Ihren Verein ist.',
+    'Und wenn Sie über den nächsten Schritt nachdenken, jetzt ist der perfekte Moment.',
+    'Mit dem Club Pro Plan nur fünf Euro pro Spieler und Jahr — halber Preis, für begrenzte Zeit.',
+    'Unbegrenzte Spieler, automatische Zahlungen, KI, Statistiken und Videoanalyse, alles inklusive ohne Provisionen.',
+    'Über zweihundert Vereine vertrauen bereits Sphaira. Wird Ihres der nächste sein?',
   ].join('\n'),
 
   pt: [
@@ -144,6 +161,10 @@ const NARRATION_TEXTS = {
     'Nesta demo vai ver exatamente como funciona.',
     'Cobranças automáticas, gestão de jogadores, convocatórias, comunicação com as famílias, tudo num só lugar.',
     'É gratuito, não precisa de cartão, e em cinco minutos saberá se é isto que o seu clube precisa.',
+    'E se está a pensar em dar o passo, agora é o momento perfeito.',
+    'Com o Plano Club Pro, apenas cinco euros por jogador e por ano — metade do preço, por tempo limitado.',
+    'Jogadores ilimitados, cobranças automáticas, IA, estatísticas e análise de vídeo, tudo incluído sem comissões.',
+    'Mais de duzentos clubes já confiam no Sphaira. O seu clube vai ser o próximo?',
   ].join('\n'),
 
   it: [
@@ -159,6 +180,10 @@ const NARRATION_TEXTS = {
     'In questa demo vedrai esattamente come funziona.',
     'Pagamenti automatici, giocatori, convocazioni, comunicazione con le famiglie, tutto in un unico posto.',
     'Gratuito. Senza carta. In cinque minuti saprai se è quello di cui il tuo club ha bisogno.',
+    'E se stai pensando di fare il passo, ora è il momento perfetto.',
+    "Con il Piano Club Pro, solo cinque euro per giocatore all'anno — metà prezzo, per un periodo limitato.",
+    'Giocatori illimitati, pagamenti automatici, intelligenza artificiale, statistiche e analisi video, tutto senza commissioni.',
+    'Oltre duecento club si fidano già di Sphaira. Il tuo sarà il prossimo?',
   ].join('\n'),
 };
 

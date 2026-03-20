@@ -61,58 +61,101 @@ $muted:    rgba(255,255,255,0.65);
   gap: 10px;
   flex-shrink: 0;
 }
-.btn-mute {
+// ── Botón Play/Pause principal ──────────────────────────────────────────────
+.btn-play-pause {
   position: relative;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.18);
+  border: 1.5px solid rgba(255,255,255,0.22);
   background: rgba(255,255,255,0.08);
-  color: $white;
+  color: rgba(255,255,255,0.75);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.2s ease;
-  font-size: 0.85rem;
-  &:hover { background: rgba(255,255,255,0.15); }
-}
-.audio-loading-dot {
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: $primary;
-  animation: pulse-dot 1.4s ease-in-out infinite;
-}
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.7); }
+  font-size: 0.88rem;
+  flex-shrink: 0;
+  transition: background 0.22s ease, border-color 0.22s ease,
+              color 0.22s ease, transform 0.15s ease,
+              box-shadow 0.3s ease;
+  outline: none;
+
+  &:hover {
+    background: rgba(255,255,255,0.16);
+    color: $white;
+    transform: scale(1.07);
+  }
+  &:active { transform: scale(0.93); }
+
+  // ── Estado: reproduciendo ──
+  &.btn-play-pause--playing {
+    border-color: rgba($primary, 0.7);
+    background: rgba($primary, 0.12);
+    color: $primary;
+    box-shadow: 0 0 0 0 rgba($primary, 0.45);
+    animation: playingGlow 2.4s ease-in-out infinite;
+
+    &:hover {
+      background: rgba($primary, 0.22);
+      box-shadow: 0 0 12px rgba($primary, 0.5);
+    }
+  }
+
+  // ── Estado: pausado por usuario ──
+  &.btn-play-pause--paused {
+    border-color: rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.9);
+    animation: pausedBlink 2.5s ease-in-out infinite;
+  }
+
+  // ── Estado: pendiente de interacción del usuario ──
+  &.btn-play-pause--pending {
+    border-color: rgba($primary, 0.55);
+    background: rgba($primary, 0.14);
+    color: $primary;
+    animation: pendingPulse 1.8s ease-in-out infinite;
+  }
+
+  // ── Estado: cargando ──
+  &.btn-play-pause--loading {
+    opacity: 0.6;
+    pointer-events: none;
+  }
 }
 
-// Estado: audio listo pero bloqueado por autoplay del navegador
-.btn-mute--pending {
-  background: rgba($primary, 0.18);
-  border-color: rgba($primary, 0.5);
-  color: $primary;
-  animation: pendingPulse 2s ease-in-out infinite;
+// Anillo animado que rodea el botón mientras reproduce
+.btn-play-pause__ring {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  border-top-color: $primary;
+  border-right-color: rgba($primary, 0.5);
+  animation: ringRotate 1.8s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes playingGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba($primary, 0.45); }
+  50%       { box-shadow: 0 0 0 8px rgba($primary, 0); }
+}
+@keyframes pausedBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
 }
 @keyframes pendingPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba($primary, 0.5); }
-  50%       { box-shadow: 0 0 0 7px rgba($primary, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba($primary, 0.55); }
+  50%       { box-shadow: 0 0 0 8px rgba($primary, 0); }
 }
-.audio-pending-ring {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: $primary;
-  animation: pulse-dot 1s ease-in-out infinite;
+@keyframes ringRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
+
+// Mantener referencia al selector legacy (audio-pending-ring ya no se usa pero evita errores)
+.audio-pending-ring { display: none; }
 .btn-skip {
   display: inline-flex;
   align-items: center;
@@ -509,6 +552,387 @@ $muted:    rgba(255,255,255,0.65);
   box-shadow: 0 6px 20px rgba(0,0,0,0.4);
   opacity: 0.85;
   animation: fadeInUp 0.5s 1.8s ease both;
+}
+
+// ── AUDIO TAP OVERLAY ────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+//  SPLASH DE INICIO — pantalla obligatoria "Toca para iniciar"
+//  Se muestra hasta que el usuario toca (garantiza play() con gesto).
+// ══════════════════════════════════════════════════════════════════════════════
+.audio-start-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 36px;
+  cursor: pointer;
+  user-select: none;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba($primary, 0.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 80%, rgba($teal, 0.10) 0%, transparent 50%),
+    linear-gradient(160deg, #050f09 0%, #0c1e12 40%, $navy-dk 100%);
+  animation: splashFadeIn 0.5s ease both;
+
+  // Clic en toda la superficie
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+}
+
+// Textura de grano
+.splash__grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  opacity: 0.5;
+  z-index: 0;
+}
+
+.splash__logo {
+  position: relative;
+  z-index: 1;
+  height: 28px;
+  opacity: 0.9;
+  filter: brightness(1.1);
+  animation: splashItemUp 0.6s 0.1s ease both;
+}
+
+// Botón play central con 3 anillos concéntricos
+.splash__play-wrap {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+}
+
+.splash__ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid rgba($primary, 0.5);
+  animation: splashRingExpand 2.4s ease-out infinite;
+
+  &--1 { width: 96px;  height: 96px;  animation-delay: 0s; }
+  &--2 { width: 120px; height: 120px; animation-delay: 0.6s; opacity: 0.7; }
+  &--3 { width: 148px; height: 148px; animation-delay: 1.2s; opacity: 0.4; }
+}
+
+.splash__play-btn {
+  position: relative;
+  z-index: 2;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 2px solid rgba($primary, 0.8);
+  background: rgba($primary, 0.18);
+  color: $primary;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 0 32px rgba($primary, 0.3), 0 0 64px rgba($primary, 0.12);
+  transition: transform 0.15s ease;
+  animation: splashItemUp 0.6s 0.2s ease both;
+
+  // El icono play tiene un ligero offset visual
+  i { margin-left: 4px; }
+
+  &:hover  { transform: scale(1.06); }
+  &:active { transform: scale(0.95); }
+}
+
+.splash__copy {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: splashItemUp 0.6s 0.3s ease both;
+}
+
+.splash__headline {
+  font-size: clamp(1.5rem, 5vw, 2.2rem);
+  font-weight: 700;
+  color: $white;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.splash__sub {
+  font-size: clamp(0.82rem, 2.5vw, 0.95rem);
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.03em;
+  margin: 0;
+}
+
+.splash__hint {
+  position: absolute;
+  bottom: max(28px, env(safe-area-inset-bottom, 28px));
+  left: 0; right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.38);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  z-index: 1;
+  animation: splashItemUp 0.6s 0.5s ease both, splashHintBlink 3s 1.5s ease-in-out infinite;
+
+  i { font-size: 0.85rem; animation: hintBounce 1.6s 1s ease-in-out infinite; }
+}
+
+// ── Keyframes del splash ──────────────────────────────────────────────────────
+@keyframes splashFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes splashItemUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes splashRingExpand {
+  0%   { opacity: 0.8; transform: scale(1); }
+  100% { opacity: 0;   transform: scale(1.5); }
+}
+@keyframes splashHintBlink {
+  0%, 100% { opacity: 0.38; }
+  50%       { opacity: 0.7; }
+}
+@keyframes hintBounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+
+// ── SLIDE 5: PROMO — PLAN CLUB PRO ───────────────────────────
+.scene--promo { overflow: hidden; }
+.promo-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 60% 30%, rgba($primary,0.18) 0%, transparent 55%),
+              radial-gradient(ellipse at 20% 80%, rgba($teal,0.1) 0%, transparent 50%),
+              linear-gradient(145deg, #0a1a12 0%, $navy-dk 100%);
+}
+.promo-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 32px;
+}
+.promo-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 100%);
+  border: 1px solid rgba($primary, 0.35);
+  border-radius: 20px;
+  padding: 24px 28px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 0 40px rgba($primary, 0.12), 0 20px 60px rgba(0,0,0,0.4);
+  animation: promoIn 0.5s ease both;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+@keyframes promoIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.promo-card__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(90deg, $primary 0%, $teal 100%);
+  color: $navy-dk;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 20px;
+  align-self: flex-start;
+  i { font-size: 0.68rem; }
+}
+.promo-card__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.promo-card__icon {
+  width: 44px; height: 44px; flex-shrink: 0;
+  background: rgba($primary, 0.15);
+  border: 1px solid rgba($primary, 0.3);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; color: $primary;
+}
+.promo-card__title {
+  margin: 0 0 4px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: $white;
+  letter-spacing: -0.02em;
+}
+.promo-card__desc {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.4;
+}
+.promo-card__pricing {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.promo-tag {
+  background: rgba(255,200,0,0.15);
+  border: 1px solid rgba(255,200,0,0.4);
+  color: #ffd060;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+.promo-original {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.35);
+  text-decoration: line-through;
+}
+.promo-discount {
+  background: #e53935;
+  color: $white;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+.promo-card__price {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  line-height: 1;
+}
+.promo-amount {
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: $primary;
+  letter-spacing: -0.04em;
+}
+.promo-unit {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.55);
+}
+.promo-card__min {
+  margin: 0;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.4);
+}
+.promo-features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px 12px;
+  li {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.82);
+    i { color: $primary; font-size: 0.82rem; flex-shrink: 0; }
+    animation: featIn 0.3s ease both;
+    &:nth-child(1) { animation-delay: 0.1s; }
+    &:nth-child(2) { animation-delay: 0.2s; }
+    &:nth-child(3) { animation-delay: 0.3s; }
+    &:nth-child(4) { animation-delay: 0.4s; }
+    &:nth-child(5) { animation-delay: 0.5s; }
+    &:nth-child(6) { animation-delay: 0.6s; }
+    &:nth-child(7) { animation-delay: 0.7s; }
+    &:nth-child(8) { animation-delay: 0.8s; }
+  }
+}
+.promo-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px 24px;
+  background: $white;
+  color: $navy-dk;
+  font-size: 0.9rem;
+  font-weight: 800;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  margin-top: 2px;
+  &:hover { background: $primary; color: $navy-dk; transform: translateY(-1px); box-shadow: 0 6px 28px rgba($primary,0.4); text-decoration: none; }
+  &:active { transform: translateY(0); }
+}
+
+// ── Promo: botón "Ver la demo" dentro de la tarjeta ──────────
+.promo-ver-demo-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  animation: promoIn 0.4s ease both;
+}
+.promo-ver-demo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px 24px;
+  background: linear-gradient(90deg, $primary 0%, $teal 100%);
+  color: $navy-dk;
+  font-size: 0.9rem;
+  font-weight: 800;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 20px rgba($primary, 0.35);
+  i { font-size: 0.85rem; }
+  &:hover { filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 6px 28px rgba($primary,0.5); }
+  &:active { transform: translateY(0); }
+}
+.promo-guarantee {
+  margin: 0;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.45);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  i { color: $primary; font-size: 0.7rem; }
 }
 
 // ── NARRACIÓN (derecha, 40%) ──────────────────────────────────
@@ -994,22 +1418,30 @@ $muted:    rgba(255,255,255,0.65);
     box-shadow: 0 0 10px rgba($primary, 0.6);
   }
 
-  // Botón audio — pill premium
-  .btn-mute {
+  // Botón Play/Pause — móvil
+  .btn-play-pause {
     width: 44px;
     height: 44px;
-    border-radius: 22px;
+    border-radius: 50%;
     background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.12);
+    border: 1.5px solid rgba(255,255,255,0.18);
     backdrop-filter: blur(12px);
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
-    &:active { transform: scale(0.93); background: rgba(255,255,255,0.14); }
-  }
-  .btn-mute--pending {
-    background: rgba($primary, 0.14);
-    border-color: rgba($primary, 0.4);
-    box-shadow: 0 0 16px rgba($primary, 0.25);
+    font-size: 0.95rem;
+    &:active { transform: scale(0.9); }
+
+    &.btn-play-pause--playing {
+      background: rgba($primary, 0.15);
+      border-color: rgba($primary, 0.7);
+      box-shadow: 0 0 14px rgba($primary, 0.35);
+    }
+    &.btn-play-pause--paused {
+      background: rgba(255,255,255,0.13);
+    }
+    &.btn-play-pause--pending {
+      background: rgba($primary, 0.14);
+      border-color: rgba($primary, 0.5);
+      box-shadow: 0 0 18px rgba($primary, 0.3);
+    }
   }
 
   // Botón Skip — pill
@@ -1026,7 +1458,9 @@ $muted:    rgba(255,255,255,0.65);
     &:active { transform: scale(0.95); }
   }
 
-  // ── Body: escena fondo + card narración ─────────────────────
+  // ════════════════════════════════════════════════════════════
+  //  LAYOUT BASE — escena fondo + narración flotante
+  // ════════════════════════════════════════════════════════════
   .intro__body {
     display: grid;
     grid-template-rows: 1fr;
@@ -1035,7 +1469,7 @@ $muted:    rgba(255,255,255,0.65);
     min-height: 0;
   }
 
-  // Escena: fondo full-bleed inmersivo
+  // Escena: capa de fondo full-bleed
   .intro__scene {
     position: absolute;
     inset: 0;
@@ -1044,7 +1478,6 @@ $muted:    rgba(255,255,255,0.65);
     width: 100%;
     z-index: 1;
 
-    // Gradiente de fade hacia el panel narración
     &::after {
       content: '';
       position: absolute;
@@ -1053,299 +1486,397 @@ $muted:    rgba(255,255,255,0.65);
       background: linear-gradient(
         to bottom,
         transparent 0%,
-        transparent 30%,
-        rgba($navy-dk, 0.5) 55%,
-        rgba($navy-dk, 0.92) 72%,
-        $navy-dk 88%
+        transparent 52%,
+        rgba($navy-dk, 0.28) 66%,
+        rgba($navy-dk, 0.85) 80%,
+        $navy-dk 90%
       );
+      pointer-events: none;
     }
   }
 
   .scene__photo-bg {
-    filter: blur(2px) brightness(0.4);
-    transform: scale(1.08);
+    filter: blur(1px) brightness(0.35);
+    transform: scale(1.06);
   }
 
+  // Visual en los 70% superiores, centrado vertical/horizontal
   .scene__content {
-    padding: 12px 16px;
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 70%;
+    z-index: 5;
+    padding: 10px 14px 0;
     gap: 10px;
     flex-wrap: nowrap;
     justify-content: center;
-    align-items: center;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 5;  // por encima del overlay ::after (z-index:3)
-    height: 52%;
+    align-items: flex-start; // alinear desde arriba para que el chat crezca hacia abajo
+    padding-top: 12px;
+    overflow: hidden; // el propio scene__content recorta lo que no cabe
   }
 
-  // CTA y Reveal: su contenido debe estar sobre el overlay de gradiente
-  .cta-content {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 5;
-    height: 60%;
-    overflow: hidden;
-    padding: 18px 16px 12px;
-    gap: 10px;
-  }
-
-  .reveal-content {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 5;
-    height: 70%;
-    padding: 20px 18px;
-    gap: 14px;
-  }
-
-  .empathy-badge {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    left: 16px;
-    right: 16px;
-    margin: 0;
-    z-index: 5;
-  }
-
-  // ── Narración: floating card desde abajo ────────────────────
+  // ═══════════════════════════════════════════════════════════
+  //  NARRACIÓN — card glassmorphism centrada, texto legible
+  // ═══════════════════════════════════════════════════════════
   .intro__narration {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    bottom: 0; left: 0; right: 0;
     z-index: 10;
-    padding: 20px 18px max(20px, env(safe-area-inset-bottom, 20px));
-    gap: 14px;
+    // Card glassmorphism real — no solo un gradiente
+    padding: 20px 20px max(20px, env(safe-area-inset-bottom, 20px));
+    gap: 12px;
+    text-align: center;
     background: linear-gradient(
       to bottom,
       rgba($navy-dk, 0) 0%,
-      rgba($navy-dk, 0.97) 12%,
-      rgba($navy-dk, 1) 25%
+      rgba($navy-dk, 0.82) 12%,
+      rgba($navy-dk, 0.97) 24%,
+      rgba($navy-dk, 1) 36%
     );
-    border-top: 1px solid rgba(255,255,255,0.06);
     overflow: visible;
   }
 
-  // ── Líneas de narración ─────────────────────────────────────
+  // Ocultar foto — ahorra espacio
+  .narration__photo { display: none; }
+
+  // Contenedor de líneas
   .narration__lines {
-    gap: 10px;
+    gap: 4px;
+    align-items: center;
+    // Card interior con fondo para máxima legibilidad
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 14px 16px;
+    backdrop-filter: blur(4px);
   }
 
+  // ── Líneas de narración — jerarquía visual fuerte ────────────
   .narration__line {
-    font-size: clamp(0.82rem, 3.6vw, 0.96rem);
-    line-height: 1.5;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    color: rgba(255,255,255,0.22);
-    transition: color 0.45s ease, transform 0.35s ease;
+    font-size: clamp(0.72rem, 3vw, 0.82rem);
+    line-height: 1.45;
+    font-weight: 400;
+    letter-spacing: 0.005em;
+    // Líneas inactivas: muy suaves, casi invisibles
+    color: rgba(255,255,255,0.25);
+    transition: all 0.4s ease;
+    text-align: center;
+    width: 100%;
 
+    // Visible (ya se leyó o está próxima)
     &--visible {
-      color: rgba(255,255,255,0.82);
+      color: rgba(255,255,255,0.45);
     }
 
+    // ACTIVA: protagonista absoluta — tamaño, peso y color premium
     &--active {
-      color: #fff !important;
+      color: #ffffff !important;
       font-weight: 700;
-      font-size: clamp(0.86rem, 3.8vw, 1rem);
-      background: linear-gradient(90deg, rgba($primary,0.14) 0%, transparent 100%);
-      border-left: 3px solid rgba($primary, 0.8);
-      padding-left: 10px;
-      margin-left: -13px;
-      border-radius: 0 6px 6px 0;
-      text-shadow: 0 0 20px rgba($primary, 0.4);
+      font-size: clamp(1.05rem, 4.6vw, 1.2rem) !important;
+      line-height: 1.38;
+      letter-spacing: -0.025em;
+      // Glow sutil verde que da identidad sin cansar
+      text-shadow:
+        0 0 40px rgba($primary, 0.45),
+        0 1px 4px rgba(0,0,0,0.5);
+      background: none;
+      border-left: none;
+      padding: 4px 0;
+      margin: 2px 0;
     }
 
+    // HIGHLIGHT: verde para datos clave (precio, número, nombre)
     &--highlight {
       color: $primary !important;
       font-weight: 800;
-      font-size: clamp(0.88rem, 3.9vw, 1.02rem);
+      font-size: clamp(1rem, 4.3vw, 1.14rem) !important;
+      text-shadow: 0 0 28px rgba($primary, 0.5);
     }
   }
 
-  // ── Foto empathy ────────────────────────────────────────────
-  .narration__photo {
-    width: 56px; height: 56px;
-    border: 2px solid rgba($primary, 0.5);
-    box-shadow: 0 4px 20px rgba($primary, 0.2);
-  }
-
-  // ── CTA button ──────────────────────────────────────────────
+  // ── CTA: "Ver la demo ahora" ─────────────────────────────────
   .narration__cta-row { gap: 10px; }
   .btn-ver-demo {
     width: 100%;
     justify-content: center;
-    padding: 17px 24px;
+    padding: 16px 20px;
     font-size: 1rem;
     font-weight: 800;
     border-radius: 16px;
     letter-spacing: 0.01em;
-    box-shadow: 0 6px 28px rgba($primary, 0.4), 0 2px 8px rgba($primary, 0.2);
+    box-shadow: 0 6px 28px rgba($primary, 0.45);
     &:active { transform: scale(0.97); }
   }
   .narration__guarantee {
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     flex-wrap: wrap;
     justify-content: center;
     color: rgba(255,255,255,0.4);
-    gap: 5px;
+    gap: 4px;
+    text-align: center;
   }
 
-  // ── Dots ────────────────────────────────────────────────────
-  .narration__dots {
-    gap: 8px;
-    justify-content: center;
-    align-items: center;
-  }
+  // ── Dots + nav ───────────────────────────────────────────────
+  .narration__dots { gap: 6px; justify-content: center; align-items: center; }
   .ndot {
-    width: 7px;
-    height: 7px;
-    border: 1.5px solid rgba(255,255,255,0.2);
+    width: 6px; height: 6px;
+    border: 1.5px solid rgba(255,255,255,0.16);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     &--active {
-      width: 32px;
-      height: 7px;
-      border-radius: 4px;
+      width: 26px; height: 6px;
+      border-radius: 3px;
       background: $primary;
       border-color: transparent;
       box-shadow: 0 0 10px rgba($primary, 0.5);
     }
-    &--done {
-      background: rgba($primary, 0.4);
-      border-color: transparent;
-    }
-    &:active { transform: scale(0.85); }
+    &--done { background: rgba($primary, 0.32); border-color: transparent; }
+    &:active { transform: scale(0.82); }
   }
 
-  // ── Navegación prev/next ────────────────────────────────────
-  .narration__nav {
-    gap: 10px;
-    align-items: center;
-  }
+  .narration__nav { gap: 8px; align-items: center; }
   .btn-nav {
-    width: 48px;
-    height: 48px;
+    width: 44px; height: 44px;
     border-radius: 50%;
-    border: 1.5px solid rgba(255,255,255,0.12);
-    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
     backdrop-filter: blur(10px);
-    font-size: 0.85rem;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-    transition: all 0.18s ease;
-    &:hover:not(:disabled) { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.22); }
-    &:active:not(:disabled) { transform: scale(0.9); }
-    &:disabled { opacity: 0.2; }
+    font-size: 0.82rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+    transition: all 0.15s ease;
+    &:hover:not(:disabled) { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.18); }
+    &:active:not(:disabled) { transform: scale(0.88); }
+    &:disabled { opacity: 0.18; }
   }
 
-  // ── WhatsApp (slide 0) ──────────────────────────────────────
+  // ════════════════════════════════════════════════════════════
+  //  SLIDES ESPECÍFICOS
+  // ════════════════════════════════════════════════════════════
+
+  // ── Slide 0: WhatsApp ────────────────────────────────────────
   .wa-phone {
-    width: 185px;
-    border-radius: 18px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
-    .wa-header { padding: 10px 12px; }
-    .wa-body { padding: 8px; min-height: 170px; gap: 5px; }
+    width: 158px;
+    border-radius: 14px;
+    box-shadow: 0 12px 36px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.07);
+    overflow: hidden; // el teléfono mismo es el clip boundary
+    .wa-header { padding: 7px 10px; gap: 6px; }
+    .wa-body { padding: 6px; gap: 4px; overflow: hidden; }
   }
-  .wa-msg { font-size: 0.7rem; padding: 6px 9px; }
-  .wa-group { font-size: 0.78rem; }
-  .wa-members { font-size: 0.63rem; }
+  .wa-msg { font-size: 0.62rem; padding: 5px 8px; border-radius: 10px; line-height: 1.35; }
+  .wa-group { font-size: 0.68rem; }
+  .wa-members { font-size: 0.56rem; }
   .excel-card { display: none; }
 
-  // ── Papeles (slide 1) ──────────────────────────────────────
-  .papers-stack { gap: 7px; max-width: 220px; }
+  // ── Slide 1: Papeles ─────────────────────────────────────────
+  .papers-stack { gap: 7px; max-width: 210px; }
   .paper {
-    padding: 9px 11px;
-    font-size: 0.73rem;
+    padding: 9px 12px;
+    font-size: 0.7rem;
     gap: 9px;
     border-radius: 10px;
-    box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+    box-shadow: 0 6px 22px rgba(0,0,0,0.4);
     i { font-size: 1rem; }
   }
-  .notif-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-    width: 165px;
-  }
+  .notif-stack { gap: 7px; width: 160px; }
   .notif {
     padding: 7px 11px;
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     border-radius: 10px;
-    background: rgba(15,23,42,0.9);
-    backdrop-filter: blur(12px);
+    background: rgba(15,23,42,0.92);
+    backdrop-filter: blur(14px);
   }
 
-  // ── Empatía badge (slide 2) ────────────────────────────────
+  // ── Slide 2: Empatía — badge centrado y grande ───────────────
   .empathy-badge {
-    margin-left: 20px;
-    margin-bottom: 0;
-    padding: 16px 20px;
+    position: absolute;
+    // Centrado en el 62% superior de la escena
+    top: 31%;
+    left: 20px; right: 20px;
+    transform: translateY(-50%);
+    margin: 0;
+    padding: 18px 22px;
     gap: 14px;
     max-width: calc(100vw - 40px);
-    border-radius: 18px;
-    background: rgba($primary, 0.12);
-    border: 1px solid rgba($primary, 0.3);
-    backdrop-filter: blur(16px);
-    box-shadow: 0 8px 32px rgba($primary, 0.15);
-    i { font-size: 1.2rem; }
-    span { font-size: 0.92rem; line-height: 1.5; }
+    border-radius: 20px;
+    background: rgba($navy-dk, 0.55);
+    border: 1px solid rgba($primary, 0.35);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 10px 36px rgba($primary, 0.18), 0 0 0 1px rgba($primary, 0.1);
+    z-index: 5;
+    i { font-size: 1.4rem; }
+    span {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      font-weight: 500;
+      color: rgba(255,255,255,0.9);
+      text-align: center;
+    }
   }
 
-  // ── Reveal (slide 3) ───────────────────────────────────────
-  .reveal-logo { height: 38px; }
-  .reveal-glow { width: 130px; height: 130px; }
-  .reveal-stats {
-    padding: 10px 16px;
-    background: rgba(255,255,255,0.06);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 14px;
-    gap: 2px;
+  // ── Slide 3: Reveal (logo + stats) ──────────────────────────
+  .reveal-content {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 5;
+    height: 65%;
+    padding: 20px 20px;
+    gap: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
-  .rstat__n { font-size: 1.15rem; font-weight: 800; }
-  .rstat__l { font-size: 0.62rem; }
-  .rstat__sep { margin: 0 12px; height: 24px; }
+  .reveal-logo { height: 38px; }
+  .reveal-glow { width: 120px; height: 120px; }
+  .reveal-stats {
+    padding: 10px 20px;
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    gap: 0;
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+  .rstat__n { font-size: 1.2rem; font-weight: 900; }
+  .rstat__l { font-size: 0.6rem; font-weight: 600; letter-spacing: 0.04em; }
+  .rstat__sep { margin: 0 14px; height: 24px; }
   .reveal-screenshots { display: none; }
 
-  // ── CTA slide (slide 4) ────────────────────────────────────
-  // intro__scene::after tiene z-index:3 y tapaba el contenido.
-  // Subimos .scene--cta por encima para que las cards sean visibles.
-  .scene--cta {
-    z-index: 4;
-  }
+  // ── Slide 4: CTA (features grid) ─────────────────────────────
+  .scene--cta { z-index: 4; }
   .cta-content {
-    padding: 20px 18px;
-    gap: 14px;
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 5;
+    height: 63%;
+    padding: 18px 16px 12px;
+    gap: 10px;
+    overflow: hidden;
+    align-items: center;   // centra el título también
   }
   .cta-eyebrow {
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     letter-spacing: 0.1em;
     margin: 0 0 2px;
+    text-align: center;
+    width: 100%;
   }
   .cta-features {
     grid-template-columns: 1fr 1fr;
     gap: 8px;
+    width: 100%;
   }
   .cta-feat {
-    padding: 10px 12px;
-    font-size: 0.74rem;
-    gap: 8px;
-    border-radius: 12px;
-    background: rgba(255,255,255,0.14);
-    border: 1px solid rgba(255,255,255,0.22);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 2px 12px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
-    transition: background 0.2s ease;
-    i { font-size: 0.84rem; }
-    &:active { background: rgba(255,255,255,0.2); }
+    padding: 9px 11px;
+    font-size: 0.72rem;
+    gap: 7px;
+    border-radius: 11px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.18);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.08);
+    i { font-size: 0.8rem; }
+    &:active { background: rgba(255,255,255,0.18); }
   }
   .cta-screenshots { display: none; }
 
+  // ── Promo slide mobile — full-bleed, tapa el panel narración ─
+  .intro__body--promo {
+    .intro__scene {
+      z-index: 12; // por encima de narración (10)
+      // El overlay ::after (z-index:3) bloquearía los clics del promo card
+      &::after { display: none; }
+    }
+    .intro__narration {
+      display: none;
+    }
+  }
+
+  .scene--promo { overflow: hidden; }
+
+  // Contenedor scrollable centrado en pantalla
+  .promo-content {
+    position: absolute;
+    inset: 0;
+    padding: 10px 14px max(16px, env(safe-area-inset-bottom, 16px));
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    z-index: 5;
+    // Flex centrado — la tarjeta queda en el medio de la pantalla
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+  }
+
+  .promo-card {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px 12px;
+    gap: 7px;
+    border-radius: 14px;
+    box-shadow: 0 0 20px rgba($primary, 0.12), 0 6px 24px rgba(0,0,0,0.45);
+  }
+
+  .promo-card__badge {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    gap: 4px;
+  }
+
+  .promo-card__header { gap: 8px; }
+
+  .promo-card__icon {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .promo-card__title { font-size: 0.88rem; margin-bottom: 1px; }
+  .promo-card__desc { font-size: 0.66rem; line-height: 1.3; }
+
+  .promo-card__pricing { gap: 5px; flex-wrap: wrap; }
+  .promo-tag  { font-size: 0.6rem;  padding: 2px 7px; }
+  .promo-original { font-size: 0.72rem; }
+  .promo-discount { font-size: 0.62rem; padding: 2px 5px; }
+
+  .promo-card__price { gap: 2px; }
+  .promo-amount { font-size: 1.8rem; }
+  .promo-unit   { font-size: 0.68rem; }
+  .promo-card__min { font-size: 0.6rem; margin-top: -3px; }
+
+  .promo-features {
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 8px;
+    li {
+      font-size: 0.65rem;
+      gap: 4px;
+      i { font-size: 0.68rem; }
+    }
+  }
+
+  // Botón "Elegir Club Pro" — tamaño táctil
+  .promo-cta {
+    padding: 13px 16px;
+    font-size: 0.82rem;
+    border-radius: 10px;
+    margin-top: 8px;
+  }
+
+  // Botón "Ver la demo" dentro del promo card
+  .promo-ver-demo {
+    padding: 13px 16px;
+    font-size: 0.84rem;
+    border-radius: 10px;
+  }
+  .promo-guarantee {
+    font-size: 0.65rem;
+    text-align: center;
+  }
 
   // ════════════════════════════════════════════════════════════
   //  STEP 2 — Selección de rol (mobile premium)
@@ -1596,7 +2127,7 @@ $muted:    rgba(255,255,255,0.65);
 // ════════════════════════════════════════════════════════════
 
 @media (max-width: 380px) {
-  .wa-phone { width: 160px; }
+  .wa-phone { width: 140px; }
   .narration__line { font-size: clamp(0.95rem, 4.2vw, 1.1rem); }
   .notif-stack { display: none; }
   .demo-role-card { padding: 14px 13px; }
