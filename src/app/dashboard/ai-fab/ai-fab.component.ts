@@ -749,6 +749,19 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.fabStartRight = this.fabRight;
   }
 
+  /**
+   * Fin de toque en el botón FAB.
+   * El touchstart tiene preventDefault() que bloquea el evento click en móvil,
+   * por lo que usamos touchend para detectar un tap (sin arrastre) y abrir el chat.
+   */
+  onFabTouchEnd(e: TouchEvent): void {
+    e.preventDefault(); // evitar eventos de mouse sintéticos post-touch
+    if (!this.fabDidDrag) {
+      this.toggleChat();
+    }
+    // El document:touchend se encargará de limpiar fabDragging y fabDidDrag
+  }
+
   @HostListener('document:mousemove', ['$event'])
   onDocumentMouseMove(e: MouseEvent): void {
     if (!this.fabDragging) return;

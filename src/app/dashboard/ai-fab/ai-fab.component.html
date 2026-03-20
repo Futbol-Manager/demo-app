@@ -6,7 +6,11 @@
      [style.right.px]="fabRight"
      (mousedown)="onFabPointerDown($event)"
      (touchstart)="onFabTouchStart($event); $event.preventDefault()">
-  <button class="ai-fab-btn" [class.open]="isOpen" (click)="onFabClick($event)" type="button" aria-label="Asistente IA - clic para abrir, arrastrar para mover">
+  <button class="ai-fab-btn" [class.open]="isOpen"
+          (click)="onFabClick($event)"
+          (touchend)="onFabTouchEnd($event)"
+          type="button"
+          aria-label="Asistente IA - clic para abrir, arrastrar para mover">
     <i class="bi" [ngClass]="isOpen ? 'bi-x-lg' : 'bi-robot'"></i>
     <span class="fab-pulse" *ngIf="!isOpen"></span>
   </button>

@@ -118,8 +118,8 @@
           </div>
         </div>
 
-        <!-- ===== VER TUTORIAL (premium: circular + pulso, según pantalla actual) ===== -->
-        <button type="button" class="header-tutorial-btn" data-tutorial="header-tutorial-btn" (click)="openTutorial()"
+        <!-- ===== VER TUTORIAL (solo desktop) ===== -->
+        <button *ngIf="isDesktop" type="button" class="header-tutorial-btn" data-tutorial="header-tutorial-btn" (click)="openTutorial()"
           [attr.aria-label]="'TUTORIAL.ARIA_TUTORIAL_BTN' | translate">
           <span class="header-tutorial-btn__pulse" aria-hidden="true"></span>
           <span class="header-tutorial-btn__circle">
@@ -129,20 +129,16 @@
         </button>
 
         <!-- ===== DESCARGAR APP ===== -->
-        <!-- Móvil Android: enlace directo a Play Store -->
-        <a *ngIf="isAndroid" class="header-action" [href]="playStoreUrl" target="_blank" role="button">
+        <!-- Móvil Android: botón icono Play Store -->
+        <a *ngIf="isAndroid" class="header-action header-download-btn" [href]="playStoreUrl" target="_blank" role="button"
+           [attr.aria-label]="'HEADER.DOWNLOAD.PLAYSTORE' | translate">
           <i class="bi bi-google-play"></i>
-          <span class="d-none d-md-inline">
-            {{ 'HEADER.DOWNLOAD.PLAYSTORE' | translate }}
-          </span>
         </a>
 
-        <!-- Móvil iOS: enlace directo a App Store -->
-        <a *ngIf="isiOS" class="header-action" [href]="appStoreUrl" target="_blank" role="button">
+        <!-- Móvil iOS: botón icono App Store -->
+        <a *ngIf="isiOS" class="header-action header-download-btn" [href]="appStoreUrl" target="_blank" role="button"
+           [attr.aria-label]="'HEADER.DOWNLOAD.APPSTORE' | translate">
           <i class="bi bi-apple"></i>
-          <span class="d-none d-md-inline">
-            {{ 'HEADER.DOWNLOAD.APPSTORE' | translate }}
-          </span>
         </a>
 
         <!-- Desktop: dropdown con ambas opciones → abre modal QR -->

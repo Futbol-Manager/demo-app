@@ -377,10 +377,11 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
   isAudioLoading = false;
   audioMuted = false;
   /**
-   * true  → mostrar splash "Toca para iniciar" (estado inicial y fallback).
-   * false → el audio ya está corriendo con sonido (autoplay tuvo éxito).
+   * true  → mostrar splash "Toca para iniciar" (móvil/tablet).
+   * false → desktop: autoplay directo sin splash.
+   * Se inicializa en ngOnInit una vez disponible el DOM.
    */
-  audioPending = true;
+  audioPending = false;
   /** true cuando el usuario ha pausado manualmente la narración */
   audioPausedByUser = false;
 
@@ -463,6 +464,24 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     private cdr: ChangeDetectorRef,
   ) {}
 
+  /**
+   * Devuelve true si el dispositivo es táctil (móvil/tablet) → mostrar splash.
+   * Devuelve false si hay un puntero preciso (ratón) → autoplay desktop directo.
+   *
+   * Nota: navigator.maxTouchPoints NO se usa porque Chrome en Windows reporta
+   * maxTouchPoints=5 aunque no haya pantalla táctil, dando falsos positivos.
+   * El CSS media query '(hover:hover) and (pointer:fine)' es la señal más fiable
+   * de un dispositivo con ratón real.
+   */
+  private isTouchDevice(): boolean {
+    if (typeof window === 'undefined') return false;
+    // Si el dispositivo tiene un puntero preciso con hover → desktop con ratón
+    const hasMousePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (hasMousePointer) return false;
+    // En caso contrario (coarse/touch o dual-input) → tratar como móvil
+    return true;
+  }
+
   ngOnInit(): void {
     if (!this.demoService.isDemoMode()) {
       this.router.navigate(['/dashboard/inicio']);
@@ -477,17 +496,19 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     this.currentLang = full.split('-')[0].toLowerCase();
     this.introSlides = INTRO_SLIDES[this.currentLang] ?? INTRO_SLIDES['es'];
 
+    // Splash universal: el audio siempre requiere interacción explícita del usuario,
+    // tanto en móvil como en desktop. Evita políticas de autoplay y es más intuitivo.
+    this.audioPending = true;
+
     // Iniciamos el audio en ngOnInit para estar lo más cerca posible del
     // gesture de navegación del usuario y maximizar la probabilidad de autoplay.
     this.loadNarrationAudio();
   }
 
   ngAfterViewInit(): void {
-    // El audio ya se inicializó en ngOnInit; aquí solo relanzamos play()
-    // por si el renderizado de la vista añade una segunda oportunidad de gesture.
-    if (this.audioPending && this.audioPlayer?.paused) {
-      this.audioPlayer.play().catch(() => {});
-    }
+    // En móvil el audio no arranca hasta que el usuario toca el splash.
+    // En desktop se intentó autoplay en ngOnInit; aquí no hacemos nada extra
+    // para no arrancar el audio sin gesto explícito del usuario.
   }
 
   ngOnDestroy(): void {
@@ -503,7 +524,7 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     const localPath = `assets/audio/narration-${this.currentLang}.mp3`;
     this.audioPlayer         = new Audio(localPath);
     this.audioPlayer.volume  = 1;
-    this.audioPlayer.preload = 'auto';
+    this.audioPlayer.preload = 'auto';   // precarga el archivo, no lo reproduce
 
     // Cue-timestamps para el teleprónter
     this.audioPlayer.addEventListener('loadedmetadata', () => {
@@ -519,14 +540,20 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
       this.cdr.markForCheck();
     }, { once: true });
 
-    // ── Intento de autoplay con sonido (bonus — no garantizado) ───────────
-    // Si el navegador lo permite (desktop, usuario con historial de interacción),
-    // el splash se descarta automáticamente y la narración arranca sin gestos.
-    // Si no (iOS Safari, política estricta), el splash sigue visible y el usuario
-    // toca UNA vez → play() dentro del gesture handler → siempre funciona.
+    if (this.audioPending) {
+      // ── MÓVIL: splash visible → NO llamar play() en absoluto.
+      // El audio solo arrancará cuando el usuario toque el splash (onUserInteraction).
+      // Así garantizamos que Chrome iOS / Safari nunca arranquen el audio
+      // antes del gesto explícito del usuario.
+      this.isAudioLoading = false;
+      return;
+    }
+
+    // ── DESKTOP: intentar autoplay con sonido ─────────────────────────────
+    // El splash no está visible en desktop; si el autoplay falla simplemente
+    // el usuario puede usar el botón play del topbar.
     this.audioPlayer.play()
       .then(() => {
-        // ¡Autoplay con sonido conseguido! Ocultar el splash.
         this.isAudioLoading = false;
         this.audioPending   = false;
         this.cdr.markForCheck();
@@ -534,16 +561,7 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
       .catch((err: unknown) => {
         const name = err instanceof DOMException ? err.name : '';
         if (name === 'AbortError') return;
-
-        // Autoplay bloqueado: intentar en silencio para que el teleprónter
-        // sincronice mientras el splash espera el gesto del usuario.
-        if (this.audioPlayer) {
-          this.audioPlayer.muted = true;
-          this.audioPlayer.play().catch(() => {
-            // Incluso muted falla (iOS estricto) → el tap arrancará desde 0.
-          });
-        }
-        // El splash ya está visible (audioPending = true por defecto).
+        // En desktop bloqueado: el botón play del topbar activará el audio.
         this.isAudioLoading = false;
         this.cdr.markForCheck();
       });
@@ -600,9 +618,11 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     }
   }
 
-  /** Click/touch activa el audio si estaba en pending o en mute forzado. */
-  @HostListener('click')
-  @HostListener('touchstart')
+  /**
+   * Llamado SOLO desde el splash screen (click/touchstart en el overlay).
+   * No está conectado al HostListener para evitar que cualquier clic en la intro
+   * active el audio involuntariamente.
+   */
   onUserInteraction(): void {
     if (!this.audioPending || !this.audioPlayer) return;
 

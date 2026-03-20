@@ -55,70 +55,72 @@
 }
 
 /* ========================= */
-/* CTA SUSCRIBIRSE (azul Sphaira: muy dinámico y atractivo) */
+/* CTA SUSCRIBIRSE — color Sphaira #002c40 */
 /* ========================= */
-$sphaira-blue: #002c40;
-$sphaira-blue-light: #00465f;
-$sphaira-blue-bright: #0a5f7a;
+$cta-sphaira: #002c40;
+$cta-sphaira-mid: #00486a;
+$cta-sphaira-light: #006690;
 
 .header-cta-subscribe {
   position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.6rem 1.35rem;
+  padding: 0.55rem 1.3rem;
   border-radius: 999px;
   font-weight: 700;
-  font-size: 0.9rem;
-  letter-spacing: 0.04em;
+  font-size: 0.88rem;
+  letter-spacing: 0.03em;
   text-decoration: none;
   color: #fff !important;
-  background: linear-gradient(145deg, $sphaira-blue-light 0%, $sphaira-blue 50%, #001a28 100%);
+  background: linear-gradient(135deg, $cta-sphaira-light 0%, $cta-sphaira-mid 50%, $cta-sphaira 100%);
   background-size: 200% 200%;
-  box-shadow: 0 4px 20px rgba(0, 44, 64, 0.5),
-              inset 0 1px 0 rgba(255, 255, 255, 0.15),
-              0 0 0 1px rgba(255, 255, 255, 0.1);
-  border: none;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 4px 16px rgba(0, 44, 64, 0.6),
+              0 0 0 1px rgba(255, 255, 255, 0.12),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2);
   cursor: pointer;
   overflow: hidden;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
-  animation: header-cta-breathe 2.2s ease-in-out infinite;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.25s ease,
+              border-color 0.25s ease;
+  animation: header-cta-breathe 2.4s ease-in-out infinite;
   font-family: inherit;
   -webkit-appearance: none;
   appearance: none;
+  white-space: nowrap;
 }
 
-/* Anillo de pulso exterior — más visible en reposo */
+/* Anillo de pulso */
 .header-cta-subscribe::before {
   content: '';
   position: absolute;
-  inset: -4px;
+  inset: -5px;
   border-radius: 999px;
-  border: 2px solid rgba(0, 90, 120, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.5);
   opacity: 0;
-  animation: header-cta-ring-pulse 2.2s ease-out infinite;
+  animation: header-cta-ring-pulse 2.4s ease-out infinite;
   pointer-events: none;
 }
 
 .header-cta-subscribe:hover {
-  transform: scale(1.1) translateY(-3px);
-  background: linear-gradient(145deg, #0d7a9e 0%, $sphaira-blue-bright 40%, $sphaira-blue-light 75%, $sphaira-blue 100%);
-  background-position: 100% 50%;
-  box-shadow: 0 12px 36px rgba(0, 44, 64, 0.6),
-              0 0 24px rgba(0, 90, 120, 0.35),
-              inset 0 1px 0 rgba(255, 255, 255, 0.25),
-              0 0 0 1px rgba(255, 255, 255, 0.15);
+  transform: scale(1.07) translateY(-2px);
+  background: linear-gradient(135deg, #0080b3 0%, $cta-sphaira-mid 60%, $cta-sphaira 100%);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 10px 32px rgba(0, 44, 64, 0.7),
+              0 0 22px rgba(0, 102, 140, 0.5),
+              inset 0 1px 0 rgba(255, 255, 255, 0.3);
   color: #fff !important;
   animation: none;
 }
 
 .header-cta-subscribe:active {
-  transform: scale(1.04) translateY(-1px);
+  transform: scale(1.02) translateY(-1px);
 }
 
 .header-cta-subscribe:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5), 0 4px 20px rgba(0, 44, 64, 0.5);
+  box-shadow: 0 0 0 3px rgba(26, 143, 255, 0.5), 0 4px 18px rgba(0, 102, 221, 0.5);
 }
 
 /* Shimmer continuo — más ancho y visible */
@@ -180,25 +182,26 @@ $sphaira-blue-bright: #0a5f7a;
 @keyframes header-cta-breathe {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 4px 20px rgba(0, 44, 64, 0.5),
-                inset 0 1px 0 rgba(255, 255, 255, 0.15),
-                0 0 0 1px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 44, 64, 0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
   50% {
     transform: scale(1.04);
-    box-shadow: 0 6px 28px rgba(0, 44, 64, 0.55),
-                inset 0 1px 0 rgba(255, 255, 255, 0.18),
-                0 0 0 1px rgba(255, 255, 255, 0.12);
+    box-shadow: 0 7px 26px rgba(0, 44, 64, 0.75),
+                0 0 18px rgba(0, 102, 140, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.18),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25);
   }
 }
 
 @keyframes header-cta-ring-pulse {
   0% {
     transform: scale(1);
-    opacity: 0.7;
+    opacity: 0.6;
   }
   100% {
-    transform: scale(1.25);
+    transform: scale(1.3);
     opacity: 0;
   }
 }
@@ -258,21 +261,44 @@ $sphaira-blue-bright: #0a5f7a;
   }
 }
 
+/* Texto siempre visible en desktop y móvil */
 .header-cta-subscribe-text {
+  display: inline !important;
   white-space: nowrap;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   letter-spacing: 0.02em;
 }
 
 @media (max-width: 768px) {
-  .header-cta-subscribe-text {
-    display: none;
-  }
+  // Botón suscripción: amplio, visible y con color #002c40
   .header-cta-subscribe {
-    padding: 0.5rem 0.8rem;
+    background: linear-gradient(135deg, #006690 0%, #00486a 50%, #002c40 100%) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 4px 14px rgba(0, 44, 64, 0.65) !important;
+    padding: 0.55rem 1.25rem !important;
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+    min-width: 130px;
+    justify-content: center;
+    flex-shrink: 0;
   }
+
+  .header-cta-subscribe-text {
+    display: inline !important;
+  }
+
+  .header-cta-subscribe-inner {
+    gap: 0.4rem !important;
+  }
+
   .header-cta-subscribe-inner i {
-    font-size: 1.3rem;
+    font-size: 0.95rem !important;
+  }
+
+  // Tutorial y descarga: ocultos en móvil (también con *ngIf en HTML)
+  .header-tutorial-btn,
+  .header-download-btn {
+    display: none !important;
   }
 }
 
@@ -907,16 +933,21 @@ $sphaira-blue-bright: #0a5f7a;
     margin-right: 0.25rem;
   }
 
-  /* ─── Header principal ─── */
+  /* ─── Header principal: sin espacios laterales ─── */
   .theme-header {
-    padding: 0.5rem 0.75rem;
+    padding: 0.45rem 0.4rem 0.45rem 0.4rem;
     max-width: 100vw;
     box-sizing: border-box;
-    min-height: 60px;
-    overflow: visible !important;
+    min-height: 56px;
+    overflow: hidden !important;
     position: relative;
     z-index: 1050;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  .theme-header .container-fluid {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
 
   @supports (-webkit-touch-callout: none) {
@@ -936,36 +967,43 @@ $sphaira-blue-bright: #0a5f7a;
     padding-right: 0 !important;
   }
 
-  /* ─── Logo ─── */
+  /* ─── Logo: pegado al borde izquierdo ─── */
   .theme-header .col-auto.me-auto {
-    flex-shrink: 1;
+    flex-shrink: 0;
     min-width: 0;
-    margin-right: 0.5rem !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    margin-right: auto !important;
   }
 
   .logo-image {
-    height: 38px;
-    max-width: 120px;
+    height: 30px;
+    max-width: 110px;
     width: auto;
     object-fit: contain;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+    display: block;
+  }
+
+  /* ─── Bloque acciones: pegado al borde derecho ─── */
+  .theme-header .col-auto.header-actions {
+    margin-right: 0 !important;
+    padding-right: 0 !important;
   }
 
   /* ─── BLOQUE ACCIONES: diseño premium unificado ─── */
   .theme-header .header-actions {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     flex-shrink: 0;
   }
 
-  /* Estilo base compartido: todos los iconos del header */
+  /* Estilo base compartido: iconos del header (excepto CTA suscripción) */
   $icon-size: 40px;
   $icon-bg: rgba(255, 255, 255, 0.14);
   $icon-bg-hover: rgba(255, 255, 255, 0.24);
   $icon-border: 1px solid rgba(255, 255, 255, 0.12);
 
-  .theme-header .header-actions .header-cta-subscribe,
   .theme-header .header-actions .header-tutorial-btn,
   .theme-header .header-actions .header-action-icon-container,
   .theme-header .header-actions .header-action,
@@ -991,6 +1029,29 @@ $sphaira-blue-bright: #0a5f7a;
     -webkit-tap-highlight-color: transparent;
   }
 
+  /* CTA Suscripción: diseño propio — compacto, azul Sphaira, con texto */
+  .theme-header .header-actions .header-cta-subscribe {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    padding: 0 0.7rem !important;
+    margin: 0 !important;
+    border-radius: 999px !important;
+    background: linear-gradient(135deg, #006690 0%, #00486a 50%, #002c40 100%) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 3px 14px rgba(0, 44, 64, 0.6) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background 0.2s ease, transform 0.15s ease !important;
+    -webkit-tap-highlight-color: transparent;
+    font-weight: 700 !important;
+    font-size: 0.76rem !important;
+    color: #fff !important;
+  }
+
   .theme-header .header-actions .header-cta-subscribe:hover,
   .theme-header .header-actions .header-tutorial-btn:hover,
   .theme-header .header-actions .header-action-icon-container:hover,
@@ -1011,7 +1072,7 @@ $sphaira-blue-bright: #0a5f7a;
     transform: scale(0.97);
   }
 
-  /* CTA Suscripción: quitar animaciones, solo icono */
+  /* CTA Suscripción: quitar animaciones secundarias, mostrar texto */
   .theme-header .header-actions .header-cta-subscribe::before,
   .theme-header .header-actions .header-cta-subscribe .header-cta-subscribe-glow,
   .theme-header .header-actions .header-cta-subscribe .header-cta-subscribe-sweep {
@@ -1019,16 +1080,29 @@ $sphaira-blue-bright: #0a5f7a;
   }
 
   .theme-header .header-actions .header-cta-subscribe .header-cta-subscribe-text {
-    display: none !important;
+    display: inline !important;
+    color: #fff !important;
+    font-weight: 700 !important;
+    font-size: 0.76rem !important;
+    white-space: nowrap !important;
   }
 
   .theme-header .header-actions .header-cta-subscribe .header-cta-subscribe-inner {
-    gap: 0;
+    gap: 0.3rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    position: relative !important;
+    z-index: 2 !important;
   }
 
   .theme-header .header-actions .header-cta-subscribe .header-cta-subscribe-inner i {
-    font-size: 1.1rem;
+    font-size: 0.82rem !important;
     animation: none !important;
+  }
+
+  /* Tutorial: oculto en móvil */
+  .theme-header .header-actions .header-tutorial-btn {
+    display: none !important;
   }
 
   /* Tutorial: quitar pulso, unificar con el resto */

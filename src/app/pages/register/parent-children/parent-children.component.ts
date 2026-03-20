@@ -182,7 +182,7 @@ export class ParentChildrenComponent implements OnInit {
   }
   toLogin(event?: Event) {
     event?.preventDefault();
-    this.router.navigate(['/home']);
+    this.router.navigate(['/demo-role']);
   }
   onValidateClick(event: Event, dni: string, index: number): void {
     event.preventDefault();
@@ -444,11 +444,11 @@ export class ParentChildrenComponent implements OnInit {
         if (res.data) {
           this.router.navigate(['/dashboard/inicio']);
         } else {
-          this.router.navigate(['/home']);
+          this.router.navigate(['/demo-role']);
         }
       },
       error: () => {
-        this.router.navigate(['/home']);
+        this.router.navigate(['/demo-role']);
       },
     });
   }

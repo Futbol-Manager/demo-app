@@ -73,7 +73,7 @@ export class ChangePasswordComponent implements OnInit {
             snackBarConfig.verticalPosition = 'bottom';
             this.snackBar.open('Se ha cambiado la contraseña correctamente, inicia sesión con tu nueva contraseña.', 'Cerrar', snackBarConfig);
             this.dialog.closeAll();
-            this.router.navigate(['/home']);
+            this.router.navigate(['/demo-role']);
           } else{
             const snackBarConfig = new MatSnackBarConfig();
             snackBarConfig.duration = 5000;

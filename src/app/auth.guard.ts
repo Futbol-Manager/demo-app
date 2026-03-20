@@ -19,8 +19,8 @@ export class AuthGuard implements CanActivate {
       take(1),  // Toma solo un valor y completa la suscripción
       tap(user => {
         if (!user) {
-          // Si el usuario no está autenticado, redirige al home pasando la URL actual como returnUrl
-          this.router.navigate(['/home'], {
+          // En demo-app, la entrada siempre es /demo-role
+          this.router.navigate(['/demo-role'], {
             queryParams: { returnUrl: state.url }
           });
         }

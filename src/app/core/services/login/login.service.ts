@@ -183,7 +183,7 @@ export class LoginService {
       this.router.navigate(['/demo-role']);
       return;
     }
-    const route = byInactivity ? ['/login'] : ['/home'];
+    const route = ['/demo-role'];
     this.router.navigate(route, byInactivity ? { queryParams: { reason: 'inactivity' } } : {});
   }
 

@@ -24,7 +24,7 @@ export class ClubPlanGuard implements CanActivate {
       take(1),
       switchMap(user => {
         if (!user) {
-          this.router.navigate(['/home']);
+          this.router.navigate(['/demo-role']);
           return of(false);
         }
 

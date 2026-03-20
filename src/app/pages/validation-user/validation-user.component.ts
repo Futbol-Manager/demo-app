@@ -47,7 +47,7 @@ export class ValidationUserComponent implements OnInit {
   }
 
   goHome(): void {
-    this.router.navigate(['/home']);
+    this.router.navigate(['/demo-role']);
   }
 
   reset(): void {
