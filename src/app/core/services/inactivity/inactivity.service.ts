@@ -2,6 +2,7 @@ import { Injectable, NgZone, OnDestroy } from '@angular/core';
 import { Subject, Subscription, merge, fromEvent, timer } from 'rxjs';
 import { switchMap, startWith, takeUntil, throttleTime } from 'rxjs/operators';
 import { LoginService } from '../login/login.service';
+import { DemoActivityService } from '../demo/demo-activity.service';
 
 /** Tiempo total de inactividad antes del logout (5 minutos — entorno demo) */
 const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000;
@@ -33,6 +34,7 @@ export class InactivityService implements OnDestroy {
   constructor(
     private ngZone: NgZone,
     private loginService: LoginService,
+    private demoActivityService: DemoActivityService,
   ) {}
 
   /**
@@ -118,6 +120,8 @@ export class InactivityService implements OnDestroy {
 
   private performLogout(): void {
     this.stop();
+    // Pausar el cronómetro de actividad antes del logout para no inflar tiempos
+    this.demoActivityService.pauseTracking();
     this.loginService.cerrarSesion(true);
   }
 

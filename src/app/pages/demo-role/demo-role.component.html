@@ -4,12 +4,16 @@
 <div class="intro" *ngIf="step === 1">
 
   <!-- ── Barra de progreso superior ── -->
+  <!-- Layout: [Logo] [═══ progress ═══] [▶] [Saltar] [🌐 ES] -->
   <div class="intro__topbar">
     <img [src]="logoSrc" alt="Sphaira Tech" class="intro__logo">
+
     <div class="intro__progress-track">
       <div class="intro__progress-fill" [style.width.%]="slideProgress"></div>
     </div>
+
     <div class="intro__topbar-actions">
+      <!-- Play / Pause -->
       <button class="btn-play-pause"
               [class.btn-play-pause--playing]="isAudioPlaying"
               [class.btn-play-pause--paused]="audioPausedByUser"
@@ -24,9 +28,35 @@
                   : isAudioPlaying  ? 'fas fa-pause'
                                     : 'fas fa-play'"></i>
       </button>
+
+      <!-- Saltar -->
       <button class="btn-skip" (click)="skipIntro()" type="button">
         {{ 'DEMO_INTRO.SKIP' | translate }} <i class="fas fa-forward"></i>
       </button>
+
+      <!-- Selector de idioma — último elemento a la derecha -->
+      <div class="lang-picker" [class.lang-picker--open]="showLangMenu">
+        <button class="lang-picker__trigger" type="button"
+                (click)="toggleLangMenu($event)"
+                [attr.aria-label]="'Cambiar idioma / Change language'">
+          <i class="fas fa-globe lang-picker__globe-icon"></i>
+          <span class="lang-picker__code">{{ activeLang | uppercase }}</span>
+          <i class="lang-picker__chevron fas"
+             [class.fa-chevron-up]="showLangMenu"
+             [class.fa-chevron-down]="!showLangMenu"></i>
+        </button>
+        <!-- Dropdown: se abre hacia abajo y alineado a la derecha -->
+        <div class="lang-picker__menu" *ngIf="showLangMenu" (click)="$event.stopPropagation()">
+          <button *ngFor="let lang of langOptions" type="button"
+                  class="lang-picker__option"
+                  [class.lang-picker__option--active]="lang.code === activeLang"
+                  (click)="changeLang(lang.code)">
+            <span class="lang-picker__option-flag">{{ lang.flag }}</span>
+            <span class="lang-picker__option-label">{{ lang.label }}</span>
+            <i class="fas fa-check lang-picker__option-check" *ngIf="lang.code === activeLang"></i>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -347,6 +377,28 @@
     <div class="demo-role-bg-pattern"></div>
   </div>
 
+  <!-- Lang picker: posición absoluta en esquina superior derecha, fuera del flujo del contenido -->
+  <div class="lang-picker lang-picker--role" [class.lang-picker--open]="showLangMenu">
+    <button class="lang-picker__trigger" type="button"
+            (click)="toggleLangMenu($event)"
+            [attr.aria-label]="'Cambiar idioma / Change language'">
+      <span class="lang-picker__globe">🌐</span>
+      <span class="lang-picker__flag">{{ activeLangOption.flag }}</span>
+      <span class="lang-picker__code">{{ activeLang | uppercase }}</span>
+      <i class="lang-picker__chevron fas" [class.fa-chevron-up]="showLangMenu" [class.fa-chevron-down]="!showLangMenu"></i>
+    </button>
+    <div class="lang-picker__menu" *ngIf="showLangMenu" (click)="$event.stopPropagation()">
+      <button *ngFor="let lang of langOptions" type="button"
+              class="lang-picker__option"
+              [class.lang-picker__option--active]="lang.code === activeLang"
+              (click)="changeLang(lang.code)">
+        <span class="lang-picker__option-flag">{{ lang.flag }}</span>
+        <span class="lang-picker__option-label">{{ lang.label }}</span>
+        <i class="fas fa-check lang-picker__option-check" *ngIf="lang.code === activeLang"></i>
+      </button>
+    </div>
+  </div>
+
   <div class="demo-role-container">
 
     <header class="demo-role-header" data-tutorial="dr-header">
@@ -417,16 +469,32 @@
     <h3 class="email-modal__title">{{ 'DEMO_INTRO.EMAIL_TITLE' | translate }}</h3>
     <p class="email-modal__sub" [innerHTML]="'DEMO_INTRO.EMAIL_SUB' | translate"></p>
 
-    <input
-      #emailInput
-      type="email"
-      [(ngModel)]="emailValue"
-      [placeholder]="'DEMO_INTRO.EMAIL_PLACEHOLDER' | translate"
-      class="email-modal__input"
-      [class.email-modal__input--error]="emailError"
-      (keydown.enter)="confirmDemoAccess()"
-      autocomplete="email">
+    <div class="email-modal__input-wrap">
+      <input
+        #emailInput
+        type="email"
+        [(ngModel)]="emailValue"
+        [placeholder]="'DEMO_INTRO.EMAIL_PLACEHOLDER' | translate"
+        class="email-modal__input"
+        [class.email-modal__input--error]="emailTouched && !isValidEmail"
+        [class.email-modal__input--valid]="emailTouched && isValidEmail"
+        (input)="onEmailInput()"
+        (blur)="emailTouched = true"
+        (keydown.enter)="confirmDemoAccess()"
+        autocomplete="email"
+        inputmode="email">
+      <!-- Icono de estado en tiempo real -->
+      <span class="email-modal__input-icon" *ngIf="emailTouched">
+        <i class="fas fa-check-circle email-icon--valid"   *ngIf="isValidEmail"></i>
+        <i class="fas fa-times-circle email-icon--invalid" *ngIf="!isValidEmail"></i>
+      </span>
+    </div>
 
+    <!-- Error en tiempo real (solo cuando el campo fue tocado y el email no es válido) -->
+    <p class="email-modal__error" *ngIf="emailTouched && !isValidEmail && !emailError">
+      <i class="fas fa-exclamation-circle"></i> {{ emailValidationMessage }}
+    </p>
+    <!-- Error de servidor (ej. navegación bloqueada) -->
     <p class="email-modal__error" *ngIf="emailError">
       <i class="fas fa-exclamation-circle"></i> {{ emailError }}
     </p>

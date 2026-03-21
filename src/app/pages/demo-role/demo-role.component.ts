@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ElementRef,
@@ -357,6 +358,23 @@ const INTRO_SLIDES: Record<string, IntroSlide[]> = {
   ],
 };
 
+// ─── Idiomas disponibles ──────────────────────────────────────────────────────
+
+interface LangOption {
+  code: string;
+  flag: string;
+  label: string;
+}
+
+const LANG_OPTIONS: LangOption[] = [
+  { code: 'es', flag: '🇪🇸', label: 'Español'    },
+  { code: 'en', flag: '🇺🇸', label: 'English'    },
+  { code: 'fr', flag: '🇫🇷', label: 'Français'   },
+  { code: 'de', flag: '🇩🇪', label: 'Deutsch'    },
+  { code: 'pt', flag: '🇵🇹', label: 'Português'  },
+  { code: 'it', flag: '🇮🇹', label: 'Italiano'   },
+];
+
 // ─── Componente ───────────────────────────────────────────────────────────────
 
 @Component({
@@ -367,6 +385,11 @@ const INTRO_SLIDES: Record<string, IntroSlide[]> = {
 export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('emailInput') emailInputRef?: ElementRef<HTMLInputElement>;
+
+  // ── Selector de idioma ────────────────────────────────────────────────────
+  readonly langOptions: LangOption[] = LANG_OPTIONS;
+  showLangMenu = false;
+  activeLang   = 'es';
 
   /** 1 = storytelling intro | 2 = selección de rol */
   step = 1;
@@ -404,9 +427,11 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
   // ── Selección de rol ──────────────────────────────────────────────────────
   selectedRole: DemoRole | null = null;
   showEmailModal = false;
-  emailValue = '';
-  isLoading = false;
-  emailError = '';
+  emailValue  = '';
+  isLoading   = false;
+  emailError  = '';
+  /** true en cuanto el usuario ha modificado el campo (activa validación en tiempo real) */
+  emailTouched = false;
 
   // ── Logo ──────────────────────────────────────────────────────────────────
   get logoSrc(): string { return 'assets/images/logosphairaw.png'; }
@@ -452,7 +477,46 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
   get isLastSlide(): boolean { return this.currentSlide === this.introSlides.length - 1; }
   get currentSlideData(): IntroSlide { return this.introSlides[this.currentSlide] ?? this.introSlides[0]; }
   get selectedRoleCard(): RoleCard | undefined { return this.roleCards.find(r => r.role === this.selectedRole); }
-  get isValidEmail(): boolean { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.emailValue.trim()); }
+  get activeLangOption(): LangOption {
+    return LANG_OPTIONS.find(l => l.code === this.activeLang) ?? LANG_OPTIONS[0];
+  }
+  /**
+   * Validación robusta: formato RFC-5321 simplificado.
+   * Comprueba: usuario@dominio.tld con dominio de al menos 2 caracteres,
+   * sin espacios, sin puntos dobles y tld de al menos 2 letras.
+   */
+  get isValidEmail(): boolean {
+    const v = this.emailValue.trim();
+    if (!v) return false;
+    // Regex robusta: usuario no vacío, @, dominio, punto, tld ≥ 2 chars
+    const RFC_EMAIL = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+    if (!RFC_EMAIL.test(v)) return false;
+    // No puede haber puntos consecutivos
+    if (v.includes('..')) return false;
+    // El usuario no puede empezar ni terminar con punto
+    const [user] = v.split('@');
+    if (user.startsWith('.') || user.endsWith('.')) return false;
+    return true;
+  }
+
+  /** Mensaje de error descriptivo según el estado del campo */
+  get emailValidationMessage(): string {
+    const v = this.emailValue.trim();
+    if (!v) return this.translate.instant('DEMO_INTRO.EMAIL_REQUIRED');
+    if (!v.includes('@')) return this.translate.instant('DEMO_INTRO.EMAIL_MISSING_AT');
+    const parts = v.split('@');
+    if (parts.length !== 2 || !parts[1]) return this.translate.instant('DEMO_INTRO.EMAIL_MISSING_DOMAIN');
+    if (!parts[1].includes('.')) return this.translate.instant('DEMO_INTRO.EMAIL_MISSING_TLD');
+    if (v.includes('..')) return this.translate.instant('DEMO_INTRO.EMAIL_DOUBLE_DOT');
+    return this.translate.instant('DEMO_INTRO.EMAIL_INVALID');
+  }
+
+  /** Llamado en cada keystroke para activar validación en tiempo real */
+  onEmailInput(): void {
+    this.emailTouched = true;
+    // Limpiar error de servidor si el usuario corrige
+    if (this.emailError && this.isValidEmail) this.emailError = '';
+  }
   get slideProgress(): number { return (this.currentSlide / Math.max(this.introSlides.length - 1, 1)) * 100; }
 
   constructor(
@@ -463,6 +527,45 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     private translate: TranslateService,
     private cdr: ChangeDetectorRef,
   ) {}
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  //  LANG PICKER
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  toggleLangMenu(event: Event): void {
+    event.stopPropagation();
+    this.showLangMenu = !this.showLangMenu;
+    this.cdr.markForCheck();
+  }
+
+  changeLang(code: string): void {
+    if (code === this.activeLang) { this.showLangMenu = false; return; }
+    this.activeLang  = code;
+    this.currentLang = code;
+    this.showLangMenu = false;
+    localStorage.setItem('lang', code);
+    this.translate.use(code);
+
+    // Recargar slides en el nuevo idioma
+    this.introSlides = INTRO_SLIDES[code] ?? INTRO_SLIDES['es'];
+
+    // Reiniciar audio en el nuevo idioma sin resetear el flujo del usuario
+    this.stopAudio();
+    this.audioPending     = true;
+    this.audioPausedByUser = false;
+    this.currentSlide     = 0;
+    this.visibleLineCount = 0;
+    this.loadNarrationAudio();
+    this.cdr.markForCheck();
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    if (this.showLangMenu) {
+      this.showLangMenu = false;
+      this.cdr.markForCheck();
+    }
+  }
 
   /**
    * Devuelve true si el dispositivo es táctil (móvil/tablet) → mostrar splash.
@@ -494,6 +597,7 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     }
     const full = this.translate.currentLang ?? this.translate.defaultLang ?? 'es';
     this.currentLang = full.split('-')[0].toLowerCase();
+    this.activeLang  = this.currentLang;
     this.introSlides = INTRO_SLIDES[this.currentLang] ?? INTRO_SLIDES['es'];
 
     // Splash universal: el audio siempre requiere interacción explícita del usuario,
@@ -750,7 +854,8 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     this.selectedRole   = role;
     this.emailValue     = '';
     this.emailError     = '';
-    this.isLoading      = false;   // reset por si quedó sucio de un intento anterior
+    this.emailTouched   = false;
+    this.isLoading      = false;
     this.showEmailModal = true;
     setTimeout(() => this.emailInputRef?.nativeElement.focus(), 80);
   }
@@ -759,8 +864,9 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     if (event && (event.target as HTMLElement).closest('.email-modal__card')) return;
     this.showEmailModal = false;
     this.selectedRole   = null;
-    this.isLoading      = false;   // siempre resetear al cerrar
+    this.isLoading      = false;
     this.emailError     = '';
+    this.emailTouched   = false;
     this.cdr.markForCheck();
   }
 
