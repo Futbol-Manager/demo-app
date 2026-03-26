@@ -917,6 +917,9 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
           this.couponDiscount = res.discountPercent;
           this.couponExpires  = res.expiresAt;
           this.demoCouponService.saveCouponToSession(res.code);
+          if (typeof (window as any).fbq === 'function') {
+            (window as any).fbq('track', 'Lead');
+          }
         } else {
           this.couponLoadError = true;
         }
