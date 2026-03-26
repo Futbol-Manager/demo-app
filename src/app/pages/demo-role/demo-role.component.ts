@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { DemoService, DemoRole } from 'src/app/core/services/demo/demo.service';
+import { DemoCouponService, DemoCouponResponse } from 'src/app/core/services/demo/demo-coupon.service';
 import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 import { gsap } from 'gsap';
 
@@ -433,6 +434,18 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
   /** true en cuanto el usuario ha modificado el campo (activa validación en tiempo real) */
   emailTouched = false;
 
+  // ── Cupón demo ────────────────────────────────────────────────────────────
+  /**
+   * Paso del modal: 'email' → captura de email | 'coupon' → muestra el cupón generado.
+   */
+  modalStep: 'email' | 'coupon' = 'email';
+  couponCode        = '';
+  couponDiscount    = 10;
+  couponExpires     = '';
+  couponCopied      = false;
+  couponLoadError   = false;
+  isCouponLoading   = false;
+
   // ── Logo ──────────────────────────────────────────────────────────────────
   get logoSrc(): string { return 'assets/images/logosphairaw.png'; }
 
@@ -523,6 +536,7 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     private router: Router,
     private loginService: LoginService,
     private demoService: DemoService,
+    public demoCouponService: DemoCouponService,
     private tutorialService: TutorialService,
     private translate: TranslateService,
     private cdr: ChangeDetectorRef,
@@ -600,12 +614,10 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     this.activeLang  = this.currentLang;
     this.introSlides = INTRO_SLIDES[this.currentLang] ?? INTRO_SLIDES['es'];
 
-    // Splash universal: el audio siempre requiere interacción explícita del usuario,
-    // tanto en móvil como en desktop. Evita políticas de autoplay y es más intuitivo.
+    // Splash universal: el audio siempre requiere interacción explícita del usuario.
     this.audioPending = true;
 
-    // Iniciamos el audio en ngOnInit para estar lo más cerca posible del
-    // gesture de navegación del usuario y maximizar la probabilidad de autoplay.
+    // Iniciamos el audio en ngOnInit para estar lo más cerca posible del gesture del usuario.
     this.loadNarrationAudio();
   }
 
@@ -851,17 +863,21 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
   // ═══════════════════════════════════════════════════════════════════════════
 
   onRoleCardClick(role: DemoRole): void {
-    this.selectedRole   = role;
-    this.emailValue     = '';
-    this.emailError     = '';
-    this.emailTouched   = false;
-    this.isLoading      = false;
-    this.showEmailModal = true;
+    this.selectedRole    = role;
+    this.emailValue      = '';
+    this.emailError      = '';
+    this.emailTouched    = false;
+    this.isLoading       = false;
+    this.isCouponLoading = false;
+    this.couponLoadError = false;
+    this.couponCode      = '';
+    this.couponCopied    = false;
+    this.modalStep       = 'email';
+    this.showEmailModal  = true;
     setTimeout(() => this.emailInputRef?.nativeElement.focus(), 80);
   }
 
-  closeEmailModal(event?: MouseEvent): void {
-    if (event && (event.target as HTMLElement).closest('.email-modal__card')) return;
+  closeEmailModal(): void {
     this.showEmailModal = false;
     this.selectedRole   = null;
     this.isLoading      = false;
@@ -870,27 +886,101 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     this.cdr.markForCheck();
   }
 
+  /**
+   * Confirma el email y llama al backend para generar el cupón.
+   * Ya NO navega al dashboard — solo cambia el modal al paso 2 (mostrar cupón).
+   */
   confirmDemoAccess(): void {
     if (!this.isValidEmail) {
       this.emailError = this.translate.instant('DEMO_INTRO.EMAIL_ERROR');
       return;
     }
-    if (!this.selectedRole || this.isLoading) return;
+    if (this.isCouponLoading) return;
 
-    const role  = this.selectedRole;
     const email = this.emailValue.trim();
+    sessionStorage.setItem('demoEmail', email);
 
+    // Marcar que el usuario completó el flujo del email: el modal no volverá a aparecer
+    this.demoCouponService.markModalShown();
+
+    this.isCouponLoading  = true;
+    this.couponLoadError  = false;
+    this.emailError       = '';
+    this.cdr.markForCheck();
+
+    this.demoCouponService.generateCoupon(email).subscribe({
+      next: (res) => {
+        if (this.destroyed) return;
+        this.isCouponLoading = false;
+        if (res && res.code) {
+          this.couponCode     = res.code;
+          this.couponDiscount = res.discountPercent;
+          this.couponExpires  = res.expiresAt;
+          this.demoCouponService.saveCouponToSession(res.code);
+        } else {
+          this.couponLoadError = true;
+        }
+        this.modalStep = 'coupon';
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        if (this.destroyed) return;
+        this.isCouponLoading = false;
+        this.couponLoadError = true;
+        this.modalStep       = 'coupon';
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  /** Copia el código del cupón al portapapeles. */
+  copyCouponCode(): void {
+    if (!this.couponCode) return;
+    navigator.clipboard.writeText(this.couponCode).then(() => {
+      this.couponCopied = true;
+      this.cdr.markForCheck();
+      setTimeout(() => { this.couponCopied = false; this.cdr.markForCheck(); }, 2500);
+    }).catch(() => {});
+  }
+
+  /**
+   * Llamado desde el botón "Comenzar la demo" (paso 2, cupón ya mostrado).
+   * Cierra el modal y navega al dashboard con el rol seleccionado.
+   */
+  startDemoFromModal(): void {
+    const email = sessionStorage.getItem('demoEmail') ?? this.emailValue.trim();
+    const role  = this.selectedRole;
+    this.showEmailModal = false;
+    this.cdr.markForCheck();
+    if (email && role) {
+      this.navigateToDashboard(email, role);
+    }
+  }
+
+  /**
+   * Llamado desde "Saltar y comenzar sin cupón" (paso 1).
+   * Navega directamente al dashboard usando solo el email introducido.
+   */
+  skipCouponModal(): void {
+    const email = this.emailValue.trim();
+    const role  = this.selectedRole;
+    this.showEmailModal = false;
+    this.cdr.markForCheck();
+    if (email && role) {
+      this.navigateToDashboard(email, role);
+    }
+  }
+
+  /** Navega al dashboard con el rol y email dados. */
+  private navigateToDashboard(email: string, role: DemoRole): void {
     this.isLoading  = true;
     this.emailError = '';
     this.cdr.markForCheck();
 
-    // Llamar directamente (sin setTimeout largo) y manejar el resultado de la navegación.
-    // Si router.navigate devuelve false o lanza, el componente no se destruye → resetear estado.
     this.loginService.loginDemoAndSetRole(email, role)
       .then((navigated) => {
-        if (this.destroyed) return; // navegación OK → componente destruido
+        if (this.destroyed) return;
         if (!navigated) {
-          // La navegación fue bloqueada (guard devolvió false)
           this.isLoading  = false;
           this.emailError = this.translate.instant('DEMO_INTRO.EMAIL_ERROR');
           this.cdr.markForCheck();

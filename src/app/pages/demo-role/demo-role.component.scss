@@ -1385,6 +1385,210 @@ $muted:    rgba(255,255,255,0.65);
   &:hover { background: rgba(0,0,0,0.1); color: $navy; }
 }
 
+// ── Oferta badge (paso 1) ──────────────────────────────────────────────────
+.email-modal__offer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #1c1004;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 100px;
+  margin-bottom: 14px;
+  i { font-size: 0.68rem; }
+}
+
+// ── Botón saltar ────────────────────────────────────────────────────────────
+.email-modal__skip-link {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.78rem;
+  text-align: center;
+  cursor: pointer;
+  padding: 4px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.18s;
+  &:hover { color: #64748b; }
+}
+
+// ── Variante card ampliada para el paso de cupón ───────────────────────────
+.email-modal__card--coupon {
+  max-width: 440px;
+}
+
+// ── Variante botón "Comenzar" (verde sobre fondo blanco) ──────────────────
+.email-modal__btn--start {
+  background: linear-gradient(135deg, $primary, darken($primary, 6%));
+  color: #fff;
+  box-shadow: 0 6px 20px rgba($primary, 0.4);
+  margin-top: 20px;
+}
+
+// ════════════════════════════════════════════════════════════
+//  CUPÓN — Bloque de éxito (paso 2 del modal)
+// ════════════════════════════════════════════════════════════
+
+.coupon-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  &__icon {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+
+  &__ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid rgba($primary, 0.3);
+    animation: couponRingPulse 2s ease-out infinite;
+    &--1 { width: 72px;  height: 72px;  animation-delay: 0s; }
+    &--2 { width: 56px;  height: 56px;  animation-delay: 0.4s; }
+  }
+  @keyframes couponRingPulse {
+    0%   { transform: scale(0.8); opacity: 0.6; }
+    50%  { transform: scale(1.1); opacity: 0.2; }
+    100% { transform: scale(0.8); opacity: 0.6; }
+  }
+
+  &__ico {
+    position: relative;
+    z-index: 1;
+    font-size: 1.7rem;
+    color: $primary;
+    background: rgba($primary, 0.1);
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 52px;
+    text-align: center;
+  }
+
+  &__title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: $navy;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+
+  &__sub {
+    font-size: 0.84rem;
+    color: #64748b;
+    margin: 0 0 20px;
+    line-height: 1.5;
+  }
+}
+
+// ── Bloque código copiable ─────────────────────────────────────────────────
+.coupon-code-block {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, rgba($primary, 0.06), rgba($primary, 0.03));
+  border: 2px dashed rgba($primary, 0.35);
+  border-radius: 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+  gap: 12px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  &:hover { background: rgba($primary, 0.1); border-color: rgba($primary, 0.5); }
+
+  &__discount {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: $primary;
+    background: rgba($primary, 0.12);
+    padding: 4px 10px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+  }
+
+  &__code {
+    flex: 1;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: $navy;
+    letter-spacing: 0.12em;
+    text-align: center;
+  }
+
+  &__copy {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    transition: color 0.15s, background 0.15s;
+    i { font-size: 0.82rem; }
+    &:hover { color: $primary; background: rgba($primary, 0.08); }
+  }
+
+  &__hint {
+    font-size: 0.74rem;
+    color: #94a3b8;
+    margin: 8px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: center;
+    i { color: #f59e0b; font-size: 0.7rem; }
+  }
+}
+
+// ── Estado de error del cupón ─────────────────────────────────────────────
+.coupon-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  text-align: center;
+
+  &__ico { font-size: 1.8rem; color: #f59e0b; }
+
+  &__msg {
+    font-size: 0.84rem;
+    color: #64748b;
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+// ── Indicador de cupón en promo slide ─────────────────────────────────────
+.promo-cta__coupon-hint {
+  font-size: 0.85em;
+  opacity: 0.9;
+}
+
 
 // ════════════════════════════════════════════════════════════
 //  RESPONSIVE — tablet ≤ 900px

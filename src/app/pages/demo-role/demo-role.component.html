@@ -284,9 +284,12 @@
             </ul>
 
             <a class="promo-cta"
-               href="https://appsphairatech.com/suscripcion-club/wizard?planType=club"
+               [href]="demoCouponService.buildSubscriptionUrl('https://appsphairatech.com/suscripcion-club/wizard?planType=club', demoCouponService.getCouponFromSession())"
                target="_blank" rel="noopener noreferrer">
               {{ 'DEMO_INTRO.PROMO_CTA' | translate }}
+              <span class="promo-cta__coupon-hint" *ngIf="demoCouponService.getCouponFromSession()">
+                &nbsp;<i class="fas fa-tag"></i> -10%
+              </span>
             </a>
 
             <!-- Botón "Ver la demo" — aparece al terminar el audio del último slide -->
@@ -450,69 +453,123 @@
 
 
 <!-- ════════════════════════════════════════════════════════════
-     MODAL — Captura de email
+     MODAL — Captura de email + Cupón de bienvenida (2 pasos)
 ════════════════════════════════════════════════════════════ -->
-<div class="email-modal" *ngIf="showEmailModal" (click)="closeEmailModal($event)">
-  <div class="email-modal__card">
+<div class="email-modal" *ngIf="showEmailModal">
+  <div class="email-modal__card" [class.email-modal__card--coupon]="modalStep === 'coupon'">
 
-    <!-- Cabecera con rol seleccionado -->
-    <div class="email-modal__role" *ngIf="selectedRoleCard">
-      <div class="emr__ico-wrap">
-        <i [class]="selectedRoleCard.icon" class="emr__ico"></i>
+    <!-- ─── PASO 1: Captura de email ─────────────────────────────── -->
+    <ng-container *ngIf="modalStep === 'email'">
+
+      <!-- Distintivo de oferta -->
+      <div class="email-modal__offer-badge">
+        <i class="fas fa-tag"></i>
+        {{ 'DEMO_INTRO.COUPON_BADGE' | translate }}
       </div>
-      <div>
-        <span class="emr__label">{{ 'DEMO_INTRO.EMAIL_AS' | translate }}</span>
-        <strong class="emr__name">{{ selectedRoleCard.titleKey | translate }}</strong>
+
+      <h3 class="email-modal__title">{{ 'DEMO_INTRO.EMAIL_TITLE' | translate }}</h3>
+      <p class="email-modal__sub" [innerHTML]="'DEMO_INTRO.EMAIL_SUB_COUPON' | translate"></p>
+
+      <div class="email-modal__input-wrap">
+        <input
+          #emailInput
+          type="email"
+          [(ngModel)]="emailValue"
+          [placeholder]="'DEMO_INTRO.EMAIL_PLACEHOLDER' | translate"
+          class="email-modal__input"
+          [class.email-modal__input--error]="emailTouched && !isValidEmail"
+          [class.email-modal__input--valid]="emailTouched && isValidEmail"
+          (input)="onEmailInput()"
+          (blur)="emailTouched = true"
+          (keydown.enter)="confirmDemoAccess()"
+          autocomplete="email"
+          inputmode="email">
+        <span class="email-modal__input-icon" *ngIf="emailTouched">
+          <i class="fas fa-check-circle email-icon--valid"   *ngIf="isValidEmail"></i>
+          <i class="fas fa-times-circle email-icon--invalid" *ngIf="!isValidEmail"></i>
+        </span>
       </div>
-    </div>
 
-    <h3 class="email-modal__title">{{ 'DEMO_INTRO.EMAIL_TITLE' | translate }}</h3>
-    <p class="email-modal__sub" [innerHTML]="'DEMO_INTRO.EMAIL_SUB' | translate"></p>
+      <p class="email-modal__error" *ngIf="emailTouched && !isValidEmail && !emailError">
+        <i class="fas fa-exclamation-circle"></i> {{ emailValidationMessage }}
+      </p>
+      <p class="email-modal__error" *ngIf="emailError">
+        <i class="fas fa-exclamation-circle"></i> {{ emailError }}
+      </p>
 
-    <div class="email-modal__input-wrap">
-      <input
-        #emailInput
-        type="email"
-        [(ngModel)]="emailValue"
-        [placeholder]="'DEMO_INTRO.EMAIL_PLACEHOLDER' | translate"
-        class="email-modal__input"
-        [class.email-modal__input--error]="emailTouched && !isValidEmail"
-        [class.email-modal__input--valid]="emailTouched && isValidEmail"
-        (input)="onEmailInput()"
-        (blur)="emailTouched = true"
-        (keydown.enter)="confirmDemoAccess()"
-        autocomplete="email"
-        inputmode="email">
-      <!-- Icono de estado en tiempo real -->
-      <span class="email-modal__input-icon" *ngIf="emailTouched">
-        <i class="fas fa-check-circle email-icon--valid"   *ngIf="isValidEmail"></i>
-        <i class="fas fa-times-circle email-icon--invalid" *ngIf="!isValidEmail"></i>
-      </span>
-    </div>
+      <button class="email-modal__btn" (click)="confirmDemoAccess()"
+              [disabled]="isCouponLoading || !isValidEmail" type="button">
+        <span *ngIf="!isCouponLoading">
+          {{ 'DEMO_INTRO.COUPON_BTN' | translate }} &nbsp;<i class="fas fa-gift"></i>
+        </span>
+        <span *ngIf="isCouponLoading">
+          <i class="fas fa-spinner fa-spin"></i> &nbsp;{{ 'DEMO_INTRO.LOADING' | translate }}
+        </span>
+      </button>
 
-    <!-- Error en tiempo real (solo cuando el campo fue tocado y el email no es válido) -->
-    <p class="email-modal__error" *ngIf="emailTouched && !isValidEmail && !emailError">
-      <i class="fas fa-exclamation-circle"></i> {{ emailValidationMessage }}
-    </p>
-    <!-- Error de servidor (ej. navegación bloqueada) -->
-    <p class="email-modal__error" *ngIf="emailError">
-      <i class="fas fa-exclamation-circle"></i> {{ emailError }}
-    </p>
+      <p class="email-modal__guarantee">
+        <i class="fas fa-shield-alt"></i>
+        {{ 'DEMO_INTRO.EMAIL_GUARANTEE' | translate }}
+      </p>
 
-    <button class="email-modal__btn" (click)="confirmDemoAccess()" [disabled]="isLoading || !isValidEmail" type="button">
-      <span *ngIf="!isLoading">
-        {{ 'DEMO_INTRO.EMAIL_BTN' | translate }} &nbsp;<i class="fas fa-arrow-right"></i>
-      </span>
-      <span *ngIf="isLoading">
-        <i class="fas fa-spinner fa-spin"></i> &nbsp;{{ 'DEMO_INTRO.LOADING' | translate }}
-      </span>
-    </button>
+      <button class="email-modal__skip-link" (click)="skipCouponModal()" type="button">
+        {{ 'DEMO_INTRO.COUPON_SKIP' | translate }}
+      </button>
 
-    <p class="email-modal__guarantee">
-      <i class="fas fa-shield-alt"></i>
-      {{ 'DEMO_INTRO.EMAIL_GUARANTEE' | translate }}
-    </p>
+    </ng-container>
 
+    <!-- ─── PASO 2: Cupón generado ────────────────────────────────── -->
+    <ng-container *ngIf="modalStep === 'coupon'">
+
+      <div class="coupon-success" *ngIf="!couponLoadError">
+
+        <!-- Animación de celebración -->
+        <div class="coupon-success__icon">
+          <span class="coupon-success__ring coupon-success__ring--1"></span>
+          <span class="coupon-success__ring coupon-success__ring--2"></span>
+          <i class="fas fa-tag coupon-success__ico"></i>
+        </div>
+
+        <h3 class="coupon-success__title">{{ 'DEMO_INTRO.COUPON_SUCCESS_TITLE' | translate }}</h3>
+        <p class="coupon-success__sub">{{ 'DEMO_INTRO.COUPON_SUCCESS_SUB' | translate }}</p>
+
+        <!-- Bloque del código copiable -->
+        <div class="coupon-code-block" (click)="copyCouponCode()">
+          <span class="coupon-code-block__discount">-{{ couponDiscount }}%</span>
+          <span class="coupon-code-block__code">{{ couponCode }}</span>
+          <button class="coupon-code-block__copy" type="button" [attr.aria-label]="'DEMO_INTRO.COUPON_COPY' | translate">
+            <i class="fas fa-check" *ngIf="couponCopied"></i>
+            <i class="fas fa-copy" *ngIf="!couponCopied"></i>
+            <span>{{ (couponCopied ? 'DEMO_INTRO.COUPON_COPIED' : 'DEMO_INTRO.COUPON_COPY') | translate }}</span>
+          </button>
+        </div>
+
+        <p class="coupon-code-block__hint">
+          <i class="fas fa-clock"></i>
+          {{ 'DEMO_INTRO.COUPON_EXPIRES' | translate }}
+        </p>
+
+      </div>
+
+      <!-- Estado de error (backend no respondió) -->
+      <div class="coupon-error" *ngIf="couponLoadError">
+        <i class="fas fa-exclamation-triangle coupon-error__ico"></i>
+        <p class="coupon-error__msg">{{ 'DEMO_INTRO.COUPON_ERROR' | translate }}</p>
+      </div>
+
+      <!-- CTA para comenzar la demo -->
+      <button class="email-modal__btn email-modal__btn--start" (click)="startDemoFromModal()" type="button">
+        {{ 'DEMO_INTRO.COUPON_SUCCESS_BTN' | translate }} &nbsp;<i class="fas fa-arrow-right"></i>
+      </button>
+
+      <p class="email-modal__guarantee" *ngIf="!couponLoadError">
+        <i class="fas fa-shield-alt"></i>
+        {{ 'DEMO_INTRO.COUPON_SAVE_HINT' | translate }}
+      </p>
+
+    </ng-container>
+
+    <!-- Botón cerrar (siempre visible) -->
     <button class="email-modal__close" (click)="closeEmailModal()" type="button"
             [attr.aria-label]="'COMMON.CLOSE' | translate">
       <i class="fas fa-times"></i>
