@@ -338,6 +338,43 @@ export class AiChatService {
   }
 
   /**
+   * Envía un mensaje al chatbot público de demo (sin autenticación).
+   * Usa el endpoint /rest/ai/demo/chat que no requiere JWT.
+   * Respuesta: { response: string } | { error: string }
+   * El mensaje queda limitado a 200 caracteres por el backend.
+   * @param clubContext Contexto del club demo (equipos, jugadores, partidos, lesiones...)
+   *                   generado por buildDemoClubContext() — se inyecta en el system prompt del backend.
+   */
+  sendMessageDemo(
+    message: string,
+    history: { role: string; text: string }[],
+    language = 'es',
+    clubContext?: string
+  ): Observable<{ response?: string; error?: string }> {
+    const body: Record<string, unknown> = {
+      message: message.slice(0, 200),
+      history: history.map(m => ({ role: m.role, content: m.text })),
+      context: 'demo',
+      language,
+    };
+    if (clubContext) body['clubContext'] = clubContext;
+    return this.http.post<{ response?: string; error?: string }>(
+      `${this.baseUrl}/demo/chat`, body
+    ).pipe(
+      timeout(45000),
+      catchError(err => {
+        console.error('[AiChatService] Demo chat error:', err);
+        const isTimeout = err?.name === 'TimeoutError';
+        return of({
+          error: isTimeout
+            ? 'La respuesta tardó demasiado. Inténtalo de nuevo.'
+            : 'Error de conexión. Inténtalo de nuevo.'
+        });
+      })
+    );
+  }
+
+  /**
    * Crea una Stripe Checkout Session para comprar créditos.
    * Redirige al usuario a la pagina de pago de Stripe.
    */

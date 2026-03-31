@@ -4,7 +4,8 @@ import { APIURLPROD, APIURLLOCAL, ApiEnvironments, APIURLPROD2, APIURLDEMO, Imag
 export const demoenvironment = {
   production: false,
   demo: true,
-  apiUrl: `${APIURLLOCAL}${ApiEnvironments.LOCAL}`,
+  // El chatbot demo usa el endpoint público /rest/ai/demo/chat de producción (no requiere JWT)
+  apiUrl: `${APIURLPROD2}${ApiEnvironments.PRO}`,
   /** En desarrollo local los leads pueden ir a producción; para desplegar en demo.sphairatech.com usa la config "demo-deploy". */
   demoLeadApiUrl: `${APIURLPROD2}${ApiEnvironments.PRO}`.replace(/\/$/, ''),
   prospectorApiUrl: 'http://localhost:8100/api/',

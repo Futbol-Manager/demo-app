@@ -6,6 +6,7 @@ import { ClubService } from '../club/club.service';
 import { VideoStorageService } from '../video-storage/video-storage.service';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 import { environment } from 'src/environments/environment';
+import { isDemoMode } from '../demo/demo-mode';
 
 export interface CoachTeamContext {
   teamId: number;
@@ -122,6 +123,10 @@ export class AiPageContextService {
    * Solo realiza la llamada una vez por clubId en la sesión activa.
    */
   preloadForClub(clubId: number, userId?: number): void {
+    // En modo demo el token es falso → las llamadas a la API fallarían con 401.
+    // El chatbot demo usa su propio endpoint público, así que no se necesita contexto.
+    if (isDemoMode()) return;
+
     const now = Date.now();
     const cacheHit = this.loadedForClubId === clubId
       && this.loadedForClubAt !== null
@@ -294,6 +299,8 @@ export class AiPageContextService {
    * para el equipo del coach. Solo realiza la llamada una vez por teamId.
    */
   preloadForCoachTeam(teamId: number): void {
+    if (isDemoMode()) return;
+
     const now = Date.now();
     const cacheHit = this.loadedForTeamId === teamId
       && this.loadedForTeamAt !== null

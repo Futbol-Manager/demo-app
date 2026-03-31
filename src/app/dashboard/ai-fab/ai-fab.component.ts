@@ -10,6 +10,8 @@ import { InjuryService } from 'src/app/core/services/injury/injury.service';
 import { Injury } from 'src/app/core/services/injury/injury.model';
 import { User } from 'src/app/core/models/users/user.model';
 import { VoiceRecognitionService } from 'src/app/core/services/voice-recognition/voice-recognition.service';
+import { DemoService } from 'src/app/core/services/demo/demo.service';
+import { buildDemoClubContext } from 'src/app/core/services/demo/demo-context';
 import * as XLSX from 'xlsx';
 
 interface ChatMessage {
@@ -297,7 +299,8 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     private aiChatService: AiChatService,
     private aiPageContextService: AiPageContextService,
     private voiceRecognition: VoiceRecognitionService,
-    private injuryService: InjuryService
+    private injuryService: InjuryService,
+    private demoService: DemoService
   ) {}
 
   ngOnInit(): void {
@@ -863,7 +866,9 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     const text = this.userInput.trim();
     if (!text || this.isResponding) return;
 
-    if (this.creditsAvailable <= 0) {
+    const isDemo = this.demoService.isDemoMode();
+
+    if (!isDemo && this.creditsAvailable <= 0) {
       this.addAssistantMessage('No tienes créditos disponibles. Pulsa en "créditos" para comprar más.');
       return;
     }
@@ -888,7 +893,6 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     };
     this.messages.push(typingMsg);
 
-    const apiKeyType = this.profileId === 99 ? 'admin' : 'users';
     const lastUserText = text;
 
     // Build conversation history (last 10 messages, excluding typing/action previews)
@@ -896,6 +900,43 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
       .filter(m => !m.isTyping && m.text && m.text.trim().length > 0)
       .slice(-10)
       .map(m => ({ role: m.role, text: m.isActionPreview ? '[Acción propuesta: ' + m.text + ']' : m.text }));
+
+    // ── Modo demo: endpoint público sin auth ──────────────────────────────────
+    if (isDemo) {
+      const demoRole   = this.demoService.getDemoRole() ?? 'coach';
+      const demoTeamId = this.currentTeamId ?? 9001;
+      const clubContext = buildDemoClubContext(demoRole, demoTeamId);
+
+      this.chatSub?.unsubscribe();
+      this.chatSub = this.aiChatService.sendMessageDemo(text, history, 'es', clubContext)
+        .pipe(finalize(() => { this.isResponding = false; }))
+        .subscribe({
+          next: (resp) => {
+            const idx = this.messages.indexOf(typingMsg);
+            if (idx > -1) this.messages.splice(idx, 1);
+            if (resp.response) {
+              this.addAssistantMessage(resp.response);
+            } else {
+              this.addAssistantMessage(resp.error || 'Ha ocurrido un error. Inténtalo de nuevo.');
+            }
+            this.updateSuggestionsFromContext(lastUserText);
+            this.shouldScroll = true;
+            this.saveConversation();
+            this.focusChatInput();
+          },
+          error: () => {
+            const idx = this.messages.indexOf(typingMsg);
+            if (idx > -1) this.messages.splice(idx, 1);
+            this.addAssistantMessage('Error de conexión. Inténtalo de nuevo.');
+            this.showSuggestions = true;
+            this.saveConversation();
+            this.focusChatInput();
+          }
+        });
+      return;
+    }
+
+    const apiKeyType = this.profileId === 99 ? 'admin' : 'users';
 
     // Enrich message with statistics context (page-specific or background)
     const pageCtx = this.activePageContext;

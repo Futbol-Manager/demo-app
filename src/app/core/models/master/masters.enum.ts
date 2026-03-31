@@ -2,7 +2,7 @@ export const APIURLPROD:string = 'https://sphairatech.com'
 export const APIURLPROD2:string = 'https://appsphairatech.com'
 /** API para la demo desplegada. Misma base que el front (https://demo.sphairatech.com); los leads van a /api/rest. */
 export const APIURLDEMO:string = 'https://demo.sphairatech.com'
-export const APIURLLOCAL:string = 'http://localhost:8080'
+export const APIURLLOCAL:string = 'http://localhost:8081'
 export const IMAGESASSETS:string = '/assets/images/'
 
 /**

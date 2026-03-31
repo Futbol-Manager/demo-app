@@ -12,6 +12,8 @@ import { Injury } from 'src/app/core/services/injury/injury.model';
 import { User } from 'src/app/core/models/users/user.model';
 import { VoiceRecognitionService } from 'src/app/core/services/voice-recognition/voice-recognition.service';
 import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
+import { DemoService } from 'src/app/core/services/demo/demo.service';
+import { buildDemoClubContext } from 'src/app/core/services/demo/demo-context';
 
 /* ═══════════════════════════════════════
    INTERFACES
@@ -194,7 +196,8 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     private aiPageContextService: AiPageContextService,
     private voiceRecognition: VoiceRecognitionService,
     private injuryService: InjuryService,
-    private tutorialService: TutorialService
+    private tutorialService: TutorialService,
+    private demoService: DemoService
   ) {}
 
   ngOnInit(): void {
@@ -464,7 +467,9 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     const text = this.userInput.trim();
     if (!text || this.isResponding) return;
 
-    if (this.creditsAvailable <= 0) {
+    const isDemo = this.demoService.isDemoMode();
+
+    if (!isDemo && this.creditsAvailable <= 0) {
       this.addAssistantMessage('No tienes créditos disponibles. Compra más créditos para seguir usando el asistente IA.');
       return;
     }
@@ -494,6 +499,37 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
       .filter(m => !m.isTyping && m.text && m.text.trim().length > 0)
       .slice(-10)
       .map(m => ({ role: m.role, text: m.isActionPreview ? '[Acción propuesta: ' + m.text + ']' : m.text }));
+
+    // ── Modo demo: endpoint público sin auth ──────────────────────────────────
+    if (isDemo) {
+      const demoTeamId  = this.teamId ?? 9001;
+      const clubContext = buildDemoClubContext('coach', demoTeamId);
+
+      this.chatSub?.unsubscribe();
+      this.chatSub = this.aiChatService.sendMessageDemo(text, history, 'es', clubContext)
+        .pipe(finalize(() => { this.isResponding = false; }))
+        .subscribe({
+          next: (resp) => {
+            const idx = this.messages.indexOf(typingMsg);
+            if (idx > -1) this.messages.splice(idx, 1);
+            if (resp.response) {
+              this.addAssistantMessage(resp.response);
+            } else {
+              this.addAssistantMessage(resp.error || 'Ha ocurrido un error. Inténtalo de nuevo.');
+            }
+            this.shouldScroll = true;
+            this.saveConversation();
+            this.focusChatInput();
+          },
+          error: () => {
+            const idx = this.messages.indexOf(typingMsg);
+            if (idx > -1) this.messages.splice(idx, 1);
+            this.addAssistantMessage('Error de conexión. Inténtalo de nuevo.');
+            this.focusChatInput();
+          }
+        });
+      return;
+    }
 
     // Enriquecer el mensaje con el contexto completo del equipo
     let enrichedText = text;
