@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Location } from '@angular/common';
 import { LoginService } from 'src/app/core/services/login/login.service';
@@ -212,6 +212,213 @@ export class NewCuotasComponent implements OnInit {
 
   /** ID del jugador cuyo modal se está cargando (para mostrar spinner en su fila) */
   loadingPlayerId: number | null = null;
+
+  // ── Filtro por estado ──────────────────────────────────────────────────────
+  filtroEstado: string = 'todos';
+
+  // ── Filtro por equipo ──────────────────────────────────────────────────────
+  filtroEquipo: string = '';
+
+  get equiposDisponibles(): string[] {
+    const set = new Set<string>();
+    this.listaPlayers.forEach((p: any) => { if (p.nameTeam) set.add(p.nameTeam); });
+    return Array.from(set).sort();
+  }
+
+  // ── Recordatorio masivo (bloqueado en demo) ───────────────────────────────
+  enviandoRecordatorio = false;
+  showModalRecordatorio = false;
+  recordatorioEnviado = false;
+
+  get jugadoresConVencida(): any[] {
+    return this.listaPlayers.filter((p: any) => p.estado != null && +p.estado <= 0);
+  }
+
+  abrirModalRecordatorio(): void {
+    this.recordatorioEnviado = false;
+    this.showModalRecordatorio = true;
+  }
+
+  cerrarModalRecordatorio(): void {
+    this.showModalRecordatorio = false;
+    this.recordatorioEnviado = false;
+  }
+
+  // ── Vista por cuota ───────────────────────────────────────────────────────
+  vistaActual: string = 'jugadores';
+  loadingAllStats = false;
+
+  // ── Filtros exclusivos de la vista Cuotas ─────────────────────────────────
+  filtroCuotaTexto = '';
+  filtroCuotaEstado: string = 'todas';
+
+  resetFiltrosCuotas(): void {
+    this.filtroCuotaTexto = '';
+    this.filtroCuotaEstado = 'todas';
+  }
+
+  get estadisticasCuotasFiltradas(): any[] {
+    const texto = this.filtroCuotaTexto.trim().toLowerCase();
+    return this.estadisticasCuotas.filter((cuota: any) => {
+      const matchTexto = !texto || (cuota.titulo || '').toLowerCase().includes(texto);
+      const completada = cuota.hasStats && cuota.jugadoresPagados === cuota.jugadoresConPago && cuota.jugadoresConPago > 0;
+      let matchEstado = true;
+      if (this.filtroCuotaEstado === 'completada') matchEstado = completada;
+      else if (this.filtroCuotaEstado === 'vencida')    matchEstado = cuota.isVencida && !completada;
+      else if (this.filtroCuotaEstado === 'pendiente')  matchEstado = !cuota.isVencida && !completada;
+      return matchTexto && matchEstado;
+    });
+  }
+
+  isCurrentVista(v: string): boolean { return this.vistaActual === v; }
+
+  cambiarVista(v: string): void {
+    this.vistaActual = v;
+    if (v === 'jugadores') {
+      this.quitarFiltroPagos();
+    } else {
+      this.precargarEstadisticasCuotas();
+    }
+  }
+
+  precargarEstadisticasCuotas(): void {
+    if (this.loadingAllStats) return;
+    const faltanDatos = this.listaPlayers.some((p: any) =>
+      !this.playerDetailCache.has(p.playerId) || !this.playerHistoryCache.has(p.playerId)
+    );
+    if (!faltanDatos) return;
+
+    this.loadingAllStats = true;
+    const observables: { [key: number]: any } = {};
+
+    this.listaPlayers.forEach((player: any) => {
+      const needsDetail  = !this.playerDetailCache.has(player.playerId);
+      const needsHistory = !this.playerHistoryCache.has(player.playerId);
+      if (needsDetail || needsHistory) {
+        const calls: any = {};
+        if (needsDetail)  calls['detail']   = this.clubService.getPlayerPaymentDetail(this.clubId, this.temporadaStoredValue, player.playerId);
+        if (needsHistory) calls['historial'] = this.clubService.getListHistoryPagosByPlayer(this.clubId, this.temporadaStoredValue, player.playerId);
+        observables[player.playerId] = forkJoin(calls);
+      }
+    });
+
+    if (Object.keys(observables).length === 0) { this.loadingAllStats = false; return; }
+
+    forkJoin(observables).subscribe({
+      next: (results: any) => {
+        for (const playerIdStr of Object.keys(results)) {
+          const playerId = +playerIdStr;
+          const res = results[playerIdStr];
+          if (res['detail']   !== undefined) this.playerDetailCache.set(playerId, res['detail']);
+          if (res['historial'] !== undefined) this.playerHistoryCache.set(playerId, res['historial']?.data ?? res['historial'] ?? []);
+        }
+        this.loadingAllStats = false;
+      },
+      error: () => { this.loadingAllStats = false; },
+    });
+  }
+
+  activarFiltroPorCuota(pagoClubId: number): void {
+    this.vistaActual = 'jugadores';
+    this.pagosSeleccionados = [pagoClubId];
+    this.showPagoFilterDropdown = false;
+    this.aplicarFiltroPagos();
+  }
+
+  /** Ratios demo para inyectar estadísticas realistas cuando el entorno no tiene pagos reales */
+  private readonly DEMO_STAT_SEEDS = [
+    { paidRatio: 0.82, collectedRatio: 0.91 },
+    { paidRatio: 0.67, collectedRatio: 0.74 },
+    { paidRatio: 0.45, collectedRatio: 0.58 },
+    { paidRatio: 0.93, collectedRatio: 0.96 },
+    { paidRatio: 0.31, collectedRatio: 0.42 },
+    { paidRatio: 0.78, collectedRatio: 0.85 },
+  ];
+
+  private injectDemoStats(jugadoresConPago: number, importe: number, idx: number): { jugadoresPagados: number; totalEsperado: number; totalRecaudado: number } {
+    const seed = this.DEMO_STAT_SEEDS[idx % this.DEMO_STAT_SEEDS.length];
+    const jugadoresPagados = Math.round(jugadoresConPago * seed.paidRatio);
+    const totalEsperado    = jugadoresConPago * importe;
+    const totalRecaudado   = Math.round(totalEsperado * seed.collectedRatio * 100) / 100;
+    return { jugadoresPagados, totalEsperado, totalRecaudado };
+  }
+
+  get estadisticasCuotas(): any[] {
+    const statsMap = new Map<number, { jugadoresConPago: number; jugadoresPagados: number; totalEsperado: number; totalRecaudado: number }>();
+    for (const [playerId, cuotas] of this.playerDetailCache.entries()) {
+      const historial = this.playerHistoryCache.get(playerId) || [];
+      for (const c of (cuotas as any[])) {
+        const pid = +(c.pagoClubId ?? c.PagoClubId ?? 0);
+        if (!statsMap.has(pid)) statsMap.set(pid, { jugadoresConPago: 0, jugadoresPagados: 0, totalEsperado: 0, totalRecaudado: 0 });
+        const s = statsMap.get(pid)!;
+        const imp = this.calcularImporteBaseCuota(c);
+        const pagado = Math.min(this.sumarImportePagadoEnHistorial(historial, pid), imp);
+        s.jugadoresConPago++;
+        s.totalEsperado += imp;
+        s.totalRecaudado += pagado;
+        if (imp > 0 && pagado >= imp) s.jugadoresPagados++;
+      }
+    }
+
+    return this.listaPagosClub.map((pago: any, idx: number) => {
+      const pagoId = +(pago.pagoClubId ?? pago.PagoClubId ?? 0);
+      const activo = this.pagosSeleccionados.length === 1 && +this.pagosSeleccionados[0] === pagoId;
+      const cached = statsMap.get(pagoId);
+
+      const serverHasStats = +(pago.jugadoresConPago ?? 0) > 0;
+      let jugadoresConPago = serverHasStats ? +(pago.jugadoresConPago ?? 0) : (cached?.jugadoresConPago ?? 0);
+      let jugadoresPagados = serverHasStats ? +(pago.jugadoresPagados ?? 0) : (cached?.jugadoresPagados ?? 0);
+      let totalEsperado    = serverHasStats ? +(pago.totalEsperado    ?? 0) : (cached?.totalEsperado    ?? 0);
+      let totalRecaudado   = serverHasStats ? +(pago.totalRecaudado   ?? 0) : (cached?.totalRecaudado   ?? 0);
+
+      // Demo: inyectar estadísticas realistas cuando el entorno no tiene pagos procesados
+      const needsDemoStats = jugadoresConPago > 0 && jugadoresPagados === 0 && totalRecaudado === 0;
+      const noDemoStats    = jugadoresConPago === 0;
+      if (needsDemoStats || noDemoStats) {
+        const baseJugadores = noDemoStats ? this.resumenTotalJugadores || 30 : jugadoresConPago;
+        const baseImporte   = +(pago.importe ?? pago.importeTotal ?? 0);
+        const demo = this.injectDemoStats(baseJugadores, baseImporte, idx);
+        jugadoresConPago = baseJugadores;
+        jugadoresPagados = demo.jugadoresPagados;
+        totalEsperado    = demo.totalEsperado;
+        totalRecaudado   = demo.totalRecaudado;
+      }
+
+      if (activo && !this.isLoadingDetalle && this.listaPlayersFiltradosPorPago.length > 0) {
+        jugadoresConPago = this.listaPlayersFiltradosPorPago.length;
+        totalEsperado    = this.listaPlayersFiltradosPorPago.reduce((s: number, p: any) => s + (+p.totalAPagarFiltrado || 0), 0);
+        totalRecaudado   = this.listaPlayersFiltradosPorPago.reduce((s: number, p: any) => s + (+p.totalPagadoFiltrado || 0), 0);
+        jugadoresPagados = this.listaPlayersFiltradosPorPago.filter((p: any) => (+p.restanteFiltrado) === 0).length;
+      }
+
+      const hasStats  = jugadoresConPago > 0;
+      const pct       = totalEsperado > 0 ? Math.min((totalRecaudado / totalEsperado) * 100, 100) : 0;
+      const isVencida = pago.fechaLimite && new Date(pago.fechaLimite) < new Date();
+      const loadingStats = this.loadingAllStats || (activo && this.isLoadingDetalle);
+
+      return { ...pago, pagoClubId: pagoId, activo, hasStats, loadingStats, jugadoresConPago, jugadoresPagados, totalEsperado, totalRecaudado, pct, isVencida };
+    });
+  }
+
+  // ── Exportar (bloqueado en demo) ──────────────────────────────────────────
+  showExportDropdown = false;
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    if (this.showExportDropdown) this.showExportDropdown = false;
+  }
+
+  showLockedToast(): void {
+    this.toastr.info(this.translate.instant('DEMO.FULL_VERSION_ONLY'));
+  }
+
+  exportarCSV(): void {
+    this.showLockedToast();
+  }
+
+  exportarExcel(): void {
+    this.showLockedToast();
+  }
 
   // Modal de pagos automáticos
   showModalAutoPayments = false;
@@ -757,6 +964,8 @@ export class NewCuotasComponent implements OnInit {
   resetPagosPlayers() {
     // Limpiar todos los filtros activos antes de recargar
     this.filtro = '';
+    this.filtroEstado = 'todos';
+    this.filtroEquipo = '';
     this.showPagoFilterDropdown = false;
     this.quitarFiltroPagos();
 
@@ -781,11 +990,24 @@ export class NewCuotasComponent implements OnInit {
 
   filtrarJugadores() {
     const texto = this.filtro.toLowerCase();
-    this.listaPlayersFiltrados = this.listaPlayers.filter(
-      (p) =>
+    this.listaPlayersFiltrados = this.listaPlayers.filter((p: any) => {
+      const matchText = !texto ||
         `${p.nombre || ''} ${p.apellido || ''}`.toLowerCase().includes(texto) ||
-        (p.nameTeam && p.nameTeam.toLowerCase().includes(texto))
-    );
+        (p.nameTeam && p.nameTeam.toLowerCase().includes(texto));
+      const matchEstado = this.filtroEstado === 'todos' ||
+        (this.filtroEstado === 'ok' && +p.estado > 0) ||
+        (this.filtroEstado === 'vencida' && +p.estado <= 0);
+      const matchEquipo = !this.filtroEquipo || p.nameTeam === this.filtroEquipo;
+      return matchText && matchEstado && matchEquipo;
+    });
+    this.paginaActual = 1;
+  }
+
+  resetFiltros(): void {
+    this.filtro = '';
+    this.filtroEstado = 'todos';
+    this.filtroEquipo = '';
+    this.filtrarJugadores();
   }
 
   ordenarPor(campo: string) {
@@ -1502,6 +1724,16 @@ export class NewCuotasComponent implements OnInit {
   }
 
   /** Suma el importe pagado para una cuota concreta (usando el historial del modal) */
+  sumarImportePagadoEnHistorial(historial: any[], pagoClubId: number): number {
+    const idObjetivo = +pagoClubId;
+    return (historial || [])
+      .filter((h: any) => +(h.pagoClubId ?? h.PagoClubId ?? 0) === idObjetivo)
+      .reduce((sum: number, h: any) => {
+        const importe = h?.importe ?? h?.importePagado ?? h?.amount ?? h?.total;
+        return sum + (parseFloat(importe) || 0);
+      }, 0);
+  }
+
   importePagadoPorCuota(pagoClubId: number): number {
     return this.historialPagosModal
       .filter((h: any) => h.pagoClubId === pagoClubId)

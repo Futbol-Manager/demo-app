@@ -2530,10 +2530,20 @@
     },
     "LOADING": "Loading data...",
     "FILTER": {
-      "SEARCH": "Filter by name or team",
-      "RESET": "Reset data",
-      "ONLY_REQUIRED": "Showing only mandatory payments",
-      "INFO": "Non-mandatory payments can be seen in the player's history."
+      "SEARCH": "Filtra per nome o squadra",
+      "RESET": "Ripristina dati",
+      "ONLY_REQUIRED": "Visualizzazione solo pagamenti obbligatori",
+      "INFO": "I pagamenti non obbligatori sono visibili nella cronologia del giocatore.",
+      "STATUS_ALL": "Tutti",
+      "STATUS_OK": "In regola",
+      "STATUS_OVERDUE": "Scaduti",
+      "ALL_TEAMS": "Tutte le squadre",
+      "SEARCH_QUOTA": "Cerca quota...",
+      "QUOTA_ALL": "Tutte",
+      "QUOTA_COMPLETED": "Completate",
+      "QUOTA_OVERDUE": "Scadute",
+      "QUOTA_PENDING": "In attesa",
+      "RESET_QUOTA": "Cancella filtri"
     },
     "TABLE": {
       "NAME": "Name",
@@ -2626,8 +2636,32 @@
       "LOADING": "Loading payment details...",
       "LOADING_SR": "Loading...",
       "TABLE_TITLE": "Players filtered by selected payments",
-      "NO_RESULTS": "No players for the selected payments.",
-      "PAID_OF": "of"
+      "NO_RESULTS": "Nessun giocatore per i pagamenti selezionati.",
+      "PAID_OF": "di",
+      "DROPDOWN_TITLE": "Filtra per quota",
+      "SELECTED_COUNT": "{{ count }} selezionata/e"
+    },
+    "EXPORT": {
+      "BTN": "Esporta",
+      "BTN_TITLE": "Esporta lista"
+    },
+    "REMINDER": {
+      "BTN": "Promemoria",
+      "BTN_TITLE": "Invia promemoria ai giocatori con pagamenti scaduti"
+    },
+    "VISTA": {
+      "PLAYERS": "Giocatori",
+      "PLAYERS_TITLE": "Vista per giocatore",
+      "QUOTAS": "Quote",
+      "QUOTAS_TITLE": "Vista per quota",
+      "NO_QUOTAS": "Nessuna quota creata ancora.",
+      "NO_QUOTAS_FILTER": "Nessuna quota corrisponde ai filtri.",
+      "DEADLINE": "Scadenza",
+      "VIEW_PLAYERS": "Vedi giocatori"
+    },
+    "DASH": {
+      "STATUS_OK": "In regola",
+      "STATUS_OVERDUE": "Scaduta"
     }
   },
   "PAYMENTS": {

@@ -1582,10 +1582,20 @@
     },
     "LOADING": "Chargement de la liste...",
     "FILTER": {
-      "SEARCH": "Filtrer par nom ou équipe",
-      "RESET": "Réinitialiser les données",
+      "SEARCH": "Filtrer par nom ou \u00e9quipe",
+      "RESET": "R\u00e9initialiser les donn\u00e9es",
       "ONLY_REQUIRED": "Affichage uniquement des paiements obligatoires",
-      "INFO": "Les paiements non obligatoires sont consultables depuis l'historique du joueur."
+      "INFO": "Les paiements non obligatoires sont consultables depuis l'historique du joueur.",
+      "STATUS_ALL": "Tous",
+      "STATUS_OK": "\u00c0 jour",
+      "STATUS_OVERDUE": "En retard",
+      "ALL_TEAMS": "Toutes les \u00e9quipes",
+      "SEARCH_QUOTA": "Rechercher un quota...",
+      "QUOTA_ALL": "Tous",
+      "QUOTA_COMPLETED": "Compl\u00e9t\u00e9s",
+      "QUOTA_OVERDUE": "En retard",
+      "QUOTA_PENDING": "En attente",
+      "RESET_QUOTA": "Effacer les filtres"
     },
     "TABLE": {
       "NAME": "Nom",
@@ -1678,8 +1688,32 @@
       "LOADING": "Chargement du détail des paiements...",
       "LOADING_SR": "Chargement...",
       "TABLE_TITLE": "Joueurs filtrés par paiements sélectionnés",
-      "NO_RESULTS": "Aucun joueur pour les paiements sélectionnés.",
-      "PAID_OF": "de"
+      "NO_RESULTS": "Aucun joueur pour les paiements s\u00e9lectionn\u00e9s.",
+      "PAID_OF": "de",
+      "DROPDOWN_TITLE": "Filtrer par quota",
+      "SELECTED_COUNT": "{{ count }} s\u00e9lectionn\u00e9(s)"
+    },
+    "EXPORT": {
+      "BTN": "Exporter",
+      "BTN_TITLE": "Exporter la liste"
+    },
+    "REMINDER": {
+      "BTN": "Rappel",
+      "BTN_TITLE": "Envoyer un rappel aux joueurs avec des paiements en retard"
+    },
+    "VISTA": {
+      "PLAYERS": "Joueurs",
+      "PLAYERS_TITLE": "Vue par joueur",
+      "QUOTAS": "Quotas",
+      "QUOTAS_TITLE": "Vue par quota",
+      "NO_QUOTAS": "Aucun quota cr\u00e9\u00e9 pour l'instant.",
+      "NO_QUOTAS_FILTER": "Aucun quota ne correspond aux filtres.",
+      "DEADLINE": "Date limite",
+      "VIEW_PLAYERS": "Voir les joueurs"
+    },
+    "DASH": {
+      "STATUS_OK": "\u00c0 jour",
+      "STATUS_OVERDUE": "En retard"
     }
   },
   "PAYMENTS": {

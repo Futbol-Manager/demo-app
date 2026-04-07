@@ -41,6 +41,27 @@
       <i class="bi bi-bell-fill"></i>
       <span>Notif.</span>
     </button>
+    <div class="hab-sep"></div>
+    <!-- RECORDATORIO MASIVO — bloqueado en demo -->
+    <button class="header-action-btn header-action-btn--reminder btn-locked-demo"
+            (click)="showLockedToast()"
+            [title]="'DEMO.FULL_VERSION_ONLY' | translate"
+            [disabled]="jugadoresConVencida.length === 0">
+      <i class="bi bi-send-fill"></i>
+      <span>{{ 'CUOTAS.REMINDER.BTN' | translate }}</span>
+      <span class="hab-badge" *ngIf="jugadoresConVencida.length > 0">{{ jugadoresConVencida.length }}</span>
+      <span class="lock-badge-sm"><i class="bi bi-lock-fill"></i></span>
+    </button>
+    <!-- EXPORTAR — bloqueado en demo -->
+    <div class="hab-export-wrap">
+      <button class="header-action-btn header-action-btn--export btn-locked-demo"
+              (click)="showLockedToast(); $event.stopPropagation()"
+              [title]="'DEMO.FULL_VERSION_ONLY' | translate">
+        <i class="bi bi-file-earmark-spreadsheet"></i>
+        <span>{{ 'CUOTAS.EXPORT.BTN' | translate }}</span>
+        <span class="lock-badge-sm"><i class="bi bi-lock-fill"></i></span>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -98,14 +119,46 @@
     </div>
   </div>
 
-  <!-- ═══════════ BARRA UNIFICADA DE FILTROS ═══════════ -->
-  <div class="uf-bar mb-2" data-tutorial="cuotas-filtros">
+  <!-- ═══════════ BARRA DE FILTROS — VISTA JUGADORES ═══════════ -->
+  <div class="uf-bar mb-2" *ngIf="vistaActual === 'jugadores'" data-tutorial="cuotas-filtros">
 
     <!-- BUSCADOR -->
     <div class="uf-search">
       <i class="bi bi-search uf-search-icon"></i>
       <input type="text" class="uf-input" [placeholder]="'CUOTAS.FILTER.SEARCH' | translate"
              [(ngModel)]="filtro" (input)="filtrarJugadores()" />
+    </div>
+
+    <div class="uf-sep"></div>
+
+    <!-- FILTRO ESTADO -->
+    <div class="uf-estado-chips">
+      <button class="uf-estado-chip"
+              [class.active]="filtroEstado === 'todos'"
+              (click)="filtroEstado = 'todos'; filtrarJugadores()">
+        {{ 'CUOTAS.FILTER.STATUS_ALL' | translate }}
+      </button>
+      <button class="uf-estado-chip uf-estado-chip--ok"
+              [class.active]="filtroEstado === 'ok'"
+              (click)="filtroEstado = 'ok'; filtrarJugadores()">
+        <i class="bi bi-check-circle-fill"></i> {{ 'CUOTAS.FILTER.STATUS_OK' | translate }}
+      </button>
+      <button class="uf-estado-chip uf-estado-chip--vencida"
+              [class.active]="filtroEstado === 'vencida'"
+              (click)="filtroEstado = 'vencida'; filtrarJugadores()">
+        <i class="bi bi-exclamation-circle-fill"></i> {{ 'CUOTAS.FILTER.STATUS_OVERDUE' | translate }}
+      </button>
+    </div>
+
+    <div class="uf-sep"></div>
+
+    <!-- FILTRO EQUIPO -->
+    <div class="uf-equipo-wrap" *ngIf="equiposDisponibles.length > 0">
+      <i class="bi bi-shield-fill uf-equipo-icon"></i>
+      <select class="uf-select" [(ngModel)]="filtroEquipo" (ngModelChange)="filtrarJugadores()">
+        <option value="">{{ 'CUOTAS.FILTER.ALL_TEAMS' | translate }}</option>
+        <option *ngFor="let eq of equiposDisponibles" [value]="eq">{{ eq }}</option>
+      </select>
     </div>
 
     <div class="uf-sep" *ngIf="listaPagosClub.length > 0"></div>
@@ -166,6 +219,22 @@
 
     <div class="uf-sep"></div>
 
+    <!-- TOGGLE VISTA -->
+    <div class="uf-vista-toggle">
+      <button class="uf-vista-btn" [class.active]="isCurrentVista('jugadores')"
+              (click)="cambiarVista('jugadores')" [title]="'CUOTAS.VISTA.PLAYERS_TITLE' | translate">
+        <i class="bi bi-people-fill"></i>
+        <span>{{ 'CUOTAS.VISTA.PLAYERS' | translate }}</span>
+      </button>
+      <button class="uf-vista-btn" [class.active]="isCurrentVista('cuotas')"
+              (click)="cambiarVista('cuotas')" [title]="'CUOTAS.VISTA.QUOTAS_TITLE' | translate">
+        <i class="bi bi-grid-3x3-gap-fill"></i>
+        <span>{{ 'CUOTAS.VISTA.QUOTAS' | translate }}</span>
+      </button>
+    </div>
+
+    <div class="uf-sep"></div>
+
     <!-- RESET DATOS -->
     <button class="uf-btn uf-btn--reset" (click)="resetPagosPlayers()">
       <i class="bi bi-arrow-counterclockwise"></i>
@@ -177,6 +246,143 @@
       <i class="bi bi-info-circle"></i>
     </button>
 
+  </div>
+
+  <!-- ═══════════ BARRA DE FILTROS — VISTA CUOTAS ═══════════ -->
+  <div class="uf-bar uf-bar--cuotas mb-2" *ngIf="vistaActual === 'cuotas'">
+
+    <!-- BUSCADOR DE CUOTAS -->
+    <div class="uf-search">
+      <i class="bi bi-search uf-search-icon"></i>
+      <input type="text" class="uf-input" [placeholder]="'CUOTAS.FILTER.SEARCH_QUOTA' | translate"
+             [(ngModel)]="filtroCuotaTexto" />
+    </div>
+
+    <div class="uf-sep"></div>
+
+    <!-- CHIPS DE ESTADO DE CUOTA -->
+    <div class="uf-estado-chips">
+      <button class="uf-estado-chip"
+              [class.active]="filtroCuotaEstado === 'todas'"
+              (click)="filtroCuotaEstado = 'todas'">
+        {{ 'CUOTAS.FILTER.QUOTA_ALL' | translate }}
+      </button>
+      <button class="uf-estado-chip uf-estado-chip--ok"
+              [class.active]="filtroCuotaEstado === 'completada'"
+              (click)="filtroCuotaEstado = 'completada'">
+        <i class="bi bi-check-circle-fill"></i> {{ 'CUOTAS.FILTER.QUOTA_COMPLETED' | translate }}
+      </button>
+      <button class="uf-estado-chip uf-estado-chip--vencida"
+              [class.active]="filtroCuotaEstado === 'vencida'"
+              (click)="filtroCuotaEstado = 'vencida'">
+        <i class="bi bi-exclamation-circle-fill"></i> {{ 'CUOTAS.FILTER.QUOTA_OVERDUE' | translate }}
+      </button>
+      <button class="uf-estado-chip uf-estado-chip--pendiente"
+              [class.active]="filtroCuotaEstado === 'pendiente'"
+              (click)="filtroCuotaEstado = 'pendiente'">
+        <i class="bi bi-clock"></i> {{ 'CUOTAS.FILTER.QUOTA_PENDING' | translate }}
+      </button>
+    </div>
+
+    <div class="uf-sep"></div>
+
+    <!-- TOGGLE VISTA -->
+    <div class="uf-vista-toggle">
+      <button class="uf-vista-btn" [class.active]="isCurrentVista('jugadores')"
+              (click)="cambiarVista('jugadores')" [title]="'CUOTAS.VISTA.PLAYERS_TITLE' | translate">
+        <i class="bi bi-people-fill"></i>
+        <span>{{ 'CUOTAS.VISTA.PLAYERS' | translate }}</span>
+      </button>
+      <button class="uf-vista-btn" [class.active]="isCurrentVista('cuotas')"
+              (click)="cambiarVista('cuotas')" [title]="'CUOTAS.VISTA.QUOTAS_TITLE' | translate">
+        <i class="bi bi-grid-3x3-gap-fill"></i>
+        <span>{{ 'CUOTAS.VISTA.QUOTAS' | translate }}</span>
+      </button>
+    </div>
+
+    <div class="uf-sep"></div>
+
+    <button class="uf-btn uf-btn--reset" (click)="resetFiltrosCuotas()">
+      <i class="bi bi-arrow-counterclockwise"></i>
+      <span>{{ 'CUOTAS.FILTER.RESET_QUOTA' | translate }}</span>
+    </button>
+  </div>
+
+  <!-- ═══════════ VISTA POR CUOTA ═══════════ -->
+  <div *ngIf="vistaActual === 'cuotas'" class="cuotas-grid mb-4">
+    <div *ngIf="listaPagosClub.length === 0" class="cuotas-grid-empty">
+      <i class="bi bi-receipt-cutoff"></i>
+      <p>{{ 'CUOTAS.VISTA.NO_QUOTAS' | translate }}</p>
+    </div>
+
+    <div *ngIf="listaPagosClub.length > 0 && estadisticasCuotasFiltradas.length === 0" class="cuotas-grid-empty">
+      <i class="bi bi-funnel"></i>
+      <p>{{ 'CUOTAS.VISTA.NO_QUOTAS_FILTER' | translate }}</p>
+      <button class="cc-btn cc-btn--detail mt-2" (click)="resetFiltrosCuotas()">
+        <i class="bi bi-arrow-counterclockwise"></i>
+        {{ 'CUOTAS.FILTER.RESET_QUOTA' | translate }}
+      </button>
+    </div>
+
+    <div *ngFor="let cuota of estadisticasCuotasFiltradas"
+         class="cuota-card"
+         [class.cuota-card--active]="cuota.activo"
+         [class.cuota-card--vencida]="cuota.isVencida">
+
+      <!-- Header -->
+      <div class="cc-header">
+        <div class="cc-icon">
+          <i class="bi" [ngClass]="cuota.isVencida ? 'bi-exclamation-triangle-fill' : 'bi-receipt'"></i>
+        </div>
+        <div class="cc-title-wrap">
+          <h4 class="cc-title">{{ cuota.titulo }}</h4>
+          <div class="cc-meta-row">
+            <span class="cc-badge" *ngIf="cuota.isVencida">{{ 'CUOTAS.DASH.STATUS_OVERDUE' | translate }}</span>
+            <span class="cc-player-counter" *ngIf="cuota.hasStats && !cuota.loadingStats">
+              <i class="bi bi-people-fill"></i>
+              <strong>{{ cuota.jugadoresPagados }}</strong><span>/{{ cuota.jugadoresConPago }}</span>
+            </span>
+            <span class="cc-player-counter cc-player-counter--loading" *ngIf="cuota.loadingStats">
+              <div class="spinner-border" role="status" style="width:11px;height:11px;border-width:1.5px"></div>
+            </span>
+          </div>
+        </div>
+        <div class="cc-importe">
+          <span class="cc-importe-num">{{ calcularImporteBaseCuota(cuota) | number:'1.2-2' }}</span>
+          <span class="cc-importe-sym">€</span>
+        </div>
+      </div>
+
+      <!-- Fecha límite -->
+      <div class="cc-fecha" *ngIf="cuota.fechaLimite">
+        <i class="bi bi-calendar-event"></i>
+        {{ 'CUOTAS.VISTA.DEADLINE' | translate }}: <strong>{{ cuota.fechaLimite }}</strong>
+      </div>
+
+      <!-- Barra de progreso -->
+      <ng-container *ngIf="cuota.hasStats && !cuota.loadingStats">
+        <div class="cc-progress-wrap">
+          <div class="cc-progress-track">
+            <div class="cc-progress-bar" [style.width.%]="cuota.pct"></div>
+          </div>
+          <span class="cc-progress-pct">{{ cuota.pct | number:'1.0-0' }}%</span>
+        </div>
+        <div class="cc-amounts">
+          <span class="cc-amt-recaudado">{{ cuota.totalRecaudado | number:'1.2-2' }} €</span>
+          <span class="cc-amt-sep">/</span>
+          <span class="cc-amt-esperado">{{ cuota.totalEsperado | number:'1.2-2' }} €</span>
+        </div>
+      </ng-container>
+
+      <!-- Acciones -->
+      <div class="cc-actions">
+        <button class="cc-btn cc-btn--detail"
+                (click)="activarFiltroPorCuota(cuota.pagoClubId)">
+          <i class="bi bi-people"></i>
+          {{ 'CUOTAS.VISTA.VIEW_PLAYERS' | translate }}
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- ═══════════ RESUMEN DE SELECCIÓN ═══════════ -->
@@ -207,7 +413,7 @@
   </div>
 
   <!-- ═══════════════ TABLA FILTRADA POR PAGOS ═══════════════ -->
-  <div class="row mb-3" *ngIf="vistaFiltroPago && !isLoadingDetalle">
+  <div class="row mb-3" *ngIf="vistaActual === 'jugadores' && vistaFiltroPago && !isLoadingDetalle">
     <div class="col-12">
       <div class="table-wrapper">
         <div class="table-scroll">
@@ -350,8 +556,8 @@
     </div>
   </div>
 
-  <!-- Tabla GENERAL (solo visible cuando NO hay filtro por pagos) -->
-  <div class="row mb-3" *ngIf="!vistaFiltroPago" data-tutorial="cuotas-listado">
+  <!-- Tabla GENERAL (solo visible cuando NO hay filtro por pagos y vista jugadores) -->
+  <div class="row mb-3" *ngIf="vistaActual === 'jugadores' && !vistaFiltroPago" data-tutorial="cuotas-listado">
     <div class="col-12">
       <div class="table-wrapper">
         <div class="table-scroll" [class.no-scroll]="isLoading">
@@ -566,7 +772,7 @@
 </div>
 
 <!-- PAGINACIÓN (FUERA de la tabla) -->
-<div class="pagination-wrapper" *ngIf="!isLoading && !vistaFiltroPago">
+<div class="pagination-wrapper" *ngIf="!isLoading && vistaActual === 'jugadores' && !vistaFiltroPago">
 
   <div class="pagination-content">
 

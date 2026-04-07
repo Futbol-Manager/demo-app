@@ -2534,9 +2534,19 @@
     "LOADING": "Daten werden geladen...",
     "FILTER": {
       "SEARCH": "Nach Name oder Mannschaft filtern",
-      "RESET": "Daten zurücksetzen",
-      "ONLY_REQUIRED": "Nur Pflichtgebühren angezeigt",
-      "INFO": "Nicht-Pflichtgebühren sind in der Zahlungshistorie des Spielers sichtbar."
+      "RESET": "Daten zur\u00fccksetzen",
+      "ONLY_REQUIRED": "Nur Pflichtgeb\u00fchren angezeigt",
+      "INFO": "Nicht-Pflichtgeb\u00fchren sind in der Zahlungshistorie des Spielers sichtbar.",
+      "STATUS_ALL": "Alle",
+      "STATUS_OK": "Aktuell",
+      "STATUS_OVERDUE": "\u00dcberf\u00e4llig",
+      "ALL_TEAMS": "Alle Mannschaften",
+      "SEARCH_QUOTA": "Geb\u00fchr suchen...",
+      "QUOTA_ALL": "Alle",
+      "QUOTA_COMPLETED": "Abgeschlossen",
+      "QUOTA_OVERDUE": "\u00dcberf\u00e4llig",
+      "QUOTA_PENDING": "Ausstehend",
+      "RESET_QUOTA": "Filter l\u00f6schen"
     },
     "TABLE": {
       "NAME": "Name",
@@ -2629,8 +2639,32 @@
       "LOADING": "Zahlungsdetails werden geladen...",
       "LOADING_SR": "Lädt...",
       "TABLE_TITLE": "Spieler gefiltert nach ausgewählten Zahlungen",
-      "NO_RESULTS": "Keine Spieler für die ausgewählten Zahlungen.",
-      "PAID_OF": "von"
+      "NO_RESULTS": "Keine Spieler f\u00fcr die ausgew\u00e4hlten Zahlungen.",
+      "PAID_OF": "von",
+      "DROPDOWN_TITLE": "Nach Geb\u00fchr filtern",
+      "SELECTED_COUNT": "{{ count }} ausgew\u00e4hlt"
+    },
+    "EXPORT": {
+      "BTN": "Exportieren",
+      "BTN_TITLE": "Liste exportieren"
+    },
+    "REMINDER": {
+      "BTN": "Erinnerung",
+      "BTN_TITLE": "Erinnerung an Spieler mit \u00fcberf\u00e4lligen Zahlungen senden"
+    },
+    "VISTA": {
+      "PLAYERS": "Spieler",
+      "PLAYERS_TITLE": "Spieleransicht",
+      "QUOTAS": "Geb\u00fchren",
+      "QUOTAS_TITLE": "Geb\u00fchrenansicht",
+      "NO_QUOTAS": "Noch keine Geb\u00fchren erstellt.",
+      "NO_QUOTAS_FILTER": "Keine Geb\u00fchr entspricht den Filtern.",
+      "DEADLINE": "Frist",
+      "VIEW_PLAYERS": "Spieler anzeigen"
+    },
+    "DASH": {
+      "STATUS_OK": "Aktuell",
+      "STATUS_OVERDUE": "\u00dcberf\u00e4llig"
     }
   },
   "PAYMENTS": {

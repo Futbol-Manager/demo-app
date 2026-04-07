@@ -1580,8 +1580,18 @@
     "FILTER": {
       "SEARCH": "Filtrar por nome ou equipa",
       "RESET": "Repor dados",
-      "ONLY_REQUIRED": "A mostrar apenas pagamentos obrigatórios",
-      "INFO": "Os pagamentos não obrigatórios podem ser vistos a partir do histórico do jogador."
+      "ONLY_REQUIRED": "A mostrar apenas pagamentos obrigat\u00f3rios",
+      "INFO": "Os pagamentos n\u00e3o obrigat\u00f3rios podem ser vistos a partir do hist\u00f3rico do jogador.",
+      "STATUS_ALL": "Todos",
+      "STATUS_OK": "Em dia",
+      "STATUS_OVERDUE": "Vencidos",
+      "ALL_TEAMS": "Todas as equipas",
+      "SEARCH_QUOTA": "Pesquisar quota...",
+      "QUOTA_ALL": "Todas",
+      "QUOTA_COMPLETED": "Conclu\u00eddas",
+      "QUOTA_OVERDUE": "Vencidas",
+      "QUOTA_PENDING": "Pendentes",
+      "RESET_QUOTA": "Limpar filtros"
     },
     "TABLE": {
       "NAME": "Nome",
@@ -1674,8 +1684,32 @@
       "LOADING": "A carregar detalhe dos pagamentos...",
       "LOADING_SR": "A carregar...",
       "TABLE_TITLE": "Jogadores filtrados por pagamentos selecionados",
-      "NO_RESULTS": "Não há jogadores para os pagamentos selecionados.",
-      "PAID_OF": "de"
+      "NO_RESULTS": "N\u00e3o h\u00e1 jogadores para os pagamentos selecionados.",
+      "PAID_OF": "de",
+      "DROPDOWN_TITLE": "Filtrar por quota",
+      "SELECTED_COUNT": "{{ count }} selecionada(s)"
+    },
+    "EXPORT": {
+      "BTN": "Exportar",
+      "BTN_TITLE": "Exportar lista"
+    },
+    "REMINDER": {
+      "BTN": "Lembrete",
+      "BTN_TITLE": "Enviar lembrete a jogadores com pagamentos vencidos"
+    },
+    "VISTA": {
+      "PLAYERS": "Jogadores",
+      "PLAYERS_TITLE": "Vista por jogador",
+      "QUOTAS": "Quotas",
+      "QUOTAS_TITLE": "Vista por quota",
+      "NO_QUOTAS": "Ainda n\u00e3o foram criadas quotas.",
+      "NO_QUOTAS_FILTER": "Nenhuma quota corresponde aos filtros.",
+      "DEADLINE": "Data limite",
+      "VIEW_PLAYERS": "Ver jogadores"
+    },
+    "DASH": {
+      "STATUS_OK": "Em dia",
+      "STATUS_OVERDUE": "Vencida"
     }
   },
   "PAYMENTS": {

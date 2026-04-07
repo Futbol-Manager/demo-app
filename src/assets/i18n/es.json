@@ -1377,7 +1377,17 @@
       "SEARCH": "Filtrar por nombre o equipo",
       "RESET": "Resetear datos",
       "ONLY_REQUIRED": "Mostrando solo pagos obligatorios",
-      "INFO": "Los pagos no obligatorios se pueden ver desde el historial del jugador."
+      "INFO": "Los pagos no obligatorios se pueden ver desde el historial del jugador.",
+      "STATUS_ALL": "Todos",
+      "STATUS_OK": "Al d\u00eda",
+      "STATUS_OVERDUE": "Vencidos",
+      "ALL_TEAMS": "Todos los equipos",
+      "SEARCH_QUOTA": "Buscar cuota...",
+      "QUOTA_ALL": "Todas",
+      "QUOTA_COMPLETED": "Completadas",
+      "QUOTA_OVERDUE": "Vencidas",
+      "QUOTA_PENDING": "Pendientes",
+      "RESET_QUOTA": "Limpiar filtros"
     },
     "TABLE": {
       "NAME": "Nombre",
@@ -1471,7 +1481,31 @@
       "LOADING_SR": "Cargando...",
       "TABLE_TITLE": "Jugadores filtrados por pagos seleccionados",
       "NO_RESULTS": "No hay jugadores para los pagos seleccionados.",
-      "PAID_OF": "de"
+      "PAID_OF": "de",
+      "DROPDOWN_TITLE": "Filtrar por cuota",
+      "SELECTED_COUNT": "{{ count }} seleccionada(s)"
+    },
+    "EXPORT": {
+      "BTN": "Exportar",
+      "BTN_TITLE": "Exportar listado"
+    },
+    "REMINDER": {
+      "BTN": "Recordatorio",
+      "BTN_TITLE": "Enviar recordatorio a jugadores con pagos vencidos"
+    },
+    "VISTA": {
+      "PLAYERS": "Jugadores",
+      "PLAYERS_TITLE": "Vista por jugador",
+      "QUOTAS": "Cuotas",
+      "QUOTAS_TITLE": "Vista por cuota",
+      "NO_QUOTAS": "No hay cuotas creadas todav\u00eda.",
+      "NO_QUOTAS_FILTER": "Ning\u00fana cuota coincide con los filtros.",
+      "DEADLINE": "Fecha l\u00edmite",
+      "VIEW_PLAYERS": "Ver jugadores"
+    },
+    "DASH": {
+      "STATUS_OK": "Al d\u00eda",
+      "STATUS_OVERDUE": "Vencida"
     }
   },
   "PAYMENTS": {

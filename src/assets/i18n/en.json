@@ -923,7 +923,17 @@
       "SEARCH": "Filter by name or team",
       "RESET": "Reset data",
       "ONLY_REQUIRED": "Showing only mandatory payments",
-      "INFO": "Non-mandatory payments can be seen in the player's history."
+      "INFO": "Non-mandatory payments can be seen in the player's history.",
+      "STATUS_ALL": "All",
+      "STATUS_OK": "Up to date",
+      "STATUS_OVERDUE": "Overdue",
+      "ALL_TEAMS": "All teams",
+      "SEARCH_QUOTA": "Search quota...",
+      "QUOTA_ALL": "All",
+      "QUOTA_COMPLETED": "Completed",
+      "QUOTA_OVERDUE": "Overdue",
+      "QUOTA_PENDING": "Pending",
+      "RESET_QUOTA": "Clear filters"
     },
     "TABLE": {
       "NAME": "Name",
@@ -1017,7 +1027,31 @@
       "LOADING_SR": "Loading...",
       "TABLE_TITLE": "Players filtered by selected payments",
       "NO_RESULTS": "No players for the selected payments.",
-      "PAID_OF": "of"
+      "PAID_OF": "of",
+      "DROPDOWN_TITLE": "Filter by quota",
+      "SELECTED_COUNT": "{{ count }} selected"
+    },
+    "EXPORT": {
+      "BTN": "Export",
+      "BTN_TITLE": "Export list"
+    },
+    "REMINDER": {
+      "BTN": "Reminder",
+      "BTN_TITLE": "Send reminder to players with overdue payments"
+    },
+    "VISTA": {
+      "PLAYERS": "Players",
+      "PLAYERS_TITLE": "Player view",
+      "QUOTAS": "Quotas",
+      "QUOTAS_TITLE": "Quota view",
+      "NO_QUOTAS": "No quotas created yet.",
+      "NO_QUOTAS_FILTER": "No quotas match the filters.",
+      "DEADLINE": "Deadline",
+      "VIEW_PLAYERS": "View players"
+    },
+    "DASH": {
+      "STATUS_OK": "Up to date",
+      "STATUS_OVERDUE": "Overdue"
     }
   },
   "NOTIFICATIONS": {
