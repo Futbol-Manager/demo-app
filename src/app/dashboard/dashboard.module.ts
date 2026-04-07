@@ -37,6 +37,7 @@ import { HistorialComponent } from './tareas/historial/historial.component';
 import { MisTareasComponent } from './tareas/mis-tareas/mis-tareas.component';
 import { TacticalBoardComponent } from './tareas/tactical-board/tactical-board.component';
 import { TareasCatalogComponent } from './tareas/tareas-catalog/tareas-catalog.component';
+import { TacticalBoardEditorComponent } from './tactical-board-editor/tactical-board-editor.component';
 import { OpcionesjugadorComponent } from './opcionesjugador/opcionesjugador.component';
 import { HorariosequiposComponent } from './horariosequipos/horariosequipos.component';
 import { EntrenamientosCreadosComponent } from './entrenamientos-creados/entrenamientos-creados.component';
@@ -138,6 +139,9 @@ import { PlanificadorSemanalIaComponent } from './planificador-semanal-ia/planif
 import { RopaCatalogoComponent } from './ropa/ropa-catalogo/ropa-catalogo.component';
 import { RopaTablaCartalogComponent } from './ropa/ropa-tabla-catalogo/ropa-tabla-catalogo.component';
 import { TaskEditModalComponent } from './task-edit-modal/task-edit-modal.component';
+import { ClubShopComponent } from './club-shop/club-shop.component';
+import { ClubPostComponent } from './club-post/club-post.component';
+import { PostGeneratorModalComponent } from './club-post/post-generator-modal/post-generator-modal.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -179,6 +183,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     HistorialComponent,
     MisTareasComponent,
     TacticalBoardComponent,
+    TacticalBoardEditorComponent,
     TareasCatalogComponent,
     OpcionesjugadorComponent,
     HorariosequiposComponent,
@@ -275,6 +280,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     RopaJugadorComponent,
     ModalBackdropDirective,
     PlanificadorSemanalIaComponent,
+    ClubShopComponent,
+    ClubPostComponent,
+    PostGeneratorModalComponent,
   ],
   imports: [
     CommonModule,

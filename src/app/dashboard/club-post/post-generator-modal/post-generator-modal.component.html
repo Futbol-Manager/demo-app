@@ -1,0 +1,398 @@
+<!-- Overlay -->
+<div class="pgm-overlay" (click)="closed.emit()"></div>
+
+<!-- Modal panel -->
+<div class="pgm-panel">
+
+  <!-- Header -->
+  <div class="pgm-header">
+    <div class="pgm-header-left">
+      <i class="bi bi-image"></i>
+      <div>
+        <h3>{{ existingPost ? ('POST_GENERATOR.EDIT_POST' | translate) : ('POST_GENERATOR.NEW_POST' | translate) }}</h3>
+        <p>{{ workingTeamName || ('POST_GENERATOR.CHOOSE_TEAM' | translate) }}</p>
+      </div>
+    </div>
+    <div class="pgm-header-actions">
+      <div class="type-toggle">
+        <button [class.active]="templateType === 'pre'" (click)="switchType('pre')">
+          <i class="bi bi-clock"></i> {{ 'POST_GENERATOR.TAB_PRE' | translate }}
+        </button>
+        <button [class.active]="templateType === 'post'" (click)="switchType('post')">
+          <i class="bi bi-flag-fill"></i> {{ 'POST_GENERATOR.TAB_POST' | translate }}
+        </button>
+        <button [class.active]="templateType === 'jornada'" (click)="switchType('jornada')">
+          <i class="bi bi-calendar-week"></i> {{ 'POST_GENERATOR.TAB_JORNADA' | translate }}
+        </button>
+      </div>
+      <button class="btn-close-modal" (click)="closed.emit()" [title]="'POST_GENERATOR.CLOSE' | translate">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="pgm-body">
+
+    <!-- ??? Form panel ??????????????????????????????????????????????????????? -->
+    <div class="pgm-form-panel">
+
+      <!-- Selector de equipo -->
+      <div class="form-section team-selector-section" *ngIf="teams.length > 0">
+        <div class="section-label">
+          <i class="bi bi-people-fill"></i> {{ 'POST_GENERATOR.TEAMS_SECTION' | translate }}
+        </div>
+        <select class="form-select form-select-sm" (change)="onTeamSelected($event)">
+          <option value="" [selected]="!workingTeamId">{{ 'POST_GENERATOR.CHOOSE_TEAM' | translate }}</option>
+          <option *ngFor="let t of teams"
+            [value]="t.teamId"
+            [selected]="t.teamId === workingTeamId">
+            {{ t.teamName }}
+          </option>
+        </select>
+      </div>
+
+      <!-- ??????? PRE / POST form ??????? -->
+      <ng-container *ngIf="templateType !== 'jornada'">
+
+        <!-- Equipos -->
+        <div class="form-section">
+          <div class="section-label"><i class="bi bi-shield-fill"></i> {{ 'POST_GENERATOR.TEAMS_SECTION' | translate }}</div>
+          <div class="teams-row">
+            <div class="team-form-group">
+              <label class="form-label-sm">{{ 'POST_GENERATOR.HOME_TEAM_LABEL' | translate }}</label>
+              <input type="text" class="form-control form-control-sm" [placeholder]="'POST_GENERATOR.TEAM_NAME_PH' | translate"
+                [(ngModel)]="homeTeamName">
+              <div class="logo-upload-row">
+                <div class="logo-thumb" (click)="homeInput.click()">
+                  <img *ngIf="homeLogoUrl" [src]="homeLogoUrl" alt="Logo local">
+                  <i *ngIf="!homeLogoUrl" class="bi bi-plus-circle"></i>
+                  <span *ngIf="!homeLogoUrl" class="upload-hint">{{ 'POST_GENERATOR.SHIELD' | translate }}</span>
+                </div>
+                <input #homeInput type="file" accept="image/*" (change)="onHomeLogo($event)" hidden>
+                <button *ngIf="homeLogoUrl" class="btn-clear-logo" (click)="clearHomeLogo()">
+                  <i class="bi bi-x"></i>
+                </button>
+              </div>
+            </div>
+            <div class="vs-badge">VS</div>
+            <div class="team-form-group">
+              <label class="form-label-sm">{{ 'POST_GENERATOR.AWAY_TEAM_LABEL' | translate }}</label>
+              <input type="text" class="form-control form-control-sm" [placeholder]="'POST_GENERATOR.RIVAL_NAME_PH' | translate"
+                [(ngModel)]="awayTeamName">
+              <div class="logo-upload-row">
+                <div class="logo-thumb" (click)="awayInput.click()">
+                  <img *ngIf="awayLogoUrl" [src]="awayLogoUrl" alt="Logo visitante">
+                  <i *ngIf="!awayLogoUrl" class="bi bi-plus-circle"></i>
+                  <span *ngIf="!awayLogoUrl" class="upload-hint">{{ 'POST_GENERATOR.SHIELD' | translate }}</span>
+                </div>
+                <input #awayInput type="file" accept="image/*" (change)="onAwayLogo($event)" hidden>
+                <button *ngIf="awayLogoUrl" class="btn-clear-logo" (click)="clearAwayLogo()">
+                  <i class="bi bi-x"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resultado ù solo post -->
+        <div class="form-section" *ngIf="templateType === 'post'">
+          <div class="section-label"><i class="bi bi-trophy-fill"></i> {{ 'POST_GENERATOR.SCORE_SECTION' | translate }}</div>
+          <div class="score-row">
+            <input type="number" class="form-control score-input" min="0" [(ngModel)]="homeScore" placeholder="0">
+            <span class="score-dash">ù</span>
+            <input type="number" class="form-control score-input" min="0" [(ngModel)]="awayScore" placeholder="0">
+          </div>
+          <div class="mt-2">
+            <label class="form-label-sm">{{ 'SOCIAL_POST.SCORERS_LABEL' | translate }}</label>
+            <input type="text" class="form-control form-control-sm"
+              placeholder="Ej: Garcùa (23'), Lùpez (67')"
+              [(ngModel)]="scorers">
+          </div>
+        </div>
+
+        <!-- Datos del partido -->
+        <div class="form-section">
+          <div class="section-label"><i class="bi bi-calendar3"></i> {{ 'POST_GENERATOR.MATCH_DATA_SECTION' | translate }}</div>
+          <div class="row g-2">
+            <div class="col-7">
+              <label class="form-label-sm">{{ 'POST_GENERATOR.DATE_LABEL' | translate }}</label>
+              <input type="text" class="form-control form-control-sm"
+                [placeholder]="'POST_GENERATOR.DATE_PH' | translate"
+                [(ngModel)]="matchDate">
+            </div>
+            <div class="col-5">
+              <label class="form-label-sm">{{ 'POST_GENERATOR.TIME_LABEL' | translate }}</label>
+              <input type="time" class="form-control form-control-sm" [(ngModel)]="matchTime">
+            </div>
+            <div class="col-8">
+              <label class="form-label-sm">{{ 'POST_GENERATOR.COMPETITION_LABEL' | translate }}</label>
+              <input type="text" class="form-control form-control-sm" [placeholder]="'POST_GENERATOR.COMPETITION_PH' | translate" [(ngModel)]="competition">
+            </div>
+            <div class="col-4">
+              <label class="form-label-sm">{{ 'POST_GENERATOR.MATCHDAY_LABEL' | translate }}</label>
+              <input type="text" class="form-control form-control-sm" [placeholder]="'POST_GENERATOR.MATCHDAY_PH' | translate" [(ngModel)]="matchday">
+            </div>
+            <div class="col-12">
+              <label class="form-label-sm">{{ 'POST_GENERATOR.VENUE_LABEL' | translate }}</label>
+              <input type="text" class="form-control form-control-sm" [placeholder]="'POST_GENERATOR.VENUE_PH' | translate" [(ngModel)]="venue">
+            </div>
+          </div>
+        </div>
+
+      </ng-container>
+
+      <!-- ??????? JORNADA form ??????? -->
+      <ng-container *ngIf="templateType === 'jornada'">
+
+        <div class="form-section">
+          <div class="section-label"><i class="bi bi-calendar-week"></i> {{ 'POST_GENERATOR.JORNADA_SECTION' | translate }}</div>
+          <div class="row g-2">
+            <div class="col-12">
+              <label class="form-label-sm">{{ 'POST_GENERATOR.JORNADA_TITLE_LABEL' | translate }}</label>
+              <input type="text" class="form-control form-control-sm"
+                [placeholder]="'POST_GENERATOR.JORNADA_TITLE_PH' | translate"
+                [(ngModel)]="jornadaTitle">
+            </div>
+            <div class="col-12">
+              <label class="form-label-sm">{{ 'POST_GENERATOR.DATE_LABEL' | translate }}</label>
+              <input type="date" class="form-control form-control-sm" [(ngModel)]="jornadaDate">
+            </div>
+          </div>
+        </div>
+
+        <!-- Lista de partidos -->
+        <div class="form-section">
+          <div class="section-label">
+            <i class="bi bi-list-ul"></i> {{ 'POST_GENERATOR.MATCHES_SECTION' | translate }}
+            <button class="btn-add-match" (click)="addJornadaMatch()">
+              <i class="bi bi-plus"></i> {{ 'POST_GENERATOR.ADD_MATCH' | translate }}
+            </button>
+          </div>
+          <div class="jornada-match-list">
+            <div class="jornada-match-item"
+              *ngFor="let match of jornadaMatches; let i = index; trackBy: trackByIndex">
+              <div class="jornada-match-row">
+                <input type="text" class="form-control form-control-sm jornada-input"
+                  [placeholder]="'POST_GENERATOR.HOME_PH' | translate" [(ngModel)]="match.homeTeam">
+                <span class="jornada-vs">vs</span>
+                <input type="text" class="form-control form-control-sm jornada-input"
+                  [placeholder]="'POST_GENERATOR.AWAY_PH' | translate" [(ngModel)]="match.awayTeam">
+                <input type="time" class="form-control form-control-sm jornada-time"
+                  [(ngModel)]="match.time">
+                <button class="btn-remove-match" (click)="removeJornadaMatch(i)" title="Eliminar">
+                  <i class="bi bi-x"></i>
+                </button>
+              </div>
+              <input type="text" class="form-control form-control-sm mt-1"
+                [placeholder]="'POST_GENERATOR.COMPETITION_OPT_PH' | translate" [(ngModel)]="match.competition">
+            </div>
+            <div *ngIf="jornadaMatches.length === 0" class="jornada-empty">
+              <i class="bi bi-plus-circle"></i> {{ 'POST_GENERATOR.NO_JORNADA_MATCHES' | translate }}
+            </div>
+          </div>
+        </div>
+
+      </ng-container>
+
+      <!-- Colores (compartido) -->
+      <div class="form-section">
+        <div class="section-label"><i class="bi bi-palette-fill"></i> {{ 'POST_GENERATOR.COLORS_SECTION' | translate }}</div>
+        <div class="colors-row">
+          <div class="color-group">
+            <label class="form-label-sm">{{ 'POST_GENERATOR.PRIMARY_COLOR' | translate }}</label>
+            <div class="color-picker-wrap">
+              <input type="color" class="color-swatch" [(ngModel)]="primaryColor">
+              <span class="color-hex">{{ primaryColor }}</span>
+            </div>
+          </div>
+          <div class="color-group">
+            <label class="form-label-sm">{{ 'POST_GENERATOR.ALT_COLOR' | translate }}</label>
+            <div class="color-picker-wrap">
+              <input type="color" class="color-swatch" [(ngModel)]="altColor">
+              <span class="color-hex">{{ altColor }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="form-actions">
+        <button class="btn-save btn-locked-demo" (click)="showLockedHint()" title="{{ 'DEMO.FULL_VERSION_ONLY' | translate }}">
+          <i class="bi bi-floppy"></i>
+          {{ existingPost ? ('POST_GENERATOR.SAVE_CHANGES' | translate) : ('POST_GENERATOR.SAVE_POST_BTN' | translate) }}
+          <span class="lock-badge"><i class="bi bi-lock-fill"></i></span>
+        </button>
+        <button class="btn-export-sm btn-locked-demo" (click)="showLockedHint()" title="{{ 'DEMO.FULL_VERSION_ONLY' | translate }}">
+          <i class="bi bi-download"></i>
+          {{ 'POST_GENERATOR.DOWNLOAD_PNG' | translate }}
+          <span class="lock-badge"><i class="bi bi-lock-fill"></i></span>
+        </button>
+      </div>
+
+      <!-- Toast demo bloqueado -->
+      <div class="demo-locked-toast" *ngIf="lockedHintVisible">
+        <i class="bi bi-lock-fill"></i>
+        {{ 'DEMO.FULL_VERSION_ONLY' | translate }}
+      </div>
+
+    </div>
+
+    <!-- ??? Preview panel ???????????????????????????????????????????????????? -->
+    <div class="pgm-preview-panel">
+      <div class="preview-label">{{ 'POST_GENERATOR.PREVIEW_LABEL' | translate }}</div>
+
+      <div class="preview-wrapper">
+        <div #templateEl>
+
+        <!-- ?? Plantilla PRE / POST ?? -->
+        <div class="match-template"
+          *ngIf="templateType !== 'jornada'"
+          [style.background]="altColor"
+          [style.font-family]="'Archivo, system-ui, sans-serif'">
+
+          <div class="tmpl-top-stripe"
+            [style.background]="'linear-gradient(90deg,' + primaryColor + ',' + darkerAlt + ')'">
+          </div>
+
+          <div class="tmpl-match-label" [style.color]="primaryColor">
+            {{ templateType === 'pre' ? ('SOCIAL_POST.LABEL_PRE' | translate) : ('SOCIAL_POST.LABEL_POST' | translate) }}
+          </div>
+
+          <div class="tmpl-teams">
+            <div class="tmpl-team">
+              <div class="tmpl-logo-wrap"
+                [style.border-color]="primaryRgba20"
+                [style.background]="primaryRgba10">
+                <img *ngIf="homeLogoUrl" [src]="homeLogoUrl" class="tmpl-logo" alt="">
+                <i *ngIf="!homeLogoUrl" class="bi bi-shield" [style.color]="primaryColor"></i>
+              </div>
+              <div class="tmpl-team-name" style="color:#ffffff">
+                {{ homeTeamName || ('POST_GENERATOR.HOME_FALLBACK' | translate) }}
+              </div>
+            </div>
+
+            <div class="tmpl-center">
+              <ng-container *ngIf="templateType === 'pre'">
+                <div class="tmpl-vs" style="color:rgba(255,255,255,0.35)">VS</div>
+              </ng-container>
+              <ng-container *ngIf="templateType === 'post'">
+                <div class="tmpl-score-row">
+                  <span class="tmpl-score-num" style="color:#ffffff">{{ homeScore ?? 0 }}</span>
+                  <span class="tmpl-score-sep" style="color:rgba(255,255,255,0.3)">:</span>
+                  <span class="tmpl-score-num" style="color:#ffffff">{{ awayScore ?? 0 }}</span>
+                </div>
+              </ng-container>
+            </div>
+
+            <div class="tmpl-team">
+              <div class="tmpl-logo-wrap"
+                [style.border-color]="primaryRgba20"
+                [style.background]="primaryRgba10">
+                <img *ngIf="awayLogoUrl" [src]="awayLogoUrl" class="tmpl-logo" alt="">
+                <i *ngIf="!awayLogoUrl" class="bi bi-shield" [style.color]="primaryColor"></i>
+              </div>
+              <div class="tmpl-team-name" style="color:#ffffff">
+                {{ awayTeamName || ('POST_GENERATOR.AWAY_FALLBACK' | translate) }}
+              </div>
+            </div>
+          </div>
+
+          <div class="tmpl-scorers" *ngIf="templateType === 'post' && scorers"
+            style="color:rgba(255,255,255,0.65)">
+            <span [style.color]="primaryColor">{{ sportEmoji }}</span> {{ scorers }}
+          </div>
+
+          <div class="tmpl-info-bar">
+            <div class="tmpl-info-row">
+              <span *ngIf="matchDate" class="tmpl-info-item" style="color:rgba(255,255,255,0.55)">
+                <span [style.color]="primaryColor">?</span>
+                {{ matchDate }}<ng-container *ngIf="matchTime"> ù {{ matchTime }}h</ng-container>
+              </span>
+              <span *ngIf="competition" class="tmpl-info-item" style="color:rgba(255,255,255,0.55)">
+                <span [style.color]="primaryColor">?</span>
+                {{ competition }}<ng-container *ngIf="matchday"> ù {{ matchday }}</ng-container>
+              </span>
+              <span *ngIf="venue" class="tmpl-info-item" style="color:rgba(255,255,255,0.45)">
+                <span [style.color]="primaryColor">?</span> {{ venue }}
+              </span>
+            </div>
+            <div class="tmpl-brand-bar" [style.border-top-color]="primaryRgba20">
+              <div class="tmpl-brand-line"
+                [style.background]="'linear-gradient(90deg, transparent, ' + primaryColor + ')'"></div>
+              <span class="tmpl-brand-name" style="color:rgba(255,255,255,0.35)">
+                {{ clubName || workingTeamName }}
+              </span>
+              <div class="tmpl-brand-line reverse"
+                [style.background]="'linear-gradient(270deg, transparent, ' + primaryColor + ')'"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ?? Plantilla JORNADA ?? -->
+        <div class="match-template jornada-template"
+          *ngIf="templateType === 'jornada'"
+          [style.background]="altColor"
+          [style.font-family]="'Archivo, system-ui, sans-serif'">
+
+          <div class="tmpl-top-stripe"
+            [style.background]="'linear-gradient(90deg,' + primaryColor + ',' + darkerAlt + ')'">
+          </div>
+
+          <div class="jornada-header">
+            <div class="jornada-club-row">
+              <img *ngIf="clubLogoUrl" [src]="clubLogoUrl" class="jornada-club-logo" alt="">
+              <div class="jornada-title-block">
+                <div class="jornada-label" [style.color]="primaryColor">JORNADA</div>
+                <div class="jornada-main-title" style="color:#ffffff">
+                  {{ jornadaTitle || ('POST_GENERATOR.JORNADA_TITLE_PH' | translate) }}
+                </div>
+                <div class="jornada-date-line" style="color:rgba(255,255,255,0.55)" *ngIf="jornadaDate">
+                  {{ formatJornadaDate(jornadaDate) }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="jornada-matches-list">
+            <div class="jornada-match-row-tmpl"
+              *ngFor="let m of jornadaMatches; let last = last"
+              [style.border-bottom-color]="last ? 'transparent' : primaryRgba20">
+              <div class="jornada-match-teams">
+                <span class="jornada-match-team" style="color:#ffffff">{{ m.homeTeam || ('POST_GENERATOR.HOME_PH' | translate) }}</span>
+                <span class="jornada-match-vs" [style.color]="primaryColor">VS</span>
+                <span class="jornada-match-team" style="color:#ffffff">{{ m.awayTeam || ('POST_GENERATOR.AWAY_PH' | translate) }}</span>
+              </div>
+              <div class="jornada-match-meta">
+                <span *ngIf="m.time" style="color:rgba(255,255,255,0.6)">{{ m.time }}h</span>
+                <span *ngIf="m.competition" style="color:rgba(255,255,255,0.4)">ù {{ m.competition }}</span>
+              </div>
+            </div>
+            <div *ngIf="jornadaMatches.length === 0" class="jornada-empty-tmpl"
+              style="color:rgba(255,255,255,0.3)">
+              {{ 'POST_GENERATOR.JORNADA_EMPTY' | translate }}
+            </div>
+          </div>
+
+          <div class="tmpl-brand-bar" [style.border-top-color]="primaryRgba20">
+            <div class="tmpl-brand-line"
+              [style.background]="'linear-gradient(90deg, transparent, ' + primaryColor + ')'"></div>
+            <span class="tmpl-brand-name" style="color:rgba(255,255,255,0.35)">
+              {{ clubName || workingTeamName }}
+            </span>
+            <div class="tmpl-brand-line reverse"
+              [style.background]="'linear-gradient(270deg, transparent, ' + primaryColor + ')'"></div>
+          </div>
+
+        </div><!-- end jornada-template -->
+        </div><!-- end #templateEl -->
+      </div>
+
+      <p class="export-hint">
+        <i class="bi bi-info-circle"></i>
+        {{ 'POST_GENERATOR.EXPORT_HINT' | translate }}
+      </p>
+    </div>
+
+  </div>
+</div>

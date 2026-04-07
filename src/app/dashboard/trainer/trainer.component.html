@@ -131,16 +131,7 @@
                     <div class="form-group">
                         <label for="posicion">Posición:</label>
                         <select class="form-control" id="posicion" name="posicion" [(ngModel)]="player.posicion">
-                            <option value="Portero">Portero</option>
-                            <option value="Defensa Central">Defensa Central</option>
-                            <option value="Defensa Lateral">Defensa Lateral</option>
-                            <option value="Carrilero">Carrilero</option>
-                            <option value="Centrocampista">Centrocampista</option>
-                            <option value="Centrocampista Defensivo">Centrocampista Defensivo</option>
-                            <option value="Centrocampista Ofensivo">Centrocampista Ofensivo</option>
-                            <option value="Mediapunta">Mediapunta</option>
-                            <option value="Extremo">Extremo</option>
-                            <option value="Delantero Centro"> Centro</option>
+                            <option *ngFor="let pos of sportConfig.positions" [value]="pos">{{ positionLabel(pos) }}</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -154,7 +145,7 @@
                             placeholder="Peso en Kg">
                     </div>
                     <div class="form-group">
-                        <label for="piernaNatural">Pierna Natural:</label>
+                        <label for="piernaNatural">{{ sportConfig.dominantLimbKey | translate }}:</label>
                         <select class="form-control" id="piernaNatural" name="piernaNatural"
                             [(ngModel)]="player.piernaNatural">
                             <option value="Derecha">Derecha</option>
@@ -246,14 +237,14 @@
                                 [(ngModel)]="player.tiroPrecisionFalta" placeholder="Tiro - Precisión Falta"
                                 (change)="promedioTiro()">
                         </div>
-                        <div class="col-6">
+                        <div class="col-6" *ngIf="currentSport === 'futbol' || currentSport === 'futbol-sala'">
                             <label for="tiroPenaltis">Tiro - Penaltis:</label>
                             <input type="text" class="form-control" id="tiroPenaltis" name="tiroPenaltis"
                                 [(ngModel)]="player.tiroPenaltis" placeholder="Tiro - Penaltis"
                                 (change)="promedioTiro()">
                         </div>
                     </div>
-                    <div class="form-group d-flex">
+                    <div class="form-group d-flex" *ngIf="currentSport === 'futbol' || currentSport === 'futbol-sala'">
                         <div class="col-6">
                             <label for="tiroCabezazo">Tiro - Cabezazo:</label>
                             <input type="text" class="form-control" id="tiroCabezazo" name="tiroCabezazo"
@@ -384,6 +375,7 @@
                                 placeholder="Mentalidad - Compostura" (change)="promedioMentalidad()">
                         </div>
                     </div>
+                    <ng-container *ngIf="sportConfig.hasGoalkeeper">
                     <div class="form-group">
                         <label for="portero">Portero:</label>
                         <input type="text" class="form-control" id="portero" name="portero" [(ngModel)]="player.portero"
@@ -425,6 +417,7 @@
                                 (change)="promedioPortero()">
                         </div>
                     </div>
+                    </ng-container>
                     <div class="form-group">
                         <label for="especialidades">Especialidades:</label>
                         <input type="text" class="form-control" id="especialidades" name="especialidades"

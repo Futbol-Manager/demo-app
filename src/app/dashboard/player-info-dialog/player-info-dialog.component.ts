@@ -6,6 +6,11 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { environment } from 'src/environments/environment';
 import { Chart, registerables } from 'chart.js/auto';
 import { PagocuotasPlayerResponse } from 'src/app/core/services/player/player.model';
+import { getSportConfig, SportConfig } from 'src/app/core/models/sport/sport-config.model';
+import { SportContextService } from 'src/app/core/services/sport/sport-context.service';
+import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
+import { sportScoringPlural } from 'src/app/core/utils/sport-ui-i18n';
 
 Chart.register(...registerables);
 
@@ -48,13 +53,36 @@ export class PlayerInfoDialogComponent implements OnInit, OnDestroy, AfterViewIn
   currentIndex2 = 0;
   iconos: { [key: string]: string } = { 'V': '🟢', 'E': '🟡', 'D': '🔴' };
 
+  sportConfig: SportConfig = getSportConfig('futbol');
+  private langSub?: Subscription;
+
+  get scoringStatLabel(): string {
+    const sk = this.sportContextService.getSport();
+    return sportScoringPlural(this.translate, sk, this.sportConfig.scoringUnitPlural);
+  }
+
+  get showStatScoring(): boolean {
+    const c = this.sportConfig.playerStatsColumns;
+    return c.includes('goles') || c.includes('puntos');
+  }
+
+  get showStatYellowCards(): boolean {
+    return this.sportConfig.playerStatsColumns.includes('tarjetasAmarillas');
+  }
+
+  get showStatRedCards(): boolean {
+    return this.sportConfig.playerStatsColumns.includes('tarjetasRojas');
+  }
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: PlayerInfoDialogData,
     private dialogRef: MatDialogRef<PlayerInfoDialogComponent>,
     private playerService: PlayerService,
     private trainingService: TrainingService,
     private loginService: LoginService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private sportContextService: SportContextService,
+    private translate: TranslateService
   ) {
     this.selectedPlayer = data.player;
     this.teamId = data.teamId;
@@ -62,6 +90,8 @@ export class PlayerInfoDialogComponent implements OnInit, OnDestroy, AfterViewIn
   }
 
   ngOnInit(): void {
+    this.sportConfig = getSportConfig(this.sportContextService.getSport());
+    this.langSub = this.translate.onLangChange.subscribe(() => this.cdr.markForCheck());
     this.loginService.usuarioActual.subscribe(u => this.usuarioActual = u);
     this.actualizarEdadSeleccionada();
     this.getInfoAsistencia();
@@ -97,6 +127,7 @@ export class PlayerInfoDialogComponent implements OnInit, OnDestroy, AfterViewIn
   }
 
   ngOnDestroy(): void {
+    this.langSub?.unsubscribe();
     if (this.radarChart) this.radarChart.destroy();
   }
 

@@ -51,6 +51,8 @@ import { finalize } from 'rxjs/operators';
 import { IndividualTrainingService } from 'src/app/core/services/individual-training/individual-training.service';
 import { ACTIVITY_COLORS } from 'src/app/core/services/individual-training/individual-training.model';
 import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
+import { SportContextService } from 'src/app/core/services/sport/sport-context.service';
+import { SportConfig, getSportConfig } from 'src/app/core/models/sport/sport-config.model';
 
 declare var html2pdf: any;
 
@@ -188,6 +190,30 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   get isView(): boolean {
     return this.mode === 'view-partido';
+  }
+
+  get isMatchPast(): boolean {
+    if (!this.daySession) return false;
+    const today = new Date().toISOString().substring(0, 10);
+    return this.daySession <= today;
+  }
+
+  get isMatchToday(): boolean {
+    if (!this.daySession) return false;
+    const today = new Date().toISOString().substring(0, 10);
+    return this.daySession === today;
+  }
+
+  /** Clave i18n para "Formaciones recientes" del rival según deporte */
+  get rivalFormationsLabelKey(): string {
+    const football = ['futbol', 'futbol-sala', 'hockey'];
+    return football.includes(this.currentSport) ? 'CAL.TEXT_011' : 'CAL.LBL_RIVAL_FORMATIONS';
+  }
+
+  /** Clave i18n para "ABP / Situaciones especiales" del rival según deporte */
+  get rivalAbpLabelKey(): string {
+    const football = ['futbol', 'futbol-sala', 'hockey'];
+    return football.includes(this.currentSport) ? 'CAL.TEXT_017' : 'CAL.LBL_RIVAL_ABP';
   }
 
   get isEdit(): boolean {
@@ -912,6 +938,9 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   playerAsistencia = false;
   motivoNoAsistencia = '';
 
+  currentSport: string = 'futbol';
+  sportConfig: SportConfig = getSportConfig('futbol');
+
   constructor(
     public router: Router,
     private route: ActivatedRoute,
@@ -927,6 +956,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private individualTrainingSvc: IndividualTrainingService,
     private tutorialService: TutorialService,
+    private sportContext: SportContextService,
   ) { }
 
   ngOnInit(): void {
@@ -967,6 +997,12 @@ export class CalendarioComponent implements OnInit, OnDestroy {
             this.clubId = response.data.clubId || 0;
             this.match2.imgClub =
               this.imageBaseUrl + 'user/' + response.data.imgClub;
+
+            const sport = (response.data as { sport?: string }).sport || 'futbol';
+            this.currentSport = sport;
+            this.sportContext.setSport(sport);
+            this.sportConfig = this.sportContext.getConfig();
+
             if (this.categoryTeam === 14) this.irAPantalla(2);
             this.getListaEntrenamientos();
           } else {

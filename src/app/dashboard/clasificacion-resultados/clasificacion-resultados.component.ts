@@ -1,11 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { Location } from '@angular/common';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { ActivatedRoute } from '@angular/router';
-import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
+import { SafeResourceUrl, SafeHtml, DomSanitizer } from '@angular/platform-browser';
 import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 import { Subscription } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
+import { getSportConfig, SportConfig } from 'src/app/core/models/sport/sport-config.model';
+import { SportContextService } from 'src/app/core/services/sport/sport-context.service';
+import { TeamService } from 'src/app/core/services/team/team.service';
+import { sportScoringPlural } from 'src/app/core/utils/sport-ui-i18n';
 import * as bootstrap from 'bootstrap';
 
 type WizardStep = 'url' | 'loading' | 'success' | 'error';
@@ -30,6 +35,24 @@ export class ClasificacionResultadosComponent implements OnInit, OnDestroy {
   // Columnas disponibles según los datos de la federación
   tieneGoles = true;
   tieneForma = false;
+  /** Cabeceras de columnas en el orden de la fuente original. */
+  headers: string[] = [];
+  /** Fecha/hora de la última actualización formateada. */
+  lastUpdated: string | null = null;
+  /** HTML bruto de la tabla (si el backend lo devuelve). */
+  rawHtml: SafeHtml | null = null;
+
+  sportConfig: SportConfig = getSportConfig('futbol');
+  currentSport = 'futbol';
+
+  /** Cabecera tipo GF—GC / PF—PC según deporte (tabla de clasificación). */
+  get scoringForAgainstHeader(): string {
+    const k = `SPORT_UI.TABLE_SCORING_FC.${this.currentSport}`;
+    const v = this.translate.instant(k);
+    if (v !== k) return v;
+    const unit = sportScoringPlural(this.translate, this.currentSport, this.sportConfig.scoringUnitPlural);
+    return this.translate.instant('SPORT_UI.TABLE_SCORING_FC_FALLBACK', { unit });
+  }
 
   showModalActa = false;
   showModalActa2 = false;
@@ -55,21 +78,40 @@ export class ClasificacionResultadosComponent implements OnInit, OnDestroy {
   cachedActaUrl: SafeResourceUrl = '';
 
   private tutorialSub?: Subscription;
+  private langSub?: Subscription;
 
   constructor(
     private location: Location,
     private route: ActivatedRoute,
     private clubService: ClubService,
     private sanitizer: DomSanitizer,
-    private tutorialService: TutorialService) { }
+    private tutorialService: TutorialService,
+    private sportContextService: SportContextService,
+    private teamService: TeamService,
+    private translate: TranslateService,
+    private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.teamId = +params['teamId'];
+      if (this.teamId) {
+        this.teamService.getTeamById(String(this.teamId)).subscribe((res: Response) => {
+          const team = res?.data as { sport?: string } | undefined;
+          if (team?.sport) {
+            this.sportContextService.setSport(team.sport);
+            this.currentSport = team.sport;
+            this.sportConfig = getSportConfig(this.currentSport);
+          }
+        });
+      }
     });
+    this.currentSport = this.sportContextService.getSport();
+    this.sportConfig = getSportConfig(this.currentSport);
     this.jornadaSeleccionada = 1;
     this.loadTableTodo(1);
     setTimeout(() => this.tutorialService.start('clasificacion-resultados', true), 600);
+
+    this.langSub = this.translate.onLangChange.subscribe(() => this.cdr.markForCheck());
 
     this.tutorialSub = this.tutorialService.getState$().subscribe(state => {
       if (state?.screenId !== 'clasificacion-resultados') return;
@@ -81,6 +123,7 @@ export class ClasificacionResultadosComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.tutorialSub?.unsubscribe();
+    this.langSub?.unsubscribe();
   }
 
   loadTableTodo(jornada: number) {
@@ -114,15 +157,75 @@ export class ClasificacionResultadosComponent implements OnInit, OnDestroy {
     let numJ = data.totalJornadas;
     if (!numJ) numJ = 35;
     this.jornadas = Array.from({ length: parseInt(numJ, 10) }, (_, i) => i + 1);
-    // Si el backend indica que la jornada no es navegable, se muestra aviso
     this.jornadaNavegable = data.jornadaNavegable !== false;
-    // Detectar columnas disponibles
+    // HTML bruto de la tabla (preferente sobre el parseo por esquema)
+    this.rawHtml = data.rawHtml
+      ? this.sanitizer.bypassSecurityTrustHtml(data.rawHtml)
+      : null;
+    // Cabeceras dinámicas de la fuente
+    this.headers = data.headers && data.headers.length > 0
+      ? data.headers
+      : this.buildFallbackHeaders(data.columnas || []);
     const columnas: string[] = data.columnas || [];
     this.tieneGoles = columnas.length === 0 || columnas.includes('goles');
     this.tieneForma = columnas.includes('forma');
-    // Detectar si todos los puntos son 0 (temporada no iniciada o datos vacíos)
     this.temporadaSinIniciar = this.equipos.length > 0
       && this.equipos.every((e: any) => !e.puntos || e.puntos === '0' || e.puntos === '');
+    this.lastUpdated = data.lastUpdated ? this.formatLastUpdated(data.lastUpdated) : null;
+  }
+
+  private tsLocale(): string {
+    const c = (this.translate.currentLang || 'es').split('-')[0];
+    const map: Record<string, string> = {
+      es: 'es-ES', en: 'en-GB', fr: 'fr-FR', pt: 'pt-PT', de: 'de-DE', it: 'it-IT',
+    };
+    return map[c] || 'es-ES';
+  }
+
+  private formatLastUpdated(iso: string): string {
+    try {
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return '';
+      return d.toLocaleString(this.tsLocale(), {
+        weekday: 'short', day: 'numeric', month: 'short',
+        hour: '2-digit', minute: '2-digit'
+      });
+    } catch {
+      return '';
+    }
+  }
+
+  private buildFallbackHeaders(columnas: string[]): string[] {
+    const hs = ['Pts'];
+    if (columnas.length === 0 || columnas.includes('pj')) hs.push('J');
+    if (columnas.length === 0 || columnas.includes('pg')) hs.push('G');
+    if (columnas.length === 0 || columnas.includes('pe')) hs.push('E');
+    if (columnas.length === 0 || columnas.includes('pp')) hs.push('P');
+    if (columnas.length === 0 || columnas.includes('goles')) { hs.push('GF'); hs.push('GC'); }
+    if (columnas.includes('forma')) hs.push('Forma');
+    return hs;
+  }
+
+  getCellValue(equipo: any, header: string): string {
+    if (equipo.datos && equipo.datos[header] != null) return equipo.datos[header];
+    const map: Record<string, string> = {
+      'Pts': equipo.puntos,  'J': equipo.jugados,
+      'G':   equipo.ganados, 'E': equipo.empatados,
+      'P':   equipo.perdidos,'GF': equipo.golesAFavor,
+      'GC':  equipo.golesEnContra, 'Forma': equipo.forma,
+    };
+    return map[header] ?? '';
+  }
+
+  isFormaHeader(header: string): boolean {
+    return header.toLowerCase() === 'forma' || header.toLowerCase() === 'form';
+  }
+
+  getHeaderLabel(h: string): string {
+    const sup = sportScoringPlural(this.translate, this.currentSport, this.sportConfig.scoringUnitPlural);
+    if (h === 'GF') return sup || h;
+    if (h === 'GC') return this.translate.instant('SPORT_UI.HEADER_VS_SCORING', { unit: sup || h });
+    return h;
   }
 
   /** Extrae el número de jornada de una URL si está presente */
@@ -137,14 +240,14 @@ export class ClasificacionResultadosComponent implements OnInit, OnDestroy {
     if (!url) return;
 
     this.wizardStep = 'loading';
-    this.wizardMessage = 'Guardando configuración...';
+    this.wizardMessage = this.translate.instant('CLASIFICACION_PAGE.MSG_SAVE_CONFIG');
 
     const jornadaInicial = this.jornadaDeUrl(url);
 
     this.clubService.saveTeamUrl(this.teamId, url).subscribe(
       (saveResp: Response) => {
         if (saveResp && saveResp.status === 200) {
-          this.wizardMessage = 'Analizando la página de clasificación...';
+          this.wizardMessage = this.translate.instant('CLASIFICACION_PAGE.MSG_ANALYZING_PAGE');
           this.clubService.refreshClasificacion(this.teamId, jornadaInicial).subscribe(
             (dataResp: Response) => {
               if (dataResp && dataResp.data != null) {
@@ -152,22 +255,22 @@ export class ClasificacionResultadosComponent implements OnInit, OnDestroy {
                 this.wizardStep = 'success';
               } else {
                 this.wizardStep = 'error';
-                this.wizardMessage = 'No se encontraron datos de clasificación en esa URL. Prueba con otra URL o comprueba que la página tenga una tabla de clasificación visible.';
+                this.wizardMessage = this.translate.instant('CLASIFICACION_PAGE.MSG_NO_DATA_URL');
               }
             },
             () => {
               this.wizardStep = 'error';
-              this.wizardMessage = 'Error al cargar los datos desde la URL. Asegúrate de que la URL sea accesible y tenga una tabla de clasificación.';
+              this.wizardMessage = this.translate.instant('CLASIFICACION_PAGE.MSG_LOAD_URL_ERROR');
             }
           );
         } else {
           this.wizardStep = 'error';
-          this.wizardMessage = 'No se pudo guardar la configuración. Inténtalo de nuevo.';
+          this.wizardMessage = this.translate.instant('CLASIFICACION_PAGE.MSG_SAVE_FAIL');
         }
       },
       () => {
         this.wizardStep = 'error';
-        this.wizardMessage = 'Error al conectar con el servidor. Comprueba tu conexión.';
+        this.wizardMessage = this.translate.instant('CLASIFICACION_PAGE.MSG_SERVER_ERROR');
       }
     );
   }
@@ -220,7 +323,7 @@ export class ClasificacionResultadosComponent implements OnInit, OnDestroy {
     this.clubService.saveTeamUrl(this.teamId, url).subscribe(
       (resp: Response) => {
         if (resp && resp.status === 200) {
-          this.reconfigFeedback = 'URL guardada. Analizando nueva fuente...';
+          this.reconfigFeedback = this.translate.instant('CLASIFICACION_PAGE.MSG_RECONFIG_SAVED');
           const jornadaReconfig = this.jornadaDeUrl(url);
           this.urlReconfigInput = '';
           this.clubService.refreshClasificacion(this.teamId, jornadaReconfig).subscribe(
@@ -232,25 +335,25 @@ export class ClasificacionResultadosComponent implements OnInit, OnDestroy {
                 this.datosCargados = true;
                 this.datosNulos = false;
               } else {
-                this.reconfigFeedback = 'No se encontraron datos en la nueva URL.';
+                this.reconfigFeedback = this.translate.instant('CLASIFICACION_PAGE.MSG_RECONFIG_NO_DATA');
                 this.reconfigFeedbackError = true;
               }
             },
             () => {
               this.savingReconfig = false;
-              this.reconfigFeedback = 'Error al cargar datos de la nueva URL.';
+              this.reconfigFeedback = this.translate.instant('CLASIFICACION_PAGE.MSG_RECONFIG_ERROR');
               this.reconfigFeedbackError = true;
             }
           );
         } else {
           this.savingReconfig = false;
-          this.reconfigFeedback = 'No se pudo guardar la URL.';
+          this.reconfigFeedback = this.translate.instant('CLASIFICACION_PAGE.MSG_RECONFIG_SAVE_FAIL');
           this.reconfigFeedbackError = true;
         }
       },
       () => {
         this.savingReconfig = false;
-        this.reconfigFeedback = 'Error al conectar con el servidor.';
+        this.reconfigFeedback = this.translate.instant('CLASIFICACION_PAGE.MSG_SERVER_ERROR');
         this.reconfigFeedbackError = true;
       }
     );

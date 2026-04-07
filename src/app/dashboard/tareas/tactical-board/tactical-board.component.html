@@ -44,7 +44,7 @@
       </button>
       <button type="button" class="shortcut-btn shortcut-btn--ball" (click)="addPlayer('ball'); showPlayerPanel = false"
               [disabled]="ballPlaced" [title]="'TBOARD.BALL' | translate">
-        <span class="ball-icon">⚽</span>
+        <span class="ball-icon">{{ ballEmoji }}</span>
         <span>{{ 'TBOARD.BALL' | translate }}</span>
       </button>
     </div>
@@ -142,7 +142,7 @@
         <div class="player-popup-divider"></div>
 
         <button class="player-add-btn ball" (click)="addPlayer('ball')" [disabled]="ballPlaced">
-          <span class="ball-icon">⚽</span>
+          <span class="ball-icon">{{ ballEmoji }}</span>
           {{ 'TBOARD.BALL' | translate }}
         </button>
 

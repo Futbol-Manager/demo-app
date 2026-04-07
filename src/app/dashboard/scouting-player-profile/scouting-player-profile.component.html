@@ -113,7 +113,7 @@
                 <input formControlName="peso" type="number" class="sp-input" placeholder="Ej. 76">
               </div>
               <div class="sp-field">
-                <label>Pierna natural</label>
+                <label>{{ sportConfig.dominantLimbKey | translate }}</label>
                 <div class="sp-radio-group">
                   <label *ngFor="let p of PIES" class="sp-radio-chip" [class.sp-radio-chip--active]="form.get('piernaNatural')?.value === p">
                     <input type="radio" formControlName="piernaNatural" [value]="p" hidden>
@@ -137,16 +137,16 @@
         <div class="sp-card" data-tutorial="spp-posiciones">
           <div class="sp-card-header">
             <div class="sp-card-header-icon"><i class="bi bi-person-fill-gear"></i></div>
-            <h3>En el campo</h3>
+            <h3>{{ onFieldSectionTitle }}</h3>
           </div>
           <div class="sp-card-body">
             <label class="sp-field-label">Posición(es) <span class="sp-hint">Pulsa para seleccionar</span></label>
             <div class="sp-positions-grid">
-              <button type="button" *ngFor="let pos of POSITIONS"
+              <button type="button" *ngFor="let pos of positionOptions"
                 class="sp-pos-chip"
                 [class.sp-pos-chip--active]="isPositionSelected(pos)"
                 (click)="togglePosition(pos)">
-                {{ pos }}
+                {{ positionLabel(pos) }}
               </button>
             </div>
           </div>
@@ -188,12 +188,12 @@
         <div class="sp-card" data-tutorial="spp-carrera">
           <div class="sp-card-header">
             <div class="sp-card-header-icon"><i class="bi bi-trophy-fill"></i></div>
-            <h3>Carrera deportiva</h3>
+            <h3>{{ 'PLAYER_SCOUTING.SEC_CV' | translate }}</h3>
           </div>
           <div class="sp-card-body">
             <div class="sp-stats-row">
               <div class="sp-stat-box">
-                <label>Goles</label>
+                <label>{{ scoringPluralLabel }}</label>
                 <input formControlName="goles" type="number" class="sp-input sp-input--stat" placeholder="0">
               </div>
               <div class="sp-stat-box">
@@ -223,11 +223,11 @@
           </div>
         </div>
 
-        <!-- ══ 5. CV FUTBOLÍSTICO ══ -->
+        <!-- ══ 5. CV / historial deportivo ══ -->
         <div class="sp-card" data-tutorial="spp-cv">
           <div class="sp-card-header">
             <div class="sp-card-header-icon"><i class="bi bi-file-earmark-person-fill"></i></div>
-            <h3>CV Futbolístico</h3>
+            <h3>Historial deportivo (CV)</h3>
           </div>
           <div class="sp-card-body">
             <p class="sp-field-desc">Sube tu CV en formato PDF o Word. Los clubes podrán descargarlo al ver tu perfil.</p>

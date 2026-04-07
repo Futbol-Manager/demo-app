@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { User } from 'src/app/core/models/users/user.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
@@ -17,13 +17,19 @@ import { NotificationService } from 'src/app/core/services/notification/notifica
 import { ConfirmationService } from 'src/app/core/services/confirmation/confirmation.service';
 import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 import { environment } from 'src/environments/environment';
+import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
+import { DemoDataService } from 'src/app/core/services/demo/demo-data.service';
+import { SportContextService } from 'src/app/core/services/sport/sport-context.service';
+import { getSportConfig } from 'src/app/core/models/sport/sport-config.model';
+import { sportLeagueLabel } from 'src/app/core/utils/sport-ui-i18n';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-inicio',
   templateUrl: './equipos.component.html',
   styleUrls: ['./equipos.component.scss'],
 })
-export class EquiposComponent implements OnInit {
+export class EquiposComponent implements OnInit, OnDestroy {
   crearEquipoForm: FormGroup;
 
   datosCargados: boolean = false;
@@ -154,40 +160,8 @@ export class EquiposComponent implements OnInit {
     { value: 42, label: 'Cadet S16' },
   ];
 
-  // Niveles por defecto
-  nivelesDefault = [
-    { value: 'LaLiga EA Sports', label: 'LaLiga EA Sports' },
-    { value: 'Liga F', label: 'Liga F' },
-    { value: 'LaLiga Hypermotion', label: 'LaLiga Hypermotion' },
-    { value: 'Segunda RFEF Femenina', label: 'Segunda RFEF Femenina' },
-    { value: 'Primera RFEF', label: 'Primera RFEF' },
-    { value: 'Segunda RFEF', label: 'Segunda RFEF' },
-    { value: 'Tercera RFEF', label: 'Tercera RFEF' },
-    { value: 'Tercera RFEF Femenina', label: 'Tercera RFEF Femenina' },
-    { value: 'Preferente Autonómica', label: 'Preferente Autonómica' },
-    {
-      value: 'Preferente Autonómica Femenina',
-      label: 'Preferente Autonómica Femenina',
-    },
-    { value: 'Primera Autonómica', label: 'Primera Autonómica' },
-    {
-      value: 'Primera Autonómica Femenina',
-      label: 'Primera Autonómica Femenina',
-    },
-    { value: 'Segunda Autonómica', label: 'Segunda Autonómica' },
-    { value: 'Tercera Autonómica', label: 'Tercera Autonómica' },
-    { value: 'División de Honor', label: 'División de Honor' },
-    { value: 'Liga Nacional', label: 'Liga Nacional' },
-    { value: 'Liga Sub-23', label: 'Liga Sub-23' },
-    { value: 'Superliga', label: 'Superliga' },
-    { value: 'Autonómica', label: 'Autonómica' },
-    { value: 'Preferente', label: 'Preferente' },
-    { value: 'Primera', label: 'Primera' },
-    { value: 'Segunda', label: 'Segunda' },
-    { value: 'Tercera', label: 'Tercera' },
-    { value: 'Fútbol 5', label: 'Fútbol 5' },
-    { value: 'No federado', label: 'No federado' },
-  ];
+  nivelesDefault: { value: string; label: string }[] = [];
+  private langSub?: Subscription;
 
   // Niveles específicos para Federación 14
   nivelesCatalanes = [
@@ -242,6 +216,69 @@ export class EquiposComponent implements OnInit {
   modalConfirAndroid = false;
   optionTienda = 1;
 
+  // ── Multi-sport filter ────────────────────────────────────────────────────
+  /** Catálogo completo de deportes con emoji y colores */
+  readonly SPORTS = [
+    { key: 'futbol',      emoji: '⚽', color: '#10b981', colorDark: '#065f46' },
+    { key: 'baloncesto',  emoji: '🏀', color: '#f97316', colorDark: '#7c2d12' },
+    { key: 'atletismo',   emoji: '🏃', color: '#0ea5e9', colorDark: '#0c4a6e' },
+    { key: 'balonmano',   emoji: '🤾', color: '#8b5cf6', colorDark: '#4c1d95' },
+    { key: 'voley',       emoji: '🏐', color: '#f59e0b', colorDark: '#78350f' },
+    { key: 'rugby',       emoji: '🏉', color: '#ef4444', colorDark: '#7f1d1d' },
+    { key: 'futbol-sala', emoji: '👟', color: '#84cc16', colorDark: '#365314' },
+    { key: 'hockey',      emoji: '🏑', color: '#14b8a6', colorDark: '#134e4a' },
+    { key: 'natacion',    emoji: '🏊', color: '#06b6d4', colorDark: '#164e63' },
+    { key: 'tenis',       emoji: '🎾', color: '#f43f5e', colorDark: '#881337' },
+  ];
+
+  /** Filtro de deporte activo en la vista */
+  sportFilter: string = 'all';
+
+  /** Equipos filtrados por deporte — se actualiza con applyFilters() */
+  filteredTeams: any[] = [];
+
+  /** Deportes únicos presentes en los equipos cargados */
+  uniqueSportsInTeams: { key: string; emoji: string }[] = [];
+
+  /** Solo true cuando hay 2+ deportes distintos (para mostrar el filtro) */
+  showSportFilter: boolean = false;
+
+  /** Recalcula filteredTeams y uniqueSportsInTeams. Llamar tras cambiar listTeam o sportFilter. */
+  applyFilters(): void {
+    const withSport = this.listTeam.map((t: any) => ({
+      ...t,
+      sport: t.sport || 'futbol',
+    }));
+    const keys = [...new Set(withSport.map((t: any) => t.sport as string))];
+    this.uniqueSportsInTeams = keys.map(k => {
+      const s = this.SPORTS.find(sp => sp.key === k);
+      return { key: k, emoji: s?.emoji ?? '🏟️' };
+    });
+    this.showSportFilter = keys.length > 1;
+    if (this.sportFilter !== 'all' && !keys.includes(this.sportFilter)) {
+      this.sportFilter = 'all';
+    }
+    this.filteredTeams = this.sportFilter === 'all'
+      ? withSport
+      : withSport.filter((t: any) => t.sport === this.sportFilter);
+  }
+
+  /** Cambia el filtro activo y recalcula */
+  setSportFilter(key: string): void {
+    this.sportFilter = key;
+    this.applyFilters();
+    if (this.federacion == null || this.federacion.toString() !== '10') {
+      const sk = key === 'all' ? 'futbol' : key;
+      this.syncNivelesFromSport(sk);
+    }
+  }
+
+  /** Emoji del deporte (fallback ⚽) */
+  getSportEmoji(sportKey: string | null | undefined): string {
+    const sport = this.SPORTS.find(s => s.key === sportKey);
+    return sport ? sport.emoji : '⚽';
+  }
+
   constructor(
     private loginService: LoginService,
     private router: Router,
@@ -253,7 +290,9 @@ export class EquiposComponent implements OnInit {
     private notificationService: NotificationService,
     private confirmationService: ConfirmationService,
     private sanitizer: DomSanitizer,
-    private tutorialService: TutorialService
+    private tutorialService: TutorialService,
+    private sportContextService: SportContextService,
+    private cdr: ChangeDetectorRef
   ) {
     this.excelForm = this.fb.group({
       excelFile: [null],
@@ -270,7 +309,36 @@ export class EquiposComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.langSub?.unsubscribe();
+  }
+
+  /** Opciones de liga (valor canónico en español del config, etiqueta traducida). */
+  buildLeagueOptions(sportKey: string): { value: string; label: string }[] {
+    const sk = !sportKey || sportKey === 'all' ? 'futbol' : sportKey;
+    const opts = getSportConfig(sk).leagueOptions || [];
+    return opts.map((label) => ({
+      value: label,
+      label: sportLeagueLabel(this.translate, sk, label),
+    }));
+  }
+
+  private syncNivelesFromSport(sk: string): void {
+    this.nivelesDefault = this.buildLeagueOptions(sk);
+    this.nivelesVisibles = [...this.nivelesDefault];
+    this.nivelesVisiblesFiltradas = [...this.nivelesDefault];
+  }
+
   ngOnInit(): void {
+    this.syncNivelesFromSport('futbol');
+    this.langSub = this.translate.onLangChange.subscribe(() => {
+      const sk = this.sportFilter !== 'all' ? this.sportFilter : 'futbol';
+      if (this.federacion == null || this.federacion.toString() !== '10') {
+        this.syncNivelesFromSport(sk);
+      }
+      this.cdr.markForCheck();
+    });
+
     setTimeout(() => this.tutorialService.start('equipos', true), 600);
 
     const userAgent = navigator.userAgent || navigator.vendor;
@@ -354,7 +422,8 @@ export class EquiposComponent implements OnInit {
         this.nivelesVisibles = [...this.nivelesCatalanes];
       } else {
         this.categoriasVisibles = [...this.categoriasDefault];
-        this.nivelesVisibles = [...this.nivelesDefault];
+        const sk = this.sportFilter !== 'all' ? this.sportFilter : 'futbol';
+        this.syncNivelesFromSport(sk);
       }
     }
 
@@ -405,7 +474,8 @@ export class EquiposComponent implements OnInit {
       this.nivelesVisibles = [...this.nivelesCatalanes];
     } else {
       this.categoriasVisibles = [...this.categoriasDefault];
-      this.nivelesVisibles = [...this.nivelesDefault];
+      const sk = this.sportFilter !== 'all' ? this.sportFilter : 'futbol';
+      this.syncNivelesFromSport(sk);
     }
   }
 
@@ -437,6 +507,14 @@ export class EquiposComponent implements OnInit {
   }
 
   checkSuscripcion() {
+    this.applyFilters();
+    if (isDemoMode()) {
+      this.numEquipos = 999;
+      this.clubOk = true;
+      this.datosCargados = true;
+      this.datosCargando = false;
+      return;
+    }
     this.teamService
       .getEstadoSuscripcion(this.userId, this.profileId)
       .subscribe({
@@ -550,6 +628,16 @@ export class EquiposComponent implements OnInit {
   cargarListadoEquiposForClub(): void {
     localStorage.setItem('temporada', this.temporada);
     this.temporadaStoredValue = this.temporada;
+
+    if (isDemoMode()) {
+      const demoData = DemoDataService.getDemoTeamByClubResponse();
+      this.clubId = demoData.club?.clubId ?? 9001;
+      this.pictureClub = demoData.club?.picture ?? 'demo-club-logo.png';
+      this.noPicture = true;
+      this.listTeam = demoData.teams ?? [];
+      this.checkSuscripcion();
+      return;
+    }
 
     const cached = this.teamService.getEquiposCache(this.userId, this.temporadaStoredValue, this.profileId);
     if (cached && cached.listTeam.length > 0) {
@@ -693,6 +781,7 @@ export class EquiposComponent implements OnInit {
               teamId: resp.data.teamId,
             };
             this.listTeam.push(newTeam);
+            this.applyFilters();
             this.teamService.setEquiposCache(this.userId, this.temporadaStoredValue, this.profileId, {
               listTeam: this.listTeam,
             });
@@ -751,6 +840,10 @@ export class EquiposComponent implements OnInit {
 
   // Método para navegar a la pantalla de calendario
   navegarACalendario(teamId: number, playerId: number): void {
+    const team = this.filteredTeams?.find((t: any) => t.teamId === teamId);
+    if (team?.sport) {
+      this.sportContextService.setSport(team.sport);
+    }
     switch (this.profileId) {
       case 0:
       case 1:

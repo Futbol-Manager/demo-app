@@ -10,6 +10,8 @@ import { ClubService } from 'src/app/core/services/club/club.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
+import { DemoDataService } from 'src/app/core/services/demo/demo-data.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { NotificationService } from 'src/app/core/services/notification/notification.service';
 import { ConfirmationService } from 'src/app/core/services/confirmation/confirmation.service';
@@ -173,6 +175,20 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.errorMsg = '';
 
+    if (isDemoMode()) {
+      const demoTeams = DemoDataService.getDemoTeamsByClubForCombo();
+      this.teams = demoTeams.map((t: any, i: number) => ({
+        teamId: t.teamId ?? t.value,
+        name: t.name ?? t.teamName,
+        color: TEAM_COLORS[i % TEAM_COLORS.length],
+        visible: true,
+      }));
+      this.teamsVisibles = new Set(this.teams.map((t) => t.teamId));
+      this.loadSavedTeamOrder();
+      this.loadAllEventsDemoMode();
+      return;
+    }
+
     const sub = this.teamService
       .getTeamsByClubForCombo(this.clubId, this.temporada)
       .subscribe({
@@ -327,6 +343,68 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
     });
 
     this.subs.push(sub);
+  }
+
+  /* ═══════════════════════════════════════
+     CARGA DE EVENTOS EN MODO DEMO
+  ═══════════════════════════════════════ */
+
+  loadAllEventsDemoMode(): void {
+    this.isLoading = true;
+    const events: CalendarEvent[] = [];
+
+    this.teams.forEach((team) => {
+      const trainings = DemoDataService.getDemoTrainingSessions(String(team.teamId));
+      trainings.forEach((t: any) => {
+        if (t.daySession) {
+          events.push({
+            id: t.trainingSessionId,
+            type: 'training',
+            teamId: team.teamId,
+            teamName: team.name,
+            teamColor: team.color,
+            date: t.daySession,
+            time: t.addressSession || '',
+            startTime: t.startTime || '',
+            endTime: t.endTime || '',
+            objective: t.objectiveSession || '',
+            warmUp: t.warmUp || '',
+            visible: t.visible,
+          });
+        }
+      });
+
+      const matches = DemoDataService.getDemoMatchPreparations(String(team.teamId));
+      matches.forEach((m: any) => {
+        if (m.matchDate) {
+          const hora = m.hora != null && m.minutos != null
+            ? `${String(m.hora).padStart(2, '0')}:${String(m.minutos).padStart(2, '0')}`
+            : '';
+          const horaLlegada = m.horaEmpieza != null && m.minutosEmpieza != null
+            ? `${String(m.horaEmpieza).padStart(2, '0')}:${String(m.minutosEmpieza).padStart(2, '0')}`
+            : '';
+          events.push({
+            id: m.matchPreparationId,
+            type: 'match',
+            teamId: team.teamId,
+            teamName: team.name,
+            teamColor: team.color,
+            date: m.matchDate,
+            time: hora,
+            rivalName: m.rivalName || '',
+            terreno: m.terreno || '',
+            matchType: m.tipoPartido || '',
+            stadium: m.lugar || '',
+            meetTime: horaLlegada,
+            visible: m.visible,
+          });
+        }
+      });
+    });
+
+    this.allEvents = events;
+    this.isLoading = false;
+    this.buildCalendarGrid();
   }
 
   /* ═══════════════════════════════════════

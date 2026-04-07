@@ -187,6 +187,16 @@ export interface LockedFeature {
   requiredPlans: ClubPlanType[];
 }
 
+/** Datos de una feature bloqueada para mostrar en el modal de upgrade (claves i18n) */
+export interface FeatureLockData {
+  nameKey: string;
+  iconClass: string;
+  imageUrl: string;
+  headlineKey: string;
+  descriptionKey: string;
+  benefitKeys: string[];
+}
+
 // ─── Dashboard Player View (Plan 1) ─────────────────────────
 export interface PlayerDashboardEntry {
   playerId: number;

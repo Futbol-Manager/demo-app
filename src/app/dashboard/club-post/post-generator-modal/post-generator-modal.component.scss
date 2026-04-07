@@ -1,0 +1,556 @@
+$border:   #e2e8f0;
+$bg:       #f8fafc;
+$text:     #0f172a;
+$muted:    #64748b;
+$surface:  #ffffff;
+$primary:  #31b270;
+$radius:   10px;
+
+// ── Overlay ───────────────────────────────────────────────────────────────────
+.pgm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 1000;
+  animation: fadeIn 0.15s ease;
+}
+
+// ── Panel ─────────────────────────────────────────────────────────────────────
+.pgm-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1001;
+  width: min(95vw, 980px);
+  max-height: 90vh;
+  background: $bg;
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translate(-50%, -47%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+
+// ── Header ─────────────────────────────────────────────────────────────────────
+.pgm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: $surface;
+  border-bottom: 1px solid $border;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  &-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    i { font-size: 1.5rem; color: $primary; }
+    h3 { margin: 0; font-size: 1.05rem; font-weight: 700; color: $text; }
+    p  { margin: 0; font-size: 0.78rem; color: $muted; }
+  }
+
+  &-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+.type-toggle {
+  display: flex;
+  background: $bg;
+  border: 1px solid $border;
+  border-radius: 8px;
+  overflow: hidden;
+
+  button {
+    padding: 6px 14px;
+    border: none;
+    background: transparent;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: $muted;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.15s;
+
+    &:hover { color: $primary; }
+    &.active { background: $primary; color: #fff; font-weight: 600; }
+  }
+}
+
+.btn-close-modal {
+  width: 34px; height: 34px;
+  border: none; border-radius: 8px;
+  background: $bg; color: $muted;
+  cursor: pointer; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+  &:hover { background: #fee2e2; color: #dc2626; }
+}
+
+// ── Body ──────────────────────────────────────────────────────────────────────
+.pgm-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+
+  @media (max-width: 900px) { flex-direction: column; overflow-y: auto; }
+}
+
+// ── Form panel ────────────────────────────────────────────────────────────────
+.pgm-form-panel {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+}
+
+.form-section {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius;
+  padding: 14px;
+}
+
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $muted;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  i { color: $primary; }
+}
+
+.section-badge {
+  margin-left: auto;
+  font-size: 0.65rem;
+  font-weight: 600;
+  background: rgba($primary, 0.1);
+  color: $primary;
+  padding: 2px 7px;
+  border-radius: 20px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.hint-text {
+  font-size: 0.76rem;
+  color: $muted;
+  margin: 6px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.form-label-sm {
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: $muted;
+  display: block;
+  margin-bottom: 3px;
+}
+
+// Teams row
+.teams-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.team-form-group { flex: 1; min-width: 0; }
+.vs-badge {
+  width: 30px; height: 30px; flex-shrink: 0;
+  background: $bg; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.68rem; font-weight: 800; color: $muted; margin-top: 20px;
+}
+.logo-upload-row { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+.logo-thumb {
+  width: 46px; height: 46px;
+  border-radius: 8px; border: 1.5px dashed $border;
+  background: $bg; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  cursor: pointer; overflow: hidden;
+  transition: border-color 0.15s, background 0.15s;
+  flex-shrink: 0;
+  &:hover { border-color: $primary; background: #f0fdf4; }
+  img { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
+  i { font-size: 1rem; color: $muted; }
+  .upload-hint { font-size: 0.58rem; color: $muted; text-align: center; line-height: 1.1; }
+}
+.btn-clear-logo {
+  border: none; background: #fee2e2; color: #dc2626;
+  width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; cursor: pointer; padding: 0; flex-shrink: 0;
+  &:hover { background: #fca5a5; }
+}
+
+// Score row
+.score-row {
+  display: flex; align-items: center; gap: 8px; justify-content: center;
+  .score-input { width: 68px; text-align: center; font-size: 1.5rem; font-weight: 800; color: $text; border-radius: 8px; padding: 4px; height: auto; }
+  .score-dash { font-size: 1.1rem; color: $muted; font-weight: 300; }
+}
+
+// Colors row
+.colors-row { display: flex; gap: 12px; }
+.color-group { flex: 1; }
+.color-picker-wrap {
+  display: flex; align-items: center; gap: 6px;
+  background: $bg; border: 1px solid $border; border-radius: 7px; padding: 4px 8px;
+}
+.color-swatch { width: 26px; height: 26px; border: none; border-radius: 6px; padding: 0; cursor: pointer; background: transparent; flex-shrink: 0; }
+.color-hex { font-size: 0.72rem; font-family: monospace; color: $muted; }
+
+// Form actions
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+.btn-save {
+  flex: 1;
+  padding: 10px 16px;
+  background: $primary; color: #fff;
+  border: none; border-radius: 8px;
+  font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  transition: background 0.15s;
+  &:hover:not(:disabled) { background: #28a060; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+.btn-export-sm {
+  padding: 10px 16px;
+  background: $bg; color: $text;
+  border: 1.5px solid $border; border-radius: 8px;
+  font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  transition: background 0.15s, border-color 0.15s;
+  &:hover:not(:disabled) { border-color: $primary; color: $primary; background: rgba($primary, 0.05); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+// ── Preview panel ─────────────────────────────────────────────────────────────
+.pgm-preview-panel {
+  flex: 0 0 auto;
+  width: 440px;
+  background: $surface;
+  border-left: 1px solid $border;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  overflow-y: auto;
+
+  @media (max-width: 900px) { width: 100%; border-left: none; border-top: 1px solid $border; }
+}
+
+.preview-label {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: $muted; align-self: flex-start;
+}
+.preview-wrapper {
+  border-radius: 12px; overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18); line-height: 0;
+}
+
+// ── Match template ────────────────────────────────────────────────────────────
+.match-template {
+  width: 400px; height: 400px;
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.tmpl-top-stripe { height: 5px; flex-shrink: 0; }
+.tmpl-match-label {
+  text-align: center; font-size: 9px; font-weight: 800;
+  letter-spacing: 3px; text-transform: uppercase; padding: 14px 0 0; flex-shrink: 0;
+}
+.tmpl-teams {
+  flex: 1; display: flex; align-items: center;
+  justify-content: center; gap: 0; padding: 0 16px; min-height: 0;
+}
+.tmpl-team {
+  width: 130px; display: flex; flex-direction: column;
+  align-items: center; gap: 8px; flex-shrink: 0;
+}
+.tmpl-logo-wrap {
+  width: 88px; height: 88px; border-radius: 50%; border: 2px solid;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+  i { font-size: 2rem; }
+}
+.tmpl-logo { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
+.tmpl-team-name { font-size: 11px; font-weight: 700; text-align: center; line-height: 1.3; max-width: 110px; word-break: break-word; }
+.tmpl-center { flex: 1; display: flex; align-items: center; justify-content: center; }
+.tmpl-vs { font-size: 28px; font-weight: 900; }
+.tmpl-score-row { display: flex; align-items: center; gap: 4px; }
+.tmpl-score-num { font-size: 52px; font-weight: 900; line-height: 1; }
+.tmpl-score-sep { font-size: 36px; font-weight: 200; line-height: 1; margin-bottom: 4px; }
+.tmpl-scorers { text-align: center; font-size: 9.5px; font-weight: 500; padding: 0 20px 6px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tmpl-info-bar { flex-shrink: 0; padding: 0 16px; }
+.tmpl-info-row { display: flex; flex-direction: column; align-items: center; gap: 3px; margin-bottom: 8px; }
+.tmpl-info-item { font-size: 9px; font-weight: 500; display: flex; align-items: center; gap: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.tmpl-brand-bar { display: flex; align-items: center; justify-content: center; gap: 8px; border-top: 1px solid; padding: 7px 0 10px; }
+.tmpl-brand-line { height: 1px; width: 50px; flex-shrink: 0; }
+.tmpl-brand-name { font-size: 8px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; }
+
+// ── Team selector section ──────────────────────────────────────────────────────
+.team-selector-section {
+  background: rgba($primary, 0.04);
+  border: 1px solid rgba($primary, 0.2);
+  border-radius: 8px;
+}
+
+// ── Jornada form ──────────────────────────────────────────────────────────────
+.btn-autofill {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  background: rgba($primary, 0.1);
+  color: $primary;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  &:hover { background: rgba($primary, 0.18); }
+}
+
+.btn-add-match {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: rgba($primary, 0.1);
+  color: $primary;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  &:hover { background: rgba($primary, 0.18); }
+}
+
+.jornada-match-list { display: flex; flex-direction: column; gap: 8px; }
+
+.jornada-match-item {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.jornada-match-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.jornada-input { flex: 1; min-width: 0; }
+.jornada-vs { font-size: 0.7rem; font-weight: 700; color: $muted; flex-shrink: 0; }
+.jornada-time { width: 80px; flex-shrink: 0; }
+
+.btn-remove-match {
+  width: 24px; height: 24px;
+  border: none; border-radius: 4px;
+  background: rgba(#dc3545, 0.08);
+  color: #dc3545;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  &:hover { background: rgba(#dc3545, 0.18); }
+}
+
+.jornada-empty {
+  padding: 16px;
+  text-align: center;
+  color: $muted;
+  font-size: 0.8rem;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+
+// ── Jornada template ──────────────────────────────────────────────────────────
+.jornada-template {
+  min-height: 340px;
+}
+
+.jornada-header {
+  padding: 14px 18px 10px;
+  flex-shrink: 0;
+}
+
+.jornada-club-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.jornada-club-logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.jornada-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.jornada-label {
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.jornada-main-title {
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.jornada-date-line {
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.jornada-matches-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 4px 18px 10px;
+  overflow: hidden;
+}
+
+.jornada-match-row-tmpl {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 0;
+  border-bottom: 1px solid;
+  gap: 10px;
+}
+
+.jornada-match-teams {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.jornada-match-team {
+  font-size: 10px;
+  font-weight: 700;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  &:last-child { text-align: right; }
+}
+
+.jornada-match-vs {
+  font-size: 8px;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.jornada-match-meta {
+  font-size: 9px;
+  font-weight: 600;
+  flex-shrink: 0;
+  display: flex;
+  gap: 4px;
+}
+
+.jornada-empty-tmpl {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  padding: 20px 0;
+}
+
+.export-hint {
+  font-size: 0.7rem; color: $muted; text-align: center; margin: 0;
+  display: flex; align-items: center; gap: 4px; justify-content: center;
+  i { color: $primary; }
+}
+
+// ── Demo locked buttons ───────────────────────────────────────────────────────
+.btn-locked-demo {
+  position: relative;
+  opacity: 0.6;
+  cursor: not-allowed !important;
+  pointer-events: auto;
+
+  &:hover {
+    background: inherit !important;
+    border-color: inherit !important;
+    color: inherit !important;
+  }
+}
+
+.lock-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.18);
+  border-radius: 4px;
+  padding: 1px 5px;
+  margin-left: 4px;
+  font-size: 0.7rem;
+}
+
+.demo-locked-toast {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e293b;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  animation: fadeIn 0.15s ease;
+  z-index: 10;
+
+  i { color: #facc15; }
+}

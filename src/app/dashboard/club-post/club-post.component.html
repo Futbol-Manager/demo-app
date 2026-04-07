@@ -1,0 +1,147 @@
+<div class="club-posts-shell">
+
+  <!-- Header -->
+  <div class="cp-header">
+    <div class="cp-header-left">
+      <button class="btn-back" (click)="goBack()" title="Volver">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <i class="bi bi-instagram"></i>
+      <div>
+        <h2>{{ 'CLUB_POSTS.TITLE' | translate }}</h2>
+        <p>{{ 'CLUB_POSTS.SUBTITLE' | translate }}</p>
+      </div>
+    </div>
+    <button class="btn-new-post" (click)="openNewPost()" [disabled]="!selectedTeamId">
+      <i class="bi bi-plus-lg"></i> {{ 'CLUB_POSTS.NEW_POST' | translate }}
+    </button>
+  </div>
+
+  <div class="cp-body">
+
+    <!-- Panel izquierdo: equipos -->
+    <aside class="cp-teams-panel" data-tutorial="cp-teams">
+      <div class="teams-panel-title">{{ 'CLUB_POSTS.TEAMS_TITLE' | translate }}</div>
+      <ng-container *ngIf="loadingTeams">
+        <div class="cp-spinner"><span class="spinner-border spinner-border-sm"></span></div>
+      </ng-container>
+      <ng-container *ngIf="!loadingTeams">
+        <div *ngIf="teams.length === 0" class="cp-empty-teams">
+          {{ 'CLUB_POSTS.NO_TEAMS' | translate }}
+        </div>
+        <button
+          *ngFor="let team of teams"
+          class="team-btn"
+          [class.active]="team.teamId === selectedTeamId"
+          (click)="selectTeam(team.teamId)">
+          <i class="bi bi-people-fill"></i>
+          <span>{{ team.teamName }}</span>
+        </button>
+      </ng-container>
+    </aside>
+
+    <!-- Panel principal: grid de posts -->
+    <main class="cp-posts-area" data-tutorial="cp-posts">
+
+      <ng-container *ngIf="!selectedTeamId">
+        <div class="cp-empty-state">
+          <i class="bi bi-arrow-left-circle"></i>
+          <p>{{ 'CLUB_POSTS.SELECT_TEAM_HINT' | translate }}</p>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="selectedTeamId">
+        <div class="cp-posts-header">
+          <span class="cp-posts-title">{{ selectedTeamName }}</span>
+          <span class="cp-posts-count">{{ posts.length }} post{{ posts.length !== 1 ? 's' : '' }}</span>
+        </div>
+
+        <ng-container *ngIf="loadingPosts">
+          <div class="cp-spinner">
+            <span class="spinner-border spinner-border-sm"></span> {{ 'CLUB_POSTS.LOADING' | translate }}
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="!loadingPosts">
+          <div *ngIf="posts.length === 0" class="cp-empty-state">
+            <i class="bi bi-image"></i>
+            <p>{{ 'CLUB_POSTS.NO_POSTS' | translate }}</p>
+            <button class="btn-new-post" (click)="openNewPost()">
+              <i class="bi bi-plus-lg"></i> {{ 'CLUB_POSTS.CREATE_FIRST' | translate }}
+            </button>
+          </div>
+
+          <div class="cp-posts-grid" *ngIf="posts.length > 0">
+            <div
+              class="post-card"
+              *ngFor="let post of posts"
+              (click)="openEditPost(post)">
+
+              <div class="post-card-top"
+                [style.background-color]="!getThumbnailUrl(post) ? (post.primaryColor || '#31b270') : 'transparent'">
+                <img *ngIf="getThumbnailUrl(post)" class="post-thumb" [src]="getThumbnailUrl(post)" alt="Preview">
+                <div class="post-card-top-overlay">
+                  <span class="post-badge" [ngClass]="postTypeClass(post.postType)">
+                    {{ postTypeLabel(post.postType) }}
+                  </span>
+                  <span class="post-match-date">{{ post.matchDate }}</span>
+                </div>
+              </div>
+
+              <div class="post-card-body">
+                <div class="post-teams" *ngIf="post.postType !== 'jornada'">
+                  <span class="post-home">{{ post.homeTeamName || 'ù' }}</span>
+                  <ng-container *ngIf="post.postType === 'post'">
+                    <span class="post-score">{{ post.homeScore }} - {{ post.awayScore }}</span>
+                  </ng-container>
+                  <ng-container *ngIf="post.postType === 'pre'">
+                    <span class="post-vs">VS</span>
+                  </ng-container>
+                  <span class="post-away">{{ post.awayTeamName || 'ù' }}</span>
+                </div>
+                <div class="post-teams" *ngIf="post.postType === 'jornada'">
+                  <span class="post-home">{{ 'CLUB_POSTS.ALL_TEAMS' | translate }}</span>
+                </div>
+
+                <div class="post-meta">
+                  <span *ngIf="post.competition" class="post-competition">
+                    <i class="bi bi-trophy-fill"></i> {{ post.competition }}
+                  </span>
+                  <span class="post-created">
+                    <i class="bi bi-calendar3"></i> {{ formatCreatedAt(post.createdAt) }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="post-card-actions" (click)="$event.stopPropagation()">
+                <button class="btn-card-action btn-edit" (click)="openEditPost(post)" title="Editar">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn-card-action btn-duplicate" (click)="duplicatePost(post, $event)" title="Duplicar">
+                  <i class="bi bi-copy"></i>
+                </button>
+                <button class="btn-card-action btn-delete" (click)="deletePost(post, $event)" title="Eliminar">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </main>
+  </div>
+
+  <!-- Modal generador de posts -->
+  <ng-container *ngIf="showModal">
+    <app-post-generator-modal
+      [clubId]="1"
+      [teamId]="selectedTeamId || 0"
+      [teamName]="selectedTeamName"
+      [teams]="teams"
+      [existingPost]="editingPost"
+      (saved)="onSaved($event)"
+      (closed)="closeModal()">
+    </app-post-generator-modal>
+  </ng-container>
+
+</div>

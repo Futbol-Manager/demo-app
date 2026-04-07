@@ -86,6 +86,8 @@ import { ExternalVideoWorkspaceComponent } from './video-analysis/external-works
 import { StaffClubComponent } from './staff-club/staff-club.component';
 import { IndividualTrainingComponent } from './individual-training/individual-training.component';
 import { RopaJugadorComponent } from './ropa-jugador/ropa-jugador.component';
+import { ClubShopComponent } from './club-shop/club-shop.component';
+import { ClubPostComponent } from './club-post/club-post.component';
 
 const routes: Routes = [
   {
@@ -177,6 +179,8 @@ const routes: Routes = [
       { path: 'coach-suscripcion-success', component: CoachSuscripcionSuccessComponent },
       { path: 'staff-club', component: StaffClubComponent, canActivate: [ClubOwnerGuard] },
       { path: 'individual-training', component: IndividualTrainingComponent },
+      { path: 'tienda-club', component: ClubShopComponent },
+      { path: 'club-post', component: ClubPostComponent },
       { path: '**', redirectTo: 'inicio' },
     ],
   }

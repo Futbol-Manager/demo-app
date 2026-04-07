@@ -1,0 +1,227 @@
+<div class="tbe-overlay" *ngIf="visible">
+  <div class="tbe-container">
+
+    <!-- Header -->
+    <div class="tbe-header">
+      <div class="tbe-header-left">
+        <i class="bi bi-easel2 tbe-logo-icon"></i>
+        <input class="tbe-play-name" [(ngModel)]="playName" placeholder="Nombre de la jugada...">
+      </div>
+      <div class="tbe-header-actions">
+        <button class="tbe-btn" (click)="newPlay()" title="Nueva jugada">
+          <i class="bi bi-plus-lg"></i>
+        </button>
+        <button class="tbe-btn" [class.active]="showPlayList" (click)="showPlayList = !showPlayList"
+                title="Jugadas guardadas">
+          <i class="bi bi-folder2-open"></i>
+        </button>
+        <button class="tbe-btn" (click)="exportAsImage()" title="Exportar imagen">
+          <i class="bi bi-download"></i>
+        </button>
+        <button class="tbe-btn tbe-btn-primary" [disabled]="saving" (click)="savePlay()">
+          <span *ngIf="!saving"><i class="bi bi-floppy me-1"></i>Guardar</span>
+          <span *ngIf="saving" class="spinner-border spinner-border-sm"></span>
+        </button>
+        <button class="tbe-btn tbe-btn-close" (click)="close()" title="Cerrar">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="tbe-body">
+
+      <!-- Toolbar lateral -->
+      <div class="tbe-toolbar">
+
+        <!-- Modos -->
+        <div class="tbe-tool-section">
+          <span class="tbe-tool-label">Herramienta</span>
+          <button class="tbe-tool" [class.active]="mode==='move'" (click)="mode='move'"
+                  title="Mover jugadores">
+            <i class="bi bi-cursor-fill"></i>
+          </button>
+          <button class="tbe-tool" [class.active]="mode==='arrow'"
+                  (click)="mode='arrow'; cancelArrow()"
+                  title="Dibujar flecha">
+            <i class="bi bi-arrow-up-right"></i>
+          </button>
+          <button class="tbe-tool" [class.active]="mode==='note'" (click)="mode='note'"
+                  title="Añadir nota">
+            <i class="bi bi-chat-left-text"></i>
+          </button>
+        </div>
+
+        <div class="tbe-divider"></div>
+
+        <!-- Formaciones -->
+        <div class="tbe-tool-section">
+          <span class="tbe-tool-label">Formación</span>
+          <button *ngFor="let f of sportConfig.formations"
+                  class="tbe-formation-btn"
+                  [class.active]="play.formation === f"
+                  (click)="loadFormation(f)">{{ f }}</button>
+        </div>
+
+        <div class="tbe-divider"></div>
+
+        <!-- Añadir rival -->
+        <div class="tbe-tool-section">
+          <span class="tbe-tool-label">Rival</span>
+          <button class="tbe-tool tbe-tool--red" (click)="addOpponent()"
+                  title="Añadir jugador rival">
+            <i class="bi bi-person-fill"></i>
+          </button>
+        </div>
+
+        <!-- Panel jugador seleccionado -->
+        <ng-container *ngIf="selectedPlayerId && mode==='move'">
+          <div class="tbe-divider"></div>
+          <div class="tbe-tool-section">
+            <span class="tbe-tool-label">Color</span>
+            <div class="tbe-color-grid">
+              <button *ngFor="let c of PLAYER_COLORS"
+                      class="tbe-color-dot"
+                      [style.background]="c"
+                      [class.active]="getSelectedPlayer()?.color === c"
+                      (click)="changeSelectedPlayerColor(c)">
+              </button>
+            </div>
+            <button class="tbe-tool tbe-tool--danger mt-1" (click)="deleteSelectedPlayer()"
+                    title="Eliminar jugador">
+              <i class="bi bi-trash3"></i>
+            </button>
+          </div>
+        </ng-container>
+
+        <!-- Acciones flechas -->
+        <ng-container *ngIf="mode==='arrow'">
+          <div class="tbe-divider"></div>
+          <div class="tbe-tool-section">
+            <button class="tbe-tool" (click)="deleteLastArrow()"
+                    title="Deshacer última flecha" [disabled]="!play.arrows.length">
+              <i class="bi bi-arrow-counterclockwise"></i>
+            </button>
+            <button class="tbe-tool tbe-tool--danger" (click)="cancelArrow()"
+                    *ngIf="arrowStart" title="Cancelar flecha">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- Tablero táctico -->
+      <div class="tbe-board-wrap">
+        <!-- Indicador modo flecha -->
+        <div class="tbe-arrow-hint" *ngIf="mode==='arrow'">
+          <i class="bi bi-info-circle"></i>
+          {{ arrowStart ? 'Haz clic para terminar la flecha' : 'Haz clic para iniciar la flecha' }}
+        </div>
+
+        <div class="tbe-board"
+             #boardRef
+             [style.background-image]="sportConfig.tacticalBoardBg ? 'url(' + sportConfig.tacticalBoardBg + ')' : null"
+             (click)="onBoardClick($event)"
+             [class.mode-arrow]="mode==='arrow'"
+             [class.mode-note]="mode==='note'">
+
+          <!-- SVG flechas -->
+          <svg class="tbe-arrows-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <defs>
+              <marker id="arrowhead-white" markerWidth="6" markerHeight="4"
+                      refX="5" refY="2" orient="auto">
+                <polygon points="0 0, 6 2, 0 4" fill="#ffffff"/>
+              </marker>
+              <marker id="arrowhead-yellow" markerWidth="6" markerHeight="4"
+                      refX="5" refY="2" orient="auto">
+                <polygon points="0 0, 6 2, 0 4" fill="#f59e0b"/>
+              </marker>
+            </defs>
+
+            <!-- Flechas guardadas -->
+            <line *ngFor="let arrow of play.arrows"
+                  [attr.x1]="arrow.fromX" [attr.y1]="arrow.fromY"
+                  [attr.x2]="arrow.toX" [attr.y2]="arrow.toY"
+                  [attr.stroke]="arrow.color"
+                  stroke-width="0.8"
+                  [attr.stroke-dasharray]="arrow.style === 'dashed' ? '3,2' : null"
+                  marker-end="url(#arrowhead-white)">
+            </line>
+
+            <!-- Flecha en construcción -->
+            <line *ngIf="arrowPreview"
+                  [attr.x1]="arrowPreview.fromX" [attr.y1]="arrowPreview.fromY"
+                  [attr.x2]="arrowPreview.toX" [attr.y2]="arrowPreview.toY"
+                  stroke="#f59e0b" stroke-width="0.7" stroke-dasharray="2,1.5"
+                  marker-end="url(#arrowhead-yellow)">
+            </line>
+
+            <!-- Punto de origen flecha -->
+            <circle *ngIf="arrowStart"
+                    [attr.cx]="arrowStart.x" [attr.cy]="arrowStart.y"
+                    r="1.5" fill="#f59e0b" opacity="0.9">
+            </circle>
+          </svg>
+
+          <!-- Jugadores -->
+          <div *ngFor="let player of play.players"
+               class="tbe-player"
+               [class.tbe-player--opponent]="player.isOpponent"
+               [class.tbe-player--selected]="selectedPlayerId === player.id"
+               [style.left.%]="player.x"
+               [style.top.%]="player.y"
+               [style.background-color]="player.color"
+               (mousedown)="onMouseDown($event, player.id)">
+            <span class="tbe-player__number">{{ player.isOpponent ? 'R' : player.number }}</span>
+            <span class="tbe-player__name">{{ player.name }}</span>
+          </div>
+
+          <!-- Notas -->
+          <div *ngFor="let note of play.notes"
+               class="tbe-note"
+               [style.left.%]="note.x"
+               [style.top.%]="note.y">
+            <i class="bi bi-chat-left-text-fill"></i>
+            <span class="tbe-note__text">{{ note.text }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel jugadas guardadas -->
+      <div class="tbe-play-list" *ngIf="showPlayList">
+        <div class="tbe-play-list__header">
+          <h4>Jugadas guardadas</h4>
+          <button class="tbe-btn tbe-btn-sm" (click)="showPlayList = false">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+        <div *ngFor="let p of savedPlays" class="tbe-play-item" (click)="loadPlay(p)">
+          <div class="tbe-play-item__info">
+            <span class="tbe-play-item__name">{{ p.name }}</span>
+            <small class="tbe-play-item__meta">{{ p.formation }}</small>
+          </div>
+          <button class="tbe-play-item__delete" (click)="confirmDeletePlay(p, $event)"
+                  title="Eliminar jugada">
+            <i class="bi bi-trash3"></i>
+          </button>
+        </div>
+        <p *ngIf="!savedPlays.length" class="tbe-empty-text">
+          <i class="bi bi-inbox me-1"></i>No hay jugadas guardadas
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal confirmar borrado -->
+  <div class="tbe-confirm-modal" *ngIf="showDeleteConfirm">
+    <div class="tbe-confirm-box">
+      <p>¿Eliminar jugada <strong>{{ playToDelete?.name }}</strong>?</p>
+      <div class="tbe-confirm-actions">
+        <button class="tbe-btn" (click)="showDeleteConfirm = false">Cancelar</button>
+        <button class="tbe-btn tbe-btn-danger" (click)="executeDeletePlay()">
+          <i class="bi bi-trash3 me-1"></i>Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

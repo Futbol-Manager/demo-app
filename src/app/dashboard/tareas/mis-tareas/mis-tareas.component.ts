@@ -7,6 +7,7 @@ import { TrainingService } from 'src/app/core/services/training/training.service
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { environment } from 'src/environments/environment';
 import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
+import { TeamService } from 'src/app/core/services/team/team.service';
 
 @Component({
   selector: 'app-mis-tareas',
@@ -19,6 +20,7 @@ export class MisTareasComponent implements OnInit, OnDestroy {
   selectedTask: StoredTask | null = null;
   teamId = 0;
   userId = 0;
+  sport = 'futbol';
   imageBaseUrl: string = environment.images + 'task-board/';
 
   showForm = false;
@@ -82,13 +84,22 @@ export class MisTareasComponent implements OnInit, OnDestroy {
     private loginService: LoginService,
     private trainingService: TrainingService,
     private sanitizer: DomSanitizer,
-    private tutorialService: TutorialService
+    private tutorialService: TutorialService,
+    private teamService: TeamService
   ) {}
 
   ngOnInit(): void {
     setTimeout(() => this.tutorialService.start('tareas-mis', true), 600);
 
-    this.route.params.subscribe(p => this.teamId = +p['teamId']);
+    this.route.params.subscribe(p => {
+      this.teamId = +p['teamId'];
+      if (this.teamId) {
+        this.teamService.getTeamById(String(this.teamId)).subscribe((res: any) => {
+          const teamData = res?.data ?? res;
+          if (teamData?.sport) { this.sport = teamData.sport; }
+        });
+      }
+    });
     this.loginService.usuarioActual.subscribe(user => {
       if (user?.userId) {
         this.userId = user.userId;

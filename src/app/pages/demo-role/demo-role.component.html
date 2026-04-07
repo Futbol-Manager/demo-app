@@ -521,7 +521,7 @@
     <!-- ─── PASO 2: Cupón generado ────────────────────────────────── -->
     <ng-container *ngIf="modalStep === 'coupon'">
 
-      <div class="coupon-success" *ngIf="!couponLoadError">
+      <div class="coupon-success" *ngIf="!couponLoadError && !emailAlreadyHasCoupon">
 
         <!-- Animación de celebración -->
         <div class="coupon-success__icon">
@@ -549,6 +549,12 @@
           {{ 'DEMO_INTRO.COUPON_EXPIRES' | translate }}
         </p>
 
+      </div>
+
+      <!-- Estado: email ya tiene cupón asociado -->
+      <div class="coupon-error" *ngIf="!couponLoadError && emailAlreadyHasCoupon">
+        <i class="fas fa-info-circle coupon-error__ico"></i>
+        <p class="coupon-error__msg">{{ 'DEMO_INTRO.COUPON_ALREADY_EXISTS' | translate }}</p>
       </div>
 
       <!-- Estado de error (backend no respondió) -->

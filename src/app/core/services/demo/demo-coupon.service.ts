@@ -24,13 +24,16 @@ export class DemoCouponService {
 
   /**
    * Llama al backend para generar (o recuperar) un cupón de demo para el email dado.
+   * Envía el idioma activo para que el email se genere en ese idioma.
    * Si el backend falla devuelve null sin bloquear el flujo.
+   * @param email     email del lead
+   * @param language  código ISO del idioma seleccionado (es, en, fr, de, pt, it, ca, gl, eu)
    */
-  generateCoupon(email: string): Observable<DemoCouponResponse | null> {
+  generateCoupon(email: string, language: string = 'es'): Observable<DemoCouponResponse | null> {
     const base = this.baseUrl.replace(/\/$/, '');
     return this.http.post<DemoCouponResponse>(
       `${base}/public/demo-coupon/generate`,
-      { email }
+      { email, language }
     ).pipe(
       catchError(() => of(null))
     );

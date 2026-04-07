@@ -1,0 +1,187 @@
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" type="button" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>Volver</span>
+    </button>
+  </div>
+  <div class="header-center">
+    <h2 class="table-title">
+      <i class="bi bi-person-vcard me-2"></i>
+      Datos personales
+    </h2>
+    <p class="header-subtitle">Ficha completa del jugador</p>
+  </div>
+  <div class="header-spacer"></div>
+</div>
+
+<div class="container datos-personales-container pb-5">
+
+  <!-- Spinner -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="text-muted mt-2">Cargando datos del jugador...</p>
+  </div>
+
+  <div *ngIf="player && !loading">
+
+    <!-- HERO -->
+    <div class="player-hero-card">
+      <div class="player-avatar-wrap">
+        <img *ngIf="player.photoUrl" [src]="player.photoUrl" [alt]="player.name" class="player-avatar"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <div class="player-avatar-fallback">{{ playerInitials }}</div>
+      </div>
+      <div class="player-hero-info">
+        <h3 class="player-hero-name">{{ player.name }} {{ player.surname }}</h3>
+        <div class="player-hero-badges">
+          <span class="hero-badge dorsal">#{{ player.dorsal }}</span>
+          <span class="hero-badge position">{{ player.position }}</span>
+          <span class="hero-badge nationality">
+            <i class="bi bi-globe2 me-1"></i>{{ player.nationality }}
+          </span>
+        </div>
+        <p class="player-hero-sport">
+          <i class="bi bi-star me-1 text-warning"></i>
+          Nombre deportivo: <strong>{{ player.sportName }}</strong>
+        </p>
+      </div>
+      <button class="btn-edit-hero" (click)="goToEdit()">
+        <i class="bi bi-pencil me-1"></i> Editar
+      </button>
+    </div>
+
+    <!-- DATOS PERSONALES -->
+    <div class="datos-section">
+      <h4 class="section-title">
+        <i class="bi bi-person-lines-fill me-2"></i>Datos personales
+      </h4>
+      <div class="datos-grid">
+        <div class="dato-item">
+          <span class="dato-label">Nombre</span>
+          <span class="dato-value">{{ player.name }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">Apellidos</span>
+          <span class="dato-value">{{ player.surname }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">Fecha de nacimiento</span>
+          <span class="dato-value">{{ player.birthDate }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">DNI / NIE</span>
+          <span class="dato-value">{{ player.dni }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">Tel&eacute;fono</span>
+          <span class="dato-value">{{ player.phone }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">Email</span>
+          <span class="dato-value">{{ player.email }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">Nombre deportivo</span>
+          <span class="dato-value">{{ player.sportName }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">Dorsal</span>
+          <span class="dato-value">#{{ player.dorsal }}</span>
+        </div>
+        <div class="dato-item dato-item--full">
+          <span class="dato-label">Direcci&oacute;n</span>
+          <span class="dato-value">{{ player.address }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">Ciudad</span>
+          <span class="dato-value">{{ player.city }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">Nacionalidad</span>
+          <span class="dato-value">{{ player.nationality }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATOS DEPORTIVOS -->
+    <div class="datos-section">
+      <h4 class="section-title">
+        <i class="bi bi-trophy-fill me-2"></i>Datos deportivos
+      </h4>
+      <div class="datos-grid">
+        <div class="dato-item">
+          <span class="dato-label">Posici&oacute;n principal</span>
+          <span class="dato-value">{{ player.position }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">Posici&oacute;n secundaria</span>
+          <span class="dato-value">{{ player.position2 }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">Altura</span>
+          <span class="dato-value">{{ player.height }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">Peso</span>
+          <span class="dato-value">{{ player.weight }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">Pie / Mano dominante</span>
+          <span class="dato-value">{{ player.foot }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TUTOR 1 -->
+    <div class="datos-section">
+      <h4 class="section-title">
+        <i class="bi bi-people-fill me-2"></i>Tutor / Padre
+      </h4>
+      <div class="datos-grid">
+        <div class="dato-item">
+          <span class="dato-label">Nombre completo</span>
+          <span class="dato-value">{{ player.tutor1Name }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">DNI / NIE</span>
+          <span class="dato-value">{{ player.tutor1Dni }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">Tel&eacute;fono</span>
+          <span class="dato-value">{{ player.tutor1Phone }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">Email</span>
+          <span class="dato-value">{{ player.tutor1Email }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TUTOR 2 -->
+    <div class="datos-section">
+      <h4 class="section-title">
+        <i class="bi bi-people-fill me-2"></i>Tutora / Madre
+      </h4>
+      <div class="datos-grid">
+        <div class="dato-item">
+          <span class="dato-label">Nombre completo</span>
+          <span class="dato-value">{{ player.tutor2Name }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">DNI / NIE</span>
+          <span class="dato-value">{{ player.tutor2Dni }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">Tel&eacute;fono</span>
+          <span class="dato-value">{{ player.tutor2Phone }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">Email</span>
+          <span class="dato-value">{{ player.tutor2Email }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

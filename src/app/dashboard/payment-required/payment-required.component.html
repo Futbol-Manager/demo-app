@@ -1,0 +1,19 @@
+<div class="payment-required">
+  <div class="payment-required__card">
+    <div class="payment-required__icon" aria-hidden="true">
+      <i class="bi bi-credit-card-2-front"></i>
+    </div>
+    <h1 class="payment-required__title">Acceso restringido</h1>
+    <p class="payment-required__message">
+      Tu suscripci&oacute;n ha expirado o tiene un pago pendiente. Renueva tu plan para seguir disfrutando de todas las funcionalidades de Sphaira.
+    </p>
+    <button type="button" class="payment-required__cta" (click)="goToSubscription()">
+      <i class="bi bi-arrow-right-circle me-2"></i>
+      Ver planes de suscripci&oacute;n
+    </button>
+    <button type="button" class="payment-required__back" (click)="goBack()">
+      <i class="bi bi-arrow-left me-1"></i>
+      Volver al inicio
+    </button>
+  </div>
+</div>

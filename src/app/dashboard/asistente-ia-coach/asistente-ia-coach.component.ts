@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
@@ -14,6 +14,10 @@ import { VoiceRecognitionService } from 'src/app/core/services/voice-recognition
 import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 import { DemoService } from 'src/app/core/services/demo/demo.service';
 import { buildDemoClubContext } from 'src/app/core/services/demo/demo-context';
+import { getSportConfig, SportConfig } from 'src/app/core/models/sport/sport-config.model';
+import { SportContextService } from 'src/app/core/services/sport/sport-context.service';
+import { TeamService } from 'src/app/core/services/team/team.service';
+import { Response } from 'src/app/core/services/models/response.model';
 
 /* ═══════════════════════════════════════
    INTERFACES
@@ -47,89 +51,36 @@ interface ConversationSummary {
 }
 
 /* ═══════════════════════════════════════
-   RESPUESTAS HARDCODEADAS — ENFOQUE DEPORTIVO
+   Demo coach: patrones multilenguaje + claves COACH_DEMO (i18n)
 ═══════════════════════════════════════ */
 
-const COACH_RESPONSES: { pattern: RegExp; response: string }[] = [
-  {
-    pattern: /entrenamientos?.*(semana|programados|pr[óo]xim|plan|hoy)/i,
-    response:
-      'Esta semana tienes **3 entrenamientos** programados:\n\n📋 **Lunes 16 feb** — 17:30h – Técnica individual y posesión\n📋 **Miércoles 18 feb** — 17:30h – Trabajo táctico y partidos reducidos\n📋 **Viernes 20 feb** — 17:00h – Preparación de partido (ABP + activación)\n\nLa asistencia media de tu equipo es del **87%**. ¿Quieres que te sugiera ejercicios para alguna sesión?',
-  },
-  {
-    pattern: /ejercicios?.*(sugier|recomiend|propón|idea|calentamiento|técnic)/i,
-    response:
-      'Te propongo una estructura para la sesión de hoy:\n\n🔥 **Calentamiento** (15 min)\n— Rondo 4v2 (2 series × 4 min)\n— Movilidad articular con balón\n\n⚽ **Parte principal** (40 min)\n— Posesión 5v5+2 comodines (10 min)\n— Circuito técnico: control, pase, conducción (15 min)\n— Partido en espacio reducido 7v7 (15 min)\n\n🧊 **Vuelta a la calma** (10 min)\n— Estiramientos dinámicos\n— Charla técnico-táctica\n\n¿Quieres que adapte la sesión a algún objetivo específico?',
-  },
-  {
-    pattern: /pr[óo]ximo.*(partido|partidos|encuentro|rival)/i,
-    response:
-      'Tu próximo partido:\n\n⚽ **Sábado 21 feb, 10:00h** vs CD Aluche (Local)\n\n📊 **Análisis del rival:**\n— Juegan en 4-3-3 con presión alta\n— Punto fuerte: transiciones rápidas\n— Punto débil: espacios a la espalda de la defensa\n— Goleador: #9 (12 goles esta temporada)\n\n💡 **Sugerencias tácticas:**\n— Inicio de juego en largo para explotar espacios\n— Presión coordinada en salida de balón rival\n— ABP: ensayar saque de esquina en corto\n\n¿Quieres que te prepare un plan de partido?',
-  },
-  {
-    pattern: /(estad[íi]sticas|rendimiento).*(equipo|jugador|temporada)/i,
-    response:
-      'Estadísticas de tu equipo esta temporada:\n\n📊 **Partidos jugados:** 18\n✅ **Victorias:** 12 (67%)\n🤝 **Empates:** 3 (17%)\n❌ **Derrotas:** 3 (17%)\n⚽ **Goles a favor:** 38 (2.1/partido)\n🥅 **Goles en contra:** 16 (0.9/partido)\n\n🏆 **Posición:** 2º clasificado\n📈 **Racha actual:** 4 victorias consecutivas\n\nLos jugadores más destacados son **Alejandro Martín** (9 goles) y **Hugo García** (7 asistencias). ¿Quieres ver estadísticas individuales?',
-  },
-  {
-    pattern: /(jugador|jugadores).*(destaca|mejor|rendimiento|estado|forma)/i,
-    response:
-      'Jugadores destacados esta temporada:\n\n⭐ **Alejandro Martín** — 9 goles, 3 asistencias, 92% asistencia\n⭐ **Hugo García** — 4 goles, 7 asistencias, 95% asistencia\n⭐ **David López** — Mejor nota media (8.2/10)\n⭐ **Pablo Sanz** — Líder en recuperaciones (8.5/partido)\n\n⚠️ **Jugadores en baja forma:**\n— Marcos López — 2 partidos sin participar, asistencia 65%\n— Carlos Ruiz — Nota media descendiendo (6.1 → 5.4)\n\n¿Te gustaría analizar a algún jugador en profundidad?',
-  },
-  {
-    pattern: /(t[áa]ctica|formaci[óo]n|sistema|esquema)/i,
-    response:
-      'Análisis táctico de tu equipo:\n\n📐 **Formación habitual:** 4-3-3\n🔄 **Alternativa:** 4-2-3-1 (usada en 4 partidos)\n\n📊 **Rendimiento por formación:**\n— 4-3-3: 71% victorias, 2.3 goles/partido\n— 4-2-3-1: 50% victorias, 1.5 goles/partido\n\n💡 **Sugerencias:**\n— El 4-3-3 funciona mejor con posesión larga\n— Considerar 4-2-3-1 contra rivales con dominio del centro\n— Los laterales son clave: participan en el 60% de los goles\n\n¿Quieres analizar una formación específica?',
-  },
-  {
-    pattern: /(lesion|lesiones|lesionados|disponibilidad)/i,
-    response:
-      'Estado de la plantilla:\n\n✅ **Disponibles:** 18 jugadores\n🏥 **Lesionados:** 2 jugadores\n\n— **David López** — Rotura fibrilar — Vuelve aprox. 5 mar\n— **Andrés Ruiz** — Tendinitis — Vuelve aprox. 20 feb (podría llegar al partido)\n\n⚠️ **Apercibidos (4 amarillas):** Carlos Pérez, Miguel Torres\n\n💡 Para el próximo partido, podrías recuperar a Andrés Ruiz si la evolución es favorable. Te recomiendo un plan de readaptación esta semana.',
-  },
-  {
-    pattern: /(asistencia|faltas|ausencias|puntualidad)/i,
-    response:
-      'Asistencia a entrenamientos este mes:\n\n📊 **Media del equipo:** 87%\n\n👍 **Mejor asistencia:**\n— Hugo García: 100%\n— Pablo Sanz: 100%\n— Alejandro Martín: 95%\n\n⚠️ **Asistencia baja:**\n— Marcos López: 65% (ha faltado 3 veces sin justificar)\n— Javier Torres: 70% (2 faltas por enfermedad)\n\n💡 **Recomendación:** Hablar con Marcos López sobre su compromiso. Su rendimiento también ha bajado en los últimos partidos.',
-  },
-  {
-    pattern: /(rival|analizar|an[áa]lisis|scouting|preparar)/i,
-    response:
-      'Para preparar el análisis del rival te puedo ayudar con:\n\n📋 **Información disponible:**\n— Formación habitual y variantes\n— Jugadores clave y goleadores\n— Puntos fuertes y débiles\n— Últimos resultados\n— Patrones ofensivos y defensivos\n— ABPs (corners, faltas)\n\n💡 **Sugerencia:** Prepara la charla de vestuario enfocándote en:\n1. Sus debilidades en defensa por bandas\n2. Nuestros puntos fuertes en transiciones\n3. Jugadas ensayadas de ABP\n\n¿Sobre qué rival quieres el análisis?',
-  },
-  {
-    pattern: /(plan|planificaci[óo]n|periodizaci[óo]n|microciclo|mesociclo)/i,
-    response:
-      'Planificación del microciclo actual:\n\n📅 **Lunes** — Recuperación activa + Técnica (carga baja)\n📅 **Martes** — Descanso\n📅 **Miércoles** — Trabajo táctico (carga media-alta)\n📅 **Jueves** — Descanso\n📅 **Viernes** — Activación pre-partido (carga baja)\n📅 **Sábado** — PARTIDO vs CD Aluche\n📅 **Domingo** — Descanso\n\n📊 **Carga acumulada semanal:** 285 UA (objetivo: 280-320 UA)\n\n💡 La carga está bien equilibrada. Viernes céntrate en ABPs y activación, no sobrecargues.',
-  },
-  {
-    pattern: /(goleador|goleadores|goles|anotad)/i,
-    response:
-      'Máximos goleadores de tu equipo:\n\n🥇 **Alejandro Martín** — 9 goles (4 de cabeza, 3 dentro del área, 2 de falta)\n🥈 **Hugo García** — 4 goles + 7 asistencias\n🥉 **Lucas Díaz** — 4 goles (todos en jugada)\n4. Daniel Fernández — 3 goles\n5. Pablo Sanz — 2 goles (centrocampista)\n\n📊 **Distribución de goles:**\n— 1ª parte: 58% | 2ª parte: 42%\n— Jugada: 65% | ABP: 25% | Penalti: 10%\n\nTu equipo es más efectivo en los primeros 30 minutos.',
-  },
-  {
-    pattern: /(hola|buenos d[íi]as|buenas|hey|qué tal)/i,
-    response:
-      '¡Hola, míster! 👋⚽ Soy tu asistente deportivo de IA. Estoy aquí para ayudarte con:\n\n📋 Planificación de entrenamientos\n⚽ Preparación de partidos\n📊 Estadísticas y rendimiento\n🧠 Análisis táctico\n🏥 Estado de la plantilla\n\n¿En qué puedo ayudarte hoy?',
-  },
-  {
-    pattern: /(gracias|genial|perfecto|vale|ok)/i,
-    response:
-      '¡De nada, míster! ⚽ Si necesitas algo más para preparar los entrenamientos o el próximo partido, aquí estoy.',
-  },
-  {
-    pattern: /(ayuda|qu[ée] puedes|qu[ée] sabes|funciones)/i,
-    response:
-      'Como tu asistente deportivo, puedo ayudarte con:\n\n📋 **Entrenamientos** — planificación, ejercicios, sesiones\n⚽ **Partidos** — análisis de rivales, plan de partido, alineaciones\n📊 **Estadísticas** — rendimiento del equipo y jugadores\n🧠 **Táctica** — formaciones, sistemas, análisis\n🏥 **Plantilla** — lesiones, disponibilidad, apercibidos\n👥 **Asistencia** — control de faltas, puntualidad\n📅 **Planificación** — microciclos, cargas, periodización\n⚽ **Goleadores** — estadísticas ofensivas\n🔍 **Scouting** — análisis de rivales\n\n¡Pregúntame lo que necesites!',
-  },
-  {
-    pattern: /(alineaci[óo]n|once|titulares|convocatoria)/i,
-    response:
-      'Sugerencia de alineación para el próximo partido (4-3-3):\n\n🧤 **POR:** Adrián Molina\n🛡️ **DFD:** Carlos Pérez ⚠️ (apercibido)\n🛡️ **DFC:** Miguel Torres ⚠️ (apercibido)\n🛡️ **DFC:** Iker Navarro\n🛡️ **DFI:** Sergio Blanco\n🎯 **MCD:** Pablo Sanz\n🎯 **MC:** Hugo García\n🎯 **MCO:** Daniel Fernández\n⚡ **EXD:** Lucas Díaz\n⚡ **DC:** Alejandro Martín\n⚡ **EXI:** Javier Torres\n\n⚠️ **Atención:** Carlos Pérez y Miguel Torres están apercibidos. Si prefieren reservarlos, se pueden usar alternativas.\n\n¿Quieres que sugiera una alineación alternativa?',
-  },
-];
+const COACH_HOME_ICONS = ['bi-clipboard-check', 'bi-lightbulb', 'bi-trophy', 'bi-graph-up', 'bi-people', 'bi-diagram-3'];
 
-const COACH_DEFAULT_RESPONSE =
-  'Disculpa, por ahora no tengo información específica sobre eso. Próximamente, cuando esté conectado al backend, podré responder con datos reales de tu equipo. Mientras tanto, puedes preguntarme sobre:\n\n• Entrenamientos y ejercicios\n• Próximos partidos y rivales\n• Estadísticas del equipo\n• Análisis táctico\n• Estado de la plantilla\n• Planificación deportiva\n• Goleadores\n• Asistencia';
+const COACH_CTX_ICONS: Record<string, string[]> = {
+  TRAIN: ['bi-lightbulb', 'bi-calendar3', 'bi-person-check', 'bi-trophy', 'bi-heart-pulse', 'bi-arrow-clockwise'],
+  MATCH: ['bi-people', 'bi-search', 'bi-diagram-3', 'bi-graph-up', 'bi-clipboard-check', 'bi-arrow-clockwise'],
+  STATS: ['bi-star', 'bi-trophy', 'bi-diagram-3', 'bi-trophy', 'bi-clipboard-check', 'bi-arrow-clockwise'],
+  TACT: ['bi-people', 'bi-graph-up', 'bi-trophy', 'bi-search', 'bi-clipboard-check', 'bi-arrow-clockwise'],
+  INJ: ['bi-people', 'bi-person-check', 'bi-trophy', 'bi-graph-up', 'bi-clipboard-check', 'bi-arrow-clockwise'],
+};
+
+const COACH_DEMO_PATTERN_ENTRIES: { pattern: RegExp; key: string }[] = [
+  { pattern: /entrenamientos?.*(semana|programados|pr[óo]xim|plan|hoy)|(training|workouts?).*(week|today|upcoming|scheduled)|sessions?.*(this week|scheduled)/i, key: 'R_TRAIN_WEEK' },
+  { pattern: /ejercicios?.*(sugier|recomiend|propón|idea|calentamiento|técnic)|exercises?.*(suggest|recommend|warm)|drills?.*(for|today)/i, key: 'R_EXERCISES' },
+  { pattern: /pr[óo]ximo.*(partido|partidos|encuentro|rival)|next.*(match|game|fixture|opponent|fixtures)/i, key: 'R_NEXT_MATCH' },
+  { pattern: /(estad[íi]sticas|rendimiento).*(equipo|jugador|temporada)|(stats|statistics).*(team|player|season)/i, key: 'R_TEAM_STATS' },
+  { pattern: /(jugador|jugadores).*(destaca|mejor|rendimiento|estado|forma)|players?.*(standout|best|perform|form)/i, key: 'R_PLAYERS' },
+  { pattern: /(t[áa]ctica|formaci[óo]n|sistema|esquema)|(tactics?|formation|system|shape)/i, key: 'R_TACTICS' },
+  { pattern: /(lesion|lesiones|lesionados|disponibilidad)|(injur|injuries|availability)/i, key: 'R_INJURIES' },
+  { pattern: /(asistencia|faltas|ausencias|puntualidad)|(attendance|absent|punctuality)/i, key: 'R_ATTENDANCE' },
+  { pattern: /(rival|analizar|an[áa]lisis|scouting|preparar)|(opponent|scout|analy[sz]e|prepare)/i, key: 'R_RIVAL' },
+  { pattern: /(plan|planificaci[óo]n|periodizaci[óo]n|microciclo|mesociclo)|(periodi[sz]ation|microcycle|mesocycle)/i, key: 'R_PLAN' },
+  { pattern: /(goleador|goleadores|goles|anotad|puntos anotad)|(scorers?|top scorer|leading scorer)/i, key: 'R_SCORERS' },
+  { pattern: /(hola|buenos d[íi]as|buenas|hey|qu[ée] tal|hello|hi|good morning|good afternoon)/i, key: 'R_GREET' },
+  { pattern: /(gracias|genial|perfecto|vale|ok\b|thanks|thank you|great|cool)/i, key: 'R_THANKS' },
+  { pattern: /(ayuda|qu[ée] puedes|qu[ée] sabes|funciones)|(help|what can you|capabilities)/i, key: 'R_HELP' },
+  { pattern: /(alineaci[óo]n|once|titulares|convocatoria)|(line-?up|lineup|starting xi|starting eleven|squad selection)/i, key: 'R_LINEUP' },
+];
 
 /* ═══════════════════════════════════════
    COMPONENTE
@@ -157,6 +108,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
   private teamId: number | null = null;
   private chatSub: Subscription | null = null;
   private coachTeamContext: CoachTeamContext | null = null;
+  private langSub: Subscription | null = null;
 
   // Voice recognition
   isRecording = false;
@@ -175,17 +127,13 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
   showDeleteConfirm = false;
   conversationToDelete: ConversationSummary | null = null;
 
-  suggestions: SuggestionChip[] = [
-    { icon: 'bi-clipboard-check', text: 'Entrenamientos esta semana', query: '¿Qué entrenamientos tengo esta semana?' },
-    { icon: 'bi-lightbulb', text: 'Sugerir ejercicios', query: 'Sugiere ejercicios para la sesión de hoy' },
-    { icon: 'bi-trophy', text: 'Próximo partido', query: '¿Cuál es el próximo partido?' },
-    { icon: 'bi-graph-up', text: 'Estadísticas del equipo', query: 'Dame las estadísticas de rendimiento del equipo' },
-    { icon: 'bi-people', text: 'Estado de la plantilla', query: '¿Cómo está la plantilla? ¿Hay lesionados?' },
-    { icon: 'bi-diagram-3', text: 'Análisis táctico', query: '¿Qué formación funciona mejor?' },
-  ];
+  suggestions: SuggestionChip[] = [];
 
   showSuggestions = true;
   profileId = 0;
+
+  /** Deporte activo (demo / equipo seleccionado). */
+  sportConfig: SportConfig = getSportConfig('futbol');
 
   constructor(
     private loginService: LoginService,
@@ -197,10 +145,24 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     private voiceRecognition: VoiceRecognitionService,
     private injuryService: InjuryService,
     private tutorialService: TutorialService,
-    private demoService: DemoService
+    private demoService: DemoService,
+    private sportContextService: SportContextService,
+    private teamService: TeamService,
+    private cdr: ChangeDetectorRef
   ) {}
 
+  private getCoachWelcomeMessage(): string {
+    return this.translate.instant('SPORT_UI.AI_COACH_WELCOME', { emoji: this.sportConfig.emoji });
+  }
+
   ngOnInit(): void {
+    this.sportConfig = getSportConfig(this.sportContextService.getSport());
+    this.rebuildDefaultHomeSuggestions();
+    this.langSub = this.translate.onLangChange.subscribe(() => {
+      this.refreshSuggestionsForLanguage();
+      this.refreshWelcomeMessageIfNeeded();
+      this.cdr.markForCheck();
+    });
     setTimeout(() => this.tutorialService.start('asistente-ia-coach', true), 600);
     this.loginService.usuarioActual.subscribe((user) => {
       this.usuarioActual = user;
@@ -235,6 +197,16 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
       if (storedTeamId) this.teamId = parseInt(storedTeamId, 10);
     }
 
+    if (this.teamId) {
+      this.teamService.getTeamById(String(this.teamId)).subscribe((res: Response) => {
+        const s = (res?.data as { sport?: string })?.sport;
+        if (s) {
+          this.sportContextService.setSport(s);
+          this.sportConfig = getSportConfig(s);
+        }
+      });
+    }
+
     // Precargar partidos y clasificación del equipo para el contexto de la IA
     if (this.teamId) {
       this.aiPageContextService.preloadForCoachTeam(this.teamId);
@@ -259,8 +231,8 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     const isFromLesiones = fromLesiones && (this.profileId === 1 || this.profileId === 2);
 
     const welcomeMsg = isFisio
-      ? '¡Hola! 👋🩺 Soy tu asistente clínico de IA. Estoy especializado en fisioterapia deportiva y tengo acceso al historial de lesiones de tu equipo.\n\nPuedo ayudarte con protocolos de rehabilitación, tiempos de recuperación, criterios RTP y prevención de lesiones.\n\nEscríbeme o elige una sugerencia.'
-      : '¡Hola, míster! 👋⚽ Soy tu asistente deportivo de IA. Puedo ayudarte con entrenamientos, partidos, estadísticas, táctica y todo lo relacionado con tu equipo.\n\nEscríbeme o elige una sugerencia. ¡Vamos!';
+      ? this.translate.instant('COACH_DEMO.FISIO_WELCOME')
+      : this.getCoachWelcomeMessage();
 
     this.addAssistantMessage(welcomeMsg);
 
@@ -276,11 +248,137 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
       // Club/Coach arriving from lesiones section — show injury-relevant suggestions
       this.injuryService.getInjuriesByTeam(this.teamId).subscribe({
         next: (injuries) => this.setSuggestionsForLesiones(injuries),
-        error: () => {} // Fall back to default suggestions already set
+        error: () => this.rebuildDefaultHomeSuggestions()
       });
     }
 
     this.initVoiceRecognition();
+  }
+
+  /** Chips inicio (coach) o refresco tras cambiar idioma */
+  private rebuildDefaultHomeSuggestions(): void {
+    if (this.profileId === 6) return;
+    this.suggestions = COACH_HOME_ICONS.map((icon, i) => ({
+      icon,
+      text: this.translate.instant(`COACH_DEMO.D${i}_T`),
+      query: this.translate.instant(`COACH_DEMO.D${i}_Q`),
+    }));
+  }
+
+  private chipsForCtx(mode: keyof typeof COACH_CTX_ICONS | 'HOME'): SuggestionChip[] {
+    if (mode === 'HOME') {
+      return COACH_HOME_ICONS.map((icon, i) => ({
+        icon,
+        text: this.translate.instant(`COACH_DEMO.D${i}_T`),
+        query: this.translate.instant(`COACH_DEMO.D${i}_Q`),
+      }));
+    }
+    const icons = COACH_CTX_ICONS[mode];
+    return [0, 1, 2, 3, 4, 5].map((i) => ({
+      icon: icons[i],
+      text: this.translate.instant(`COACH_DEMO.CTX_${mode}_${i}_T`),
+      query: this.translate.instant(`COACH_DEMO.CTX_${mode}_${i}_Q`),
+    }));
+  }
+
+  /** Si el chat solo tiene el mensaje de bienvenida (sin mensajes de usuario), actualiza su texto al idioma activo. */
+  private refreshWelcomeMessageIfNeeded(): void {
+    if (this.messages.some(m => m.role === 'user')) {
+      return;
+    }
+    const nonTyping = this.messages.filter(m => !m.isTyping);
+    if (nonTyping.length !== 1 || nonTyping[0].role !== 'assistant') {
+      return;
+    }
+    const isFisio = this.profileId === 6;
+    nonTyping[0].text = isFisio
+      ? this.translate.instant('COACH_DEMO.FISIO_WELCOME')
+      : this.getCoachWelcomeMessage();
+  }
+
+  private localeTag(): string {
+    const lang = (this.translate.currentLang || this.translate.defaultLang || 'es').split('-')[0];
+    const map: Record<string, string> = {
+      es: 'es-ES',
+      en: 'en-GB',
+      fr: 'fr-FR',
+      de: 'de-DE',
+      it: 'it-IT',
+      pt: 'pt-PT',
+    };
+    return map[lang] || lang;
+  }
+
+  private refreshSuggestionsForLanguage(): void {
+    if (this.profileId === 6) {
+      if (this.teamId) {
+        this.injuryService.getInjuriesByTeam(this.teamId).subscribe({
+          next: (injuries) => this.setSuggestionsForFisio(injuries),
+          error: () => this.setSuggestionsForFisio([]),
+        });
+      }
+      return;
+    }
+    if ((this.profileId === 1 || this.profileId === 2) && this.teamId) {
+      this.injuryService.getInjuriesByTeam(this.teamId).subscribe({
+        next: (injuries) => {
+          if (injuries.some((i) => i.status !== 'alta')) {
+            this.setSuggestionsForLesiones(injuries);
+          } else {
+            this.rebuildDefaultHomeSuggestions();
+          }
+        },
+        error: () => this.rebuildDefaultHomeSuggestions(),
+      });
+      return;
+    }
+    this.rebuildDefaultHomeSuggestions();
+  }
+
+  private coachDemoParams(): Record<string, string> {
+    const cfg = this.sportConfig;
+    const sup = cfg.scoringUnitPlural;
+    const su = cfg.scoringUnit;
+    const formA = cfg.formations?.[0] ?? '4-3-3';
+    const formB = cfg.formations?.[1] ?? '4-2-3-1';
+    return {
+      emoji: cfg.emoji,
+      sup,
+      su,
+      sup_l: sup.toLowerCase(),
+      su_l: su.toLowerCase(),
+      formA,
+      formB,
+      ctxHint: this.buildCoachCtxHint(),
+    };
+  }
+
+  private buildCoachCtxHint(): string {
+    const cfg = this.sportConfig;
+    const k = `SPORT_AI_CTX.${cfg.key}`;
+    let ctx = this.translate.instant(k);
+    if (!ctx || ctx === k) {
+      ctx = (cfg.aiContextPrompt || '').trim();
+    }
+    if (!ctx) return '';
+    const fk = `SPORT_FIELD.${cfg.key}`;
+    let field = this.translate.instant(fk);
+    if (!field || field === fk) {
+      field = cfg.fieldName;
+    }
+    const snippet = ctx.length > 280 ? ctx.slice(0, 280) + '…' : ctx;
+    return `\n\n_Contexto (${field}):_ ${snippet}`;
+  }
+
+  /** Respuestas demo locales (patrones) cuando aplica; también fallback si la API demo no devuelve texto */
+  private coachDemoLocalReply(userText: string): string {
+    const params = this.coachDemoParams();
+    for (const entry of COACH_DEMO_PATTERN_ENTRIES) {
+      if (entry.pattern.test(userText)) {
+        return this.translate.instant(`COACH_DEMO.${entry.key}`, params);
+      }
+    }
+    return this.translate.instant('COACH_DEMO.DEFAULT', params);
   }
 
   private initVoiceRecognition(): void {
@@ -358,7 +456,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
       next: (list) => {
         this.conversations = (list || []).map((c: any) => ({
           id: c.id,
-          title: c.title || 'Conversación',
+          title: c.title || this.translate.instant('COACH_DEMO.CONV_LIST_FALLBACK'),
           date: c.date,
           messageCount: c.messageCount || 0,
           preview: c.title || '',
@@ -375,9 +473,12 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     this.showSuggestions = true;
 
     const isFisio = this.profileId === 6;
+    if (!isFisio) {
+      this.rebuildDefaultHomeSuggestions();
+    }
     const welcomeMsg = isFisio
-      ? '¡Hola! 👋🩺 Soy tu asistente clínico de IA. Estoy especializado en fisioterapia deportiva y tengo acceso al historial de lesiones de tu equipo.\n\nPuedo ayudarte con protocolos de rehabilitación, tiempos de recuperación, criterios RTP y prevención de lesiones.\n\nEscríbeme o elige una sugerencia.'
-      : '¡Hola, míster! 👋⚽ Soy tu asistente deportivo de IA. Puedo ayudarte con entrenamientos, partidos, estadísticas, táctica y todo lo relacionado con tu equipo.\n\nEscríbeme o elige una sugerencia. ¡Vamos!';
+      ? this.translate.instant('COACH_DEMO.FISIO_WELCOME')
+      : this.getCoachWelcomeMessage();
 
     this.addAssistantMessage(welcomeMsg);
 
@@ -450,7 +551,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     if (!this.currentConversationId || !this.userId) return;
     const userMessages = this.messages.filter(m => m.role === 'user');
     if (userMessages.length === 0) return;
-    const title = userMessages[0]?.text?.substring(0, 50) || 'Nueva conversación';
+    const title = userMessages[0]?.text?.substring(0, 50) || this.translate.instant('COACH_DEMO.CONV_TITLE_DEFAULT');
     const messages = this.messages
       .filter(m => !m.isTyping && m.text)
       .map(m => ({ role: m.role, text: m.text }));
@@ -470,7 +571,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     const isDemo = this.demoService.isDemoMode();
 
     if (!isDemo && this.creditsAvailable <= 0) {
-      this.addAssistantMessage('No tienes créditos disponibles. Compra más créditos para seguir usando el asistente IA.');
+      this.addAssistantMessage(this.translate.instant('COACH_DEMO.MSG_NO_CREDITS'));
       return;
     }
 
@@ -498,7 +599,12 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     const history = this.messages
       .filter(m => !m.isTyping && m.text && m.text.trim().length > 0)
       .slice(-10)
-      .map(m => ({ role: m.role, text: m.isActionPreview ? '[Acción propuesta: ' + m.text + ']' : m.text }));
+      .map(m => ({
+        role: m.role,
+        text: m.isActionPreview
+          ? this.translate.instant('COACH_DEMO.MSG_ACTION_PREVIEW', { text: m.text })
+          : m.text
+      }));
 
     // ── Modo demo: endpoint público sin auth ──────────────────────────────────
     if (isDemo) {
@@ -506,7 +612,8 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
       const clubContext = buildDemoClubContext('coach', demoTeamId);
 
       this.chatSub?.unsubscribe();
-      this.chatSub = this.aiChatService.sendMessageDemo(text, history, 'es', clubContext)
+      const demoLang = (this.translate.currentLang || this.translate.defaultLang || 'es').split('-')[0];
+      this.chatSub = this.aiChatService.sendMessageDemo(text, history, demoLang, clubContext)
         .pipe(finalize(() => { this.isResponding = false; }))
         .subscribe({
           next: (resp) => {
@@ -514,8 +621,10 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
             if (idx > -1) this.messages.splice(idx, 1);
             if (resp.response) {
               this.addAssistantMessage(resp.response);
+            } else if (resp.error) {
+              this.addAssistantMessage(resp.error);
             } else {
-              this.addAssistantMessage(resp.error || 'Ha ocurrido un error. Inténtalo de nuevo.');
+              this.addAssistantMessage(this.coachDemoLocalReply(text));
             }
             this.shouldScroll = true;
             this.saveConversation();
@@ -524,7 +633,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
           error: () => {
             const idx = this.messages.indexOf(typingMsg);
             if (idx > -1) this.messages.splice(idx, 1);
-            this.addAssistantMessage('Error de conexión. Inténtalo de nuevo.');
+            this.addAssistantMessage(this.translate.instant('COACH_DEMO.ERR_CONNECTION'));
             this.focusChatInput();
           }
         });
@@ -586,7 +695,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
               this.creditsAvailable = resp.creditsRemaining;
             }
           } else {
-            this.addAssistantMessage(resp.message || 'Ha ocurrido un error. Intentalo de nuevo.');
+            this.addAssistantMessage(resp.message || this.translate.instant('COACH_DEMO.MSG_ERROR_GENERIC'));
           }
           this.updateSuggestionsContext(text);
           this.shouldScroll = true;
@@ -596,7 +705,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
         error: () => {
           const idx = this.messages.indexOf(typingMsg);
           if (idx > -1) this.messages.splice(idx, 1);
-          this.addAssistantMessage('Error de conexion. Intentalo de nuevo.');
+          this.addAssistantMessage(this.translate.instant('COACH_DEMO.MSG_ERROR_NETWORK'));
           this.focusChatInput();
         }
       });
@@ -611,21 +720,29 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
         msg.isExecutingAction = false;
         if (result.success) {
           const parts: string[] = [];
-          if ((result.created ?? 0) > 0) parts.push(result.created + ' creado(s)');
-          if ((result.edited ?? 0) > 0) parts.push(result.edited + ' editado(s)');
-          if ((result.deleted ?? 0) > 0) parts.push(result.deleted + ' eliminado(s)');
-          let summaryMsg = '✅ ' + (parts.length > 0 ? parts.join(', ') : 'Acciones ejecutadas correctamente.') + ' Recargando datos...';
+          if ((result.created ?? 0) > 0) {
+            parts.push(this.translate.instant('COACH_DEMO.ACTION_N_CREATED', { n: result.created }));
+          }
+          if ((result.edited ?? 0) > 0) {
+            parts.push(this.translate.instant('COACH_DEMO.ACTION_N_EDITED', { n: result.edited }));
+          }
+          if ((result.deleted ?? 0) > 0) {
+            parts.push(this.translate.instant('COACH_DEMO.ACTION_N_DELETED', { n: result.deleted }));
+          }
+          const body = parts.length > 0 ? parts.join(', ') : this.translate.instant('COACH_DEMO.ACTION_OK_EMPTY');
+          const reloading = this.translate.instant('COACH_DEMO.ACTION_RELOADING');
+          let summaryMsg = this.translate.instant('COACH_DEMO.ACTION_SUCCESS', { body, reloading });
           if (result.errors && result.errors.length > 0) {
-            summaryMsg += '\n⚠️ Advertencias: ' + result.errors.join(', ');
+            summaryMsg += this.translate.instant('COACH_DEMO.ACTION_WARNINGS', { errors: result.errors.join(', ') });
           }
           if (result.details && result.details.length > 0) {
-            summaryMsg += '\n📋 ' + result.details.join(', ');
+            summaryMsg += this.translate.instant('COACH_DEMO.ACTION_DETAILS', { details: result.details.join(', ') });
           }
           this.addAssistantMessage(summaryMsg);
           setTimeout(() => window.dispatchEvent(new CustomEvent('ai-data-changed')), 500);
           setTimeout(() => window.dispatchEvent(new CustomEvent('ai-data-changed')), 1500);
         } else {
-          let errMsg = '❌ ' + (result.message || 'Error al ejecutar las acciones.');
+          let errMsg = '❌ ' + (result.message || this.translate.instant('COACH_DEMO.ACTION_FAIL'));
           if (result.errors && result.errors.length > 0) {
             errMsg += '\n' + result.errors.join(', ');
           }
@@ -637,7 +754,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
       },
       error: () => {
         msg.isExecutingAction = false;
-        this.addAssistantMessage('❌ Error de conexión al ejecutar las acciones.');
+        this.addAssistantMessage('❌ ' + this.translate.instant('COACH_DEMO.ACTION_CONN_FAIL'));
         this.saveConversation();
         this.focusChatInput();
       }
@@ -646,7 +763,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
 
   cancelActions(msg: ChatMessage): void {
     msg.actionExecuted = true;
-    this.addAssistantMessage('Acción cancelada.');
+    this.addAssistantMessage(this.translate.instant('COACH_DEMO.ACTION_USER_CANCEL'));
     this.shouldScroll = true;
     this.saveConversation();
     this.focusChatInput();
@@ -668,7 +785,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     this.isResponding = false;
     const typingIdx = this.messages.findIndex(m => m.isTyping);
     if (typingIdx > -1) this.messages.splice(typingIdx, 1);
-    this.addAssistantMessage('Peticion cancelada.');
+    this.addAssistantMessage(this.translate.instant('COACH_DEMO.REQUEST_CANCELLED'));
   }
 
   openCreditsModal(): void {
@@ -681,6 +798,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
 
   ngOnDestroy(): void {
     this.chatSub?.unsubscribe();
+    this.langSub?.unsubscribe();
     this.voiceTranscriptSub?.unsubscribe();
     this.voiceListeningSub?.unsubscribe();
     this.voiceErrorSub?.unsubscribe();
@@ -725,15 +843,6 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
      RESPUESTAS
   ═══════════════════════════════════════ */
 
-  private getResponse(userText: string): string {
-    for (const entry of COACH_RESPONSES) {
-      if (entry.pattern.test(userText)) {
-        return entry.response;
-      }
-    }
-    return COACH_DEFAULT_RESPONSE;
-  }
-
   /* ═══════════════════════════════════════
      SUGERENCIAS LESIONES — CLUB / COACH
   ═══════════════════════════════════════ */
@@ -742,44 +851,59 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     const active = injuries.filter(i => i.status === 'baja');
     const recovery = injuries.filter(i => i.status !== 'baja' && i.status !== 'alta');
     const chips: SuggestionChip[] = [];
+    const playerFb = this.translate.instant('COACH_DEMO.PLAYER_FALLBACK');
+    const zoneFb = this.translate.instant('COACH_DEMO.ZONE_FALLBACK');
+    const dateUnk = this.translate.instant('COACH_DEMO.DATE_UNKNOWN');
+    const dateNone = this.translate.instant('COACH_DEMO.DATE_NONE');
 
-    // Bajas activas que afectan disponibilidad (máx. 2)
     for (const inj of active.slice(0, 2)) {
-      const name = inj.playerName || 'el jugador';
-      const zone = inj.zoneLabel || inj.zone || 'lesión';
+      const name = inj.playerName || playerFb;
+      const zone = inj.zoneLabel || inj.zone || zoneFb;
       chips.push({
         icon: 'bi-person-x',
-        text: `Baja: ${name}`,
-        query: `${name} está lesionado con ${zone}. ¿Cuándo puede estar disponible? Alta prevista: ${inj.dateReturn || 'sin determinar'}.`
+        text: this.translate.instant('COACH_DEMO.LES_LOW_T', { name }),
+        query: this.translate.instant('COACH_DEMO.LES_LOW_Q', {
+          name,
+          zone,
+          dateReturn: inj.dateReturn || dateUnk,
+        }),
       });
     }
 
-    // Jugadores en recuperación próximos a volver (máx. 2)
     for (const inj of recovery.slice(0, 2)) {
-      const name = inj.playerName || 'el jugador';
+      const name = inj.playerName || playerFb;
+      const zone = inj.zoneLabel || inj.zone || zoneFb;
       chips.push({
         icon: 'bi-person-check',
-        text: `Vuelta: ${name}`,
-        query: `¿${name} puede llegar al próximo partido? Está en fase RTP ${inj.rtpPhase}, alta prevista ${inj.dateReturn || 'sin fecha'}.`
+        text: this.translate.instant('COACH_DEMO.LES_RTP_T', { name }),
+        query: this.translate.instant('COACH_DEMO.LES_RTP_Q', {
+          name,
+          zone,
+          rtpPhase: inj.rtpPhase ?? '—',
+          dateReturn: inj.dateReturn || dateNone,
+        }),
       });
     }
 
-    // Resumen de disponibilidad
     if (injuries.length > 0) {
       chips.push({
         icon: 'bi-heart-pulse',
-        text: 'Disponibilidad del equipo',
-        query: `¿Cuántos jugadores tengo disponibles? Hay ${active.length} lesiones activas y ${recovery.length} en recuperación.`
+        text: this.translate.instant('COACH_DEMO.LES_SUM_T'),
+        query: this.translate.instant('COACH_DEMO.LES_SUM_Q', {
+          active: String(active.length),
+          recovery: String(recovery.length),
+        }),
       });
     }
 
-    // Sugerencias de gestión de alineación con bajas
+    const namesJoined = active.map(i => i.playerName).filter(Boolean).join(', ');
     chips.push({
       icon: 'bi-people',
-      text: 'Alineación sin lesionados',
-      query: active.length > 0
-        ? `Sugiere una alineación para el próximo partido teniendo en cuenta que ${active.map(i => i.playerName).filter(Boolean).join(', ')} están lesionados.`
-        : '¿Cuál sería la mejor alineación para el próximo partido?'
+      text: this.translate.instant('COACH_DEMO.CTX_MATCH_0_T'),
+      query:
+        active.length > 0
+          ? this.translate.instant('COACH_DEMO.LINEUP_Q_INJ', { names: namesJoined })
+          : this.translate.instant('COACH_DEMO.LINEUP_Q_NONE'),
     });
 
     this.suggestions = chips.slice(0, 6);
@@ -793,49 +917,59 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     const active = injuries.filter(i => i.status === 'baja');
     const recovery = injuries.filter(i => i.status !== 'baja' && i.status !== 'alta');
     const chips: SuggestionChip[] = [];
+    const playerFb = this.translate.instant('COACH_DEMO.PLAYER_FALLBACK');
+    const zoneFb = this.translate.instant('COACH_DEMO.ZONE_FALLBACK');
+    const dateNone = this.translate.instant('COACH_DEMO.DATE_NONE');
 
-    // 1. Sugerencias basadas en lesiones activas (máx. 2)
     for (const inj of active.slice(0, 2)) {
-      const name = inj.playerName || 'el jugador';
-      const zone = inj.zoneLabel || inj.zone || 'lesión';
+      const name = inj.playerName || playerFb;
+      const zone = inj.zoneLabel || inj.zone || zoneFb;
       chips.push({
         icon: 'bi-bandaid',
-        text: `${name} — ${zone}`,
-        query: `¿Cuál es el protocolo de tratamiento para ${name} con ${zone}? Estado actual: ${inj.status}, fase RTP: ${inj.rtpPhase}.`
+        text: this.translate.instant('COACH_DEMO.F_LOW_T', { name, zone }),
+        query: this.translate.instant('COACH_DEMO.F_LOW_Q', {
+          name,
+          zone,
+          status: inj.status ?? '—',
+          rtpPhase: inj.rtpPhase ?? '—',
+        }),
       });
     }
 
-    // 2. Sugerencias de jugadores en recuperación/RTP (máx. 2)
     for (const inj of recovery.slice(0, 2)) {
-      const name = inj.playerName || 'el jugador';
-      const zone = inj.zoneLabel || inj.zone || 'lesión';
+      const name = inj.playerName || playerFb;
+      const zone = inj.zoneLabel || inj.zone || zoneFb;
       chips.push({
         icon: 'bi-arrow-up-circle',
-        text: `Alta prevista: ${name}`,
-        query: `¿Cuándo puede volver a entrenar ${name}? Tiene una ${zone} en fase RTP ${inj.rtpPhase}. Alta prevista: ${inj.dateReturn || 'sin fecha'}.`
+        text: this.translate.instant('COACH_DEMO.F_RTP_T', { name }),
+        query: this.translate.instant('COACH_DEMO.F_RTP_Q', {
+          name,
+          zone,
+          rtpPhase: inj.rtpPhase ?? '—',
+          dateReturn: inj.dateReturn || dateNone,
+        }),
       });
     }
 
-    // 3. Resumen general siempre disponible
     if (injuries.length > 0) {
       chips.push({
         icon: 'bi-heart-pulse',
-        text: 'Resumen de lesiones',
-        query: `Dame un resumen del estado actual de lesiones del equipo. Hay ${active.length} lesiones activas y ${recovery.length} jugadores en recuperación.`
+        text: this.translate.instant('COACH_DEMO.F_SUM_T'),
+        query: this.translate.instant('COACH_DEMO.F_SUM_Q', {
+          active: String(active.length),
+          recovery: String(recovery.length),
+        }),
       });
     }
 
-    // 4. Completar con sugerencias genéricas hasta 6
-    const generic: SuggestionChip[] = [
-      { icon: 'bi-shield-check', text: 'Prevención de lesiones', query: '¿Qué ejercicios de prevención recomiendas para reducir el riesgo de lesiones musculares?' },
-      { icon: 'bi-calendar-check', text: 'Carga de entrenamiento', query: '¿Cómo debería gestionar la carga de entrenamiento para los jugadores en recuperación?' },
-      { icon: 'bi-clipboard2-pulse', text: 'Protocolo RTP', query: 'Explícame las fases del protocolo Return to Play (RTP) para una lesión muscular' },
-      { icon: 'bi-people', text: 'Estado de la plantilla', query: '¿Cuántos jugadores están disponibles y cuántos tienen restricciones médicas?' },
-    ];
-
-    for (const g of generic) {
+    const genericIcons = ['bi-shield-check', 'bi-calendar-check', 'bi-clipboard2-pulse', 'bi-people'];
+    for (let g = 1; g <= 4; g++) {
       if (chips.length >= 6) break;
-      chips.push(g);
+      chips.push({
+        icon: genericIcons[g - 1],
+        text: this.translate.instant(`COACH_DEMO.F_G${g}_T`),
+        query: this.translate.instant(`COACH_DEMO.F_G${g}_Q`),
+      });
     }
 
     this.suggestions = chips.slice(0, 6);
@@ -857,60 +991,18 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
       return;
     }
 
-    if (/entrenamiento|ejercicio|sesi[óo]n/i.test(userText)) {
-      this.suggestions = [
-        { icon: 'bi-lightbulb', text: 'Sugerir ejercicios', query: 'Sugiere ejercicios para la sesión de hoy' },
-        { icon: 'bi-calendar3', text: 'Planificación semanal', query: '¿Cómo está la planificación del microciclo?' },
-        { icon: 'bi-person-check', text: 'Asistencia del equipo', query: '¿Cuál es la asistencia a entrenamientos?' },
-        { icon: 'bi-trophy', text: 'Próximo partido', query: '¿Cuál es el próximo partido?' },
-        { icon: 'bi-heart-pulse', text: 'Lesionados', query: '¿Hay jugadores lesionados?' },
-        { icon: 'bi-arrow-clockwise', text: 'Volver al inicio', query: 'Ayuda' },
-      ];
-    } else if (/partido|rival|encuentro/i.test(userText)) {
-      this.suggestions = [
-        { icon: 'bi-people', text: 'Sugerir alineación', query: '¿Qué alineación me sugieres para el próximo partido?' },
-        { icon: 'bi-search', text: 'Análisis del rival', query: 'Analiza al próximo rival' },
-        { icon: 'bi-diagram-3', text: 'Táctica recomendada', query: '¿Qué formación funciona mejor?' },
-        { icon: 'bi-graph-up', text: 'Estadísticas', query: 'Dame las estadísticas del equipo' },
-        { icon: 'bi-clipboard-check', text: 'Entrenamientos', query: '¿Qué entrenamientos tengo esta semana?' },
-        { icon: 'bi-arrow-clockwise', text: 'Volver al inicio', query: 'Ayuda' },
-      ];
-    } else if (/estad[íi]stica|rendimiento|datos/i.test(userText)) {
-      this.suggestions = [
-        { icon: 'bi-star', text: 'Jugadores destacados', query: '¿Qué jugadores están destacando?' },
-        { icon: 'bi-trophy', text: 'Goleadores', query: '¿Quiénes son los máximos goleadores?' },
-        { icon: 'bi-diagram-3', text: 'Análisis táctico', query: '¿Qué formación funciona mejor?' },
-        { icon: 'bi-trophy', text: 'Próximo partido', query: '¿Cuál es el próximo partido?' },
-        { icon: 'bi-clipboard-check', text: 'Entrenamientos', query: '¿Qué entrenamientos tengo esta semana?' },
-        { icon: 'bi-arrow-clockwise', text: 'Volver al inicio', query: 'Ayuda' },
-      ];
-    } else if (/t[áa]ctica|formaci[óo]n|sistema/i.test(userText)) {
-      this.suggestions = [
-        { icon: 'bi-people', text: 'Sugerir alineación', query: '¿Qué alineación me sugieres?' },
-        { icon: 'bi-graph-up', text: 'Estadísticas', query: 'Dame las estadísticas del equipo' },
-        { icon: 'bi-trophy', text: 'Próximo partido', query: '¿Cuál es el próximo partido?' },
-        { icon: 'bi-search', text: 'Análisis rival', query: 'Analiza al próximo rival' },
-        { icon: 'bi-clipboard-check', text: 'Entrenamientos', query: '¿Qué entrenamientos tengo esta semana?' },
-        { icon: 'bi-arrow-clockwise', text: 'Volver al inicio', query: 'Ayuda' },
-      ];
-    } else if (/lesion|plantilla|disponib/i.test(userText)) {
-      this.suggestions = [
-        { icon: 'bi-people', text: 'Sugerir alineación', query: '¿Qué alineación me sugieres?' },
-        { icon: 'bi-person-check', text: 'Asistencia', query: '¿Cuál es la asistencia a entrenamientos?' },
-        { icon: 'bi-trophy', text: 'Próximo partido', query: '¿Cuál es el próximo partido?' },
-        { icon: 'bi-graph-up', text: 'Estadísticas', query: 'Dame las estadísticas del equipo' },
-        { icon: 'bi-clipboard-check', text: 'Entrenamientos', query: '¿Qué entrenamientos tengo esta semana?' },
-        { icon: 'bi-arrow-clockwise', text: 'Volver al inicio', query: 'Ayuda' },
-      ];
+    if (/entrenamiento|ejercicio|sesi[óo]n|training|workout|session|drill/i.test(userText)) {
+      this.suggestions = this.chipsForCtx('TRAIN');
+    } else if (/partido|rival|encuentro|match|game|fixture|opponent/i.test(userText)) {
+      this.suggestions = this.chipsForCtx('MATCH');
+    } else if (/estad[íi]stica|rendimiento|datos|stats|statistics|performance/i.test(userText)) {
+      this.suggestions = this.chipsForCtx('STATS');
+    } else if (/t[áa]ctica|formaci[óo]n|sistema|tactics?|formation|shape/i.test(userText)) {
+      this.suggestions = this.chipsForCtx('TACT');
+    } else if (/lesion|plantilla|disponib|injur|squad|roster|availability/i.test(userText)) {
+      this.suggestions = this.chipsForCtx('INJ');
     } else {
-      this.suggestions = [
-        { icon: 'bi-clipboard-check', text: 'Entrenamientos esta semana', query: '¿Qué entrenamientos tengo esta semana?' },
-        { icon: 'bi-lightbulb', text: 'Sugerir ejercicios', query: 'Sugiere ejercicios para la sesión de hoy' },
-        { icon: 'bi-trophy', text: 'Próximo partido', query: '¿Cuál es el próximo partido?' },
-        { icon: 'bi-graph-up', text: 'Estadísticas del equipo', query: 'Dame las estadísticas de rendimiento del equipo' },
-        { icon: 'bi-people', text: 'Estado de la plantilla', query: '¿Cómo está la plantilla? ¿Hay lesionados?' },
-        { icon: 'bi-diagram-3', text: 'Análisis táctico', query: '¿Qué formación funciona mejor?' },
-      ];
+      this.suggestions = this.chipsForCtx('HOME');
     }
   }
 
@@ -936,7 +1028,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
   }
 
   formatTime(date: Date): string {
-    return date.toLocaleTimeString('es-ES', {
+    return date.toLocaleTimeString(this.localeTag(), {
       hour: '2-digit',
       minute: '2-digit',
     });
@@ -947,10 +1039,16 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     const today = new Date();
     const diff = today.getTime() - d.getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    if (days === 0) return 'Hoy';
-    if (days === 1) return 'Ayer';
-    if (days < 7) return `Hace ${days} días`;
-    return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+    if (days === 0) {
+      return this.translate.instant('COACH_DEMO.CHAT_DATE_TODAY');
+    }
+    if (days === 1) {
+      return this.translate.instant('COACH_DEMO.CHAT_DATE_YESTERDAY');
+    }
+    if (days < 7) {
+      return this.translate.instant('COACH_DEMO.CHAT_DATE_DAYS_AGO', { days });
+    }
+    return d.toLocaleDateString(this.localeTag(), { day: 'numeric', month: 'short' });
   }
 
   goBack(): void {

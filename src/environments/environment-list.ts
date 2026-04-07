@@ -27,7 +27,7 @@ export const demoenvironment = {
    *  "George" (JBFqnCBsd6RMkjVDRZzb) — voz masculina British English.
    *  Puedes sustituir cualquier ID por otro desde tu cuenta ElevenLabs.
    */
-  elevenLabsApiKey: 'sk_a1bf9a764eb0a236c2fd0a2b944101bf7c4a8a0a112b3574',
+  elevenLabsApiKey: '267900036aa376c204e321eb8e3d3c6d858379ecba36d6b671c5983fde3566d1',
   elevenLabsVoiceId: 'RwzBDEn5f6FIgpAjH9YN', // Mateo — hombre castellano de España (default)
   /** Voces específicas por código ISO 639-1. Si no se define para un idioma se usa elevenLabsVoiceId. */
   elevenLabsVoicesByLang: {

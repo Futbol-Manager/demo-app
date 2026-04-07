@@ -149,7 +149,7 @@
         <div class="row g-2 mb-3">
           <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Posición</span><span class="value">{{ selectedPlayer?.posicion || '—' }}</span></div></div>
           <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Posición 2</span><span class="value">{{ selectedPlayer?.posicionDos || '—' }}</span></div></div>
-          <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Pierna natural</span><span class="value">{{ selectedPlayer?.piernaNatural || '—' }}</span></div></div>
+          <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">{{ sportConfig.dominantLimbKey | translate }}</span><span class="value">{{ selectedPlayer?.piernaNatural || '—' }}</span></div></div>
           <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Altura (cm)</span><span class="value">{{ selectedPlayer?.altura || '—' }}</span></div></div>
           <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Peso (Kg)</span><span class="value">{{ selectedPlayer?.peso || '—' }}</span></div></div>
         </div>
@@ -158,9 +158,9 @@
           <div class="col"><div class="stat-card-pro"><span class="stat-card-label">Partidos jugados</span><span class="stat-card-value">{{ partidosJugados }}</span></div></div>
           <div class="col"><div class="stat-card-pro"><span class="stat-card-label">Titularidades</span><span class="stat-card-value">{{ numTitulares }}</span></div></div>
           <div class="col"><div class="stat-card-pro"><span class="stat-card-label">Minutos jugados</span><span class="stat-card-value">{{ minutosJugados }}</span></div></div>
-          <div class="col"><div class="stat-card-pro"><span class="stat-card-label">Goles</span><span class="stat-card-value">{{ goles }}</span></div></div>
-          <div class="col"><div class="stat-card-pro"><span class="stat-card-label">Tarjetas Amarillas</span><span class="stat-card-value">{{ tarjetasAmarillas }}</span></div></div>
-          <div class="col"><div class="stat-card-pro"><span class="stat-card-label">Tarjetas Rojas</span><span class="stat-card-value">{{ tarjetasRojas }}</span></div></div>
+          <div class="col" *ngIf="showStatScoring"><div class="stat-card-pro"><span class="stat-card-label">{{ scoringStatLabel }}</span><span class="stat-card-value">{{ goles }}</span></div></div>
+          <div class="col" *ngIf="showStatYellowCards"><div class="stat-card-pro"><span class="stat-card-label">Tarjetas Amarillas</span><span class="stat-card-value">{{ tarjetasAmarillas }}</span></div></div>
+          <div class="col" *ngIf="showStatRedCards"><div class="stat-card-pro"><span class="stat-card-label">Tarjetas Rojas</span><span class="stat-card-value">{{ tarjetasRojas }}</span></div></div>
         </div>
         <h2 class="modal-section-heading">Asistencia a entrenamientos</h2>
         <div class="table-responsive">

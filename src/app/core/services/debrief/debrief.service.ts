@@ -54,6 +54,9 @@ export class DebriefService {
   // ═══════════════════════════════════════
 
   getConfig(userId: number, teamId?: number): Observable<DebriefConfig | null> {
+    if (isDemoMode()) {
+      return of(null);
+    }
     return this.http.get<any>(this.baseUrl + `config/${userId}`).pipe(
       map(res => {
         if (!res?.data) return null;
@@ -112,6 +115,9 @@ export class DebriefService {
   // ═══════════════════════════════════════
 
   saveTrainingDebrief(debrief: DebriefTraining): Observable<DebriefTraining> {
+    if (isDemoMode()) {
+      return of({ ...debrief, debriefId: debrief.debriefId ?? Date.now(), status: 'completed' } as DebriefTraining);
+    }
     const body = {
       teamId: debrief.teamId,
       coachUserId: debrief.coachUserId,
@@ -129,6 +135,9 @@ export class DebriefService {
   }
 
   saveMatchDebrief(debrief: DebriefMatch): Observable<DebriefMatch> {
+    if (isDemoMode()) {
+      return of({ ...debrief, debriefId: debrief.debriefId ?? Date.now(), status: 'completed' } as DebriefMatch);
+    }
     const body = {
       teamId: debrief.teamId,
       coachUserId: debrief.coachUserId,
@@ -296,6 +305,39 @@ export class DebriefService {
   }
 
   getDebrief(debriefId: number): Observable<(DebriefTraining | DebriefMatch) | null> {
+    if (isDemoMode()) {
+      const historial = DemoDataService.getDemoDebriefHistory();
+      const item = historial.find((h: any) => h.debriefId === debriefId) || historial[0];
+      if (!item) return of(null);
+      if (item.type === 'match') {
+        return of({
+          debriefId: item.debriefId,
+          teamId: 9001,
+          coachUserId: 1,
+          date: item.date,
+          rivalName: item.rivalName || 'Club Norte',
+          result: '2-1',
+          answers: [
+            { questionId: 'MQ1', quickValue: 4 },
+            { questionId: 'MQ2', quickValue: 'si' },
+            { questionId: 'MQ3', textValue: 'El equipo mostró buena presión tras pérdida.' }
+          ],
+          status: item.status || 'completed'
+        } as DebriefMatch);
+      }
+      return of({
+        debriefId: item.debriefId,
+        teamId: 9001,
+        coachUserId: 1,
+        date: item.date,
+        answers: [
+          { questionId: 'TQ1', quickValue: 4 },
+          { questionId: 'TQ2', quickValue: 'si' },
+          { questionId: 'TQ3', textValue: 'Buen trabajo en la fase de transición.' }
+        ],
+        status: item.status || 'completed'
+      } as DebriefTraining);
+    }
     return this.http.get<any>(this.baseUrl + `${debriefId}`).pipe(
       map(res => {
         if (!res?.data) return null;

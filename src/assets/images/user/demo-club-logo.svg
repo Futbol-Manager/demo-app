@@ -1,32 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" width="120" height="140">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 240" width="220" height="240">
   <defs>
-    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#1e8832;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#2a9e42;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#156b28;stop-opacity:1" />
+    <linearGradient id="hexBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#003352"/>
+      <stop offset="100%" stop-color="#001e2e"/>
     </linearGradient>
-    <linearGradient id="ballGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#e8e8e8;stop-opacity:1" />
+    <linearGradient id="chevronGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#27a862"/>
+      <stop offset="50%" stop-color="#31b270"/>
+      <stop offset="100%" stop-color="#27a862"/>
     </linearGradient>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.25"/>
+    <clipPath id="hexClip">
+      <polygon points="110,4 206,56 206,184 110,236 14,184 14,56"/>
+    </clipPath>
+    <filter id="softShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+    <filter id="iconShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000" flood-opacity="0.5"/>
     </filter>
   </defs>
-  <!-- Escudo -->
-  <path d="M60 8 L108 28 L108 72 Q108 112 60 132 Q12 112 12 72 L12 28 Z" fill="url(#shieldGrad)" stroke="#0d5c1f" stroke-width="2" filter="url(#shadow)"/>
-  <!-- Franja central blanca -->
-  <path d="M60 18 L100 34 L100 68 Q100 102 60 122 Q20 102 20 68 L20 34 Z" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
-  <!-- Balon estilizado -->
-  <g transform="translate(60,70) scale(0.9)">
-    <circle cx="0" cy="0" r="22" fill="url(#ballGrad)" stroke="#c0c0c0" stroke-width="1"/>
-    <path d="M0 -22 A22 22 0 0 1 19 -11 L11 -6 A12 12 0 0 0 6 -11 Z" fill="none" stroke="#2d2d2d" stroke-width="2.5" stroke-linecap="round"/>
-    <path d="M0 -22 A22 22 0 0 0 -19 -11 L-11 -6 A12 12 0 0 1 -6 -11 Z" fill="none" stroke="#2d2d2d" stroke-width="2.5" stroke-linecap="round"/>
-    <path d="M19 -11 L11 -6 A12 12 0 0 1 11 6 L19 11 A22 22 0 0 0 0 22" fill="none" stroke="#2d2d2d" stroke-width="2.5" stroke-linecap="round"/>
-    <path d="M-19 -11 L-11 -6 A12 12 0 0 0 -11 6 L-19 11 A22 22 0 0 1 0 22" fill="none" stroke="#2d2d2d" stroke-width="2.5" stroke-linecap="round"/>
-    <path d="M0 22 A22 22 0 0 1 -19 11 L-11 6 A12 12 0 0 1 11 6 L19 11 A22 22 0 0 0 0 22" fill="none" stroke="#2d2d2d" stroke-width="2.5" stroke-linecap="round"/>
-  </g>
-  <!-- Iniciales S T -->
-  <text x="60" y="52" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="20" fill="white">ST</text>
+
+  <!-- ── OUTER BORDER (gold) ── -->
+  <polygon points="110,2 208,55 208,185 110,238 12,185 12,55"
+           fill="none" stroke="#d4af37" stroke-width="3.5" filter="url(#softShadow)"/>
+
+  <!-- ── HEX BODY ── -->
+  <polygon points="110,5 205,57 205,183 110,235 15,183 15,57"
+           fill="url(#hexBg)"/>
+
+  <!-- ── INNER BORDER (green) ── -->
+  <polygon points="110,14 196,62 196,178 110,226 24,178 24,62"
+           fill="none" stroke="rgba(49,178,112,0.45)" stroke-width="1.5"/>
+
+  <!-- ── DIAGONAL GREEN CHEVRON ── -->
+  <polygon points="15,110 205,110 205,140 15,140"
+           fill="url(#chevronGrad)" clip-path="url(#hexClip)" opacity="0.92"/>
+
+  <!-- ── SPHAIRA TITLE ── -->
+  <text x="110" y="78" text-anchor="middle" dominant-baseline="middle"
+        font-family="'Arial Black','Impact','Franklin Gothic Heavy',sans-serif"
+        font-weight="900" font-size="28" fill="white" letter-spacing="4"
+        filter="url(#iconShadow)">SPHAIRA</text>
+
+  <!-- ── SPORT ICONS (emoji-style, 4 icons 2×2 grid) ── -->
+  <!-- Football ⚽ — top-left -->
+  <text x="72" y="108" text-anchor="middle" dominant-baseline="middle"
+        font-family="'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif"
+        font-size="32" filter="url(#iconShadow)">⚽</text>
+
+  <!-- Basketball 🏀 — top-right -->
+  <text x="148" y="108" text-anchor="middle" dominant-baseline="middle"
+        font-family="'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif"
+        font-size="32" filter="url(#iconShadow)">🏀</text>
+
+  <!-- Runner / Athletics 🏃 — bottom-left -->
+  <text x="72" y="160" text-anchor="middle" dominant-baseline="middle"
+        font-family="'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif"
+        font-size="32" filter="url(#iconShadow)">🏃</text>
+
+  <!-- Volleyball 🏐 — bottom-right -->
+  <text x="148" y="160" text-anchor="middle" dominant-baseline="middle"
+        font-family="'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif"
+        font-size="32" filter="url(#iconShadow)">🏐</text>
+
+  <!-- ── SUBTITLE ── -->
+  <text x="110" y="210" text-anchor="middle" dominant-baseline="middle"
+        font-family="Arial,Helvetica,sans-serif"
+        font-weight="700" font-size="11" fill="#31b270" letter-spacing="3.5">CLUB DEPORTIVO</text>
+
+  <!-- ── TOP SEPARATOR LINE ── -->
+  <line x1="55" y1="92" x2="165" y2="92"
+        stroke="rgba(49,178,112,0.3)" stroke-width="1"/>
+
+  <!-- ── BOTTOM SEPARATOR LINE ── -->
+  <line x1="45" y1="196" x2="175" y2="196"
+        stroke="rgba(49,178,112,0.3)" stroke-width="1"/>
 </svg>

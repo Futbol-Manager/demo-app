@@ -8,6 +8,7 @@ import { ClubPlanType } from 'src/app/core/models/subscription/club-subscription
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 import { environment } from 'src/environments/environment';
 import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
+import { DemoDataService } from 'src/app/core/services/demo/demo-data.service';
 import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 
 /* =========================
@@ -154,6 +155,18 @@ export class CuadroComponent implements OnInit, OnDestroy {
 
   cargarDatosDashboard(): void {
     this.loadingDashboard = true;
+
+    if (isDemoMode()) {
+      const demo = DemoDataService.getDemoCuadroMandos();
+      this.listTeams = demo.teams ?? [];
+      this.listUltimos = demo.ultimos ?? [];
+      this.listProximos = (demo.proximos ?? []).map((p: string) => this.parseProximo(p));
+      this.parseResultados();
+      this.generarCalendarioEntrenos();
+      this.loadingDashboard = false;
+      return;
+    }
+
     this.clubService
       .getEntrenandoAhora(this.clubId, this.temporadaStoredValue)
       .subscribe({

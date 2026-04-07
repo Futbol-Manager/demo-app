@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
@@ -12,6 +12,9 @@ import { AiPageContextService } from 'src/app/core/services/ai-chat/ai-page-cont
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
+import { getSportConfig, SportConfig } from 'src/app/core/models/sport/sport-config.model';
+import { SportContextService } from 'src/app/core/services/sport/sport-context.service';
+import { sportScoringPlural } from 'src/app/core/utils/sport-ui-i18n';
 
 @Component({
   selector: 'app-estadisticas-equipos-club',
@@ -52,6 +55,10 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
 
   userId = 0;
 
+  sportConfig: SportConfig = getSportConfig('futbol');
+  currentSport = 'futbol';
+  private langSub?: Subscription;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -65,9 +72,42 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
     private aiPageContext: AiPageContextService,
     private loginService: LoginService,
     private tutorialService: TutorialService,
+    private sportContextService: SportContextService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
+  /** Si el deporte incluye este campo en actas/partidos (modal). */
+  hasMatchStatKey(key: string): boolean {
+    return this.sportConfig.matchStatsFields.some((f) => f.key === key);
+  }
+
+  get labelScoringFor(): string {
+    const k = `SPORT_UI.SHORT_SCORING_FOR.${this.currentSport}`;
+    const v = this.translate.instant(k);
+    if (v !== k) return v;
+    return this.sportConfig.scoringUnitPlural.slice(0, 3);
+  }
+
+  get labelScoringAgainst(): string {
+    const k = `SPORT_UI.SHORT_SCORING_AGAINST.${this.currentSport}`;
+    const v = this.translate.instant(k);
+    if (v !== k) return v;
+    return 'C';
+  }
+
+  get labelDiffScoring(): string {
+    const unit = sportScoringPlural(this.translate, this.currentSport, this.sportConfig.scoringUnitPlural);
+    return this.translate.instant('SPORT_UI.DIFF_SCORING', { unit });
+  }
+
+  get aiSuggestionGoalsComparison(): string {
+    const unit = sportScoringPlural(this.translate, this.currentSport, this.sportConfig.scoringUnitPlural).toLowerCase();
+    return this.translate.instant('SPORT_UI.AI_COMPARE_SCORING_PROMPT', { unit });
+  }
+
   ngOnInit(): void {
+    this.currentSport = this.sportContextService.getSport();
+    this.sportConfig = getSportConfig(this.currentSport);
     this.loginService.usuarioActual.pipe().subscribe(user => {
       if (user) this.userId = user.userId;
     });
@@ -76,6 +116,7 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
     });
     this.getListaPostpartidos();
     this.initVoiceRecognition();
+    this.langSub = this.translate.onLangChange.subscribe(() => this.cdr.markForCheck());
     setTimeout(() => this.tutorialService.start('estadisticas-equipos-club', true), 600);
   }
 
@@ -123,6 +164,7 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.langSub?.unsubscribe();
     this.voiceTranscriptSub?.unsubscribe();
     this.voiceListeningSub?.unsubscribe();
     this.voiceErrorSub?.unsubscribe();

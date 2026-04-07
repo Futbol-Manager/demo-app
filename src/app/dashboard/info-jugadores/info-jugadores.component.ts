@@ -14,6 +14,8 @@ import { Player } from 'src/app/core/services/player/player.model';
 import { Location } from '@angular/common';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { environment } from 'src/environments/environment';
+import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
+import { DemoDataService } from 'src/app/core/services/demo/demo-data.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
@@ -199,6 +201,23 @@ export class InfoJugadoresComponent implements OnInit, OnDestroy {
   }
 
   cargarListadoJugadores(): void {
+    if (isDemoMode()) {
+      const demoData = DemoDataService.getDemoListJugadoresByClub();
+      this.teams = demoData.teams ?? [];
+      this.players = [];
+      this.filteredPlayers = [];
+      for (const team of this.teams) {
+        for (const p of (team.players ?? [])) {
+          const player = { ...p, teamId: team.teamId };
+          this.players.push(player);
+          this.filteredPlayers.push(player);
+        }
+      }
+      this.loadPlayersOfTeam();
+      this.datosCargados = true;
+      this.loading = false;
+      return;
+    }
     this.clubService.getListJugadoresByClubForTemp(this.clubId, this.temporadaStoredValue).subscribe(
       (response: Response) => {
         if (response && response.data) {

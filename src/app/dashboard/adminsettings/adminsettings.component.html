@@ -1,0 +1,60 @@
+<div class="back-container mb-3">
+  <div class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>Volver</span>
+  </div>
+</div>
+
+<div class="container mt-2 pb-4">
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="admin-icon-badge">
+      <i class="bi bi-people-fill"></i>
+    </div>
+    <div>
+      <h2 class="mb-0">Usuarios del sistema</h2>
+      <p class="text-muted mb-0 small">Gesti&oacute;n interna &mdash; solo administradores Sphaira</p>
+    </div>
+    <span class="ms-auto badge bg-primary rounded-pill">{{ tableUsers.length }} usuarios</span>
+  </div>
+
+  <div class="table-responsive admin-table-wrap">
+    <table class="table table-hover admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Fecha alta</th>
+          <th>Perfil</th>
+          <th>Nombre</th>
+          <th>Apellidos</th>
+          <th>Tel&eacute;fono</th>
+          <th>Email</th>
+          <th>F. nacimiento</th>
+          <th>Validado</th>
+          <th>Comunicaciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of tableUsers">
+          <td class="fw-semibold text-muted">#{{ u.id }}</td>
+          <td>{{ u.createdAt }}</td>
+          <td>
+            <span class="profile-badge" [ngClass]="'profile-' + u.profile.toLowerCase()">
+              {{ u.profile }}
+            </span>
+          </td>
+          <td>{{ u.name }}</td>
+          <td>{{ u.surname }}</td>
+          <td class="text-muted small">{{ u.phone }}</td>
+          <td class="text-muted small">{{ u.email }}</td>
+          <td class="text-muted small">{{ u.birthDate }}</td>
+          <td>
+            <i class="bi" [ngClass]="u.validated ? 'bi-check-circle-fill text-success' : 'bi-x-circle-fill text-danger'"></i>
+          </td>
+          <td>
+            <i class="bi" [ngClass]="u.communications ? 'bi-check-circle-fill text-success' : 'bi-dash-circle text-muted'"></i>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

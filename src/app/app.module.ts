@@ -50,12 +50,14 @@ export function HttpLoaderFactory(http: HttpClient) {
     HttpClientModule,
 
     // 🌍 Traducciones (forRoot + import explícito para pipe en templates)
+    // defaultLanguage: 'es' actúa como fallback para claves no traducidas en ca/gl/eu
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
         useFactory: HttpLoaderFactory,
         deps: [HttpClient]
-      }
+      },
+      defaultLanguage: 'es'
     }),
     TranslateModule,
     AuthPagesModule,

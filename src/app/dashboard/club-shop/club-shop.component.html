@@ -1,0 +1,252 @@
+<!-- HERO -->
+<div class="shop-hero" data-tutorial="shop-hero">
+  <div class="back-container">
+    <button class="btn-back" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+  <div class="hero-center">
+    <i class="bi bi-bag-heart-fill hero-icon"></i>
+    <div>
+      <h2 class="hero-title">{{ 'CLUB_SHOP.TITLE' | translate }}</h2>
+      <p class="hero-subtitle">{{ 'CLUB_SHOP.SUBTITLE' | translate }}</p>
+    </div>
+  </div>
+  <button class="cart-fab" (click)="switchTab('cart')">
+    <i class="bi bi-bag"></i>
+    <span *ngIf="cartCount > 0" class="cart-count">{{ cartCount }}</span>
+  </button>
+</div>
+
+<!-- TABS -->
+<div class="shop-tabs" data-tutorial="shop-tabs">
+  <button class="tab-btn" [class.active]="activeTab === 'catalog'" (click)="switchTab('catalog')">
+    <i class="bi bi-grid-3x3-gap me-2"></i>{{ 'CLUB_SHOP.TABS.CATALOG' | translate }}
+  </button>
+  <button class="tab-btn" [class.active]="activeTab === 'cart'" (click)="switchTab('cart')">
+    <i class="bi bi-bag me-2"></i>{{ 'CLUB_SHOP.TABS.CART' | translate }}
+    <span *ngIf="cartCount > 0" class="tab-badge">{{ cartCount }}</span>
+  </button>
+  <button class="tab-btn" [class.active]="activeTab === 'orders'" (click)="switchTab('orders')">
+    <i class="bi bi-receipt me-2"></i>{{ 'CLUB_SHOP.TABS.ORDERS' | translate }}
+  </button>
+</div>
+
+<div class="shop-body">
+
+  <!-- CATALOGO -->
+  <div *ngIf="activeTab === 'catalog'" class="catalog-section">
+
+    <!-- Barra de busqueda -->
+    <div class="search-bar" data-tutorial="shop-search">
+      <i class="bi bi-search search-icon"></i>
+      <input class="search-input" type="text" [(ngModel)]="searchQuery" [placeholder]="'CLUB_SHOP.SEARCH_PLACEHOLDER' | translate" />
+      <button *ngIf="searchQuery" class="search-clear" (click)="searchQuery = ''">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Sin resultados -->
+    <div *ngIf="filteredProducts.length === 0" class="empty-state">
+      <div class="empty-icon"><i class="bi bi-search"></i></div>
+      <h3>{{ 'CLUB_SHOP.EMPTY_SEARCH' | translate }} "{{ searchQuery }}"</h3>
+      <button class="btn-ghost" (click)="searchQuery = ''">{{ 'CLUB_SHOP.CLEAR_SEARCH' | translate }}</button>
+    </div>
+
+    <!-- Grid de productos (Bootstrap) -->
+    <div class="row g-3" *ngIf="filteredProducts.length > 0" data-tutorial="shop-grid">
+      <div class="col-6 col-md-4 col-lg-3" *ngFor="let p of filteredProducts; trackBy: trackById">
+        <div class="product-card h-100" (click)="openDetail(p)">
+          <div class="product-img-wrap">
+            <img [src]="p.image" [alt]="productName(p)" loading="lazy" />
+            <div class="product-hover-overlay">
+              <span class="btn-view"><i class="bi bi-eye me-1"></i>{{ 'CLUB_SHOP.VIEW_PRODUCT' | translate }}</span>
+            </div>
+            <div class="product-badge" *ngIf="p.badgeKey">{{ productBadge(p) }}</div>
+          </div>
+          <div class="product-info">
+            <span class="product-category">{{ productCategory(p) }}</span>
+            <h5 class="product-name">{{ productName(p) }}</h5>
+            <div class="product-rating">
+              <i *ngFor="let s of starArray(); trackBy: trackByIdx"
+                 class="bi" [class.bi-star-fill]="s <= p.rating" [class.bi-star]="s > p.rating"></i>
+              <span class="rating-count">({{ p.reviews }})</span>
+            </div>
+            <span class="product-price">{{ formatPrice(p.price) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETALLE PRODUCTO (Modal) -->
+  <div *ngIf="selectedProduct" class="pdm-backdrop" (click)="closeDetail()">
+    <div class="pdm-card" (click)="$event.stopPropagation()">
+
+      <!-- Imagen -->
+      <div class="pdm-media">
+        <img [src]="selectedProduct.image" [alt]="productName(selectedProduct)" class="pdm-main-img" />
+        <div class="pdm-badge" *ngIf="selectedProduct.badgeKey">{{ productBadge(selectedProduct) }}</div>
+      </div>
+
+      <!-- Info -->
+      <div class="pdm-info">
+        <div class="pdm-topbar">
+          <span class="pdm-category-label">
+            <i class="bi bi-bag-heart me-1"></i>{{ productCategory(selectedProduct) }}
+          </span>
+          <button class="pdm-close" (click)="closeDetail()"><i class="bi bi-x-lg"></i></button>
+        </div>
+
+        <h2 class="pdm-name">{{ productName(selectedProduct) }}</h2>
+
+        <div class="pdm-rating-row">
+          <div class="pdm-stars">
+            <i *ngFor="let s of starArray(); trackBy: trackByIdx"
+               class="bi" [class.bi-star-fill]="s <= selectedProduct.rating" [class.bi-star]="s > selectedProduct.rating"></i>
+          </div>
+          <span class="pdm-score">{{ selectedProduct.rating }}</span>
+          <span class="pdm-cnt">({{ selectedProduct.reviews }} {{ 'CLUB_SHOP.RATINGS' | translate }})</span>
+        </div>
+
+        <div class="pdm-price-block">
+          <span class="pdm-price">{{ formatPrice(selectedProduct.price) }}</span>
+          <span class="pdm-stock" *ngIf="selectedProduct.stock <= 10">
+            <i class="bi bi-fire me-1"></i>{{ 'CLUB_SHOP.ONLY_LEFT' | translate }} {{ selectedProduct.stock }}
+          </span>
+        </div>
+
+        <p class="pdm-desc">{{ productDescription(selectedProduct) }}</p>
+        <div class="pdm-sep"></div>
+
+        <!-- Talla / variante -->
+        <div *ngIf="selectedProduct.variants?.length" class="pdm-variants">
+          <span class="pdm-vlabel">{{ 'CLUB_SHOP.SIZE' | translate }}: <strong>{{ selectedVariant }}</strong></span>
+          <div class="pdm-vchips">
+            <button *ngFor="let v of selectedProduct.variants; trackBy: trackByIdx"
+                    class="pdm-vchip" [class.active]="selectedVariant === v"
+                    (click)="selectedVariant = v">{{ v }}</button>
+          </div>
+        </div>
+
+        <!-- Cantidad -->
+        <div class="pdm-qty-row">
+          <span class="pdm-qty-label">{{ 'CLUB_SHOP.QUANTITY' | translate }}</span>
+          <div class="pdm-qty-ctrl">
+            <button (click)="changeQty(-1)" [disabled]="quantityToAdd <= 1"><i class="bi bi-dash"></i></button>
+            <span>{{ quantityToAdd }}</span>
+            <button (click)="changeQty(1)"><i class="bi bi-plus"></i></button>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <button class="pdm-btn-add" (click)="addToCart(selectedProduct)">
+          <i class="bi bi-bag-plus-fill me-2"></i>{{ 'CLUB_SHOP.ADD_TO_CART' | translate }}
+        </button>
+
+        <div class="pdm-trust-bar">
+          <span><i class="bi bi-shield-check"></i> {{ 'CLUB_SHOP.SECURE_PAYMENT' | translate }}</span>
+          <span class="dot">&middot;</span>
+          <span><i class="bi bi-arrow-repeat"></i> {{ 'CLUB_SHOP.RETURNS' | translate }}</span>
+          <span class="dot">&middot;</span>
+          <span><i class="bi bi-truck"></i> {{ 'CLUB_SHOP.FREE_SHIPPING' | translate }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARRITO -->
+  <div *ngIf="activeTab === 'cart'" class="cart-section" data-tutorial="shop-cart">
+
+    <div *ngIf="cartItems.length === 0" class="empty-state">
+      <div class="empty-icon"><i class="bi bi-bag"></i></div>
+      <h3>{{ 'CLUB_SHOP.CART_EMPTY_TITLE' | translate }}</h3>
+      <p>{{ 'CLUB_SHOP.CART_EMPTY_TEXT' | translate }}</p>
+      <button class="btn-primary-sph" (click)="switchTab('catalog')">
+        <i class="bi bi-grid-3x3-gap me-2"></i>{{ 'CLUB_SHOP.VIEW_CATALOG' | translate }}
+      </button>
+    </div>
+
+    <div *ngIf="cartItems.length > 0" class="cart-layout">
+      <!-- Items -->
+      <div class="cart-items-panel">
+        <h3 class="panel-title">{{ 'CLUB_SHOP.TABS.CART' | translate }} <span class="item-count">({{ cartCount }} {{ 'CLUB_SHOP.ITEMS' | translate }})</span></h3>
+        <div class="cart-item" *ngFor="let ci of cartItems; trackBy: trackByIdx">
+          <div class="ci-img">
+            <img [src]="ci.product.image" [alt]="productName(ci.product)" />
+          </div>
+          <div class="ci-info">
+            <h6>{{ productName(ci.product) }}</h6>
+            <small *ngIf="ci.variant" class="variant-tag">{{ ci.variant }}</small>
+            <div class="ci-price">{{ formatPrice(ci.product.price * ci.qty) }}</div>
+          </div>
+          <div class="ci-qty">
+            <button (click)="updateQty(ci, -1)"><i class="bi bi-dash"></i></button>
+            <span>{{ ci.qty }}</span>
+            <button (click)="updateQty(ci, 1)"><i class="bi bi-plus"></i></button>
+          </div>
+          <button class="ci-remove" (click)="removeItem(ci)"><i class="bi bi-x-lg"></i></button>
+        </div>
+      </div>
+
+      <!-- Resumen -->
+      <div class="cart-summary-panel">
+        <h3 class="panel-title">{{ 'CLUB_SHOP.ORDER_SUMMARY' | translate }}</h3>
+        <div class="summary-rows">
+          <div class="summary-row">
+            <span>{{ 'CLUB_SHOP.SUBTOTAL' | translate }}</span>
+            <span>{{ formatPrice(cartTotal) }}</span>
+          </div>
+          <div class="summary-row">
+            <span>{{ 'CLUB_SHOP.SHIPPING' | translate }}</span>
+            <span class="free-badge">{{ 'CLUB_SHOP.FREE' | translate }}</span>
+          </div>
+          <div class="summary-row total-row">
+            <span>{{ 'CLUB_SHOP.TOTAL' | translate }}</span>
+            <span>{{ formatPrice(cartTotal) }}</span>
+          </div>
+        </div>
+
+        <!-- Demo notice -->
+        <div class="demo-notice">
+          <i class="bi bi-info-circle-fill me-2"></i>
+          {{ 'CLUB_SHOP.DEMO_NOTICE' | translate }}
+        </div>
+
+        <button class="btn-checkout" disabled>
+          <i class="bi bi-lock-fill me-2"></i>{{ 'CLUB_SHOP.PAY' | translate }} {{ formatPrice(cartTotal) }}
+        </button>
+
+        <div class="trust-badges">
+          <span><i class="bi bi-shield-lock-fill"></i> SSL</span>
+          <span><i class="bi bi-credit-card-fill"></i> Stripe</span>
+          <span><i class="bi bi-lock-fill"></i> {{ 'CLUB_SHOP.SECURE_PAYMENT' | translate }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PEDIDOS -->
+  <div *ngIf="activeTab === 'orders'" class="orders-section" data-tutorial="shop-orders">
+    <div class="empty-state">
+      <div class="empty-icon"><i class="bi bi-receipt"></i></div>
+      <h3>{{ 'CLUB_SHOP.ORDERS_EMPTY_TITLE' | translate }}</h3>
+      <p>{{ 'CLUB_SHOP.ORDERS_EMPTY_TEXT' | translate }}</p>
+      <button class="btn-primary-sph" (click)="switchTab('catalog')">
+        <i class="bi bi-grid-3x3-gap me-2"></i>{{ 'CLUB_SHOP.EXPLORE_CATALOG' | translate }}
+      </button>
+    </div>
+  </div>
+
+</div><!-- /shop-body -->
+
+<!-- TOAST -->
+<div class="cart-toast" [class.visible]="cartToastVisible">
+  <div class="toast-icon-wrap"><i class="bi bi-bag-check-fill"></i></div>
+  <div class="toast-text">
+    <span class="toast-label">{{ 'CLUB_SHOP.ADDED_TO_CART' | translate }}</span>
+    <span class="toast-product">{{ tr('CLUB_SHOP.PRODUCTS.' + cartToastKey + '.NAME') }}</span>
+  </div>
+  <i class="bi bi-check-circle-fill toast-check"></i>
+</div>

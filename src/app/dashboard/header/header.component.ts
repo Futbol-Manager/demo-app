@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, Renderer2, ChangeDetectionStrategy } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, NgZone, OnDestroy, OnInit, Renderer2, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBarConfig } from '@angular/material/snack-bar';
@@ -29,6 +29,10 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 import { InactivityService } from 'src/app/core/services/inactivity/inactivity.service';
 import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
+import {
+  APP_LANGUAGE_OPTIONS,
+  APP_SUPPORTED_LANG_CODES,
+} from 'src/app/core/constants/app-supported-languages';
 
 /** Intervalo en ms para refrescar listado y contador de notificaciones */
 const NOTIFICATIONS_POLL_INTERVAL_MS = 45_000;
@@ -38,7 +42,7 @@ const NOTIFICATIONS_POLL_INTERVAL_MS = 45_000;
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnInit, OnDestroy {
+export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();
   isDarkMode: boolean = false;
   coachBelongsToClub = false;
@@ -76,7 +80,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   /** URL del avatar para mostrar: en demo usa assets (demo-club-logo, demo-coach-avatar, demo-player-avatar). */
   getDisplayAvatarUrl(): string {
     if ((environment as { demo?: boolean }).demo) {
-      const name = this.imgUser || (this.profileId === 1 ? 'demo-club-logo.png' : this.profileId === 2 ? 'demo-coach-avatar.svg' : 'demo-player-avatar.svg');
+      const name = this.imgUser || (this.profileId === 1 ? 'demo-club-logo.svg' : this.profileId === 2 ? 'demo-coach-avatar.svg' : 'demo-player-avatar.svg');
       return 'assets/images/user/' + name;
     }
     if (!this.imgUser) return '';
@@ -86,6 +90,27 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   showModalIdioma = false;
   selectedLang: string = 'es';
+
+  /** Opciones del modal de idioma. */
+  readonly languageOptions = APP_LANGUAGE_OPTIONS;
+
+  // Header scroll state
+  isScrolled = false;
+
+  get roleLabel(): string {
+    switch (this.profileId) {
+      case 1:                   return 'Club';
+      case 2:                   return 'Coach';
+      case 3: case 4: case 5:  return 'Player';
+      case 6: case 7:           return 'Staff';
+      default:                  return '';
+    }
+  }
+
+  @HostListener('window:scroll')
+  onScroll(): void {
+    this.isScrolled = window.scrollY > 8;
+  }
 
   showPasswordSection = false;
   currentPassword = '';
@@ -113,6 +138,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   // Coach trial banner
   coachTrialActive = false;
+  trialExpired = false;
+  trialDaysLeft = -1;
+  trialCountdown = '';
 
   /** Tutorial: screenId según la ruta actual (dashboard-inicio | cuadro-de-mandos) */
   currentTutorialScreenId: string = 'dashboard-inicio';
@@ -158,12 +186,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private aiChatService: AiChatService,
     private clubService: ClubService,
     private cdr: ChangeDetectorRef,
+    private ngZone: NgZone,
     public inactivityService: InactivityService,
     private tutorialService: TutorialService,
   ) {
-    const lang = localStorage.getItem('lang');
-    if (lang) {
-      this.selectedLang = lang;
+    const stored = localStorage.getItem('lang');
+    const current = this.translate.currentLang || this.translate.defaultLang || 'es';
+    this.selectedLang = (stored && APP_SUPPORTED_LANG_CODES.includes(stored as any)) ? stored : current;
+    if (!stored || !APP_SUPPORTED_LANG_CODES.includes(stored as any)) {
+      localStorage.setItem('lang', this.selectedLang);
     }
     // Sync isDarkMode with ThemeService
     this.themeService.mode$.subscribe(mode => {
@@ -215,14 +246,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.cdr.markForCheck();
     });
 
-    // Actualizar listado y contador de notificaciones cada cierto tiempo
-    interval(NOTIFICATIONS_POLL_INTERVAL_MS)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        if (this.userId > 0 && this.userId !== 9 && this.canShowUserNotificationsBell()) {
-          this.loadHeaderNotifications();
-        }
-      });
+    // Actualizar listado y contador de notificaciones fuera de la zona para no bloquear CD
+    this.ngZone.runOutsideAngular(() => {
+      interval(NOTIFICATIONS_POLL_INTERVAL_MS)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(() => {
+          if (this.userId > 0 && this.userId !== 9 && this.canShowUserNotificationsBell()) {
+            this.ngZone.run(() => this.loadHeaderNotifications());
+          }
+        });
+    });
 
     // Al volver a la pestaña, verificar que la sesión siga válida; si el token expiró (401), el interceptor cierra sesión
     fromEvent(document, 'visibilitychange')
@@ -327,6 +360,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.currentTutorialScreenId = 'notificaciones';
     } else if (url.includes('staff-club')) {
       this.currentTutorialScreenId = 'staff-club';
+    } else if (url.includes('club-post')) {
+      this.currentTutorialScreenId = 'club-post';
+    } else if (url.includes('tienda-club')) {
+      this.currentTutorialScreenId = 'tienda-club';
     } else if (url.includes('scouting-club')) {
       this.currentTutorialScreenId = 'scouting-club';
     } else if (url.includes('club-videos')) {
@@ -724,7 +761,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.router.navigate(['/dashboard/inicio']);
   }
 
-  ngAfterViewInit() {
+  goToLeadsWeb(): void {
+    this.router.navigate(['/dashboard/inicio']);
+  }
+
+  goToAdminImpersonate(): void {
+    this.router.navigate(['/dashboard/inicio']);
+  }
+
+  ngAfterViewInit(): void {
     document
       .querySelectorAll('[data-bs-toggle="dropdown"]')
       .forEach((el) => Dropdown.getOrCreateInstance(el as HTMLElement));

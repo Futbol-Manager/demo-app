@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Router } from '@angular/router';
-import { LockedFeature } from 'src/app/core/models/subscription/club-subscription.model';
+import { FeatureLockData } from 'src/app/core/models/subscription/club-subscription.model';
 
 @Component({
   selector: 'app-feature-lock-modal',
@@ -9,17 +8,15 @@ import { LockedFeature } from 'src/app/core/models/subscription/club-subscriptio
 })
 export class FeatureLockModalComponent {
   @Input() visible = false;
-  @Input() feature: LockedFeature | null = null;
+  @Input() featureData: FeatureLockData | null = null;
   @Output() closed = new EventEmitter<void>();
-
-  constructor(private router: Router) {}
+  @Output() upgrade = new EventEmitter<void>();
 
   close(): void {
     this.closed.emit();
   }
 
   goToPlans(): void {
-    this.close();
-    this.router.navigate(['/dashboard/suscripcion-club']);
+    this.upgrade.emit();
   }
 }

@@ -5,6 +5,8 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { environment } from 'src/environments/environment';
+import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
+import { DemoDataService } from 'src/app/core/services/demo/demo-data.service';
 import { Location } from '@angular/common';
 import * as XLSX from 'xlsx';
 import { NotificationService } from 'src/app/core/services/notification/notification.service';
@@ -249,6 +251,28 @@ export class InfoEntrenadoresComponent implements OnInit {
 
   cargarListadoEntrenadores(): void {
     this.loading = true;
+
+    if (isDemoMode()) {
+      const demoData = DemoDataService.getDemoListEntrenadoresByClub();
+      this.teams = demoData.teams ?? [];
+      const allTrainers: Trainer[] = [];
+      for (const team of this.teams) {
+        for (const t of (team.trainers ?? [])) {
+          const existing = allTrainers.find((tr) => tr.userId === t.userId);
+          if (existing) {
+            if (!existing.teams) existing.teams = [existing.nameTeam];
+            existing.teams.push(team.nameTeam);
+          } else {
+            allTrainers.push({ ...t, teamId: team.teamId, nameTeam: team.nameTeam });
+          }
+        }
+      }
+      this.trainers = allTrainers;
+      this.filteredTrainers = [...allTrainers];
+      this.datosCargados = true;
+      this.loading = false;
+      return;
+    }
 
     // Usamos el mismo endpoint de jugadores del club agrupado por equipos.
     // Los entrenadores vienen en response.data.trainers si existe, o simulamos

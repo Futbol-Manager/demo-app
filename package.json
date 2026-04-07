@@ -52,6 +52,7 @@
     "file-saver": "^2.0.5",
     "gifshot": "^0.4.5",
     "gsap": "^3.14.2",
+    "html2canvas": "^1.4.1",
     "html2pdf.js": "^0.10.2",
     "jquery": "^3.7.1",
     "konva": "^9.3.22",

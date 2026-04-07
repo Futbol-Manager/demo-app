@@ -154,6 +154,9 @@ export class TrainingService {
   }
 
   createUpdateImgTask(tasksShopId: number, taskId: number, file: File, userId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ url: '' }) as Response);
+    }
     // Verifica si el archivo está presente
     if (file) {
       // Obtén el token almacenado en localStorage
@@ -984,6 +987,9 @@ export class TrainingService {
   }
 
   getListsAsistenciaByTeam(teamId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoListAsistenciaByTeam(teamId)) as Response);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 

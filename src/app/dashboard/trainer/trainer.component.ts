@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User } from 'src/app/core/models/users/user.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
+import { TeamService } from 'src/app/core/services/team/team.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Player } from 'src/app/core/services/player/player.model';
 import * as $ from 'jquery';
@@ -12,6 +13,10 @@ import { HttpClient } from '@angular/common/http';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 import { environment } from 'src/environments/environment';
+import { getSportConfig, SportConfig } from 'src/app/core/models/sport/sport-config.model';
+import { SportContextService } from 'src/app/core/services/sport/sport-context.service';
+import { TranslateService } from '@ngx-translate/core';
+import { sportPositionLabel } from 'src/app/core/utils/sport-ui-i18n';
 // Registra los complementos necesarios
 Chart.register(...registerables);
 
@@ -48,6 +53,13 @@ export class TrainerComponent implements OnInit {
   selectedFile!: File;
   temporadaStoredValue = getCurrentSeasonString();
 
+  sportConfig: SportConfig = getSportConfig('futbol');
+  currentSport = 'futbol';
+
+  positionLabel(pos: string): string {
+    return sportPositionLabel(this.translate, this.currentSport, pos);
+  }
+
   get imageBaseUrlUser(): string {
     return environment.images + 'user/';
   }
@@ -57,16 +69,26 @@ export class TrainerComponent implements OnInit {
     private route: ActivatedRoute,
     private http: HttpClient,
     private elementRef: ElementRef,
-    private trainingService: TrainingService) { }
+    private trainingService: TrainingService,
+    private teamService: TeamService,
+    private sportContextService: SportContextService,
+    private translate: TranslateService) { }
 
   ngOnInit(): void {
+    this.currentSport = this.sportContextService.getSport();
+    this.sportConfig = getSportConfig(this.currentSport);
     // Suscribirse a los cambios en los parámetros de la URL
     this.route.params.subscribe(params => {
-      // Obtener el valor de teamId de los parámetros
-      this.teamId = +params['teamId'];  // El + convierte el valor a número
+      this.teamId = +params['teamId'];
       console.log('teamId:', this.teamId);
+      this.teamService.getTeamById(String(this.teamId)).subscribe((res: Response) => {
+        const team = res?.data as { sport?: string } | undefined;
+        const s = (team?.sport || this.sportContextService.getSport() || 'futbol') as string;
+        this.sportContextService.setSport(s);
+        this.currentSport = s;
+        this.sportConfig = getSportConfig(s);
+      });
       this.cargarListadoJugadores();
-      // Luego puedes realizar acciones con el teamId según tus necesidades
     });
 
     if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
@@ -359,6 +381,39 @@ export class TrainerComponent implements OnInit {
     this.cargarGraficoRadar();
   }
 
+  /** Etiquetas del radar según deporte (sin eje portero si no aplica). */
+  private getRadarLabels(): string[] {
+    const skill = this.translate.instant(this.sportConfig.skillLabelKey);
+    const labels = [
+      skill && skill !== this.sportConfig.skillLabelKey ? skill : 'Habilidad con balón',
+      'Pase',
+      'Tiro',
+      'Defensa',
+      'Físico',
+      'Mentalidad'
+    ];
+    if (this.sportConfig.hasGoalkeeper) {
+      labels.push('Portero');
+    }
+    return labels;
+  }
+
+  private getRadarData(p: Player): number[] {
+    const n = (v: unknown) => parseInt(String(v ?? '0'), 10) || 0;
+    const vals = [
+      n(p.habilidadConBalon),
+      n(p.pase),
+      n(p.tiro),
+      n(p.defensa),
+      n(p.fisico),
+      n(p.mentalidad)
+    ];
+    if (this.sportConfig.hasGoalkeeper) {
+      vals.push(n(p.portero));
+    }
+    return vals;
+  }
+
   // Método para cargar el gráfico de radar con los datos del jugador
   cargarGraficoRadar() {
     // Antes de crear el nuevo gráfico, destruye el gráfico existente si es necesario
@@ -369,18 +424,10 @@ export class TrainerComponent implements OnInit {
     this.radarChart = new Chart(ctx, {
       type: 'radar',
       data: {
-        labels: ['Habilidad con balon', 'Pase', 'Tiro', 'Defensa', 'Físico', 'Mentalidad', 'Portero'],
+        labels: this.getRadarLabels(),
         datasets: [{
           label: 'Atributos del Jugador',
-          data: [
-            parseInt(this.selectedPlayer.habilidadConBalon),
-            parseInt(this.selectedPlayer.pase),
-            parseInt(this.selectedPlayer.tiro),
-            parseInt(this.selectedPlayer.defensa),
-            parseInt(this.selectedPlayer.fisico),
-            parseInt(this.selectedPlayer.mentalidad),
-            parseInt(this.selectedPlayer.portero)
-          ],
+          data: this.getRadarData(this.selectedPlayer),
           backgroundColor: 'rgba(255, 99, 132, 0.2)',
           borderColor: 'rgba(255, 99, 132, 1)',
           borderWidth: 1

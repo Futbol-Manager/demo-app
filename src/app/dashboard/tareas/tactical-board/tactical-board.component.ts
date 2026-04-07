@@ -8,6 +8,14 @@ import Konva from 'konva';
 import { gsap } from 'gsap';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
+import { TeamService } from 'src/app/core/services/team/team.service';
+import { getSportConfig, SportConfig } from 'src/app/core/models/sport/sport-config.model';
+import {
+  SportElementDef,
+  getCommonElements,
+  getSportSpecificElements,
+  findSportElementDef,
+} from './sport-element.registry';
 
 /* ──────────────── Interfaces ──────────────── */
 interface PlayerMarker {
@@ -34,7 +42,7 @@ interface UndoState {
   nextPlayerNumber: number;
 }
 
-type ToolType = 'select' | 'pencil' | 'line' | 'arrow' | 'rect' | 'ellipse' | 'text' | 'eraser';
+type ToolType = 'select' | 'pencil' | 'line' | 'arrow' | 'rect' | 'ellipse' | 'text' | 'eraser' | 'double-arrow' | 'curved-arrow' | 'polygon';
 
 @Component({
   selector: 'app-tactical-board',
@@ -51,9 +59,14 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
   @Input() taskId: number = 0;
   @Input() trainingId: number = 0;
   @Input() userId: number = 0;
+  @Input() sport: string = 'futbol';
   @Output() imagenGuardada = new EventEmitter<string>();
   @Output() archivoGenerado = new EventEmitter<File>();
   @Output() cerrar = new EventEmitter<void>();
+
+  sportConfig: SportConfig = getSportConfig('futbol');
+  commonElements: SportElementDef[] = [];
+  sportSpecificElements: SportElementDef[] = [];
 
   savingTask: boolean = false;
   saveTaskError: string = '';
@@ -150,7 +163,8 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
     private route: ActivatedRoute,
     public t: TranslateService,
     private trainingService: TrainingService,
-    private tutorialService: TutorialService
+    private tutorialService: TutorialService,
+    private teamService: TeamService
   ) {}
 
   /* ────────────────── Lifecycle ────────────────── */
@@ -159,7 +173,39 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
 
     this.route.params.subscribe(p => {
       this.teamId = +p['teamId'] || 0;
+
+      if (this.teamId) {
+        this.teamService.getTeamById(String(this.teamId)).subscribe((res: any) => {
+          const teamData = res?.data ?? res;
+          if (teamData?.sport) {
+            this.sport = teamData.sport;
+          }
+          this.refreshSportConfig();
+          if (this.pitchLayer) {
+            this.drawPitch();
+          }
+        });
+      } else {
+        this.refreshSportConfig();
+      }
     });
+
+    this.refreshSportConfig();
+  }
+
+  private refreshSportConfig(): void {
+    this.sportConfig = getSportConfig(this.sport);
+    this.commonElements = getCommonElements();
+    this.sportSpecificElements = getSportSpecificElements(this.sport);
+  }
+
+  get ballEmoji(): string {
+    const map: Record<string, string> = {
+      futbol: '⚽', baloncesto: '🏀', balonmano: '🤾', voley: '🏐',
+      'futbol-americano': '🏈', rugby: '🏉', 'futbol-sala': '⚽',
+      hockey: '🏑', waterpolo: '🤽', beisbol: '⚾', 'hockey-hielo': '🏒'
+    };
+    return map[this.sport] || '⚽';
   }
 
   ngAfterViewInit(): void {
@@ -298,61 +344,526 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   /* ────────────────── PITCH DRAWING ────────────────── */
-  private drawPitch(): void {
-    this.pitchLayer.destroyChildren();
+  /* ─────────── Pitch background helpers ─────────── */
+
+  /** Franjas verticales estilo césped rayado (fútbol, futsal, rugby, hockey hierba, NFL). */
+  private addVerticalGrassStripes(stripCount: number, colorEven: string, colorOdd: string): void {
     const W = this.PITCH_W;
     const H = this.PITCH_H;
-    const lineW = 2;
+    const sw = W / stripCount;
+    for (let i = 0; i < stripCount; i++) {
+      this.pitchLayer.add(new Konva.Rect({ x: i * sw, y: 0, width: sw, height: H, fill: i % 2 === 0 ? colorEven : colorOdd, listening: false }));
+    }
+  }
+
+  /** Fondo liso para deportes sin apariencia de césped rayado. */
+  private addSolidPitchFill(fill: string): void {
+    this.pitchLayer.add(new Konva.Rect({ x: 0, y: 0, width: this.PITCH_W, height: this.PITCH_H, fill, listening: false }));
+  }
+
+  private drawPitch(): void {
+    this.pitchLayer.destroyChildren();
+    if (this.pitchStyle === 'blank') { this.pitchLayer.batchDraw(); return; }
+
+    switch (this.sport) {
+      case 'baloncesto':        this.drawBasketballCourt();        break;
+      case 'balonmano':         this.drawHandballCourt();          break;
+      case 'voley':             this.drawVolleyballCourt();        break;
+      case 'futbol-sala':       this.drawFutsalCourt();            break;
+      case 'waterpolo':         this.drawWaterpoloCourt();         break;
+      case 'rugby':             this.drawRugbyPitch();             break;
+      case 'hockey':            this.drawHockeyCourt();            break;
+      case 'hockey-hielo':      this.drawIceHockeyCourt();         break;
+      case 'futbol-americano':  this.drawAmericanFootballField();  break;
+      case 'beisbol':           this.drawBaseballField();          break;
+      case 'futbol':
+      default:                  this.drawFootballPitch();          break;
+    }
+  }
+
+  // FIFA proportions: W=1050=105m, H=680=68m → 10px/m
+  private drawFootballPitch(): void {
+    const W = this.PITCH_W;
+    const H = this.PITCH_H;
     const c = '#ffffff';
     const grass1 = '#2e7d32';
     const grass2 = '#388e3c';
+    const ls = { stroke: c, strokeWidth: 2, listening: false };
 
-    const stripeW = W / 12;
-    for (let i = 0; i < 12; i++) {
-      this.pitchLayer.add(new Konva.Rect({
-        x: i * stripeW, y: 0, width: stripeW, height: H,
-        fill: i % 2 === 0 ? grass1 : grass2, listening: false
-      }));
-    }
-
-    if (this.pitchStyle === 'blank') { this.pitchLayer.batchDraw(); return; }
-
-    const ls = { stroke: c, strokeWidth: lineW, listening: false };
+    this.addVerticalGrassStripes(14, grass1, grass2);
 
     this.pitchLayer.add(new Konva.Rect({ x: 0, y: 0, width: W, height: H, ...ls, fill: 'transparent' }));
     this.pitchLayer.add(new Konva.Line({ points: [W / 2, 0, W / 2, H], ...ls }));
-    this.pitchLayer.add(new Konva.Circle({ x: W / 2, y: H / 2, radius: 73, ...ls, fill: 'transparent' }));
+    this.pitchLayer.add(new Konva.Circle({ x: W / 2, y: H / 2, radius: 91, ...ls, fill: 'transparent' }));
     this.pitchLayer.add(new Konva.Circle({ x: W / 2, y: H / 2, radius: 4, fill: c, listening: false }));
 
-    const paW = 132; const paH = 322; const paY = (H - paH) / 2;
-    this.pitchLayer.add(new Konva.Rect({ x: 0, y: paY, width: paW, height: paH, ...ls, fill: 'transparent' }));
-    this.pitchLayer.add(new Konva.Rect({ x: W - paW, y: paY, width: paW, height: paH, ...ls, fill: 'transparent' }));
+    const paW = 165; const paH = 403; const paY = (H - paH) / 2;
+    this.pitchLayer.add(new Konva.Rect({ x: 0, y: paY, width: paW, height: paH, ...ls, fill: 'rgba(255,255,255,0.03)' }));
+    this.pitchLayer.add(new Konva.Rect({ x: W - paW, y: paY, width: paW, height: paH, ...ls, fill: 'rgba(255,255,255,0.03)' }));
 
-    const gaW = 44; const gaH = 146; const gaY = (H - gaH) / 2;
+    const gaW = 55; const gaH = 183; const gaY = (H - gaH) / 2;
     this.pitchLayer.add(new Konva.Rect({ x: 0, y: gaY, width: gaW, height: gaH, ...ls, fill: 'transparent' }));
     this.pitchLayer.add(new Konva.Rect({ x: W - gaW, y: gaY, width: gaW, height: gaH, ...ls, fill: 'transparent' }));
 
-    this.pitchLayer.add(new Konva.Circle({ x: 88, y: H / 2, radius: 4, fill: c, listening: false }));
-    this.pitchLayer.add(new Konva.Circle({ x: W - 88, y: H / 2, radius: 4, fill: c, listening: false }));
+    this.pitchLayer.add(new Konva.Circle({ x: 110, y: H / 2, radius: 4, fill: c, listening: false }));
+    this.pitchLayer.add(new Konva.Circle({ x: W - 110, y: H / 2, radius: 4, fill: c, listening: false }));
 
-    this.pitchLayer.add(new Konva.Arc({ x: 88, y: H / 2, innerRadius: 73, outerRadius: 73, angle: 106, rotation: -53, ...ls }));
-    this.pitchLayer.add(new Konva.Arc({ x: W - 88, y: H / 2, innerRadius: 73, outerRadius: 73, angle: 106, rotation: 127, ...ls }));
+    this.pitchLayer.add(new Konva.Arc({ x: 110, y: H / 2, innerRadius: 91, outerRadius: 91, angle: 105, rotation: -52.5, ...ls }));
+    this.pitchLayer.add(new Konva.Arc({ x: W - 110, y: H / 2, innerRadius: 91, outerRadius: 91, angle: 105, rotation: 127.5, ...ls }));
 
     [{ x: 0, y: 0, r: 0 }, { x: W, y: 0, r: 90 }, { x: W, y: H, r: 180 }, { x: 0, y: H, r: 270 }]
-      .forEach(corner => {
-        this.pitchLayer.add(new Konva.Arc({
-          x: corner.x, y: corner.y, innerRadius: 12, outerRadius: 12,
-          angle: 90, rotation: corner.r, ...ls
-        }));
-      });
+      .forEach(cn => this.pitchLayer.add(new Konva.Arc({ x: cn.x, y: cn.y, innerRadius: 10, outerRadius: 10, angle: 90, rotation: cn.r, ...ls })));
 
-    const goalH = 58; const goalD = 16; const goalY = (H - goalH) / 2;
-    this.pitchLayer.add(new Konva.Rect({ x: -goalD, y: goalY, width: goalD, height: goalH, stroke: '#bbb', strokeWidth: 2, fill: 'rgba(255,255,255,0.08)', listening: false }));
-    this.pitchLayer.add(new Konva.Rect({ x: W, y: goalY, width: goalD, height: goalH, stroke: '#bbb', strokeWidth: 2, fill: 'rgba(255,255,255,0.08)', listening: false }));
+    const goalH = 73; const goalD = 24; const goalY = (H - goalH) / 2;
+    this.pitchLayer.add(new Konva.Rect({ x: -goalD, y: goalY, width: goalD, height: goalH, stroke: '#cccccc', strokeWidth: 2, fill: 'rgba(255,255,255,0.1)', listening: false }));
+    this.pitchLayer.add(new Konva.Rect({ x: W, y: goalY, width: goalD, height: goalH, stroke: '#cccccc', strokeWidth: 2, fill: 'rgba(255,255,255,0.1)', listening: false }));
 
     if (this.pitchStyle === 'half') {
       this.pitchLayer.add(new Konva.Rect({ x: 0, y: 0, width: W / 2, height: H, fill: grass1, listening: false }));
     }
+
+    this.pitchLayer.batchDraw();
+  }
+
+  // NBA proportions: W=1050=28.65m, H=680=15.24m
+  private drawBasketballCourt(): void {
+    const W = this.PITCH_W;
+    const H = this.PITCH_H;
+    const c = '#ffffff';
+    const orange = '#e65100';
+    const parquet = '#b97228';
+    const ls = { stroke: c, strokeWidth: 2, listening: false };
+    const ols = { stroke: orange, strokeWidth: 2, listening: false };
+
+    this.addSolidPitchFill(parquet);
+    this.pitchLayer.add(new Konva.Rect({ x: 0, y: 0, width: W, height: H, ...ls, fill: 'transparent' }));
+    this.pitchLayer.add(new Konva.Line({ points: [W / 2, 0, W / 2, H], ...ls }));
+
+    const cR = 82;
+    this.pitchLayer.add(new Konva.Circle({ x: W / 2, y: H / 2, radius: cR, ...ls, fill: 'transparent' }));
+    this.pitchLayer.add(new Konva.Circle({ x: W / 2, y: H / 2, radius: 30, ...ls, fill: 'transparent' }));
+    this.pitchLayer.add(new Konva.Circle({ x: W / 2, y: H / 2, radius: 4, fill: c, listening: false }));
+
+    const keyH = 218; const keyW = 212; const keyY = (H - keyH) / 2;
+    this.pitchLayer.add(new Konva.Rect({ x: 0, y: keyY, width: keyW, height: keyH, stroke: c, strokeWidth: 2, fill: 'rgba(160,80,10,0.28)', listening: false }));
+    this.pitchLayer.add(new Konva.Rect({ x: W - keyW, y: keyY, width: keyW, height: keyH, stroke: c, strokeWidth: 2, fill: 'rgba(160,80,10,0.28)', listening: false }));
+
+    const ftR = 82;
+    this.pitchLayer.add(new Konva.Arc({ x: keyW, y: H / 2, innerRadius: ftR, outerRadius: ftR, angle: 180, rotation: -90, ...ls }));
+    this.pitchLayer.add(new Konva.Arc({ x: keyW, y: H / 2, innerRadius: ftR, outerRadius: ftR, angle: 180, rotation: 90, stroke: c, strokeWidth: 2, dash: [8, 6], listening: false }));
+    this.pitchLayer.add(new Konva.Arc({ x: W - keyW, y: H / 2, innerRadius: ftR, outerRadius: ftR, angle: 180, rotation: 90, ...ls }));
+    this.pitchLayer.add(new Konva.Arc({ x: W - keyW, y: H / 2, innerRadius: ftR, outerRadius: ftR, angle: 180, rotation: -90, stroke: c, strokeWidth: 2, dash: [8, 6], listening: false }));
+
+    const hashLen = 16;
+    for (let i = 1; i <= 4; i++) {
+      const hx = (keyW / 5) * i;
+      [[hx, keyY - hashLen, hx, keyY], [hx, keyY + keyH, hx, keyY + keyH + hashLen],
+       [W - hx, keyY - hashLen, W - hx, keyY], [W - hx, keyY + keyH, W - hx, keyY + keyH + hashLen]]
+        .forEach(pts => this.pitchLayer.add(new Konva.Line({ points: pts, stroke: c, strokeWidth: 2, listening: false })));
+    }
+
+    const basketX = 57; const boardHalf = 28;
+    const bxL = basketX + 20; const bxR = W - basketX - 20;
+    this.pitchLayer.add(new Konva.Rect({ x: basketX - 2, y: H / 2 - boardHalf, width: 4, height: boardHalf * 2, stroke: orange, strokeWidth: 3, fill: 'rgba(230,81,0,0.15)', listening: false }));
+    this.pitchLayer.add(new Konva.Circle({ x: bxL, y: H / 2, radius: 18, stroke: orange, strokeWidth: 3, fill: 'transparent', listening: false }));
+    this.pitchLayer.add(new Konva.Rect({ x: W - basketX - 2, y: H / 2 - boardHalf, width: 4, height: boardHalf * 2, stroke: orange, strokeWidth: 3, fill: 'rgba(230,81,0,0.15)', listening: false }));
+    this.pitchLayer.add(new Konva.Circle({ x: bxR, y: H / 2, radius: 18, stroke: orange, strokeWidth: 3, fill: 'transparent', listening: false }));
+
+    const resR = 46;
+    this.pitchLayer.add(new Konva.Arc({ x: bxL, y: H / 2, innerRadius: resR, outerRadius: resR, angle: 180, rotation: -90, ...ols }));
+    this.pitchLayer.add(new Konva.Arc({ x: bxR, y: H / 2, innerRadius: resR, outerRadius: resR, angle: 180, rotation: 90, ...ols }));
+
+    const threeR = 247; const cornerY = 41;
+    this.pitchLayer.add(new Konva.Line({ points: [0, cornerY, bxL, cornerY], stroke: c, strokeWidth: 2, listening: false }));
+    this.pitchLayer.add(new Konva.Line({ points: [0, H - cornerY, bxL, H - cornerY], stroke: c, strokeWidth: 2, listening: false }));
+    this.pitchLayer.add(new Konva.Arc({ x: bxL, y: H / 2, innerRadius: threeR, outerRadius: threeR, angle: 128, rotation: -64, ...ls }));
+    this.pitchLayer.add(new Konva.Line({ points: [W, cornerY, bxR, cornerY], stroke: c, strokeWidth: 2, listening: false }));
+    this.pitchLayer.add(new Konva.Line({ points: [W, H - cornerY, bxR, H - cornerY], stroke: c, strokeWidth: 2, listening: false }));
+    this.pitchLayer.add(new Konva.Arc({ x: bxR, y: H / 2, innerRadius: threeR, outerRadius: threeR, angle: 128, rotation: 116, ...ls }));
+
+    this.pitchLayer.batchDraw();
+  }
+
+  // IHF proportions: W=1050=40m, H=680=20m
+  private drawHandballCourt(): void {
+    const W = this.PITCH_W;
+    const H = this.PITCH_H;
+    const courtBlue = '#1976d2';
+    const c = '#ffffff';
+    const ls = { stroke: c, strokeWidth: 2, listening: false };
+    const dash9 = { stroke: c, strokeWidth: 2, dash: [12, 8], listening: false };
+
+    this.addSolidPitchFill(courtBlue);
+    this.pitchLayer.add(new Konva.Rect({ x: 0, y: 0, width: W, height: H, ...ls, fill: 'transparent' }));
+    this.pitchLayer.add(new Konva.Line({ points: [W / 2, 0, W / 2, H], ...ls }));
+    this.pitchLayer.add(new Konva.Circle({ x: W / 2, y: H / 2, radius: 51, ...ls, fill: 'transparent' }));
+
+    const goalHalf = 51; const r6 = 157; const r9 = 236;
+    const tp = H / 2 - goalHalf; const bp = H / 2 + goalHalf;
+
+    this.pitchLayer.add(new Konva.Arc({ x: 0, y: tp, innerRadius: r6, outerRadius: r6, angle: 90, rotation: -90, ...ls }));
+    this.pitchLayer.add(new Konva.Line({ points: [r6, tp, r6, bp], ...ls }));
+    this.pitchLayer.add(new Konva.Arc({ x: 0, y: bp, innerRadius: r6, outerRadius: r6, angle: 90, rotation: 0, ...ls }));
+    this.pitchLayer.add(new Konva.Arc({ x: W, y: tp, innerRadius: r6, outerRadius: r6, angle: 90, rotation: 180, ...ls }));
+    this.pitchLayer.add(new Konva.Line({ points: [W - r6, tp, W - r6, bp], ...ls }));
+    this.pitchLayer.add(new Konva.Arc({ x: W, y: bp, innerRadius: r6, outerRadius: r6, angle: 90, rotation: 90, ...ls }));
+
+    this.pitchLayer.add(new Konva.Arc({ x: 0, y: tp, innerRadius: r9, outerRadius: r9, angle: 90, rotation: -90, ...dash9 }));
+    this.pitchLayer.add(new Konva.Line({ points: [r9, tp, r9, bp], ...dash9 }));
+    this.pitchLayer.add(new Konva.Arc({ x: 0, y: bp, innerRadius: r9, outerRadius: r9, angle: 90, rotation: 0, ...dash9 }));
+    this.pitchLayer.add(new Konva.Arc({ x: W, y: tp, innerRadius: r9, outerRadius: r9, angle: 90, rotation: 180, ...dash9 }));
+    this.pitchLayer.add(new Konva.Line({ points: [W - r9, tp, W - r9, bp], ...dash9 }));
+    this.pitchLayer.add(new Konva.Arc({ x: W, y: bp, innerRadius: r9, outerRadius: r9, angle: 90, rotation: 90, ...dash9 }));
+
+    this.pitchLayer.add(new Konva.Circle({ x: 184, y: H / 2, radius: 5, fill: c, listening: false }));
+    this.pitchLayer.add(new Konva.Circle({ x: W - 184, y: H / 2, radius: 5, fill: c, listening: false }));
+    this.pitchLayer.add(new Konva.Line({ points: [184, H / 2 - 34, 184, H / 2 + 34], stroke: c, strokeWidth: 2, dash: [8, 6], listening: false }));
+    this.pitchLayer.add(new Konva.Line({ points: [W - 184, H / 2 - 34, W - 184, H / 2 + 34], stroke: c, strokeWidth: 2, dash: [8, 6], listening: false }));
+
+    const sub = 118;
+    [[W / 2 - sub, 0], [W / 2 + sub, 0], [W / 2 - sub, H - 12], [W / 2 + sub, H - 12]]
+      .forEach(([x, y]) => this.pitchLayer.add(new Konva.Line({ points: [x, y as number, x, (y as number) + 12], ...ls })));
+
+    const goalH2 = 102; const goalD2 = 22; const goalY2 = (H - goalH2) / 2;
+    this.pitchLayer.add(new Konva.Rect({ x: -goalD2, y: goalY2, width: goalD2, height: goalH2, stroke: '#cccccc', strokeWidth: 3, fill: 'rgba(255,255,255,0.1)', listening: false }));
+    this.pitchLayer.add(new Konva.Rect({ x: W, y: goalY2, width: goalD2, height: goalH2, stroke: '#cccccc', strokeWidth: 3, fill: 'rgba(255,255,255,0.1)', listening: false }));
+
+    this.pitchLayer.batchDraw();
+  }
+
+  // FIVB: W=1050=24m, H=680=15m
+  private drawVolleyballCourt(): void {
+    const W = this.PITCH_W;
+    const H = this.PITCH_H;
+    const court = '#283593';
+    const c = '#ffffff';
+    const ls = { stroke: c, strokeWidth: 2, listening: false };
+
+    this.addSolidPitchFill(court);
+
+    const padX = 130; const padY = 136;
+    const cW = W - 2 * padX; const cH = H - 2 * padY;
+    this.pitchLayer.add(new Konva.Rect({ x: padX, y: padY, width: cW, height: cH, stroke: c, strokeWidth: 3, fill: 'transparent', listening: false }));
+
+    const netX = W / 2;
+    this.pitchLayer.add(new Konva.Line({ points: [netX, padY - 22, netX, padY + cH + 22], stroke: '#ffeb3b', strokeWidth: 5, listening: false }));
+
+    const bandH = 8;
+    for (let i = 0; i < 5; i++) {
+      const col = i % 2 === 0 ? '#cc0000' : '#ffffff';
+      this.pitchLayer.add(new Konva.Rect({ x: netX - 3, y: padY + i * bandH, width: 6, height: bandH, fill: col, listening: false }));
+      this.pitchLayer.add(new Konva.Rect({ x: netX - 3, y: padY + cH - bandH * (i + 1), width: 6, height: bandH, fill: col, listening: false }));
+    }
+
+    const atk = cW / 6;
+    this.pitchLayer.add(new Konva.Line({ points: [netX - atk, padY, netX - atk, padY + cH], ...ls }));
+    this.pitchLayer.add(new Konva.Line({ points: [netX + atk, padY, netX + atk, padY + cH], ...ls }));
+
+    this.pitchLayer.batchDraw();
+  }
+
+  // FIFA Futsal: W=1050=40m, H=680=20m
+  private drawFutsalCourt(): void {
+    const W = this.PITCH_W;
+    const H = this.PITCH_H;
+    const bg1 = '#1b5e20'; const bg2 = '#2e7d32';
+    const c = '#ffffff';
+    const ls = { stroke: c, strokeWidth: 2, listening: false };
+
+    this.addVerticalGrassStripes(12, bg1, bg2);
+    this.pitchLayer.add(new Konva.Rect({ x: 0, y: 0, width: W, height: H, ...ls, fill: 'transparent' }));
+    this.pitchLayer.add(new Konva.Line({ points: [W / 2, 0, W / 2, H], ...ls }));
+    this.pitchLayer.add(new Konva.Circle({ x: W / 2, y: H / 2, radius: 76, ...ls, fill: 'transparent' }));
+    this.pitchLayer.add(new Konva.Circle({ x: W / 2, y: H / 2, radius: 4, fill: c, listening: false }));
+
+    const penR = 157;
+    this.pitchLayer.add(new Konva.Arc({ x: 0, y: H / 2, innerRadius: penR, outerRadius: penR, angle: 180, rotation: -90, ...ls }));
+    this.pitchLayer.add(new Konva.Arc({ x: W, y: H / 2, innerRadius: penR, outerRadius: penR, angle: 180, rotation: 90, ...ls }));
+
+    this.pitchLayer.add(new Konva.Circle({ x: 157, y: H / 2, radius: 4, fill: c, listening: false }));
+    this.pitchLayer.add(new Konva.Circle({ x: W - 157, y: H / 2, radius: 4, fill: c, listening: false }));
+    this.pitchLayer.add(new Konva.Circle({ x: 255, y: H / 2, radius: 4, fill: c, listening: false }));
+    this.pitchLayer.add(new Konva.Circle({ x: W - 255, y: H / 2, radius: 4, fill: c, listening: false }));
+
+    [{ x: 0, y: 0, r: 0 }, { x: W, y: 0, r: 90 }, { x: W, y: H, r: 180 }, { x: 0, y: H, r: 270 }]
+      .forEach(cn => this.pitchLayer.add(new Konva.Arc({ x: cn.x, y: cn.y, innerRadius: 20, outerRadius: 20, angle: 90, rotation: cn.r, ...ls })));
+
+    const goalH3 = 102; const goalD3 = 23; const goalY3 = (H - goalH3) / 2;
+    this.pitchLayer.add(new Konva.Rect({ x: -goalD3, y: goalY3, width: goalD3, height: goalH3, stroke: '#cccccc', strokeWidth: 2, fill: 'rgba(255,255,255,0.08)', listening: false }));
+    this.pitchLayer.add(new Konva.Rect({ x: W, y: goalY3, width: goalD3, height: goalH3, stroke: '#cccccc', strokeWidth: 2, fill: 'rgba(255,255,255,0.08)', listening: false }));
+
+    this.pitchLayer.batchDraw();
+  }
+
+  // Olympic water polo: W=1050=30m, H=680=20m
+  private drawWaterpoloCourt(): void {
+    const W = this.PITCH_W;
+    const H = this.PITCH_H;
+    const pool = '#1565c0';
+    const c = '#ffffff';
+    const ls = { stroke: c, strokeWidth: 2, listening: false };
+
+    this.addSolidPitchFill(pool);
+    for (let i = -H; i < W + H; i += 30) {
+      this.pitchLayer.add(new Konva.Line({ points: [i, 0, i + H, H], stroke: 'rgba(255,255,255,0.04)', strokeWidth: 12, listening: false }));
+    }
+    this.pitchLayer.add(new Konva.Rect({ x: 0, y: 0, width: W, height: H, ...ls, fill: 'transparent' }));
+    this.pitchLayer.add(new Konva.Line({ points: [W / 2, 0, W / 2, H], stroke: '#ffffff', strokeWidth: 3, listening: false }));
+
+    const m2 = Math.round(2 / 30 * W);
+    this.pitchLayer.add(new Konva.Line({ points: [m2, 0, m2, H], stroke: '#e53935', strokeWidth: 2, listening: false }));
+    this.pitchLayer.add(new Konva.Line({ points: [W - m2, 0, W - m2, H], stroke: '#e53935', strokeWidth: 2, listening: false }));
+
+    const m5 = Math.round(5 / 30 * W);
+    this.pitchLayer.add(new Konva.Line({ points: [m5, 0, m5, H], stroke: '#fdd835', strokeWidth: 2, listening: false }));
+    this.pitchLayer.add(new Konva.Line({ points: [W - m5, 0, W - m5, H], stroke: '#fdd835', strokeWidth: 2, listening: false }));
+
+    const m6 = Math.round(6 / 30 * W);
+    this.pitchLayer.add(new Konva.Line({ points: [m6, H / 2 - 28, m6, H / 2 + 28], stroke: '#ffffff', strokeWidth: 2, dash: [8, 6], listening: false }));
+    this.pitchLayer.add(new Konva.Line({ points: [W - m6, H / 2 - 28, W - m6, H / 2 + 28], stroke: '#ffffff', strokeWidth: 2, dash: [8, 6], listening: false }));
+
+    const bands = [{ x: m2, col: '#e53935' }, { x: m5, col: '#fdd835' }, { x: W / 2, col: '#ffffff' }, { x: W - m5, col: '#fdd835' }, { x: W - m2, col: '#e53935' }];
+    bands.forEach(b => this.pitchLayer.add(new Konva.Rect({ x: b.x - 4, y: 8, width: 8, height: 22, fill: b.col, listening: false })));
+
+    const goalH4 = 102; const goalD4 = 18; const goalY4 = (H - goalH4) / 2;
+    this.pitchLayer.add(new Konva.Rect({ x: -goalD4, y: goalY4, width: goalD4, height: goalH4, stroke: '#bbbbbb', strokeWidth: 3, fill: 'rgba(255,255,255,0.12)', listening: false }));
+    this.pitchLayer.add(new Konva.Rect({ x: W, y: goalY4, width: goalD4, height: goalH4, stroke: '#bbbbbb', strokeWidth: 3, fill: 'rgba(255,255,255,0.12)', listening: false }));
+
+    this.pitchLayer.batchDraw();
+  }
+
+  // World Rugby: W=1050=120m (100m play+2×10m in-goal), H=680=70m
+  private drawRugbyPitch(): void {
+    const W = this.PITCH_W;
+    const H = this.PITCH_H;
+    const grass1 = '#33691e'; const grass2 = '#558b2f';
+    const c = '#ffffff';
+    const ls = { stroke: c, strokeWidth: 2, listening: false };
+
+    this.addVerticalGrassStripes(12, grass1, grass2);
+    this.pitchLayer.add(new Konva.Rect({ x: 0, y: 0, width: W, height: H, ...ls, fill: 'transparent' }));
+
+    const inGoal = 88;
+    this.pitchLayer.add(new Konva.Rect({ x: 0, y: 0, width: inGoal, height: H, stroke: c, strokeWidth: 2, fill: 'rgba(255,255,255,0.06)', listening: false }));
+    this.pitchLayer.add(new Konva.Rect({ x: W - inGoal, y: 0, width: inGoal, height: H, stroke: c, strokeWidth: 2, fill: 'rgba(255,255,255,0.06)', listening: false }));
+
+    const scaleX = (W - 2 * inGoal) / 100;
+    const scaleY = H / 70;
+
+    this.pitchLayer.add(new Konva.Line({ points: [W / 2, 0, W / 2, H], ...ls }));
+
+    const m10L = W / 2 - 10 * scaleX; const m10R = W / 2 + 10 * scaleX;
+    this.pitchLayer.add(new Konva.Line({ points: [m10L, 0, m10L, H], stroke: 'rgba(255,255,255,0.55)', strokeWidth: 1.5, listening: false }));
+    this.pitchLayer.add(new Konva.Line({ points: [m10R, 0, m10R, H], stroke: 'rgba(255,255,255,0.55)', strokeWidth: 1.5, listening: false }));
+
+    const m22L = inGoal + 22 * scaleX; const m22R = W - inGoal - 22 * scaleX;
+    this.pitchLayer.add(new Konva.Line({ points: [m22L, 0, m22L, H], stroke: 'rgba(255,255,255,0.55)', strokeWidth: 1.5, listening: false }));
+    this.pitchLayer.add(new Konva.Line({ points: [m22R, 0, m22R, H], stroke: 'rgba(255,255,255,0.55)', strokeWidth: 1.5, listening: false }));
+
+    const l5 = 5 * scaleY; const l15 = 15 * scaleY;
+    [m22L, m22R, m10L, m10R, W / 2].forEach(x => {
+      [[x - 6, l5, x + 6, l5], [x - 6, H - l5, x + 6, H - l5],
+       [x - 6, l15, x + 6, l15], [x - 6, H - l15, x + 6, H - l15]]
+        .forEach(pts => this.pitchLayer.add(new Konva.Line({ points: pts, stroke: c, strokeWidth: 2, listening: false })));
+    });
+
+    const postGap = Math.round(5.6 * scaleY);
+    const postLen = 75; const crossAt = 30;
+    const topPost = H / 2 - postGap / 2; const botPost = H / 2 + postGap / 2;
+
+    this.pitchLayer.add(new Konva.Line({ points: [inGoal, topPost, inGoal - postLen, topPost], stroke: c, strokeWidth: 2.5, listening: false }));
+    this.pitchLayer.add(new Konva.Line({ points: [inGoal, botPost, inGoal - postLen, botPost], stroke: c, strokeWidth: 2.5, listening: false }));
+    this.pitchLayer.add(new Konva.Line({ points: [inGoal - crossAt, topPost, inGoal - crossAt, botPost], stroke: c, strokeWidth: 2.5, listening: false }));
+    this.pitchLayer.add(new Konva.Line({ points: [W - inGoal, topPost, W - inGoal + postLen, topPost], stroke: c, strokeWidth: 2.5, listening: false }));
+    this.pitchLayer.add(new Konva.Line({ points: [W - inGoal, botPost, W - inGoal + postLen, botPost], stroke: c, strokeWidth: 2.5, listening: false }));
+    this.pitchLayer.add(new Konva.Line({ points: [W - inGoal + crossAt, topPost, W - inGoal + crossAt, botPost], stroke: c, strokeWidth: 2.5, listening: false }));
+
+    this.pitchLayer.batchDraw();
+  }
+
+  // FIH field hockey: W=1050=91.4m, H=680=55m
+  private drawHockeyCourt(): void {
+    const W = this.PITCH_W;
+    const H = this.PITCH_H;
+    const grass1 = '#1b5e20'; const grass2 = '#2e7d32';
+    const c = '#ffffff';
+    const ls = { stroke: c, strokeWidth: 2, listening: false };
+
+    this.addVerticalGrassStripes(16, grass1, grass2);
+    this.pitchLayer.add(new Konva.Rect({ x: 0, y: 0, width: W, height: H, ...ls, fill: 'transparent' }));
+    this.pitchLayer.add(new Konva.Line({ points: [W / 2, 0, W / 2, H], ...ls }));
+
+    this.pitchLayer.add(new Konva.Circle({ x: W / 2, y: H / 2, radius: 52, ...ls, fill: 'transparent' }));
+    this.pitchLayer.add(new Konva.Circle({ x: W / 2, y: H / 2, radius: 4, fill: c, listening: false }));
+
+    const m23 = Math.round(23 / 91.4 * W);
+    this.pitchLayer.add(new Konva.Line({ points: [m23, 0, m23, H], stroke: 'rgba(255,255,255,0.5)', strokeWidth: 1.5, dash: [12, 6], listening: false }));
+    this.pitchLayer.add(new Konva.Line({ points: [W - m23, 0, W - m23, H], stroke: 'rgba(255,255,255,0.5)', strokeWidth: 1.5, dash: [12, 6], listening: false }));
+
+    const dR = 168; const goalHalf5 = 23;
+    const tp5 = H / 2 - goalHalf5; const bp5 = H / 2 + goalHalf5;
+
+    this.pitchLayer.add(new Konva.Arc({ x: 0, y: tp5, innerRadius: dR, outerRadius: dR, angle: 90, rotation: -90, ...ls }));
+    this.pitchLayer.add(new Konva.Line({ points: [dR, tp5, dR, bp5], ...ls }));
+    this.pitchLayer.add(new Konva.Arc({ x: 0, y: bp5, innerRadius: dR, outerRadius: dR, angle: 90, rotation: 0, ...ls }));
+    this.pitchLayer.add(new Konva.Arc({ x: W, y: tp5, innerRadius: dR, outerRadius: dR, angle: 90, rotation: 180, ...ls }));
+    this.pitchLayer.add(new Konva.Line({ points: [W - dR, tp5, W - dR, bp5], ...ls }));
+    this.pitchLayer.add(new Konva.Arc({ x: W, y: bp5, innerRadius: dR, outerRadius: dR, angle: 90, rotation: 90, ...ls }));
+
+    const pen1 = Math.round(6.4 / 91.4 * W); const pen2 = Math.round(10 / 91.4 * W);
+    this.pitchLayer.add(new Konva.Circle({ x: pen1, y: H / 2, radius: 4, fill: c, listening: false }));
+    this.pitchLayer.add(new Konva.Circle({ x: W - pen1, y: H / 2, radius: 4, fill: c, listening: false }));
+    this.pitchLayer.add(new Konva.Circle({ x: pen2, y: H / 2, radius: 4, fill: c, listening: false }));
+    this.pitchLayer.add(new Konva.Circle({ x: W - pen2, y: H / 2, radius: 4, fill: c, listening: false }));
+
+    const goalH5 = 46; const goalD5 = 24; const goalY5 = (H - goalH5) / 2;
+    this.pitchLayer.add(new Konva.Rect({ x: -goalD5, y: goalY5, width: goalD5, height: goalH5, stroke: '#cccccc', strokeWidth: 2, fill: 'rgba(255,255,255,0.1)', listening: false }));
+    this.pitchLayer.add(new Konva.Rect({ x: W, y: goalY5, width: goalD5, height: goalH5, stroke: '#cccccc', strokeWidth: 2, fill: 'rgba(255,255,255,0.1)', listening: false }));
+
+    this.pitchLayer.batchDraw();
+  }
+
+  // NHL ice hockey: W=1050=60.96m, H=680=25.91m
+  private drawIceHockeyCourt(): void {
+    const W = this.PITCH_W;
+    const H = this.PITCH_H;
+    const ice1 = '#d8eaf8';
+    const c = '#1a1a2e';
+    const red = '#cc0000'; const blue = '#0033cc';
+
+    this.addSolidPitchFill(ice1);
+
+    this.pitchLayer.add(new Konva.Rect({ x: 4, y: 4, width: W - 8, height: H - 8, cornerRadius: 80, stroke: '#1a1a2e', strokeWidth: 6, fill: 'transparent', listening: false }));
+    this.pitchLayer.add(new Konva.Line({ points: [W / 2, 0, W / 2, H], stroke: red, strokeWidth: 5, listening: false }));
+
+    const blueLine = Math.round(22.86 / 60.96 * W);
+    this.pitchLayer.add(new Konva.Line({ points: [blueLine, 0, blueLine, H], stroke: blue, strokeWidth: 4, listening: false }));
+    this.pitchLayer.add(new Konva.Line({ points: [W - blueLine, 0, W - blueLine, H], stroke: blue, strokeWidth: 4, listening: false }));
+
+    const goalLine = Math.round(4 / 60.96 * W);
+    this.pitchLayer.add(new Konva.Line({ points: [goalLine, 0, goalLine, H], stroke: red, strokeWidth: 2, listening: false }));
+    this.pitchLayer.add(new Konva.Line({ points: [W - goalLine, 0, W - goalLine, H], stroke: red, strokeWidth: 2, listening: false }));
+
+    const faceR = Math.round(4.57 / 25.91 * H);
+    this.pitchLayer.add(new Konva.Circle({ x: W / 2, y: H / 2, radius: faceR, stroke: red, strokeWidth: 2, fill: 'rgba(204,0,0,0.05)', listening: false }));
+    this.pitchLayer.add(new Konva.Circle({ x: W / 2, y: H / 2, radius: 8, fill: red, listening: false }));
+
+    const zoneX = Math.round(16.8 / 60.96 * W);
+    const zoneY = Math.round(6.7 / 25.91 * H);
+    [[zoneX, zoneY], [zoneX, H - zoneY], [W - zoneX, zoneY], [W - zoneX, H - zoneY]]
+      .forEach(([x, y]) => {
+        this.pitchLayer.add(new Konva.Circle({ x, y, radius: faceR, stroke: red, strokeWidth: 2, fill: 'rgba(204,0,0,0.05)', listening: false }));
+        this.pitchLayer.add(new Konva.Circle({ x, y, radius: 6, fill: red, listening: false }));
+        const hm = 20; const hr = faceR + 16;
+        [[x - hr, y - hm, x - hr, y + hm], [x + hr, y - hm, x + hr, y + hm]]
+          .forEach(pts => this.pitchLayer.add(new Konva.Line({ points: pts, stroke: red, strokeWidth: 2, listening: false })));
+      });
+
+    const creaseR = Math.round(1.83 / 25.91 * H);
+    this.pitchLayer.add(new Konva.Arc({ x: goalLine, y: H / 2, innerRadius: creaseR, outerRadius: creaseR, angle: 180, rotation: -90, stroke: red, strokeWidth: 2, fill: 'rgba(130,180,240,0.4)', listening: false }));
+    this.pitchLayer.add(new Konva.Arc({ x: W - goalLine, y: H / 2, innerRadius: creaseR, outerRadius: creaseR, angle: 180, rotation: 90, stroke: red, strokeWidth: 2, fill: 'rgba(130,180,240,0.4)', listening: false }));
+
+    const goalH6 = creaseR * 2; const goalD6 = 21; const goalY6 = (H - goalH6) / 2;
+    this.pitchLayer.add(new Konva.Rect({ x: goalLine - goalD6, y: goalY6, width: goalD6, height: goalH6, stroke: red, strokeWidth: 2, fill: 'rgba(204,0,0,0.15)', listening: false }));
+    this.pitchLayer.add(new Konva.Rect({ x: W - goalLine, y: goalY6, width: goalD6, height: goalH6, stroke: red, strokeWidth: 2, fill: 'rgba(204,0,0,0.15)', listening: false }));
+
+    this.pitchLayer.batchDraw();
+  }
+
+  // NFL American football: W=1050=120yd, H=680=53.3yd
+  private drawAmericanFootballField(): void {
+    const W = this.PITCH_W;
+    const H = this.PITCH_H;
+    const grass1 = '#1a5c1a'; const grass2 = '#235c23';
+    const c = '#ffffff';
+    const gold = '#ffd700';
+
+    this.addVerticalGrassStripes(20, grass1, grass2);
+    this.pitchLayer.add(new Konva.Rect({ x: 0, y: 0, width: W, height: H, stroke: c, strokeWidth: 3, fill: 'transparent', listening: false }));
+
+    const endZ = Math.round(10 / 120 * W);
+    this.pitchLayer.add(new Konva.Rect({ x: 0, y: 0, width: endZ, height: H, stroke: c, strokeWidth: 2, fill: 'rgba(255,255,255,0.07)', listening: false }));
+    this.pitchLayer.add(new Konva.Rect({ x: W - endZ, y: 0, width: endZ, height: H, stroke: c, strokeWidth: 2, fill: 'rgba(255,255,255,0.07)', listening: false }));
+
+    const fieldW = W - 2 * endZ;
+    const yPx = fieldW / 100;
+
+    for (let y = 5; y <= 95; y += 5) {
+      const x = endZ + y * yPx;
+      this.pitchLayer.add(new Konva.Line({ points: [x, 0, x, H], stroke: c, strokeWidth: y % 10 === 0 ? 2 : 1.2, listening: false }));
+    }
+
+    this.pitchLayer.add(new Konva.Line({ points: [W / 2, 0, W / 2, H], stroke: gold, strokeWidth: 3, listening: false }));
+
+    const hashY1 = H / 3; const hashY2 = 2 * H / 3; const hashLen = 10;
+    for (let y = 0; y <= 100; y += 5) {
+      const x = endZ + y * yPx;
+      [[x - hashLen / 2, hashY1, x + hashLen / 2, hashY1], [x - hashLen / 2, hashY2, x + hashLen / 2, hashY2]]
+        .forEach(pts => this.pitchLayer.add(new Konva.Line({ points: pts, stroke: c, strokeWidth: 1, listening: false })));
+    }
+
+    ['1 0', '2 0', '3 0', '4 0', '5 0', '4 0', '3 0', '2 0', '1 0'].forEach((num, i) => {
+      const x = endZ + (10 + i * 10) * yPx;
+      this.pitchLayer.add(new Konva.Text({ x: x - 14, y: H / 2 - 12, text: num, fontSize: 18, fontStyle: 'bold', fill: 'rgba(255,255,255,0.5)', fontFamily: 'Arial', listening: false }));
+    });
+
+    const pgap = 60; const pAbove = 65; const crossAt2 = 30;
+    [[0, 1], [W, -1]].forEach(([xPos, dir]) => {
+      this.pitchLayer.add(new Konva.Line({ points: [xPos, H / 2, (xPos as number) + (dir as number) * crossAt2, H / 2], stroke: gold, strokeWidth: 3, listening: false }));
+      this.pitchLayer.add(new Konva.Line({ points: [(xPos as number) + (dir as number) * crossAt2, H / 2 - pgap / 2, (xPos as number) + (dir as number) * crossAt2, H / 2 + pgap / 2], stroke: gold, strokeWidth: 3, listening: false }));
+      this.pitchLayer.add(new Konva.Line({ points: [(xPos as number) + (dir as number) * crossAt2, H / 2 - pgap / 2, (xPos as number) + (dir as number) * (crossAt2 + pAbove), H / 2 - pgap / 2], stroke: gold, strokeWidth: 3, listening: false }));
+      this.pitchLayer.add(new Konva.Line({ points: [(xPos as number) + (dir as number) * crossAt2, H / 2 + pgap / 2, (xPos as number) + (dir as number) * (crossAt2 + pAbove), H / 2 + pgap / 2], stroke: gold, strokeWidth: 3, listening: false }));
+    });
+
+    this.pitchLayer.batchDraw();
+  }
+
+  // Baseball: overhead view
+  private drawBaseballField(): void {
+    const W = this.PITCH_W;
+    const H = this.PITCH_H;
+
+    this.pitchLayer.add(new Konva.Rect({ x: 0, y: 0, width: W, height: H, fill: '#2e7d32', listening: false }));
+
+    const homeX = W / 2;
+    const homeY = H - 50;
+    const ofR = Math.min(homeY - 10, W / 2 - 10);
+
+    for (let r = 50; r < ofR - 30; r += 36) {
+      const even = Math.floor(r / 36) % 2 === 0;
+      this.pitchLayer.add(new Konva.Arc({ x: homeX, y: homeY, innerRadius: r, outerRadius: r + 18, angle: 90, rotation: -135, fill: even ? '#338a38' : '#2e7d32', stroke: 'transparent', listening: false }));
+    }
+
+    this.pitchLayer.add(new Konva.Arc({ x: homeX, y: homeY, innerRadius: ofR - 30, outerRadius: ofR, angle: 90, rotation: -135, fill: '#c4934a', stroke: 'transparent', listening: false }));
+
+    const lineLen = ofR * 1.05;
+    this.pitchLayer.add(new Konva.Line({ points: [homeX, homeY, homeX - lineLen * 0.707, homeY - lineLen * 0.707], stroke: '#ffffff', strokeWidth: 2, listening: false }));
+    this.pitchLayer.add(new Konva.Line({ points: [homeX, homeY, homeX + lineLen * 0.707, homeY - lineLen * 0.707], stroke: '#ffffff', strokeWidth: 2, listening: false }));
+
+    const bp = Math.round(Math.min(W, H) * 0.28);
+    const fp = { x: homeX + bp, y: homeY - bp };
+    const sp = { x: homeX, y: homeY - 2 * bp };
+    const tp = { x: homeX - bp, y: homeY - bp };
+
+    const icX = homeX; const icY = homeY - bp;
+    this.pitchLayer.add(new Konva.Circle({ x: icX, y: icY, radius: bp * 1.08, fill: '#c4934a', listening: false }));
+    this.pitchLayer.add(new Konva.Line({ points: [homeX, homeY, fp.x, fp.y, sp.x, sp.y, tp.x, tp.y, homeX, homeY], stroke: '#4caf50', strokeWidth: 0, fill: '#4caf50', closed: true, listening: false }));
+
+    const mndX = homeX; const mndY = Math.round(homeY - bp * 0.672);
+    this.pitchLayer.add(new Konva.Circle({ x: mndX, y: mndY, radius: 20, fill: '#a0784a', stroke: '#8b6035', strokeWidth: 2, listening: false }));
+
+    this.pitchLayer.add(new Konva.Line({ points: [homeX, homeY, fp.x, fp.y, sp.x, sp.y, tp.x, tp.y, homeX, homeY], stroke: '#c4934a', strokeWidth: 7, listening: false }));
+
+    [[fp.x, fp.y], [sp.x, sp.y], [tp.x, tp.y]].forEach(([bx, by]) => {
+      this.pitchLayer.add(new Konva.Rect({ x: bx, y: by, width: 13, height: 13, fill: '#ffffff', rotation: 45, offsetX: 6.5, offsetY: 6.5, listening: false }));
+    });
+    this.pitchLayer.add(new Konva.Rect({ x: homeX, y: homeY, width: 14, height: 14, fill: '#ffffff', rotation: 45, offsetX: 7, offsetY: 7, listening: false }));
+
+    this.pitchLayer.add(new Konva.Rect({ x: homeX + 10, y: homeY - 22, width: 26, height: 44, stroke: '#ffffff', strokeWidth: 1.5, fill: 'transparent', listening: false }));
+    this.pitchLayer.add(new Konva.Rect({ x: homeX - 36, y: homeY - 22, width: 26, height: 44, stroke: '#ffffff', strokeWidth: 1.5, fill: 'transparent', listening: false }));
+
+    this.pitchLayer.add(new Konva.Circle({ x: homeX - lineLen * 0.707 + 4, y: homeY - lineLen * 0.707 + 4, radius: 5, fill: '#ffd700', listening: false }));
+    this.pitchLayer.add(new Konva.Circle({ x: homeX + lineLen * 0.707 - 4, y: homeY - lineLen * 0.707 + 4, radius: 5, fill: '#ffd700', listening: false }));
 
     this.pitchLayer.batchDraw();
   }
@@ -1081,7 +1592,7 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
       this.ballPlaced = true;
 
       const label = new Konva.Text({
-        text: '⚽', fontSize: 24,
+        text: this.ballEmoji, fontSize: 24,
         fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif',
         listening: false, offsetX: 12, offsetY: 12
       });

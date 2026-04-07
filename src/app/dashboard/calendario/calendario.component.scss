@@ -738,12 +738,34 @@ $g-header:    linear-gradient(135deg, #{$sp-navy} 0%, #{$sp-navy-mid} 55%, #{$sp
   flex-direction: column;
   border-radius: 20px;
   overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(0, 44, 64, 0.06),
+    0 25px 50px -12px rgba(0, 44, 64, 0.18),
+    0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+/* Cabecera modal día (Pro SaaS — mismo criterio visual que rep-futbol) */
+.modal-saas .modal-header {
+  flex-shrink: 0;
+  padding: 1rem 1.35rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.modal-saas .modal-title {
+  margin: 0;
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
 }
 
 .modal-body-saas {
   flex: 1;
   display: flex;
   min-height: 0;
+  background: #f8fafc;
+  align-items: stretch;
 }
 
 /* ========== Modal Asistencia jugadores – Pro SaaS ========== */
@@ -1106,7 +1128,9 @@ $g-header:    linear-gradient(135deg, #{$sp-navy} 0%, #{$sp-navy-mid} 55%, #{$sp
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding-right: 12px;
+  padding: 1rem 12px 1rem 0;
+  border-right: 1px solid #e5e7eb;
+  background: #ffffff;
 }
 
 .modal-right {
@@ -1126,6 +1150,7 @@ $g-header:    linear-gradient(135deg, #{$sp-navy} 0%, #{$sp-navy-mid} 55%, #{$sp
   overflow-y: auto;
   overflow-x: hidden;
   padding: 24px;
+  background: #ffffff;
 }
 
 /* Lista con scroll */
@@ -2231,6 +2256,535 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
   color: #374151;
 }
 
+/* ═══════════════════════════════════════════════════════ */
+/* RIVAL FIELD CARDS — grid de análisis del rival          */
+/* ═══════════════════════════════════════════════════════ */
+
+.rival-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 18px;
+
+  @media (max-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 480px) { grid-template-columns: 1fr; }
+}
+
+.rfc {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 44, 64, 0.10);
+  border-radius: 12px;
+  padding: 12px 14px 10px;
+  box-shadow: 0 2px 8px rgba(0, 44, 64, 0.05);
+  transition: box-shadow 0.18s;
+
+  &:hover { box-shadow: 0 4px 14px rgba(0, 44, 64, 0.10); }
+}
+
+.rfc-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #374151;
+  letter-spacing: 0.01em;
+  margin: 0;
+  line-height: 1.2;
+  text-transform: none;
+  cursor: default;
+}
+
+.rfc-icon {
+  font-size: 0.88rem;
+  flex-shrink: 0;
+}
+
+.rfc-icon--green  { color: #31b270; }
+.rfc-icon--red    { color: #ef4444; }
+.rfc-icon--blue   { color: #3b82f6; }
+.rfc-icon--purple { color: #8b5cf6; }
+.rfc-icon--teal   { color: #14b8a6; }
+.rfc-icon--orange { color: #f97316; }
+.rfc-icon--amber  { color: #f59e0b; }
+.rfc-icon--dark   { color: #002c40; }
+
+.rfc-textarea {
+  border: none !important;
+  border-top: 1px solid rgba(0, 44, 64, 0.08) !important;
+  border-radius: 0 !important;
+  padding: 8px 0 4px !important;
+  font-size: 0.83rem !important;
+  color: #111827 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  resize: none;
+  min-height: 56px;
+
+  &::placeholder {
+    font-style: italic;
+    font-weight: 600;
+    color: #94a3b8;
+    text-decoration: underline;
+    text-decoration-color: rgba(148, 163, 184, 0.5);
+    text-decoration-style: dotted;
+    opacity: 1;
+  }
+  &::-webkit-input-placeholder {
+    font-style: italic;
+    font-weight: 600;
+    color: #94a3b8;
+    text-decoration: underline;
+    text-decoration-color: rgba(148, 163, 184, 0.5);
+  }
+  &::-moz-placeholder {
+    font-style: italic;
+    font-weight: 600;
+    color: #94a3b8;
+    opacity: 1;
+  }
+
+  &:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-top-color: #31b270 !important;
+  }
+
+  &[readonly] {
+    color: #6b7280 !important;
+    cursor: default;
+  }
+}
+
+[data-theme="dark"] {
+  .rfc {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    &:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.25); }
+  }
+
+  .rfc-label { color: var(--text-secondary); }
+
+  .rfc-textarea {
+    color: var(--text-primary) !important;
+    border-top-color: var(--border-color) !important;
+    &:focus { border-top-color: #31b270 !important; }
+    &[readonly] { color: var(--text-secondary) !important; }
+    &::placeholder { color: #4b6070; }
+    &::-webkit-input-placeholder { color: #4b6070; }
+    &::-moz-placeholder { color: #4b6070; opacity: 1; }
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════ */
+/* MATCH HERO — header rico del partido (alineado rep-futbol) */
+/* ═══════════════════════════════════════════════════════ */
+
+.match-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #002c40 0%, #004d6e 100%);
+  border-radius: 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 16px rgba(0, 44, 64, 0.20);
+}
+
+.match-hero-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.match-hero-emoji {
+  font-size: 2.2rem;
+  line-height: 1;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.match-hero-info {
+  min-width: 0;
+}
+
+.match-hero-rival {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 3px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.match-hero-meta {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.match-hero-dot {
+  opacity: 0.45;
+}
+
+/* ── Status badge ── */
+.match-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  i { font-size: 0.75rem; }
+}
+
+.msb-upcoming {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.msb-today {
+  background: #31b270;
+  color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.35);
+  animation: pulse-green 2s infinite;
+}
+
+.msb-past {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.35); }
+  50%       { box-shadow: 0 0 0 6px rgba(49, 178, 112, 0.12); }
+}
+
+@media (max-width: 480px) {
+  .match-hero {
+    padding: 12px 14px;
+    border-radius: 10px;
+  }
+  .match-hero-emoji { font-size: 1.7rem; }
+  .match-hero-rival { font-size: 1rem; }
+}
+
+
+/* ═══════════════════════════════════════════════════════ */
+/* MATCH INFO STRIP — chips con datos clave del partido    */
+/* ═══════════════════════════════════════════════════════ */
+
+.match-info-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-wrap: wrap;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.mis-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 20px;
+  background: rgba(0, 44, 64, 0.06);
+  border: 1px solid rgba(0, 44, 64, 0.10);
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: #374151;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.15s;
+
+  i { font-size: 0.8rem; color: #6b7280; }
+
+  &:hover { background: rgba(0, 44, 64, 0.10); }
+}
+
+.mis-chip--location {
+  max-width: 160px;
+  .mis-chip-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.mis-chip--sport {
+  background: rgba(49, 178, 112, 0.10);
+  border-color: rgba(49, 178, 112, 0.25);
+  color: #1a7a4a;
+  font-weight: 600;
+}
+
+.mis-chip--periods {
+  background: rgba(0, 44, 64, 0.08);
+  border-color: rgba(0, 44, 64, 0.18);
+  color: #002c40;
+  font-weight: 600;
+  i { color: #002c40; }
+}
+
+
+/* ═══════════════════════════════════════════════════════ */
+/* MATCH TABS — pill/underline pro                         */
+/* ═══════════════════════════════════════════════════════ */
+
+.match-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: rgba(0, 44, 64, 0.05);
+  border-radius: 12px;
+  padding: 4px;
+}
+
+.match-tabs .nav-item {
+  flex-shrink: 0;
+}
+
+.mt-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: #6b7280;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+
+  i { font-size: 0.85rem; }
+
+  &:hover:not(.active) {
+    background: rgba(0, 44, 64, 0.08);
+    color: #002c40;
+  }
+
+  &.active {
+    background: #002c40;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 44, 64, 0.25);
+  }
+}
+
+@media (max-width: 480px) {
+  .match-tabs { flex-wrap: wrap; }
+  .mt-link { padding: 6px 10px; font-size: 0.78rem; }
+}
+
+/* dark mode */
+[data-theme="dark"] {
+  .match-hero { background: linear-gradient(135deg, #001e2e 0%, #002c40 100%); }
+
+  .msb-upcoming { background: rgba(255,255,255,0.08); }
+
+  .mis-chip {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.10);
+    color: var(--text-secondary);
+    i { color: var(--text-secondary); }
+  }
+
+  .mis-chip--sport {
+    background: rgba(49, 178, 112, 0.12);
+    border-color: rgba(49, 178, 112, 0.25);
+    color: #31b270;
+  }
+
+  .mis-chip--periods {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.15);
+    color: var(--text-primary);
+    i { color: var(--text-primary); }
+  }
+
+  .match-tabs {
+    background: rgba(255,255,255,0.05);
+  }
+
+  .mt-link {
+    color: var(--text-secondary);
+    &:hover:not(.active) {
+      background: rgba(255,255,255,0.08);
+      color: var(--text-primary);
+    }
+    &.active {
+      background: #31b270;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(49, 178, 112, 0.3);
+    }
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════ */
+/* MATCH ACTION BAR — fila única pro                       */
+/* ═══════════════════════════════════════════════════════ */
+
+.match-action-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 4px;
+  border-bottom: 1px solid rgba(0, 44, 64, 0.08);
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+/* Separador vertical entre grupos */
+.mab-sep {
+  width: 1px;
+  height: 26px;
+  background: rgba(0, 44, 64, 0.15);
+  margin: 0 4px;
+  flex-shrink: 0;
+  border-radius: 1px;
+}
+
+/* ── Botón base ── */
+.mab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.82rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+  line-height: 1;
+  letter-spacing: 0.01em;
+
+  i { font-size: 0.95rem; }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14);
+  }
+
+  &:active:not(:disabled) { transform: translateY(0); }
+
+  &:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ── Variantes de color ── */
+.mab-primary {
+  background: #002c40;
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(0, 44, 64, 0.28);
+  &:hover:not(:disabled) { background: #01415e; }
+}
+
+.mab-success {
+  background: #31b270;
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(49, 178, 112, 0.30);
+  &:hover:not(:disabled) { background: #27925c; }
+}
+
+.mab-info {
+  background: #31b270;
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(49, 178, 112, 0.30);
+  &:hover:not(:disabled) { background: #27925c; }
+}
+
+.mab-warning {
+  background: #002c40;
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(0, 44, 64, 0.28);
+  &:hover:not(:disabled) { background: #01415e; }
+}
+
+.mab-outline {
+  background: #ffffff;
+  color: #002c40;
+  border: 1.5px solid rgba(0, 44, 64, 0.18);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  &:hover:not(:disabled) {
+    background: #f0f4f8;
+    border-color: rgba(0, 44, 64, 0.40);
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 576px) {
+  .match-action-bar {
+    gap: 8px;
+    padding: 12px 0;
+  }
+  .mab-btn {
+    padding: 8px 10px;
+    font-size: 0.78rem;
+    gap: 5px;
+  }
+  .mab-sep { display: none; }
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] {
+  .match-action-bar { border-bottom-color: var(--border-color); }
+
+  .mab-sep { background: var(--border-strong); }
+
+  .mab-outline {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+  }
+
+  .mab-btn:disabled { opacity: 0.3; }
+}
+
 /* ============================= */
 /* SAAS ACTION BAR               */
 /* ============================= */
@@ -2310,6 +2864,29 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
 .saas-btn-outline:hover {
   background: #efdcb6;
   color: #002c40;
+}
+
+/* Info / warning — barra acciones entrenamiento (colores alineados con .mab-info / .mab-warning en rep-futbol) */
+.saas-btn-info {
+  background: #31b270;
+  color: #ffffff;
+  box-shadow: 0 3px 10px rgba(49, 178, 112, 0.3);
+}
+
+.saas-btn-info:hover {
+  background: #27925c;
+  color: #ffffff;
+}
+
+.saas-btn-warning {
+  background: #002c40;
+  color: #ffffff;
+  box-shadow: 0 3px 10px rgba(0, 44, 64, 0.28);
+}
+
+.saas-btn-warning:hover {
+  background: #01415e;
+  color: #ffffff;
 }
 
 /* ============================= */
@@ -4380,12 +4957,30 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
     color: var(--text-primary);
   }
 
+  .modal-saas .modal-header {
+    background: var(--bg-card);
+    border-bottom-color: var(--border-color);
+  }
+
   .modal-title {
     color: var(--text-primary);
   }
 
+  .modal-saas .modal-title {
+    color: var(--text-primary);
+  }
+
+  .modal-body-saas {
+    background: var(--bg-surface);
+  }
+
   .modal-left {
     border-right-color: var(--border-color);
+    background: var(--bg-card);
+  }
+
+  .content-scroll {
+    background: var(--bg-card);
   }
 
   .form-header h4 {
@@ -4738,6 +5333,26 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
     background: rgba(var(--color-primary-rgb), 0.12);
     color: var(--color-primary);
     border-color: var(--color-primary);
+  }
+
+  .saas-btn-info {
+    background: #31b270;
+    color: #fff;
+  }
+
+  .saas-btn-info:hover {
+    background: #27925c;
+    color: #fff;
+  }
+
+  .saas-btn-warning {
+    background: #002c40;
+    color: #fff;
+  }
+
+  .saas-btn-warning:hover {
+    background: #01415e;
+    color: #fff;
   }
 
   /* ---- SAAS TASK BTN ---- */

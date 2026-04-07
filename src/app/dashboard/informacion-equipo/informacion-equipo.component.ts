@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,13 +12,18 @@ import { Location } from '@angular/common';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 import { environment } from 'src/environments/environment';
+import { getSportConfig } from 'src/app/core/models/sport/sport-config.model';
+import { SportContextService } from 'src/app/core/services/sport/sport-context.service';
+import { TranslateService } from '@ngx-translate/core';
+import { sportLeagueLabel } from 'src/app/core/utils/sport-ui-i18n';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-informacion-equipo',
   templateUrl: './informacion-equipo.component.html',
   styleUrls: ['./informacion-equipo.component.scss']
 })
-export class InformacionEquipoComponent implements OnInit {
+export class InformacionEquipoComponent implements OnInit, OnDestroy {
   editarEquipoForm: FormGroup;
   teamNew: TeamNew = new TeamNew();
   teamId!: number;
@@ -75,33 +80,8 @@ export class InformacionEquipoComponent implements OnInit {
     { value: '26', label: 'Debutante' }
   ];
 
-  levelOptions: { value: string, label: string }[] = [
-    { value: 'LaLiga EA Sports', label: 'LaLiga EA Sports' },
-    { value: 'Liga F', label: 'Liga F' },
-    { value: 'LaLiga Hypermotion', label: 'LaLiga Hypermotion' },
-    { value: 'Segunda RFEF Femenina', label: 'Segunda RFEF Femenina' },
-    { value: 'Primera RFEF', label: 'Primera RFEF' },
-    { value: 'Segunda RFEF', label: 'Segunda RFEF' },
-    { value: 'Tercera RFEF', label: 'Tercera RFEF' },
-    { value: 'Tercera RFEF Femenina', label: 'Tercera RFEF Femenina' },
-    { value: 'Preferente Autonómica', label: 'Preferente Autonómica' },
-    { value: 'Preferente Autonómica Femenina', label: 'Preferente Autonómica Femenina' },
-    { value: 'Primera Autonómica', label: 'Primera Autonómica' },
-    { value: 'Primera Autonómica Femenina', label: 'Primera Autonómica Femenina' },
-    { value: 'Segunda Autonómica', label: 'Segunda Autonómica' },
-    { value: 'Tercera Autonómica', label: 'Tercera Autonómica' },
-    { value: 'División de Honor', label: 'División de Honor' },
-    { value: 'Liga Nacional', label: 'Liga Nacional' },
-    { value: 'Liga Sub-23', label: 'Liga Sub-23' },
-    { value: 'Superliga', label: 'Superliga' },
-    { value: 'Autonómica', label: 'Autonómica' },
-    { value: 'Preferente', label: 'Preferente' },
-    { value: 'Primera', label: 'Primera' },
-    { value: 'Segunda', label: 'Segunda' },
-    { value: 'Tercera', label: 'Tercera' },
-    { value: 'Fútbol 5', label: 'Fútbol 5' },
-    { value: 'No federado', label: 'No federado' },
-  ];
+  /** Opciones de competición según el deporte del equipo (SPORT_CONFIGS.leagueOptions). */
+  levelOptions: { value: string; label: string }[] = [];
 
   nameOptions: { value: string, label: string }[] = [
     { value: '', label: 'Sin letra' },
@@ -128,8 +108,8 @@ export class InformacionEquipoComponent implements OnInit {
 
   categoriaNivel: string = '';
   mostrarDropdown2: boolean = false;
-  nivelesVisiblesFiltradas = [...this.levelOptions];
-  nivelesVisibles = [...this.levelOptions];
+  nivelesVisiblesFiltradas: { value: string; label: string }[] = [];
+  nivelesVisibles: { value: string; label: string }[] = [];
   datosCargados: boolean = false;
   showDeleteConfirm = false;
   teamLogoUrl: string | null = null;
@@ -147,7 +127,10 @@ export class InformacionEquipoComponent implements OnInit {
     private loginService: LoginService,
     private clubService: ClubService,
     private location: Location,
-    private tutorialService: TutorialService
+    private tutorialService: TutorialService,
+    private sportContextService: SportContextService,
+    private translate: TranslateService,
+    private cdr: ChangeDetectorRef
   ) {
     this.editarEquipoForm = this.fb.group({
       teamId: ["", Validators.required],
@@ -161,7 +144,18 @@ export class InformacionEquipoComponent implements OnInit {
     });
   }
 
+  private langSub?: Subscription;
+
+  ngOnDestroy(): void {
+    this.langSub?.unsubscribe();
+  }
+
   ngOnInit(): void {
+    this.refreshLevelOptions(this.sportContextService.getSport() || 'futbol');
+    this.langSub = this.translate.onLangChange.subscribe(() => {
+      this.refreshLevelOptions(this.sportContextService.getSport() || 'futbol');
+      this.cdr.markForCheck();
+    });
     setTimeout(() => this.tutorialService.start('informacion-equipo', true), 600);
 
     // Inicialización del objeto diasTeam
@@ -187,6 +181,17 @@ export class InformacionEquipoComponent implements OnInit {
       this.cargarInfoEntrenadores();
       this.obtenerCategorias();
     });
+  }
+
+  private refreshLevelOptions(sportKey: string): void {
+    const sk = sportKey || 'futbol';
+    const opts = getSportConfig(sk).leagueOptions || [];
+    this.levelOptions = opts.map((o) => ({
+      value: o,
+      label: sportLeagueLabel(this.translate, sk, o),
+    }));
+    this.nivelesVisibles = [...this.levelOptions];
+    this.nivelesVisiblesFiltradas = [...this.levelOptions];
   }
 
   goBack(): void {
@@ -218,6 +223,9 @@ export class InformacionEquipoComponent implements OnInit {
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
+          const sport = (response.data as { sport?: string }).sport || 'futbol';
+          this.sportContextService.setSport(sport);
+          this.refreshLevelOptions(sport);
           this.editarEquipoForm.get('categoriaNombre')?.setValue(response.data.category);
           this.team = response.data;
           this.teamInfo = {

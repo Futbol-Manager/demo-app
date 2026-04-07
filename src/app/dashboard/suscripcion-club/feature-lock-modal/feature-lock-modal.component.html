@@ -1,48 +1,78 @@
-<!-- Feature Lock Modal Overlay -->
-<div class="lock-modal-overlay" *ngIf="visible" (click)="close()">
-  <div class="lock-modal" (click)="$event.stopPropagation()">
+<!-- Feature Lock Modal -->
+<div class="flm-overlay" *ngIf="visible" (click)="close()" role="dialog" aria-modal="true">
+  <div class="flm-card" (click)="$event.stopPropagation()" *ngIf="featureData">
 
-    <!-- Lock icon -->
-    <div class="lock-icon-wrapper">
-      <i class="bi bi-lock-fill"></i>
-    </div>
-
-    <!-- Title -->
-    <h2>{{ 'CLUB_PLANS.LOCKED.MODAL_TITLE' | translate }}</h2>
-
-    <!-- Feature name -->
-    <p class="feature-name" *ngIf="feature">
-      <i [class]="feature.iconClass"></i>
-      {{ feature.nameKey | translate }}
-    </p>
-
-    <!-- Description -->
-    <p class="lock-description">
-      {{ 'CLUB_PLANS.LOCKED.MODAL_DESC' | translate }}
-    </p>
-
-    <!-- Required plans -->
-    <div class="required-plans" *ngIf="feature">
-      <span class="plan-badge familia" *ngIf="feature.requiredPlans.includes('familia')">
-        <i class="bi bi-people-fill"></i>
-        {{ 'CLUB_PLANS.PLAN_FAMILIA.NAME' | translate }}
-      </span>
-      <span class="plan-badge club" *ngIf="feature.requiredPlans.includes('club')">
-        <i class="bi bi-shield-fill"></i>
-        {{ 'CLUB_PLANS.PLAN_CLUB.NAME' | translate }}
-      </span>
-    </div>
-
-    <!-- Actions -->
-    <div class="lock-actions">
-      <button class="btn-upgrade" (click)="goToPlans()">
-        <i class="bi bi-arrow-up-circle-fill"></i>
-        {{ 'CLUB_PLANS.LOCKED.UPGRADE_BTN' | translate }}
+    <!-- ── HERO con imagen de fondo ── -->
+    <div class="flm-hero" [style.backgroundImage]="'url(' + featureData.imageUrl + ')'">
+      <div class="flm-hero__gradient"></div>
+      <button type="button" class="flm-close" (click)="close()" [attr.aria-label]="'COMMON.CLOSE' | translate">
+        <i class="bi bi-x-lg"></i>
       </button>
-      <button class="btn-dismiss" (click)="close()">
-        {{ 'CLUB_PLANS.LOCKED.CLOSE_BTN' | translate }}
-      </button>
+      <div class="flm-hero__content">
+        <div class="flm-hero__lock">
+          <i class="bi bi-lock-fill"></i>
+        </div>
+        <span class="flm-hero__feature-badge">
+          <i class="bi" [ngClass]="featureData.iconClass"></i>
+          {{ featureData.nameKey | translate }}
+        </span>
+      </div>
     </div>
 
+    <!-- ── CUERPO ── -->
+    <div class="flm-body">
+
+      <!-- Plan necesario -->
+      <div class="flm-plan-pill">
+        <i class="bi bi-building"></i>
+        {{ 'FEATURE_LOCK.MODAL.PLAN_PILL' | translate }}
+      </div>
+
+      <!-- Headline de marketing -->
+      <h2 class="flm-headline">{{ featureData.headlineKey | translate }}</h2>
+
+      <!-- Descripción -->
+      <p class="flm-description">{{ featureData.descriptionKey | translate }}</p>
+
+      <!-- Beneficios -->
+      <ul class="flm-benefits">
+        <li *ngFor="let b of featureData.benefitKeys" class="flm-benefit">
+          <span class="flm-benefit__icon"><i class="bi bi-check2-circle"></i></span>
+          <span>{{ b | translate }}</span>
+        </li>
+      </ul>
+
+      <!-- Precio con descuento -->
+      <div class="flm-pricing">
+        <div class="flm-pricing__left">
+          <span class="flm-pricing__tag">
+            <i class="bi bi-lightning-charge-fill"></i>
+            {{ 'FEATURE_LOCK.MODAL.LIMITED_OFFER' | translate }}
+          </span>
+          <div class="flm-pricing__row">
+            <span class="flm-pricing__old">{{ 'FEATURE_LOCK.MODAL.OLD_PRICE' | translate }}</span>
+            <span class="flm-pricing__badge">{{ 'FEATURE_LOCK.MODAL.DISCOUNT_BADGE' | translate }}</span>
+          </div>
+          <div class="flm-pricing__main">
+            {{ 'FEATURE_LOCK.MODAL.PRICE_MAIN' | translate }}<span class="flm-pricing__period">&nbsp;{{ 'FEATURE_LOCK.MODAL.PRICE_SUFFIX' | translate }}</span>
+          </div>
+        </div>
+        <div class="flm-pricing__right">
+          <i class="bi bi-shield-check"></i>
+          <span>{{ 'FEATURE_LOCK.MODAL.NO_COMMITMENT' | translate }}</span>
+        </div>
+      </div>
+
+      <!-- CTAs -->
+      <button type="button" class="flm-cta-primary" (click)="goToPlans()">
+        <i class="bi bi-rocket-takeoff-fill"></i>
+        {{ 'FEATURE_LOCK.MODAL.CTA_UNLOCK' | translate }}
+      </button>
+
+      <button type="button" class="flm-cta-secondary" (click)="close()">
+        {{ 'FEATURE_LOCK.MODAL.CTA_STAY_FREE' | translate }}
+      </button>
+
+    </div>
   </div>
 </div>

@@ -62,9 +62,9 @@
             <th class="col-num col-win">{{ 'ESTADIS_EQUIPO.TABLE.W' | translate }}</th>
             <th class="col-num col-draw">{{ 'ESTADIS_EQUIPO.TABLE.D' | translate }}</th>
             <th class="col-num col-loss">{{ 'ESTADIS_EQUIPO.TABLE.L' | translate }}</th>
-            <th class="col-num">{{ 'ESTADIS_EQUIPO.TABLE.GF' | translate }}</th>
-            <th class="col-num">{{ 'ESTADIS_EQUIPO.TABLE.GA' | translate }}</th>
-            <th class="col-num">{{ 'ESTADIS_EQUIPO.TABLE.DG' | translate }}</th>
+            <th class="col-num">{{ labelScoringFor }}</th>
+            <th class="col-num">{{ labelScoringAgainst }}</th>
+            <th class="col-num">{{ labelDiffScoring }}</th>
             <th class="col-form">{{ 'ESTADIS_EQUIPO.TABLE.LAST' | translate }}</th>
           </tr>
         </thead>
@@ -90,9 +90,9 @@
               <div class="team-cell">
                 <div class="team-avatar" [attr.data-initial]="(resumen.equipo || resumen.categoria)?.charAt(0)">
                   <img *ngIf="isDemo"
-                       src="assets/images/user/demo-club-logo.png"
+                       src="assets/images/user/demo-club-logo.svg"
                        alt="Escudo"
-                       class="avatar-logo" />
+                       class="avatar-logo avatar-logo--demo" />
                 </div>
                 <div class="team-info">
                   <a class="team-name" (click)="verTablaequipo(i)">{{ resumen.equipo || resumen.categoria }}</a>
@@ -203,15 +203,15 @@
             <th>{{ 'ESTADIS_EQUIPO.MODAL.RESULT' | translate }}</th>
             <th>{{ 'ESTADIS_EQUIPO.MODAL.LOCAL_VISITOR' | translate }}</th>
             <th>{{ 'ESTADIS_EQUIPO.MODAL.TYPEMATCH' | translate }}</th>
-            <th>{{ 'ESTADIS_EQUIPO.MODAL.GF' | translate }}</th>
-            <th>{{ 'ESTADIS_EQUIPO.MODAL.GA' | translate }}</th>
-            <th>{{ 'ESTADIS_EQUIPO.MODAL.SHOTS_FOR' | translate }}</th>
-            <th>{{ 'ESTADIS_EQUIPO.MODAL.SHOTS_AGAINST' | translate }}</th>
-            <th>{{ 'ESTADIS_EQUIPO.MODAL.FOULS_FOR' | translate }}</th>
-            <th>{{ 'ESTADIS_EQUIPO.MODAL.FOULS_AGAINST' | translate }}</th>
-            <th>{{ 'ESTADIS_EQUIPO.MODAL.CORNERS' | translate }}</th>
-            <th>{{ 'ESTADIS_EQUIPO.MODAL.YELLOW' | translate }}</th>
-            <th>{{ 'ESTADIS_EQUIPO.MODAL.RED' | translate }}</th>
+            <th>{{ labelScoringFor }}</th>
+            <th>{{ labelScoringAgainst }}</th>
+            <th *ngIf="hasMatchStatKey('disparosAFavor')">{{ 'ESTADIS_EQUIPO.MODAL.SHOTS_FOR' | translate }}</th>
+            <th *ngIf="hasMatchStatKey('disparosEnContra')">{{ 'ESTADIS_EQUIPO.MODAL.SHOTS_AGAINST' | translate }}</th>
+            <th *ngIf="hasMatchStatKey('faltasRecibidas')">{{ 'ESTADIS_EQUIPO.MODAL.FOULS_FOR' | translate }}</th>
+            <th *ngIf="hasMatchStatKey('faltasCometidas')">{{ 'ESTADIS_EQUIPO.MODAL.FOULS_AGAINST' | translate }}</th>
+            <th *ngIf="hasMatchStatKey('cornersAFavor')">{{ 'ESTADIS_EQUIPO.MODAL.CORNERS' | translate }}</th>
+            <th *ngIf="hasMatchStatKey('tarjetasAmarillas')">{{ 'ESTADIS_EQUIPO.MODAL.YELLOW' | translate }}</th>
+            <th *ngIf="hasMatchStatKey('tarjetasRojas')">{{ 'ESTADIS_EQUIPO.MODAL.RED' | translate }}</th>
 
           </tr>
         </thead>
@@ -233,13 +233,13 @@
             <td>{{ partido.matchPreparation.tipoPartido }}</td>
             <td>{{ partido.golesAFavor }}</td>
             <td>{{ partido.golesEnContra }}</td>
-            <td>{{ partido.disparosAFavor }} </td>
-            <td>{{ partido.disparosEnContra }}</td>
-            <td>{{ partido.faltasRecibidas }} </td>
-            <td>{{ partido.faltasCometidas }} </td>
-            <td>{{ partido.cornersAFavor }} </td>
-            <td>{{ partido.tarjetasAmarillas }}</td>
-            <td>{{ partido.tarjetasRojas }}</td>
+            <td *ngIf="hasMatchStatKey('disparosAFavor')">{{ partido.disparosAFavor }} </td>
+            <td *ngIf="hasMatchStatKey('disparosEnContra')">{{ partido.disparosEnContra }}</td>
+            <td *ngIf="hasMatchStatKey('faltasRecibidas')">{{ partido.faltasRecibidas }} </td>
+            <td *ngIf="hasMatchStatKey('faltasCometidas')">{{ partido.faltasCometidas }} </td>
+            <td *ngIf="hasMatchStatKey('cornersAFavor')">{{ partido.cornersAFavor }} </td>
+            <td *ngIf="hasMatchStatKey('tarjetasAmarillas')">{{ partido.tarjetasAmarillas }}</td>
+            <td *ngIf="hasMatchStatKey('tarjetasRojas')">{{ partido.tarjetasRojas }}</td>
           </tr>
         </tbody>
       </table>
@@ -275,7 +275,7 @@
         <button class="suggestion-chip" (click)="useSuggestion('Analiza el rendimiento de los equipos')">
           📈 {{ 'AI_PANEL.SUGGESTION_PERFORMANCE_ANALYSIS' | translate }}
         </button>
-        <button class="suggestion-chip" (click)="useSuggestion('Compara goles a favor vs en contra')">
+        <button class="suggestion-chip" (click)="useSuggestion(aiSuggestionGoalsComparison)">
           ⚖️ {{ 'AI_PANEL.SUGGESTION_GOALS_COMPARISON' | translate }}
         </button>
         <button class="suggestion-chip" (click)="useSuggestion('¿Cuál es el promedio de victorias?')">

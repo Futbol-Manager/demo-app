@@ -10,9 +10,9 @@
 
   <div class="header-center">
     <h2 class="table-title">
-      <i class="bi bi-trophy me-2"></i>Clasificación y resultados
+      <i class="bi bi-trophy me-2"></i>{{ 'CLASIFICACION_PAGE.PAGE_TITLE' | translate }}
     </h2>
-    <p class="header-subtitle">Seguimiento de la liga y resultados del equipo</p>
+    <p class="header-subtitle">{{ 'CLASIFICACION_PAGE.PAGE_SUBTITLE' | translate }}</p>
   </div>
 
   <div class="page-header-right"></div>
@@ -25,8 +25,8 @@
       <div class="sphaira-spinner-ring"></div>
       <img src="assets/images/Logo_SphairaTech1.svg" alt="Sphaira" class="sphaira-spinner-logo" />
     </div>
-    <h5 class="wizard-title mt-3">Actualizando clasificación...</h5>
-    <p class="wizard-message">La IA está analizando la página de tu federación.<br>Esto puede tardar entre 20 y 40 segundos.</p>
+    <h5 class="wizard-title mt-3">{{ 'CLASIFICACION_PAGE.REFRESH_TITLE' | translate }}</h5>
+    <p class="wizard-message" [innerHTML]="'CLASIFICACION_PAGE.REFRESH_MESSAGE' | translate"></p>
   </div>
 </div>
 
@@ -37,8 +37,8 @@
       <div class="sphaira-spinner-ring"></div>
       <img src="assets/images/Logo_SphairaTech1.svg" alt="Sphaira" class="sphaira-spinner-logo" />
     </div>
-    <h5 class="wizard-title mt-4">Cargando clasificación...</h5>
-    <p class="wizard-message">La IA está analizando la página de tu federación.<br>Esto puede tardar entre 20 y 40 segundos.</p>
+    <h5 class="wizard-title mt-4">{{ 'CLASIFICACION_PAGE.LOADING_TITLE' | translate }}</h5>
+    <p class="wizard-message" [innerHTML]="'CLASIFICACION_PAGE.LOADING_MESSAGE' | translate"></p>
     <div class="wizard-steps-indicator mt-3">
       <span class="step-dot active"></span>
       <span class="step-dot active"></span>
@@ -55,27 +55,24 @@
     <!-- Paso 1: URL -->
     <div *ngIf="wizardStep === 'url'" class="wizard-card">
       <div class="wizard-icon">🔗</div>
-      <h5 class="wizard-title">Configura tu clasificación</h5>
-      <p class="wizard-desc">
-        Introduce la URL de la página de clasificación de tu federación o liga.<br>
-        Sphaira extraerá los datos automáticamente.
-      </p>
+      <h5 class="wizard-title">{{ 'CLASIFICACION_PAGE.WIZARD_URL_TITLE' | translate }}</h5>
+      <p class="wizard-desc" [innerHTML]="'CLASIFICACION_PAGE.WIZARD_URL_DESC' | translate"></p>
       <div class="wizard-form">
-        <label class="wizard-label">URL de clasificación</label>
+        <label class="wizard-label">{{ 'CLASIFICACION_PAGE.WIZARD_URL_LABEL' | translate }}</label>
         <input
           type="url"
           class="wizard-input"
           [(ngModel)]="urlInput"
-          placeholder="https://www.tufederacion.es/clasificacion?grupo=XXXXX"
+          [placeholder]="'CLASIFICACION_PAGE.WIZARD_URL_PLACEHOLDER' | translate"
           (keyup.enter)="startWizard()"
           autofocus
         />
         <button class="wizard-btn" (click)="startWizard()" [disabled]="!urlInput.trim()">
-          <i class="bi bi-search me-2"></i>Analizar y cargar
+          <i class="bi bi-search me-2"></i>{{ 'CLASIFICACION_PAGE.WIZARD_ANALYZE_BTN' | translate }}
         </button>
       </div>
       <div class="wizard-hint">
-        Introduce la URL exacta de la página de clasificación de tu federación o liga.
+        {{ 'CLASIFICACION_PAGE.WIZARD_URL_HINT' | translate }}
       </div>
     </div>
 
@@ -85,7 +82,7 @@
         <div class="sphaira-spinner-ring"></div>
         <img src="assets/images/Logo_SphairaTech1.svg" alt="Sphaira" class="sphaira-spinner-logo" />
       </div>
-      <h5 class="wizard-title mt-4">Procesando...</h5>
+      <h5 class="wizard-title mt-4">{{ 'CLASIFICACION_PAGE.WIZARD_PROCESSING' | translate }}</h5>
       <p class="wizard-message">{{ wizardMessage }}</p>
       <div class="wizard-steps-indicator mt-3">
         <span class="step-dot active"></span>
@@ -97,13 +94,10 @@
     <!-- Paso 3: Éxito -->
     <div *ngIf="wizardStep === 'success'" class="wizard-card wizard-success">
       <div class="wizard-success-icon">✅</div>
-      <h5 class="wizard-title">¡Datos cargados!</h5>
-      <p class="wizard-desc">
-        La clasificación y los resultados se han importado correctamente.<br>
-        Pulsa el botón para verlos.
-      </p>
+      <h5 class="wizard-title">{{ 'CLASIFICACION_PAGE.WIZARD_SUCCESS_TITLE' | translate }}</h5>
+      <p class="wizard-desc" [innerHTML]="'CLASIFICACION_PAGE.WIZARD_SUCCESS_DESC' | translate"></p>
       <button class="wizard-btn" (click)="finishWizard()">
-        <i class="bi bi-table me-2"></i>Ver clasificación
+        <i class="bi bi-table me-2"></i>{{ 'CLASIFICACION_PAGE.WIZARD_VIEW_BTN' | translate }}
       </button>
       <div class="wizard-steps-indicator mt-4">
         <span class="step-dot done"></span>
@@ -115,10 +109,10 @@
     <!-- Error -->
     <div *ngIf="wizardStep === 'error'" class="wizard-card wizard-error">
       <div class="wizard-error-icon">⚠️</div>
-      <h5 class="wizard-title">No se pudieron cargar los datos</h5>
+      <h5 class="wizard-title">{{ 'CLASIFICACION_PAGE.WIZARD_ERROR_TITLE' | translate }}</h5>
       <p class="wizard-message">{{ wizardMessage }}</p>
       <button class="wizard-btn btn-outline mt-3" (click)="retryWizard()">
-        <i class="bi bi-arrow-counterclockwise me-2"></i>Intentar con otra URL
+        <i class="bi bi-arrow-counterclockwise me-2"></i>{{ 'CLASIFICACION_PAGE.WIZARD_RETRY_BTN' | translate }}
       </button>
     </div>
 
@@ -155,11 +149,11 @@
           </select>
         </ng-container>
         <ng-template #jornadaFija>
-          <span class="badge-jornada-fija" title="Esta fuente muestra siempre la jornada actual">
-            <i class="bi bi-calendar-event"></i> Jornada actual
+          <span class="badge-jornada-fija" [title]="'CLASIFICACION_PAGE.BADGE_JORNADA_TITLE' | translate">
+            <i class="bi bi-calendar-event"></i> {{ 'SPORT_UI.ROUND_CURRENT' | translate }}
           </span>
         </ng-template>
-        <button class="btn-refresh" (click)="refresh()" title="Actualizar datos">
+        <button class="btn-refresh" (click)="refresh()" [title]="'CLASIFICACION_PAGE.REFRESH_BTN_TITLE' | translate">
           <i class="bi bi-arrow-clockwise"></i>
         </button>
       </div>
@@ -169,7 +163,7 @@
     <div *ngIf="temporadaSinIniciar" class="container px-0">
       <div class="sph-info-banner mt-2">
         <i class="bi bi-info-circle-fill"></i>
-        <span>La fase actual aún no ha comenzado — todos los equipos tienen 0 puntos. Los datos se actualizarán cuando empiecen los partidos. Pulsa <strong>actualizar</strong> cuando quieras.</span>
+        <span [innerHTML]="'CLASIFICACION_PAGE.BANNER_SEASON' | translate"></span>
       </div>
     </div>
 
@@ -180,14 +174,14 @@
           <thead>
             <tr>
               <th>#</th>
-              <th style="text-align:left">Equipo</th>
-              <th>Pts</th>
-              <th>J</th>
-              <th>G</th>
-              <th>E</th>
-              <th>P</th>
-              <th *ngIf="tieneGoles">GF — GC</th>
-              <th *ngIf="tieneForma" title="Últimos resultados">Forma</th>
+              <th style="text-align:left">{{ 'CLASIFICACION_PAGE.TABLE_TEAM' | translate }}</th>
+              <th>{{ 'CLASIFICACION_PAGE.TABLE_PTS' | translate }}</th>
+              <th>{{ 'CLASIFICACION_PAGE.TABLE_J' | translate }}</th>
+              <th>{{ 'CLASIFICACION_PAGE.TABLE_G' | translate }}</th>
+              <th>{{ 'CLASIFICACION_PAGE.TABLE_E' | translate }}</th>
+              <th>{{ 'CLASIFICACION_PAGE.TABLE_P' | translate }}</th>
+              <th *ngIf="tieneGoles">{{ scoringForAgainstHeader }}</th>
+              <th *ngIf="tieneForma" [title]="'CLASIFICACION_PAGE.TABLE_FORMA_TITLE' | translate">{{ 'CLASIFICACION_PAGE.TABLE_FORMA' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -239,18 +233,18 @@
 
     <!-- Cambiar URL -->
     <div class="url-reconfig-section mt-0" data-tutorial="cr-reconfig">
-      <span class="url-reconfig-label"><i class="bi bi-link-45deg me-1"></i>¿Cambiar fuente?</span>
+      <span class="url-reconfig-label"><i class="bi bi-link-45deg me-1"></i>{{ 'CLASIFICACION_PAGE.RECONFIG_LABEL' | translate }}</span>
       <input
         type="url"
         class="url-reconfig-input"
         [(ngModel)]="urlReconfigInput"
-        placeholder="https://www.nueva-federacion.es/clasificacion?..."
+        [placeholder]="'CLASIFICACION_PAGE.RECONFIG_PLACEHOLDER' | translate"
         [disabled]="savingReconfig"
       />
       <button class="btn-reconfig" (click)="saveReconfigUrl()" [disabled]="savingReconfig || !urlReconfigInput.trim()">
         <span *ngIf="savingReconfig" class="spinner-border spinner-border-sm me-1"></span>
         <i *ngIf="!savingReconfig" class="bi bi-cloud-arrow-up me-1"></i>
-        {{ savingReconfig ? 'Guardando...' : 'Actualizar URL' }}
+        {{ savingReconfig ? ('CLASIFICACION_PAGE.RECONFIG_SAVING' | translate) : ('CLASIFICACION_PAGE.RECONFIG_BTN' | translate) }}
       </button>
       <div *ngIf="reconfigFeedback" class="reconfig-feedback"
            [ngClass]="{'text-success': !reconfigFeedbackError, 'text-danger': reconfigFeedbackError}">
@@ -283,7 +277,7 @@
         </div>
         <div class="row mb-4">
           <div class="col-md-6">
-            <h6 style="color:var(--sph-night)">⚽ {{ 'CAL.TEXT_167' | translate }} — {{ actaSeleccionada.equipo_local }}</h6>
+            <h6 style="color:var(--sph-night)">{{ sportConfig.emoji }} {{ 'CAL.TEXT_167' | translate }} — {{ actaSeleccionada.equipo_local }}</h6>
             <ul class="list-group list-group-flush">
               <li *ngFor="let gol of actaSeleccionada.goles_equipo_local" class="list-group-item">
                 {{ gol.minuto }}' — {{ gol.nombre_jugador }}
@@ -291,7 +285,7 @@
             </ul>
           </div>
           <div class="col-md-6">
-            <h6 style="color:#ef4444">⚽ {{ 'CAL.TEXT_167' | translate }} — {{ actaSeleccionada.equipo_visitante }}</h6>
+            <h6 style="color:#ef4444">{{ sportConfig.emoji }} {{ 'CAL.TEXT_167' | translate }} — {{ actaSeleccionada.equipo_visitante }}</h6>
             <ul class="list-group list-group-flush">
               <li *ngFor="let gol of actaSeleccionada.goles_equipo_visitante" class="list-group-item">
                 {{ gol.minuto }}' — {{ gol.nombre_jugador }}
@@ -301,7 +295,7 @@
         </div>
       </div>
       <div class="modal-footer bg-light">
-        <button class="btn btn-secondary" (click)="cerrarModalActa()">Cerrar</button>
+        <button class="btn btn-secondary" (click)="cerrarModalActa()">{{ 'CLASIFICACION_PAGE.MODAL_CLOSE' | translate }}</button>
       </div>
     </div>
   </div>
@@ -313,7 +307,7 @@
   <div class="modal-dialog modal-xl modal-dialog-centered" style="max-width: 95%;">
     <div class="modal-content">
       <div class="modal-header" style="background: var(--sph-night); color:#fff;">
-        <h5 class="modal-title">📄 Acta del partido</h5>
+        <h5 class="modal-title">📄 {{ 'CLASIFICACION_PAGE.MODAL_ACTA_IFRAME_TITLE' | translate }}</h5>
         <button type="button" class="btn-close btn-close-white" (click)="cerrarModalActa2()"></button>
       </div>
       <div class="modal-body p-0" style="height: 90vh;">

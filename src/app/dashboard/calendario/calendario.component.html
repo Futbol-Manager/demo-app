@@ -286,7 +286,7 @@
             </button>
             <button type="button" class="new-activity-option new-activity-option--disabled" disabled>
               <i class="bi bi-person-walking"></i>
-              <span>Sesión Individual</span>
+              <span>{{ 'CAL.TEXT_402' | translate }}</span>
               <span class="badge-proximamente">{{ 'CAL.PROXIMAMENTE' | translate }}</span>
             </button>
           </div>
@@ -342,21 +342,21 @@
               <button type="button" *ngIf="profileId !== 3" class="saas-btn saas-btn-info"
                 (click)="openFormSelector('pre-training', trainingSession.trainingSessionId)">
                 <i class="bi bi-clipboard-plus"></i>
-                <span>PRE-Entrenamiento</span>
+                <span>{{ 'CAL.TEXT_403' | translate }}</span>
               </button>
 
               <!-- POST-Entrenamiento: asignar formulario a players -->
               <button type="button" *ngIf="profileId !== 3" class="saas-btn saas-btn-info"
                 (click)="openFormSelector('post-training', trainingSession.trainingSessionId)">
                 <i class="bi bi-clipboard-check"></i>
-                <span>POST-Entrenamiento</span>
+                <span>{{ 'CAL.TEXT_404' | translate }}</span>
               </button>
 
               <!-- Análisis del entrenador: debrief del coach para el club -->
               <button type="button" *ngIf="profileId !== 3" class="saas-btn saas-btn-warning"
                 (click)="router.navigate(['/dashboard/debrief', 'training', teamId, trainingSession.trainingSessionId])">
                 <i class="bi bi-clipboard-pulse"></i>
-                <span>Análisis del entrenador</span>
+                <span>{{ 'CAL.TEXT_405' | translate }}</span>
               </button>
 
               <!-- PLAYER: formularios asignados por el coach -->
@@ -364,12 +364,12 @@
                 <button type="button" class="saas-btn saas-btn-info"
                   (click)="openPlayerForm('pre-training', trainingSession.trainingSessionId)">
                   <i class="bi bi-clipboard-plus"></i>
-                  <span>Formulario PRE</span>
+                  <span>{{ 'CAL.TEXT_406' | translate }}</span>
                 </button>
                 <button type="button" class="saas-btn saas-btn-info"
                   (click)="openPlayerForm('post-training', trainingSession.trainingSessionId)">
                   <i class="bi bi-clipboard-check"></i>
-                  <span>Formulario POST</span>
+                  <span>{{ 'CAL.TEXT_407' | translate }}</span>
                 </button>
               </ng-container>
 
@@ -418,7 +418,7 @@
             <div class="form-row-2col">
               <!-- HORA INICIO -->
               <div class="form-card compact">
-                <h6>Hora de inicio</h6>
+                <h6>{{ 'CAL.TEXT_408' | translate }}</h6>
                 <input type="time" class="form-control saas-input"
                   [(ngModel)]="trainingSession.startTime" name="startTime"
                   [readonly]="profileId === 3"
@@ -427,7 +427,7 @@
 
               <!-- HORA FIN -->
               <div class="form-card compact">
-                <h6>Hora de fin</h6>
+                <h6>{{ 'CAL.TEXT_409' | translate }}</h6>
                 <input type="time" class="form-control saas-input"
                   [(ngModel)]="trainingSession.endTime" name="endTime"
                   [readonly]="profileId === 3"
@@ -767,7 +767,7 @@
           <div class="form-header text-center">
             <h4>
               <i class="bi bi-person-walking me-2" [style.color]="getIndividualColor(selectedIndividualSession!.activityType)"></i>
-              Sesión Individual
+              {{ 'CAL.TEXT_402' | translate }}
             </h4>
             <p class="text-muted small mb-0">{{ daySession | date:'dd/MM/yyyy' }}</p>
           </div>
@@ -812,111 +812,182 @@
         <!-- ============================= -->
         <div *ngIf="mode === 'create-partido' || mode === 'view-partido'" class="content-scroll">
 
-          <!-- HEADER -->
-          <div class="detail-header">
-            <h5 class="modal-title">
-              {{ isCreate ? ('CAL.TEXT_070' | translate) : (('CAL.TEXT_066' | translate) + ' ' + daySession) }}
-            </h5>
+          <!-- HEADER — modo vista: hero card con deporte y rival -->
+          <div class="match-hero" *ngIf="isView">
+            <div class="match-hero-left">
+              <span class="match-hero-emoji">{{ sportConfig.emoji }}</span>
+              <div class="match-hero-info">
+                <h4 class="match-hero-rival">{{ match.rivalName || ('CAL.TEXT_066' | translate) }}</h4>
+                <p class="match-hero-meta">
+                  <span>{{ daySession }}</span>
+                  <ng-container *ngIf="match.tipoPartido">
+                    <span class="match-hero-dot">·</span>
+                    <span>{{ match.tipoPartido }}</span>
+                  </ng-container>
+                </p>
+              </div>
+            </div>
+            <span class="match-status-badge"
+              [class.msb-today]="isMatchToday"
+              [class.msb-past]="isMatchPast && !isMatchToday"
+              [class.msb-upcoming]="!isMatchPast">
+              <i class="bi"
+                [class.bi-sun-fill]="isMatchToday"
+                [class.bi-check-circle-fill]="isMatchPast && !isMatchToday"
+                [class.bi-calendar-event]="!isMatchPast"></i>
+              {{ isMatchToday ? 'HOY' : (isMatchPast ? 'Jugado' : 'Próximo') }}
+            </span>
           </div>
+
+          <!-- HEADER — modo crear -->
+          <div class="detail-header" *ngIf="isCreate">
+            <h5 class="modal-title">{{ 'CAL.TEXT_070' | translate }}</h5>
+          </div>
+
           <div>
             <!-- ACCIONES PARTIDO -->
 
-            <div class="saas-action-bar" *ngIf="isView">
-              <!-- ================= PRE / POST PARTIDO ================= -->
-              <div *ngIf="(usuarioActual!.profileType.profileId === 1 || usuarioActual!.profileType.profileId === 2)
-            && match.matchPreparationId !== 0" class="action-group">
-                <button type="button" class="saas-btn saas-btn-outline"
-                  (click)="openModalPrePartido(match.matchPreparationId)">
-                  <i class="bi bi-clipboard-check"></i>
-                  {{ 'CAL.TEXT_097' | translate }}
-                </button>
-                <button type="button" class="saas-btn saas-btn-success"
-                  (click)="openModalPostMatch(match.matchPreparationId)">
-                  <i class="bi bi-graph-up"></i>
-                  {{ 'CAL.TEXT_098' | translate }}
-                </button>
-              </div>
+            <!-- ═══════════════════════════════════════════════════ -->
+            <!-- MATCH ACTION BAR — fila única pro                   -->
+            <!-- ═══════════════════════════════════════════════════ -->
+            <div class="match-action-bar" *ngIf="isView">
 
-              <!-- ================= JUGADORES ================= -->
-              <div *ngIf="usuarioActual!.profileType.profileId === 3 || usuarioActual!.profileType.profileId === 4"
-                class="action-group">
-                <button type="button" class="saas-btn saas-btn-outline"
-                  (click)="openModalFormPrePartido(match.matchPreparationId)">
-                  <i class="bi bi-clipboard"></i>
-                  {{ 'CAL.TEXT_097' | translate }}
-                </button>
-                <button type="button" class="saas-btn saas-btn-success"
-                  (click)="openModalFormPostPartido(match.matchPreparationId)">
-                  <i class="bi bi-check-circle"></i>
-                  {{ 'CAL.TEXT_098' | translate }}
-                </button>
-              </div>
-
-              <!-- ================= CONVOCATORIA ================= -->
-              <div class="action-group">
-                <button *ngIf="usuarioActual!.profileType.profileId < 3" type="button" class="saas-btn saas-btn-primary"
-                  (click)="abrirModalConvocatoria()">
-                  <i class="bi bi-people"></i>
-                  {{ 'CAL.TEXT_099' | translate }}
-                </button>
-                <button *ngIf="usuarioActual!.profileType.profileId > 2" type="button" class="saas-btn saas-btn-outline"
-                  (click)="abrirModalConvocatoriaLista(match.matchPreparationId)">
-                  <i class="bi bi-card-list"></i>
-                  {{ 'CAL.TEXT_099' | translate }}
-                </button>
-              </div>
-
-              <!-- ================= POST + PDF ================= -->
-              <div class="action-group">
-                <button *ngIf="usuarioActual!.profileType.profileId < 3" type="button" class="saas-btn saas-btn-success"
-                  (click)="openPostPartido(match.matchPreparationId)">
-                  <i class="bi bi-trophy"></i>
-                  {{ 'CAL.TEXT_100' | translate }}
-                </button>
-
-                <button *ngIf="usuarioActual!.profileType.profileId === 2" type="button"
-                  class="saas-btn saas-btn-outline" (click)="abrirModalPDF()">
-                  <i class="bi bi-file-earmark-pdf"></i>
-                  {{ 'CAL.TEXT_101' | translate }}
-                </button>
-              </div>
-
-              <!-- ================= FORMULARIOS PRE/POST PARTIDO + ANÁLISIS ================= -->
-              <div class="action-group"
-                   *ngIf="usuarioActual!.profileType.profileId === 2 && match.matchPreparationId !== 0">
-                <!-- PRE-Partido: asignar formulario a players -->
-                <button type="button" class="saas-btn saas-btn-info"
+              <!-- ── Formularios PRE/POST (Coach/Admin) ── -->
+              <ng-container *ngIf="(usuarioActual!.profileType.profileId === 1 || usuarioActual!.profileType.profileId === 2) && match.matchPreparationId !== 0">
+                <button type="button" class="mab-btn mab-info"
+                  title="Asignar formulario PRE a los jugadores"
                   (click)="openFormSelector('pre-match', match.matchPreparationId)">
                   <i class="bi bi-clipboard-plus"></i>
-                  PRE-Partido
+                  <span>{{ 'CAL.TEXT_097' | translate }}</span>
                 </button>
-                <!-- POST-Partido: asignar formulario a players -->
-                <button type="button" class="saas-btn saas-btn-info"
+                <button type="button" class="mab-btn mab-info"
+                  title="Asignar formulario POST a los jugadores"
                   (click)="openFormSelector('post-match', match.matchPreparationId)">
                   <i class="bi bi-clipboard-check"></i>
-                  POST-Partido
+                  <span>{{ 'CAL.TEXT_098' | translate }}</span>
                 </button>
-                <!-- Análisis del entrenador: debrief del coach para el club -->
-                <button type="button" class="saas-btn saas-btn-warning"
-                  (click)="router.navigate(['/dashboard/debrief', 'match', teamId, match.matchPreparationId])">
-                  <i class="bi bi-clipboard-pulse"></i>
-                  Análisis del entrenador
-                </button>
-              </div>
+                <span class="mab-sep"></span>
+              </ng-container>
 
-              <!-- PLAYER: formularios asignados por el coach -->
-              <div class="action-group" *ngIf="usuarioActual!.profileType.profileId === 3 && match.matchPreparationId !== 0">
-                <button type="button" class="saas-btn saas-btn-info"
+              <!-- ── Formularios PRE/POST (Jugador) ── -->
+              <ng-container *ngIf="usuarioActual!.profileType.profileId === 3 || usuarioActual!.profileType.profileId === 4">
+                <button type="button" class="mab-btn mab-info"
+                  title="{{ 'CAL.TEXT_097' | translate }}"
+                  (click)="openModalFormPrePartido(match.matchPreparationId)">
+                  <i class="bi bi-clipboard"></i>
+                  <span>{{ 'CAL.TEXT_097' | translate }}</span>
+                </button>
+                <button type="button" class="mab-btn mab-info"
+                  title="{{ 'CAL.TEXT_098' | translate }}"
+                  (click)="openModalFormPostPartido(match.matchPreparationId)">
+                  <i class="bi bi-check-circle"></i>
+                  <span>{{ 'CAL.TEXT_098' | translate }}</span>
+                </button>
+                <span class="mab-sep"></span>
+              </ng-container>
+
+              <!-- ── Formularios asignados (solo perfil jugador) ── -->
+              <ng-container *ngIf="usuarioActual!.profileType.profileId === 3 && match.matchPreparationId !== 0">
+                <button type="button" class="mab-btn mab-outline"
+                  title="Ver formulario PRE asignado por el entrenador"
                   (click)="openPlayerForm('pre-match', match.matchPreparationId)">
                   <i class="bi bi-clipboard-plus"></i>
-                  Formulario PRE
+                  <span>{{ 'CAL.TEXT_406' | translate }}</span>
                 </button>
-                <button type="button" class="saas-btn saas-btn-info"
+                <button type="button" class="mab-btn mab-outline"
+                  title="Ver formulario POST asignado por el entrenador"
                   (click)="openPlayerForm('post-match', match.matchPreparationId)">
                   <i class="bi bi-clipboard-check"></i>
-                  Formulario POST
+                  <span>{{ 'CAL.TEXT_407' | translate }}</span>
                 </button>
+                <span class="mab-sep"></span>
+              </ng-container>
+
+              <!-- ── Convocatoria ── -->
+              <button *ngIf="usuarioActual!.profileType.profileId < 3" type="button" class="mab-btn mab-primary"
+                title="{{ 'CAL.TEXT_099' | translate }}"
+                (click)="abrirModalConvocatoria()">
+                <i class="bi bi-people"></i>
+                <span>{{ 'CAL.TEXT_099' | translate }}</span>
+              </button>
+              <button *ngIf="usuarioActual!.profileType.profileId > 2" type="button" class="mab-btn mab-outline"
+                title="{{ 'CAL.TEXT_099' | translate }}"
+                (click)="abrirModalConvocatoriaLista(match.matchPreparationId)">
+                <i class="bi bi-card-list"></i>
+                <span>{{ 'CAL.TEXT_099' | translate }}</span>
+              </button>
+
+              <span class="mab-sep" *ngIf="usuarioActual!.profileType.profileId < 3"></span>
+
+              <!-- ── Post Partido + Imprimir ── -->
+              <ng-container *ngIf="usuarioActual!.profileType.profileId < 3">
+                <button type="button" class="mab-btn mab-success"
+                  [disabled]="!isMatchPast"
+                  [title]="isMatchPast ? ('CAL.TEXT_100' | translate) : 'Disponible a partir de la fecha del partido'"
+                  (click)="openPostPartido(match.matchPreparationId)">
+                  <i class="bi bi-trophy"></i>
+                  <span>{{ 'CAL.TEXT_100' | translate }}</span>
+                </button>
+                <button *ngIf="usuarioActual!.profileType.profileId === 2" type="button" class="mab-btn mab-outline"
+                  [disabled]="!isMatchPast"
+                  [title]="isMatchPast ? ('CAL.TEXT_101' | translate) : 'Disponible a partir de la fecha del partido'"
+                  (click)="abrirModalPDF()">
+                  <i class="bi bi-file-earmark-pdf"></i>
+                  <span>{{ 'CAL.TEXT_101' | translate }}</span>
+                </button>
+              </ng-container>
+
+              <!-- ── Análisis del entrenador ── -->
+              <ng-container *ngIf="usuarioActual!.profileType.profileId === 2 && match.matchPreparationId !== 0">
+                <span class="mab-sep"></span>
+                <button type="button" class="mab-btn mab-warning"
+                  title="Análisis post-partido del entrenador (debrief)"
+                  (click)="router.navigate(['/dashboard/debrief', 'match', teamId, match.matchPreparationId])">
+                  <i class="bi bi-clipboard-pulse"></i>
+                  <span>Análisis</span>
+                </button>
+              </ng-container>
+
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════ -->
+            <!-- INFO STRIP — chips contextuales del partido          -->
+            <!-- ═══════════════════════════════════════════════════ -->
+            <div class="match-info-strip" *ngIf="isView">
+
+              <div class="mis-chip" *ngIf="match.tipoPartido">
+                <i class="bi bi-trophy"></i>
+                <span>{{ match.tipoPartido }}</span>
               </div>
+
+              <div class="mis-chip" *ngIf="match.terreno">
+                <i class="bi bi-house-door"></i>
+                <span>{{ match.terreno }}</span>
+              </div>
+
+              <div class="mis-chip mis-chip--location" *ngIf="match.lugar?.trim()">
+                <i class="bi bi-geo-alt"></i>
+                <span class="mis-chip-text">{{ match.lugar }}</span>
+              </div>
+
+              <div class="mis-chip" *ngIf="match.horaEmpieza">
+                <i class="bi bi-clock"></i>
+                <span>{{ match.horaEmpieza }}:{{ match.minutosEmpieza }}</span>
+              </div>
+
+              <div class="mis-chip mis-chip--periods" *ngIf="sportConfig.matchPeriods">
+                <i class="bi bi-hourglass-split"></i>
+                <span>
+                  {{ sportConfig.matchPeriods.count }}×
+                  <ng-container *ngIf="sportConfig.matchPeriods.durationMin">{{ sportConfig.matchPeriods.durationMin }}min</ng-container>
+                  ({{ sportConfig.matchPeriods.label }})
+                </span>
+              </div>
+
+              <div class="mis-chip mis-chip--sport">
+                <span>{{ sportConfig.fieldName }}</span>
+              </div>
+
             </div>
 
             <!-- FORM -->
@@ -959,21 +1030,24 @@
               <!-- TABS -->
               <div class="tabs-header">
                 <!-- TABS -->
-                <ul class="nav nav-tabs" id="matchTabs" role="tablist">
+                <ul class="nav match-tabs" id="matchTabs" role="tablist">
                   <li class="nav-item">
-                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-general" type="button">
+                    <button class="mt-link active" data-bs-toggle="tab" data-bs-target="#tab-general" type="button">
+                      <i class="bi bi-info-circle"></i>
                       {{ 'CAL.TEXT_071' | translate }}
                     </button>
                   </li>
 
                   <li class="nav-item" *ngIf="canShowTabs">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-rival" type="button">
+                    <button class="mt-link" data-bs-toggle="tab" data-bs-target="#tab-rival" type="button">
+                      <i class="bi bi-shield"></i>
                       {{ 'CAL.TEXT_085' | translate }}
                     </button>
                   </li>
 
                   <li class="nav-item" *ngIf="canShowTabs">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-plan" type="button">
+                    <button class="mt-link" data-bs-toggle="tab" data-bs-target="#tab-plan" type="button">
+                      <i class="bi bi-person-check"></i>
                       {{ 'CAL.TEXT_086' | translate }}
                     </button>
                   </li>
@@ -1104,81 +1178,134 @@
                 <!-- ================= TAB RIVAL ================= -->
                 <div class="tab-pane fade" id="tab-rival" *ngIf="canShowTabs">
 
-                  <div class="row mt-3">
-                    <div class="col-md-4">
-                      <textarea class="form-control saas-input auto-grow" rows="1" (input)="autoGrow($event)"
+                  <div class="rival-fields-grid">
+
+                    <div class="rfc">
+                      <label class="rfc-label">
+                        <i class="bi bi-arrow-up-circle-fill rfc-icon rfc-icon--green"></i>
+                        {{ 'CAL.TEXT_006' | translate }}
+                      </label>
+                      <textarea class="form-control saas-input auto-grow rfc-textarea" rows="3" (input)="autoGrow($event)"
                         [(ngModel)]="match.puntosFuertesRival" name="puntosFuertesRival" [readonly]="isView && !isEdit"
-                        placeholder="{{ 'CAL.TEXT_006' | translate }}"></textarea>
+                        placeholder="{{ 'CAL.PH_RIVAL_STRENGTHS' | translate }}"></textarea>
                     </div>
 
-                    <div class="col-md-4">
-                      <textarea class="form-control saas-input auto-grow" rows="1" (input)="autoGrow($event)"
+                    <div class="rfc">
+                      <label class="rfc-label">
+                        <i class="bi bi-arrow-down-circle-fill rfc-icon rfc-icon--red"></i>
+                        {{ 'CAL.TEXT_007' | translate }}
+                      </label>
+                      <textarea class="form-control saas-input auto-grow rfc-textarea" rows="3" (input)="autoGrow($event)"
                         [(ngModel)]="match.puntosDebilesRival" name="puntosDebilesRival" [readonly]="isView && !isEdit"
-                        placeholder="{{ 'CAL.TEXT_007' | translate }}"></textarea>
+                        placeholder="{{ 'CAL.PH_RIVAL_WEAKNESSES' | translate }}"></textarea>
                     </div>
 
-                    <div class="col-md-4">
-                      <textarea class="form-control saas-input auto-grow" rows="1" (input)="autoGrow($event)"
+                    <div class="rfc">
+                      <label class="rfc-label">
+                        <i class="bi bi-person-badge-fill rfc-icon rfc-icon--blue"></i>
+                        {{ 'CAL.TEXT_008' | translate }}
+                      </label>
+                      <textarea class="form-control saas-input auto-grow rfc-textarea" rows="3" (input)="autoGrow($event)"
                         [(ngModel)]="match.jugadoresClaveRival" name="jugadoresClaveRival"
-                        [readonly]="isView && !isEdit" placeholder="{{ 'CAL.TEXT_008' | translate }}"></textarea>
+                        [readonly]="isView && !isEdit" placeholder="{{ 'CAL.PH_RIVAL_PLAYERS' | translate }}"></textarea>
                     </div>
-                  </div>
-                  <div class="row mt-3">
-                    <div class="col-12 col-md-4 mt-3">
-                      <textarea class="form-control saas-input auto-grow" rows="1" (input)="autoGrow($event)"
+
+                    <div class="rfc">
+                      <label class="rfc-label">
+                        <i class="bi bi-diagram-3-fill rfc-icon rfc-icon--purple"></i>
+                        {{ 'CAL.TEXT_009' | translate }}
+                      </label>
+                      <textarea class="form-control saas-input auto-grow rfc-textarea" rows="3" (input)="autoGrow($event)"
                         id="estiloJuegoRival" name="estiloJuegoRival" [(ngModel)]="match.estiloJuegoRival"
-                        [readonly]="isView && !isEdit" placeholder="{{ 'CAL.TEXT_009' | translate }}"></textarea>
+                        [readonly]="isView && !isEdit" placeholder="{{ 'CAL.PH_RIVAL_STYLE' | translate }}"></textarea>
                     </div>
-                    <div class="col-12 col-md-4 mt-3">
-                      <textarea class="form-control saas-input auto-grow" rows="1" (input)="autoGrow($event)"
+
+                    <div class="rfc">
+                      <label class="rfc-label">
+                        <i class="bi bi-calendar-check-fill rfc-icon rfc-icon--teal"></i>
+                        {{ 'CAL.TEXT_010' | translate }}
+                      </label>
+                      <textarea class="form-control saas-input auto-grow rfc-textarea" rows="3" (input)="autoGrow($event)"
                         id="ultimosResultadosRival" name="ultimosResultadosRival" [readonly]="isView && !isEdit"
                         [(ngModel)]="match.ultimosResultadosRival"
-                        placeholder="{{ 'CAL.TEXT_010' | translate }}"></textarea>
+                        placeholder="{{ 'CAL.PH_RIVAL_RESULTS' | translate }}"></textarea>
                     </div>
-                    <div class="col-12 col-md-4 mt-3">
-                      <textarea class="form-control saas-input auto-grow" rows="1" (input)="autoGrow($event)"
+
+                    <div class="rfc">
+                      <label class="rfc-label">
+                        <i class="bi bi-grid-3x3-gap-fill rfc-icon rfc-icon--dark"></i>
+                        {{ rivalFormationsLabelKey | translate }}
+                      </label>
+                      <textarea class="form-control saas-input auto-grow rfc-textarea" rows="3" (input)="autoGrow($event)"
                         id="formacionesRecientesRival" name="formacionesRecientesRival" [readonly]="isView && !isEdit"
                         [(ngModel)]="match.formacionesRecientesRival"
-                        placeholder="{{ 'CAL.TEXT_011' | translate }}"></textarea>
+                        placeholder="{{ 'CAL.PH_RIVAL_FORMATIONS' | translate }}"></textarea>
                     </div>
-                  </div>
-                  <div class="row mt-3">
-                    <div class="col-12 col-md-4 mt-3">
-                      <textarea class="form-control saas-input auto-grow" rows="1" (input)="autoGrow($event)"
+
+                    <div class="rfc">
+                      <label class="rfc-label">
+                        <i class="bi bi-lightning-fill rfc-icon rfc-icon--orange"></i>
+                        {{ 'CAL.TEXT_012' | translate }}
+                      </label>
+                      <textarea class="form-control saas-input auto-grow rfc-textarea" rows="3" (input)="autoGrow($event)"
                         id="patronesOfensivosRival" name="patronesOfensivosRival" [readonly]="isView && !isEdit"
                         [(ngModel)]="match.patronesOfensivosRival"
-                        placeholder="{{ 'CAL.TEXT_012' | translate }}"></textarea>
+                        placeholder="{{ 'CAL.PH_RIVAL_OFFENSIVE_PATTERNS' | translate }}"></textarea>
                     </div>
-                    <div class="col-12 col-md-4 mt-3">
-                      <textarea class="form-control saas-input auto-grow" rows="1" (input)="autoGrow($event)"
+
+                    <div class="rfc">
+                      <label class="rfc-label">
+                        <i class="bi bi-shield-fill-check rfc-icon rfc-icon--dark"></i>
+                        {{ 'CAL.TEXT_013' | translate }}
+                      </label>
+                      <textarea class="form-control saas-input auto-grow rfc-textarea" rows="3" (input)="autoGrow($event)"
                         id="patronesDefensivosRival" name="patronesDefensivosRival" [readonly]="isView && !isEdit"
                         [(ngModel)]="match.patronesDefensivosRival"
-                        placeholder="{{ 'CAL.TEXT_013' | translate }}"></textarea>
+                        placeholder="{{ 'CAL.PH_RIVAL_DEFENSIVE_PATTERNS' | translate }}"></textarea>
                     </div>
-                    <div class="col-12 col-md-4 mt-3">
-                      <textarea class="form-control saas-input auto-grow" rows="1" (input)="autoGrow($event)"
+
+                    <div class="rfc">
+                      <label class="rfc-label">
+                        <i class="bi bi-graph-up-arrow rfc-icon rfc-icon--amber"></i>
+                        {{ 'CAL.TEXT_014' | translate }}
+                      </label>
+                      <textarea class="form-control saas-input auto-grow rfc-textarea" rows="3" (input)="autoGrow($event)"
                         id="estadisticasRival" name="estadisticasRival" [(ngModel)]="match.estadisticasRival"
                         [readonly]="isView && !isEdit" placeholder="{{ 'CAL.TEXT_014' | translate }}"></textarea>
                     </div>
-                  </div>
-                  <div class="row mt-3">
-                    <div class="col-12 col-md-4 mt-3">
-                      <textarea class="form-control saas-input auto-grow" rows="1" (input)="autoGrow($event)"
+
+                    <div class="rfc">
+                      <label class="rfc-label">
+                        <i class="bi bi-arrow-repeat rfc-icon rfc-icon--teal"></i>
+                        {{ 'CAL.TEXT_015' | translate }}
+                      </label>
+                      <textarea class="form-control saas-input auto-grow rfc-textarea" rows="3" (input)="autoGrow($event)"
                         id="tendenciasTacticasRival" name="tendenciasTacticasRival" [readonly]="isView && !isEdit"
                         [(ngModel)]="match.tendenciasTacticasRival"
-                        placeholder="{{ 'CAL.TEXT_015' | translate }}"></textarea>
+                        placeholder="{{ 'CAL.PH_RIVAL_TRENDS' | translate }}"></textarea>
                     </div>
-                    <div class="col-12 col-md-4 mt-3">
-                      <textarea class="form-control saas-input auto-grow" rows="1" (input)="autoGrow($event)"
+
+                    <div class="rfc">
+                      <label class="rfc-label">
+                        <i class="bi bi-person-lines-fill rfc-icon rfc-icon--purple"></i>
+                        {{ 'CAL.TEXT_016' | translate }}
+                      </label>
+                      <textarea class="form-control saas-input auto-grow rfc-textarea" rows="3" (input)="autoGrow($event)"
                         id="datosIndividualesRival" name="datosIndividualesRival" [readonly]="isView && !isEdit"
                         [(ngModel)]="match.datosIndividualesRival"
-                        placeholder="{{ 'CAL.TEXT_016' | translate }}"></textarea>
+                        placeholder="{{ 'CAL.PH_RIVAL_KEY_DATA' | translate }}"></textarea>
                     </div>
-                    <div class="col-12 col-md-4 mt-3">
-                      <textarea class="form-control saas-input auto-grow" rows="1" (input)="autoGrow($event)"
+
+                    <div class="rfc">
+                      <label class="rfc-label">
+                        <i class="bi bi-bullseye rfc-icon rfc-icon--dark"></i>
+                        {{ rivalAbpLabelKey | translate }}
+                      </label>
+                      <textarea class="form-control saas-input auto-grow rfc-textarea" rows="3" (input)="autoGrow($event)"
                         id="abpsRival" name="abpsRival" [readonly]="isView && !isEdit" [(ngModel)]="match.abpsRival"
                         placeholder="{{ 'CAL.TEXT_017' | translate }}"></textarea>
                     </div>
+
                   </div>
 
                 </div>

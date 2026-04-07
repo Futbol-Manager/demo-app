@@ -114,6 +114,18 @@ export class TutorialService {
     this.screens.set('staff-club-de', this.getStaffClubStepsDe());
     this.screens.set('staff-club-pt', this.getStaffClubStepsPt());
     this.screens.set('staff-club-it', this.getStaffClubStepsIt());
+    this.screens.set('tienda-club', this.getClubShopSteps());
+    this.screens.set('tienda-club-en', this.getClubShopStepsEn());
+    this.screens.set('tienda-club-fr', this.getClubShopStepsFr());
+    this.screens.set('tienda-club-de', this.getClubShopStepsDe());
+    this.screens.set('tienda-club-pt', this.getClubShopStepsPt());
+    this.screens.set('tienda-club-it', this.getClubShopStepsIt());
+    this.screens.set('club-post', this.getClubPostSteps());
+    this.screens.set('club-post-en', this.getClubPostStepsEn());
+    this.screens.set('club-post-fr', this.getClubPostStepsFr());
+    this.screens.set('club-post-de', this.getClubPostStepsDe());
+    this.screens.set('club-post-pt', this.getClubPostStepsPt());
+    this.screens.set('club-post-it', this.getClubPostStepsIt());
     this.screens.set('scouting-club', this.getScoutingClubSteps());
     this.screens.set('scouting-club-en', this.getScoutingClubStepsEn());
     this.screens.set('scouting-club-fr', this.getScoutingClubStepsFr());
@@ -494,6 +506,22 @@ export class TutorialService {
         text: 'Y el Asistente de IA: siempre disponible en todas las pantallas. Hazle preguntas, pídele informes, sesiones de entrenamiento o convocatorias. Lo tienes en el botón circular de la esquina.',
         audioFile: 'inicio_13.mp3',
         targetSelector: '[data-tutorial="inicio-asistente-ia"]',
+        position: 'left'
+      },
+      {
+        id: 'inicio-redes-sociales',
+        title: 'Redes Sociales',
+        text: 'Gestiona la presencia digital de tu club desde aqu\u00ed. Puedes ver todas las publicaciones en Facebook, Instagram y Twitter, programar nuevo contenido y consultar cu\u00e1ntas personas interact\u00faan con cada post. Tu comunidad, siempre informada y conectada.',
+        audioFile: 'inicio_redes.mp3',
+        targetSelector: '[data-tutorial="inicio-redes-sociales"]',
+        position: 'left'
+      },
+      {
+        id: 'inicio-tienda',
+        title: 'Tienda del Club',
+        text: 'El espacio oficial de merchandising de tu club. Publica camisetas, ch\u00e1ndales, bufandas y todo tipo de art\u00edculos oficiales para que los socios y las familias los vean y los pidan directamente. Un cat\u00e1logo digital con precios, im\u00e1genes y gesti\u00f3n de pedidos, todo en uno.',
+        audioFile: 'inicio_tienda.mp3',
+        targetSelector: '[data-tutorial="inicio-tienda"]',
         position: 'left'
       },
       {
@@ -944,6 +972,22 @@ export class TutorialService {
         position: 'left'
       },
       {
+        id: 'inicio-redes-sociales',
+        title: 'Social Media',
+        text: "Manage your club's digital presence all in one place. View posts across Facebook, Instagram and Twitter, schedule new content, and check how each publication is performing. Keep your community informed and engaged.",
+        audioFile: 'inicio_redes_en.mp3',
+        targetSelector: '[data-tutorial="inicio-redes-sociales"]',
+        position: 'left'
+      },
+      {
+        id: 'inicio-tienda',
+        title: 'Club Shop',
+        text: "Your club's official merchandise space. List shirts, tracksuits, scarves and any official item so supporters and families can browse and order directly. A digital catalogue with prices, photos and order management, all in one place.",
+        audioFile: 'inicio_tienda_en.mp3',
+        targetSelector: '[data-tutorial="inicio-tienda"]',
+        position: 'left'
+      },
+      {
         id: 'inicio-app-movil',
         title: '📱 Download the app — take your club everywhere',
         text: 'Did you know Sphaira has a mobile app available for iPhone and Android? Review call-ups from the touchline, manage payments between meetings, check live stats, and receive instant alerts. The mobile experience is much faster and more convenient than the browser. Download it by searching Sphaira in the App Store or Google Play.',
@@ -1166,6 +1210,8 @@ export class TutorialService {
       { id: 'inicio-biblioteca-videos', title: 'Vidéothèque', text: 'Vidéothèque : votre médiathèque dans le cloud. Téléchargez des enregistrements, liez YouTube ou Vimeo et organisez tout par équipe ou saison. Tout le contenu audiovisuel du club, toujours à portée de main.', audioFile: 'inicio_11_fr.mp3', targetSelector: '[data-tutorial="inicio-biblioteca-videos"]', position: 'left' },
       { id: 'inicio-video-analysis', title: 'Analyse vidéo', text: 'Analyse vidéo : allez encore plus loin. Créez des sessions tactiques sur vos enregistrements, ajoutez des annotations, dessinez sur le terrain et extrayez des clips à partager avec le staff technique.', audioFile: 'inicio_12_fr.mp3', targetSelector: '[data-tutorial="inicio-video-analysis"]', position: 'left' },
       { id: 'inicio-asistente-ia', title: 'Assistant IA', text: 'Et l\'Assistant IA : toujours disponible sur tous les écrans. Posez des questions, demandez des rapports, des séances d\'entraînement ou des convocations. Retrouvez-le dans le bouton circulaire dans le coin.', audioFile: 'inicio_13_fr.mp3', targetSelector: '[data-tutorial="inicio-asistente-ia"]', position: 'left' },
+      { id: 'inicio-redes-sociales', title: 'R\u00e9seaux Sociaux', text: 'G\u00e9rez la pr\u00e9sence digitale de votre club depuis cet espace. Consultez les publications sur Facebook, Instagram et Twitter, programmez du nouveau contenu et suivez les performances de chaque post. Votre communaut\u00e9, toujours inform\u00e9e et connect\u00e9e.', audioFile: 'inicio_redes_fr.mp3', targetSelector: '[data-tutorial="inicio-redes-sociales"]', position: 'left' },
+      { id: 'inicio-tienda', title: 'Boutique du Club', text: 'L\'espace officiel de merchandising de votre club. Publiez maillots, surv\u00eatements, \u00e9charpes et tout article officiel pour que supporters et familles les consultent et commandent directement. Un catalogue digital avec prix, photos et gestion des commandes int\u00e9gr\u00e9e.', audioFile: 'inicio_tienda_fr.mp3', targetSelector: '[data-tutorial="inicio-tienda"]', position: 'left' },
       { id: 'inicio-app-movil', title: '📱 Téléchargez l\'app — emportez votre club partout', text: 'Saviez-vous que Sphaira dispose d\'une application mobile pour iPhone et Android ? Consultez les convocations depuis le banc de touche, gérez les paiements entre réunions, vérifiez les statistiques en direct et recevez des alertes instantanément. Téléchargez-la en cherchant Sphaira dans l\'App Store ou sur Google Play.', audioFile: 'inicio_14_fr.mp3', position: 'bottom' },
       { id: 'inicio-fin', title: 'Terminé', text: 'Vous connaissez maintenant votre tableau de bord club. Explorez n\'importe quel module quand vous le souhaitez, et si vous avez besoin d\'aide, le bouton d\'aide sur chaque écran est là pour vous. Tirez le meilleur parti de Sphaira !', audioFile: 'inicio_15_fr.mp3', position: 'bottom' },
     ];
@@ -1225,6 +1271,8 @@ export class TutorialService {
       { id: 'inicio-biblioteca-videos', title: 'Videothek', text: 'Videothek: Ihr cloudbasierter Medienspeicher. Laden Sie Aufnahmen hoch, verlinken Sie YouTube oder Vimeo und organisieren Sie alles nach Team oder Saison. Das gesamte audiovisuelle Material des Vereins, stets griffbereit.', audioFile: 'inicio_11_de.mp3', targetSelector: '[data-tutorial="inicio-biblioteca-videos"]', position: 'left' },
       { id: 'inicio-video-analysis', title: 'Videoanalyse', text: 'Videoanalyse: Gehen Sie einen Schritt weiter. Erstellen Sie taktische Sitzungen zu Ihren Aufnahmen, fügen Sie Anmerkungen hinzu, zeichnen Sie auf dem Spielfeld und extrahieren Sie Clips zum Teilen mit dem Trainerstab.', audioFile: 'inicio_12_de.mp3', targetSelector: '[data-tutorial="inicio-video-analysis"]', position: 'left' },
       { id: 'inicio-asistente-ia', title: 'KI-Assistent', text: 'Und der KI-Assistent: auf jedem Bildschirm immer verfügbar. Stellen Sie Fragen, fordern Sie Berichte, Trainingseinheiten oder Kaderberufungen an. Sie finden ihn im runden Knopf in der Ecke.', audioFile: 'inicio_13_de.mp3', targetSelector: '[data-tutorial="inicio-asistente-ia"]', position: 'left' },
+      { id: 'inicio-redes-sociales', title: 'Soziale Medien', text: 'Verwalten Sie hier die digitale Pr\u00e4senz Ihres Vereins. Sehen Sie die Beitr\u00e4ge auf Facebook, Instagram und Twitter ein, planen Sie neue Inhalte und verfolgen Sie die Leistung jedes Beitrags. Ihre Community stets informiert und vernetzt.', audioFile: 'inicio_redes_de.mp3', targetSelector: '[data-tutorial="inicio-redes-sociales"]', position: 'left' },
+      { id: 'inicio-tienda', title: 'Vereins-Shop', text: 'Der offizielle Merchandise-Bereich Ihres Vereins. Ver\u00f6ffentlichen Sie Trikots, Trainingsanz\u00fcge, Schals und alle offiziellen Artikel, damit Mitglieder und Familien sie ansehen und direkt bestellen k\u00f6nnen. Ein digitaler Katalog mit Preisen, Bildern und Bestellverwaltung in einem.', audioFile: 'inicio_tienda_de.mp3', targetSelector: '[data-tutorial="inicio-tienda"]', position: 'left' },
       { id: 'inicio-app-movil', title: '📱 App herunterladen — Verein immer dabei', text: 'Wussten Sie, dass Sphaira eine mobile App für iPhone und Android hat? Überprüfen Sie Kaderberufungen von der Seitenlinie, verwalten Sie Zahlungen zwischen Meetings und erhalten Sie sofortige Benachrichtigungen. Das mobile Erlebnis ist viel schneller und bequemer als der Browser. Laden Sie es im App Store oder auf Google Play herunter.', audioFile: 'inicio_14_de.mp3', position: 'bottom' },
       { id: 'inicio-fin', title: 'Fertig', text: 'Sie kennen jetzt Ihr Vereins-Dashboard. Erkunden Sie jedes Modul, wann immer Sie möchten, und wenn Sie Orientierung benötigen, ist die Hilfe-Schaltfläche auf jedem Bildschirm für Sie da. Holen Sie das Beste aus Sphaira heraus!', audioFile: 'inicio_15_de.mp3', position: 'bottom' },
     ];
@@ -1284,6 +1332,8 @@ export class TutorialService {
       { id: 'inicio-biblioteca-videos', title: 'Biblioteca de Vídeos', text: 'Biblioteca de Vídeos: o seu hub multimédia na nuvem. Carregue gravações, ligue o YouTube ou Vimeo e organize tudo por equipa ou época. Todo o conteúdo audiovisual do clube, sempre à mão.', audioFile: 'inicio_11_pt.mp3', targetSelector: '[data-tutorial="inicio-biblioteca-videos"]', position: 'left' },
       { id: 'inicio-video-analysis', title: 'Análise de Vídeo', text: 'Análise de Vídeo: vá mais longe. Crie sessões táticas sobre as suas gravações, adicione anotações, desenhe no campo e extraia clips para partilhar com a equipa técnica.', audioFile: 'inicio_12_pt.mp3', targetSelector: '[data-tutorial="inicio-video-analysis"]', position: 'left' },
       { id: 'inicio-asistente-ia', title: 'Assistente IA', text: 'E o Assistente IA: sempre disponível em todos os ecrãs. Faça perguntas, peça relatórios, sessões de treino ou convocatórias. Encontra-o no botão circular no canto.', audioFile: 'inicio_13_pt.mp3', targetSelector: '[data-tutorial="inicio-asistente-ia"]', position: 'left' },
+      { id: 'inicio-redes-sociales', title: 'Redes Sociais', text: 'Gira a presen\u00e7a digital do seu clube a partir daqui. Consulte as publica\u00e7\u00f5es no Facebook, Instagram e Twitter, programe novo conte\u00fado e veja o desempenho de cada publica\u00e7\u00e3o. A sua comunidade sempre informada e ligada.', audioFile: 'inicio_redes_pt.mp3', targetSelector: '[data-tutorial="inicio-redes-sociales"]', position: 'left' },
+      { id: 'inicio-tienda', title: 'Loja do Clube', text: 'O espa\u00e7o oficial de merchandising do seu clube. Publique camisolas, fatos de treino, cachec\u00f3is e qualquer artigo oficial para que adeptos e fam\u00edlias os consultem e encomendem diretamente. Um cat\u00e1logo digital com pre\u00e7os, fotos e gest\u00e3o de encomendas integrada.', audioFile: 'inicio_tienda_pt.mp3', targetSelector: '[data-tutorial="inicio-tienda"]', position: 'left' },
       { id: 'inicio-app-movil', title: '📱 Descarregue a app — leve o seu clube em todo o lado', text: 'Sabia que o Sphaira tem uma aplicação móvel disponível para iPhone e Android? Reveja convocatórias do banco de suplentes, gira pagamentos entre reuniões, consulte estatísticas em direto e receba alertas instantâneos. A experiência móvel é muito mais rápida e cómoda que o browser. Pesquise Sphaira na App Store ou no Google Play.', audioFile: 'inicio_14_pt.mp3', position: 'bottom' },
       { id: 'inicio-fin', title: 'Concluído', text: 'Já conhece o seu painel de clube. Explore qualquer módulo quando quiser e, se precisar de orientação, o botão de ajuda em cada ecrã está lá para si. Tire o máximo partido do Sphaira!', audioFile: 'inicio_15_pt.mp3', position: 'bottom' },
     ];
@@ -1343,6 +1393,8 @@ export class TutorialService {
       { id: 'inicio-biblioteca-videos', title: 'Videoteca', text: 'Videoteca: il tuo hub multimediale nel cloud. Carica registrazioni, collega YouTube o Vimeo e organizza tutto per squadra o stagione. Tutto il materiale audiovisivo del club, sempre a portata di mano.', audioFile: 'inicio_11_it.mp3', targetSelector: '[data-tutorial="inicio-biblioteca-videos"]', position: 'left' },
       { id: 'inicio-video-analysis', title: 'Analisi Video', text: 'Analisi Video: vai oltre. Crea sessioni tattiche sulle tue registrazioni, aggiungi annotazioni, disegna sul campo ed estrai clip da condividere con lo staff tecnico.', audioFile: 'inicio_12_it.mp3', targetSelector: '[data-tutorial="inicio-video-analysis"]', position: 'left' },
       { id: 'inicio-asistente-ia', title: 'Assistente IA', text: 'E l\'Assistente IA: sempre disponibile su ogni schermata. Fai domande, richiedi report, sessioni di allenamento o convocazioni. Trovalo nel pulsante circolare nell\'angolo.', audioFile: 'inicio_13_it.mp3', targetSelector: '[data-tutorial="inicio-asistente-ia"]', position: 'left' },
+      { id: 'inicio-redes-sociales', title: 'Social Media', text: 'Gestisci la presenza digitale del tuo club da qui. Consulta le pubblicazioni su Facebook, Instagram e Twitter, programma nuovi contenuti e monitora le performance di ogni post. La tua community sempre informata e connessa.', audioFile: 'inicio_redes_it.mp3', targetSelector: '[data-tutorial="inicio-redes-sociales"]', position: 'left' },
+      { id: 'inicio-tienda', title: 'Negozio del Club', text: 'Lo spazio ufficiale di merchandising del tuo club. Pubblica maglie, tute, sciarpe e qualsiasi articolo ufficiale affinch\u00e9 tifosi e famiglie li consultino e ordinino direttamente. Un catalogo digitale con prezzi, foto e gestione degli ordini integrata.', audioFile: 'inicio_tienda_it.mp3', targetSelector: '[data-tutorial="inicio-tienda"]', position: 'left' },
       { id: 'inicio-app-movil', title: '📱 Scarica l\'app — porta il club sempre con te', text: 'Lo sapevi che Sphaira ha un\'app mobile disponibile per iPhone e Android? Controlla le convocazioni dalla panchina, gestisci i pagamenti tra una riunione e l\'altra, consulta le statistiche in diretta e ricevi avvisi istantanei. Scaricala cercando Sphaira nell\'App Store o su Google Play.', audioFile: 'inicio_14_it.mp3', position: 'bottom' },
       { id: 'inicio-fin', title: 'Fatto', text: 'Ora conosci la tua dashboard club. Esplora qualsiasi modulo quando vuoi e, se hai bisogno di orientamento, il pulsante di aiuto su ogni schermata è lì per te. Ottieni il massimo da Sphaira!', audioFile: 'inicio_15_it.mp3', position: 'bottom' },
     ];
@@ -5441,6 +5493,86 @@ export class TutorialService {
     ];
   }
 
+  // ─── Tienda del Club — 6 idiomas ──────────────────────────────────────────
+
+  private getClubShopSteps(): TutorialStep[] {
+    return [
+      { id: 'shop-bienvenida', title: 'Tienda del Club', text: 'Bienvenido a la tienda del club. Aquí puedes explorar el catálogo oficial, revisar el carrito y consultar tus pedidos. Te guiamos paso a paso.', audioFile: 'shop_01.mp3', position: 'bottom' },
+      { id: 'shop-hero', title: 'Cabecera de tienda', text: 'En la cabecera tienes acceso rápido al carrito y al botón de volver. Desde aquí controlas el flujo completo de compra.', audioFile: 'shop_02.mp3', targetSelector: '[data-tutorial="shop-hero"]', position: 'bottom' },
+      { id: 'shop-tabs', title: 'Catálogo, carrito y pedidos', text: 'Usa estas pestañas para cambiar entre catálogo de productos, carrito actual y listado de pedidos.', audioFile: 'shop_03.mp3', targetSelector: '[data-tutorial="shop-tabs"]', position: 'bottom' },
+      { id: 'shop-search', title: 'Búsqueda', text: 'Busca productos por nombre o palabra clave para encontrar rápidamente lo que necesitas.', audioFile: 'shop_04.mp3', targetSelector: '[data-tutorial="shop-search"]', position: 'bottom' },
+      { id: 'shop-grid', title: 'Listado de productos', text: 'Aquí se muestran las tarjetas de producto. Pulsa en una para abrir el detalle, elegir talla y añadir al carrito.', audioFile: 'shop_05.mp3', targetSelector: '[data-tutorial="shop-grid"]', position: 'left' },
+      { id: 'shop-cart', title: 'Carrito', text: 'En la pestaña carrito puedes ajustar cantidades, eliminar productos y revisar el resumen antes del pago.', audioFile: 'shop_06.mp3', targetSelector: '[data-tutorial="shop-cart"]', position: 'left' },
+      { id: 'shop-orders', title: 'Pedidos', text: 'En pedidos verás el estado de tus compras realizadas y su historial.', audioFile: 'shop_07.mp3', targetSelector: '[data-tutorial="shop-orders"]', position: 'left' },
+      { id: 'shop-fin', title: 'Listo', text: 'Ya dominas la tienda del club. Explora el catálogo y gestiona tus compras cuando lo necesites.', audioFile: 'shop_08.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getClubShopStepsEn(): TutorialStep[] {
+    return [
+      { id: 'shop-bienvenida', title: 'Club Shop', text: "Welcome to the club shop. Here you can browse the official catalogue, review your cart, and check your orders. We'll guide you step by step.", audioFile: 'shop_01_en.mp3', position: 'bottom' },
+      { id: 'shop-hero', title: 'Shop header', text: 'In the header you have quick access to the cart and the back button. From here you control the full purchase flow.', audioFile: 'shop_02_en.mp3', targetSelector: '[data-tutorial="shop-hero"]', position: 'bottom' },
+      { id: 'shop-tabs', title: 'Catalogue, cart and orders', text: 'Use these tabs to switch between the product catalogue, your current cart, and your order list.', audioFile: 'shop_03_en.mp3', targetSelector: '[data-tutorial="shop-tabs"]', position: 'bottom' },
+      { id: 'shop-search', title: 'Search', text: 'Search by product name or keyword to find what you need quickly.', audioFile: 'shop_04_en.mp3', targetSelector: '[data-tutorial="shop-search"]', position: 'bottom' },
+      { id: 'shop-grid', title: 'Product grid', text: 'This area shows product cards. Tap one to open details, select size, and add it to your cart.', audioFile: 'shop_05_en.mp3', targetSelector: '[data-tutorial="shop-grid"]', position: 'left' },
+      { id: 'shop-cart', title: 'Cart', text: 'In the cart tab you can adjust quantities, remove products, and review your summary before payment.', audioFile: 'shop_06_en.mp3', targetSelector: '[data-tutorial="shop-cart"]', position: 'left' },
+      { id: 'shop-orders', title: 'Orders', text: 'In orders you can track the status of your purchases and view order history.', audioFile: 'shop_07_en.mp3', targetSelector: '[data-tutorial="shop-orders"]', position: 'left' },
+      { id: 'shop-fin', title: 'All set', text: "You've mastered the club shop. Browse the catalogue and manage purchases whenever you need.", audioFile: 'shop_08_en.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getClubShopStepsFr(): TutorialStep[] {
+    return [
+      { id: 'shop-bienvenida', title: 'Boutique du Club', text: "Bienvenue dans la boutique du club. Ici, vous pouvez parcourir le catalogue officiel, vérifier votre panier et consulter vos commandes. Nous vous guidons pas à pas.", audioFile: 'shop_01_fr.mp3', position: 'bottom' },
+      { id: 'shop-hero', title: 'En-tête de la boutique', text: "Dans l'en-tête, vous avez un accès rapide au panier et au bouton retour. D'ici, vous contrôlez tout le parcours d'achat.", audioFile: 'shop_02_fr.mp3', targetSelector: '[data-tutorial="shop-hero"]', position: 'bottom' },
+      { id: 'shop-tabs', title: 'Catalogue, panier et commandes', text: 'Utilisez ces onglets pour basculer entre le catalogue produits, le panier actuel et la liste des commandes.', audioFile: 'shop_03_fr.mp3', targetSelector: '[data-tutorial="shop-tabs"]', position: 'bottom' },
+      { id: 'shop-search', title: 'Recherche', text: 'Recherchez par nom de produit ou mot-clé pour trouver rapidement ce dont vous avez besoin.', audioFile: 'shop_04_fr.mp3', targetSelector: '[data-tutorial="shop-search"]', position: 'bottom' },
+      { id: 'shop-grid', title: 'Grille de produits', text: "Cette zone affiche les cartes produit. Appuyez sur une carte pour ouvrir le détail, choisir la taille et l'ajouter au panier.", audioFile: 'shop_05_fr.mp3', targetSelector: '[data-tutorial="shop-grid"]', position: 'left' },
+      { id: 'shop-cart', title: 'Panier', text: 'Dans l’onglet panier, vous pouvez ajuster les quantités, supprimer des produits et vérifier le récapitulatif avant paiement.', audioFile: 'shop_06_fr.mp3', targetSelector: '[data-tutorial="shop-cart"]', position: 'left' },
+      { id: 'shop-orders', title: 'Commandes', text: 'Dans commandes, vous suivez l’état de vos achats et consultez l’historique.', audioFile: 'shop_07_fr.mp3', targetSelector: '[data-tutorial="shop-orders"]', position: 'left' },
+      { id: 'shop-fin', title: 'Terminé', text: 'Vous maîtrisez maintenant la boutique du club. Parcourez le catalogue et gérez vos achats quand vous le souhaitez.', audioFile: 'shop_08_fr.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getClubShopStepsDe(): TutorialStep[] {
+    return [
+      { id: 'shop-bienvenida', title: 'Vereinsshop', text: 'Willkommen im Vereinsshop. Hier können Sie den offiziellen Katalog durchsuchen, den Warenkorb prüfen und Bestellungen einsehen. Wir führen Sie Schritt für Schritt.', audioFile: 'shop_01_de.mp3', position: 'bottom' },
+      { id: 'shop-hero', title: 'Shop-Kopfbereich', text: 'Im Kopfbereich haben Sie schnellen Zugriff auf den Warenkorb und die Zurück-Taste. Von hier steuern Sie den gesamten Kaufablauf.', audioFile: 'shop_02_de.mp3', targetSelector: '[data-tutorial="shop-hero"]', position: 'bottom' },
+      { id: 'shop-tabs', title: 'Katalog, Warenkorb und Bestellungen', text: 'Nutzen Sie diese Tabs, um zwischen Produktkatalog, aktuellem Warenkorb und Bestellliste zu wechseln.', audioFile: 'shop_03_de.mp3', targetSelector: '[data-tutorial="shop-tabs"]', position: 'bottom' },
+      { id: 'shop-search', title: 'Suche', text: 'Suchen Sie nach Produktname oder Stichwort, um schnell das Gewünschte zu finden.', audioFile: 'shop_04_de.mp3', targetSelector: '[data-tutorial="shop-search"]', position: 'bottom' },
+      { id: 'shop-grid', title: 'Produktraster', text: 'Hier sehen Sie Produktkarten. Tippen Sie auf eine Karte, um Details zu öffnen, Größe zu wählen und in den Warenkorb zu legen.', audioFile: 'shop_05_de.mp3', targetSelector: '[data-tutorial="shop-grid"]', position: 'left' },
+      { id: 'shop-cart', title: 'Warenkorb', text: 'Im Warenkorb-Tab können Sie Mengen anpassen, Produkte entfernen und die Zusammenfassung vor der Zahlung prüfen.', audioFile: 'shop_06_de.mp3', targetSelector: '[data-tutorial="shop-cart"]', position: 'left' },
+      { id: 'shop-orders', title: 'Bestellungen', text: 'Im Bereich Bestellungen verfolgen Sie den Status Ihrer Käufe und sehen den Verlauf.', audioFile: 'shop_07_de.mp3', targetSelector: '[data-tutorial="shop-orders"]', position: 'left' },
+      { id: 'shop-fin', title: 'Fertig', text: 'Sie beherrschen jetzt den Vereinsshop. Durchsuchen Sie den Katalog und verwalten Sie Einkäufe jederzeit.', audioFile: 'shop_08_de.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getClubShopStepsPt(): TutorialStep[] {
+    return [
+      { id: 'shop-bienvenida', title: 'Loja do Clube', text: 'Bem-vindo à loja do clube. Aqui pode explorar o catálogo oficial, rever o carrinho e consultar as suas encomendas. Guiamo-lo passo a passo.', audioFile: 'shop_01_pt.mp3', position: 'bottom' },
+      { id: 'shop-hero', title: 'Cabeçalho da loja', text: 'No cabeçalho tem acesso rápido ao carrinho e ao botão de voltar. A partir daqui controla todo o fluxo de compra.', audioFile: 'shop_02_pt.mp3', targetSelector: '[data-tutorial="shop-hero"]', position: 'bottom' },
+      { id: 'shop-tabs', title: 'Catálogo, carrinho e encomendas', text: 'Use estes separadores para alternar entre catálogo de produtos, carrinho atual e lista de encomendas.', audioFile: 'shop_03_pt.mp3', targetSelector: '[data-tutorial="shop-tabs"]', position: 'bottom' },
+      { id: 'shop-search', title: 'Pesquisa', text: 'Pesquise por nome do produto ou palavra-chave para encontrar rapidamente o que precisa.', audioFile: 'shop_04_pt.mp3', targetSelector: '[data-tutorial="shop-search"]', position: 'bottom' },
+      { id: 'shop-grid', title: 'Grelha de produtos', text: 'Nesta área vê os cartões de produto. Toque num cartão para abrir detalhes, escolher tamanho e adicionar ao carrinho.', audioFile: 'shop_05_pt.mp3', targetSelector: '[data-tutorial="shop-grid"]', position: 'left' },
+      { id: 'shop-cart', title: 'Carrinho', text: 'No separador carrinho pode ajustar quantidades, remover produtos e rever o resumo antes do pagamento.', audioFile: 'shop_06_pt.mp3', targetSelector: '[data-tutorial="shop-cart"]', position: 'left' },
+      { id: 'shop-orders', title: 'Encomendas', text: 'Em encomendas pode acompanhar o estado das compras e consultar o histórico.', audioFile: 'shop_07_pt.mp3', targetSelector: '[data-tutorial="shop-orders"]', position: 'left' },
+      { id: 'shop-fin', title: 'Concluído', text: 'Já domina a loja do clube. Explore o catálogo e gira as compras quando precisar.', audioFile: 'shop_08_pt.mp3', position: 'bottom' }
+    ];
+  }
+
+  private getClubShopStepsIt(): TutorialStep[] {
+    return [
+      { id: 'shop-bienvenida', title: 'Negozio del Club', text: 'Benvenuto nel negozio del club. Qui puoi esplorare il catalogo ufficiale, controllare il carrello e consultare i tuoi ordini. Ti guidiamo passo dopo passo.', audioFile: 'shop_01_it.mp3', position: 'bottom' },
+      { id: 'shop-hero', title: 'Intestazione del negozio', text: 'Nell’intestazione hai accesso rapido al carrello e al pulsante indietro. Da qui controlli tutto il flusso di acquisto.', audioFile: 'shop_02_it.mp3', targetSelector: '[data-tutorial="shop-hero"]', position: 'bottom' },
+      { id: 'shop-tabs', title: 'Catalogo, carrello e ordini', text: 'Usa queste schede per passare tra catalogo prodotti, carrello attuale e lista ordini.', audioFile: 'shop_03_it.mp3', targetSelector: '[data-tutorial="shop-tabs"]', position: 'bottom' },
+      { id: 'shop-search', title: 'Ricerca', text: 'Cerca per nome prodotto o parola chiave per trovare rapidamente ciò che ti serve.', audioFile: 'shop_04_it.mp3', targetSelector: '[data-tutorial="shop-search"]', position: 'bottom' },
+      { id: 'shop-grid', title: 'Griglia prodotti', text: 'In quest’area vedi le schede prodotto. Tocca una scheda per aprire i dettagli, scegliere la taglia e aggiungere al carrello.', audioFile: 'shop_05_it.mp3', targetSelector: '[data-tutorial="shop-grid"]', position: 'left' },
+      { id: 'shop-cart', title: 'Carrello', text: 'Nella scheda carrello puoi regolare quantità, rimuovere prodotti e controllare il riepilogo prima del pagamento.', audioFile: 'shop_06_it.mp3', targetSelector: '[data-tutorial="shop-cart"]', position: 'left' },
+      { id: 'shop-orders', title: 'Ordini', text: 'In ordini puoi seguire lo stato degli acquisti e vedere lo storico.', audioFile: 'shop_07_it.mp3', targetSelector: '[data-tutorial="shop-orders"]', position: 'left' },
+      { id: 'shop-fin', title: 'Fatto', text: 'Ora padroneggi il negozio del club. Esplora il catalogo e gestisci gli acquisti quando ne hai bisogno.', audioFile: 'shop_08_it.mp3', position: 'bottom' }
+    ];
+  }
+
   // ─── Ropa Jugador — idiomas ───────────────────────────────────────────────
 
   private getRopaJugadorStepsEn(): TutorialStep[] {
@@ -5480,6 +5612,62 @@ export class TutorialService {
       { id: 'rj-bienvenida', title: 'Le mie taglie di abbigliamento', text: 'Sei nel catalogo di abbigliamento della squadra. Seleziona la tua taglia per ogni capo; si salva automaticamente e il club usa queste preferenze per gli ordini. Ti guidiamo passo dopo passo.', audioFile: 'rj_01_it.mp3', position: 'bottom' },
       { id: 'rj-grid', title: 'Catalogo abbigliamento', text: 'Ogni scheda mostra l\'immagine, il nome, la descrizione e il selettore della taglia. Scegli tra Non selezionato o le taglie disponibili; alla scelta si salva istantaneamente e vedrai lo stato salvataggio o salvato.', audioFile: 'rj_02_it.mp3', targetSelector: '[data-tutorial="rj-grid"]', position: 'left' },
       { id: 'rj-fin', title: 'Fatto', text: 'Ora conosci Le mie taglie di abbigliamento. Mantieni le tue preferenze aggiornate per ogni capo della squadra.', audioFile: 'rj_03_it.mp3', position: 'bottom' }
+    ];
+  }
+
+  // ─── Club Post — idiomas ─────────────────────────────────────────────────────
+
+  private getClubPostSteps(): TutorialStep[] {
+    return [
+      { id: 'cp-bienvenida', title: 'Club Post', text: 'Bienvenido a Club Post. Desde aquí puedes crear imágenes para redes sociales con el diseño de tu club, listas para compartir en Instagram, Twitter o Facebook.', audioFile: 'cp_01.mp3', position: 'bottom' },
+      { id: 'cp-equipos', title: 'Panel de equipos', text: 'En este panel lateral encontrarás todos los equipos del club. Selecciona uno para ver y gestionar sus publicaciones.', audioFile: 'cp_02.mp3', targetSelector: '[data-tutorial="cp-teams"]', position: 'right' },
+      { id: 'cp-posts', title: 'Crear un post', text: 'Aquí aparecen los posts del equipo. Pulsa Nuevo post para abrir el editor, elegir la plantilla y personalizar colores y datos del partido.', audioFile: 'cp_03.mp3', targetSelector: '[data-tutorial="cp-posts"]', position: 'top' },
+      { id: 'cp-fin', title: 'Listo', text: '¡Perfecto! Ya sabes cómo usar Club Post. Selecciona un equipo, crea tu primer post y descárgalo listo para redes sociales.', audioFile: 'cp_04.mp3', position: 'bottom' },
+    ];
+  }
+
+  private getClubPostStepsEn(): TutorialStep[] {
+    return [
+      { id: 'cp-bienvenida', title: 'Club Post', text: 'Welcome to Club Post. From here you can create social media images with your club design, ready to share on Instagram, Twitter or Facebook.', audioFile: 'cp_01_en.mp3', position: 'bottom' },
+      { id: 'cp-equipos', title: 'Teams panel', text: 'In this side panel you will find all the club teams. Select one to view and manage its posts.', audioFile: 'cp_02_en.mp3', targetSelector: '[data-tutorial="cp-teams"]', position: 'right' },
+      { id: 'cp-posts', title: 'Create a post', text: 'Here you see the posts for the selected team. Tap New post to open the editor, choose a template and customize colours and match details.', audioFile: 'cp_03_en.mp3', targetSelector: '[data-tutorial="cp-posts"]', position: 'top' },
+      { id: 'cp-fin', title: 'All set', text: 'Great! You now know how to use Club Post. Select a team, create your first post and download it for social media.', audioFile: 'cp_04_en.mp3', position: 'bottom' },
+    ];
+  }
+
+  private getClubPostStepsFr(): TutorialStep[] {
+    return [
+      { id: 'cp-bienvenida', title: 'Club Post', text: 'Bienvenue dans Club Post. D\'ici vous pouvez créer des visuels pour les réseaux sociaux avec le design de votre club, prêts à partager sur Instagram, Twitter ou Facebook.', audioFile: 'cp_01_fr.mp3', position: 'bottom' },
+      { id: 'cp-equipos', title: 'Panneau des équipes', text: 'Dans ce panneau latéral vous trouverez toutes les équipes du club. Sélectionnez-en une pour voir et gérer ses publications.', audioFile: 'cp_02_fr.mp3', targetSelector: '[data-tutorial="cp-teams"]', position: 'right' },
+      { id: 'cp-posts', title: 'Créer une publication', text: 'Ici apparaissent les publications de l\'équipe. Appuyez sur Nouveau post pour ouvrir l\'éditeur et personnaliser votre visuel.', audioFile: 'cp_03_fr.mp3', targetSelector: '[data-tutorial="cp-posts"]', position: 'top' },
+      { id: 'cp-fin', title: 'Terminé', text: 'Parfait ! Vous savez maintenant utiliser Club Post. Sélectionnez une équipe, créez votre premier visuel et téléchargez-le.', audioFile: 'cp_04_fr.mp3', position: 'bottom' },
+    ];
+  }
+
+  private getClubPostStepsDe(): TutorialStep[] {
+    return [
+      { id: 'cp-bienvenida', title: 'Club Post', text: 'Willkommen bei Club Post. Hier können Sie Bilder für soziale Medien mit dem Design Ihres Vereins erstellen, bereit zum Teilen auf Instagram, Twitter oder Facebook.', audioFile: 'cp_01_de.mp3', position: 'bottom' },
+      { id: 'cp-equipos', title: 'Team-Bereich', text: 'In diesem Seitenbereich finden Sie alle Teams des Vereins. Wählen Sie eines aus, um die Beiträge zu sehen und zu verwalten.', audioFile: 'cp_02_de.mp3', targetSelector: '[data-tutorial="cp-teams"]', position: 'right' },
+      { id: 'cp-posts', title: 'Beitrag erstellen', text: 'Hier sehen Sie die Beiträge des ausgewählten Teams. Tippen Sie auf Neuer Beitrag, um den Editor zu öffnen und Vorlage sowie Details anzupassen.', audioFile: 'cp_03_de.mp3', targetSelector: '[data-tutorial="cp-posts"]', position: 'top' },
+      { id: 'cp-fin', title: 'Fertig', text: 'Super! Sie wissen jetzt, wie Club Post funktioniert. Wählen Sie ein Team, erstellen Sie Ihren ersten Beitrag und laden Sie ihn für soziale Medien herunter.', audioFile: 'cp_04_de.mp3', position: 'bottom' },
+    ];
+  }
+
+  private getClubPostStepsPt(): TutorialStep[] {
+    return [
+      { id: 'cp-bienvenida', title: 'Club Post', text: 'Bem-vindo ao Club Post. Daqui pode criar imagens para redes sociais com o design do seu clube, prontas para partilhar no Instagram, Twitter ou Facebook.', audioFile: 'cp_01_pt.mp3', position: 'bottom' },
+      { id: 'cp-equipos', title: 'Painel de equipas', text: 'Neste painel lateral encontra todas as equipas do clube. Selecione uma para ver e gerir as suas publicações.', audioFile: 'cp_02_pt.mp3', targetSelector: '[data-tutorial="cp-teams"]', position: 'right' },
+      { id: 'cp-posts', title: 'Criar uma publicação', text: 'Aqui aparecem os posts da equipa. Prima Novo post para abrir o editor, escolher a plantilha e personalizar as cores e os dados do jogo.', audioFile: 'cp_03_pt.mp3', targetSelector: '[data-tutorial="cp-posts"]', position: 'top' },
+      { id: 'cp-fin', title: 'Concluído', text: 'Perfeito! Já sabe como usar o Club Post. Selecione uma equipa, crie o seu primeiro post e descarregue-o para as redes sociais.', audioFile: 'cp_04_pt.mp3', position: 'bottom' },
+    ];
+  }
+
+  private getClubPostStepsIt(): TutorialStep[] {
+    return [
+      { id: 'cp-bienvenida', title: 'Club Post', text: 'Benvenuto in Club Post. Da qui puoi creare immagini per i social media con il design del tuo club, pronte da condividere su Instagram, Twitter o Facebook.', audioFile: 'cp_01_it.mp3', position: 'bottom' },
+      { id: 'cp-equipos', title: 'Pannello squadre', text: 'In questo pannello laterale trovi tutti i team del club. Selezionane uno per vedere e gestire le sue pubblicazioni.', audioFile: 'cp_02_it.mp3', targetSelector: '[data-tutorial="cp-teams"]', position: 'right' },
+      { id: 'cp-posts', title: 'Creare una pubblicazione', text: 'Qui appaiono i post del team selezionato. Premi Nuovo post per aprire l\'editor, scegliere il modello e personalizzare colori e dettagli della partita.', audioFile: 'cp_03_it.mp3', targetSelector: '[data-tutorial="cp-posts"]', position: 'top' },
+      { id: 'cp-fin', title: 'Fatto', text: 'Ottimo! Ora sai come usare Club Post. Seleziona un team, crea il tuo primo post e scaricalo per i social media.', audioFile: 'cp_04_it.mp3', position: 'bottom' },
     ];
   }
 }

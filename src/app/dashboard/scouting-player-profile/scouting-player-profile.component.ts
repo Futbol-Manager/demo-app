@@ -1,16 +1,22 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { environment } from 'src/environments/environment';
+import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
+import { getSportConfig, SportConfig } from 'src/app/core/models/sport/sport-config.model';
+import { SportContextService } from 'src/app/core/services/sport/sport-context.service';
+import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
+import { sportPositionLabel, sportScoringPlural, sportSectionOnField } from 'src/app/core/utils/sport-ui-i18n';
 
 @Component({
   selector: 'app-scouting-player-profile',
   templateUrl: './scouting-player-profile.component.html',
   styleUrls: ['./scouting-player-profile.component.scss']
 })
-export class ScoutingPlayerProfileComponent implements OnInit {
+export class ScoutingPlayerProfileComponent implements OnInit, OnDestroy {
   private apiBase = `${environment.apiUrl}scouting/player`;
 
   playerId = 0;
@@ -49,12 +55,30 @@ export class ScoutingPlayerProfileComponent implements OnInit {
   successMsg = '';
   errorMsg = '';
 
-  readonly POSITIONS = [
-    'Portero', 'Defensa Central', 'Lateral Derecho', 'Lateral Izquierdo',
-    'Carrilero Derecho', 'Carrilero Izquierdo', 'Mediocentro Defensivo',
-    'Mediocentro', 'Mediocentro Ofensivo', 'Mediapunta',
-    'Extremo Derecho', 'Extremo Izquierdo', 'Segundo Delantero', 'Delantero Centro'
-  ];
+  /** Posiciones según el deporte activo (demo / contexto de club). */
+  sportConfig: SportConfig = getSportConfig('futbol');
+
+  get positionOptions(): string[] {
+    return this.sportConfig.positions?.length ? this.sportConfig.positions : getSportConfig('futbol').positions;
+  }
+
+  private langSub?: Subscription;
+
+  /** Título de la tarjeta de posiciones (ej. «En el Campo», «En la Cancha»). */
+  get onFieldSectionTitle(): string {
+    const f = this.sportConfig.fieldName;
+    const art = ['Cancha', 'Pista', 'Piscina', 'Pista de hielo'].includes(f) ? 'la' : 'el';
+    const fb = `En ${art} ${f}`;
+    return sportSectionOnField(this.translate, this.sportConfig.key, fb);
+  }
+
+  get scoringPluralLabel(): string {
+    return sportScoringPlural(this.translate, this.sportConfig.key, this.sportConfig.scoringUnitPlural);
+  }
+
+  positionLabel(pos: string): string {
+    return sportPositionLabel(this.translate, this.sportConfig.key, pos);
+  }
 
   readonly PIES = ['Derecho', 'Izquierdo', 'Ambidiestro'];
 
@@ -76,10 +100,16 @@ export class ScoutingPlayerProfileComponent implements OnInit {
     private http: HttpClient,
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private sportContextService: SportContextService,
+    private translate: TranslateService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    const s = this.sportContextService.getSport() || 'futbol';
+    this.sportConfig = getSportConfig(s);
+    this.langSub = this.translate.onLangChange.subscribe(() => this.cdr.markForCheck());
     const routePlayerId = +this.route.snapshot.paramMap.get('playerId')!;
     this.loginService.usuarioActual.subscribe(user => {
       this.playerId = routePlayerId || user?.playerId || 0;
@@ -91,6 +121,10 @@ export class ScoutingPlayerProfileComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.langSub?.unsubscribe();
   }
 
   private get headers(): HttpHeaders {
@@ -121,6 +155,21 @@ export class ScoutingPlayerProfileComponent implements OnInit {
   }
 
   loadProfile(): void {
+    if (isDemoMode()) {
+      this.profile = this.getDemoProfile();
+      this.videos = this.getDemoVideos();
+      const p = this.profile;
+      this.photoPreview = p.imagenPerfil || null;
+      this.cvUrl = p.cvUrl || null;
+      this.cvFileName = p.cvUrl ? this.extractFileName(p.cvUrl) : null;
+      this.form.patchValue({
+        ...p,
+        esPublico: p.esPublico === 1,
+        consentimientoDatos: p.consentimientoDatos === 1
+      });
+      this.loading = false;
+      return;
+    }
     this.loading = true;
     this.http.get<any>(`${this.apiBase}/${this.playerId}/profile`, { headers: this.headers })
       .subscribe({
@@ -144,7 +193,52 @@ export class ScoutingPlayerProfileComponent implements OnInit {
       });
   }
 
+  private getDemoProfile(): any {
+    return {
+      nombre: 'Alejandro García Ruiz',
+      fechaDeNacimiento: '2001-03-15',
+      nacionalidad: 'Española',
+      paisResidencia: 'España',
+      provinciaResidencia: 'Madrid',
+      altura: 181,
+      peso: 76,
+      piernaNatural: 'Derecho',
+      mailContacto: 'alejandro.garcia@demo.com',
+      telefonoContacto: '+34 612 345 678',
+      posicionPrincipal: 'Mediocentro',
+      posicionesSecundarias: 'Mediocentro Ofensivo, Mediapunta',
+      equipoActual: 'Sphaira FC',
+      ligaActual: 'Tercera RFEF',
+      disponibilidad: 'TRANSFER',
+      clubesAnteriores: 'Atlético Norte B, Escuela Sur FC',
+      goles: 8,
+      asistencias: 12,
+      torneosImportantes: 'Copa Autonómica 2024, Torneo de Primavera 2023',
+      premiosIndividuales: 'Mejor centrocampista Liga Regional 2023',
+      convocatoriasSelecciones: 'Sub-21 España (3 veces)',
+      fortalezas: 'Visión de juego, pase largo, liderazgo',
+      areasMejora: 'Velocidad en sprints cortos',
+      descripcion: 'Mediocentro completo con gran capacidad de distribución y lectura del juego. Referente en el vestuario.',
+      esPublico: 1,
+      consentimientoDatos: 1,
+      imagenPerfil: null,
+      cvUrl: null,
+    };
+  }
+
+  private getDemoVideos(): any[] {
+    return [
+      { videoId: 1, titulo: 'Highlights Temporada 2024/25', plataforma: 'YOUTUBE', url: 'https://youtube.com/watch?v=demo1' },
+      { videoId: 2, titulo: 'Goles Copa Autonómica', plataforma: 'YOUTUBE', url: 'https://youtube.com/watch?v=demo2' },
+    ];
+  }
+
   save(): void {
+    if (isDemoMode()) {
+      this.successMsg = 'Perfil guardado correctamente. (Demo)';
+      setTimeout(() => this.successMsg = '', 4000);
+      return;
+    }
     this.saving = true;
     this.successMsg = '';
     this.errorMsg = '';
@@ -296,6 +390,11 @@ export class ScoutingPlayerProfileComponent implements OnInit {
   }
 
   checkVideoSubscription(): void {
+    if (isDemoMode()) {
+      this.videoSubscription = true;
+      this.videoSubscriptionLoading = false;
+      return;
+    }
     this.videoSubscriptionLoading = true;
     this.http.get<any>(`${this.apiBase}/${this.playerId}/video-subscription`, { headers: this.headers })
       .subscribe({

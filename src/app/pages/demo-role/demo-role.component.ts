@@ -445,6 +445,7 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
   couponCopied      = false;
   couponLoadError   = false;
   isCouponLoading   = false;
+  emailAlreadyHasCoupon = false;
 
   // ── Logo ──────────────────────────────────────────────────────────────────
   get logoSrc(): string { return 'assets/images/logosphairaw.png'; }
@@ -527,6 +528,7 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
   /** Llamado en cada keystroke para activar validación en tiempo real */
   onEmailInput(): void {
     this.emailTouched = true;
+    this.emailAlreadyHasCoupon = false;
     // Limpiar error de servidor si el usuario corrige
     if (this.emailError && this.isValidEmail) this.emailError = '';
   }
@@ -870,6 +872,7 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     this.isLoading       = false;
     this.isCouponLoading = false;
     this.couponLoadError = false;
+    this.emailAlreadyHasCoupon = false;
     this.couponCode      = '';
     this.couponCopied    = false;
     this.modalStep       = 'email';
@@ -883,6 +886,7 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     this.isLoading      = false;
     this.emailError     = '';
     this.emailTouched   = false;
+    this.emailAlreadyHasCoupon = false;
     this.cdr.markForCheck();
   }
 
@@ -905,20 +909,24 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
 
     this.isCouponLoading  = true;
     this.couponLoadError  = false;
+    this.emailAlreadyHasCoupon = false;
     this.emailError       = '';
     this.cdr.markForCheck();
 
-    this.demoCouponService.generateCoupon(email).subscribe({
+    this.demoCouponService.generateCoupon(email, this.activeLang).subscribe({
       next: (res) => {
         if (this.destroyed) return;
         this.isCouponLoading = false;
+        this.emailAlreadyHasCoupon = res?.status === 'existing';
         if (res && res.code) {
-          this.couponCode     = res.code;
+          this.couponCode     = this.emailAlreadyHasCoupon ? '' : res.code;
           this.couponDiscount = res.discountPercent;
           this.couponExpires  = res.expiresAt;
-          this.demoCouponService.saveCouponToSession(res.code);
-          if (typeof (window as any).fbq === 'function') {
-            (window as any).fbq('track', 'Lead');
+          if (!this.emailAlreadyHasCoupon) {
+            this.demoCouponService.saveCouponToSession(res.code);
+            if (typeof (window as any).fbq === 'function') {
+              (window as any).fbq('track', 'Lead');
+            }
           }
         } else {
           this.couponLoadError = true;

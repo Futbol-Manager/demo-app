@@ -5,25 +5,39 @@ import { Injectable } from '@angular/core';
  * Cada método devuelve la misma estructura que el endpoint real para que las pantallas
  * funcionen sin llamar a la API.
  */
-/** Nombres y apellidos para generar 144 jugadores (8 equipos x 18). Apellidos variados para que cada jugador tenga uno distinto en rotación. */
-const DEMO_FIRST_NAMES = ['Carlos', 'Miguel', 'Antonio', 'David', 'Pablo', 'Javier', 'Sergio', 'Álvaro', 'Diego', 'Daniel', 'Adrián', 'Marcos', 'Raúl', 'Iván', 'Roberto', 'Fernando', 'Andrés', 'Luis'];
-const DEMO_LAST_NAMES = ['García', 'López', 'Ruiz', 'Martín', 'Sánchez', 'Pérez', 'González', 'Rodríguez', 'Fernández', 'Martínez', 'Jiménez', 'Gómez', 'Díaz', 'Moreno', 'Álvarez', 'Romero', 'Torres', 'Ramírez', 'Vargas', 'Castro', 'Reyes', 'Mora', 'Herrera', 'Medina', 'Silva', 'Ríos', 'Cabrera', 'Fuentes'];
-/** Posiciones para 18 jugadores por equipo: 2 PT, 4 DEF, 2 LAT, 5 MED, 5 DEL */
-const DEMO_POSITIONS = ['Portero', 'Portero', 'Defensa', 'Defensa', 'Defensa', 'Defensa', 'Lateral', 'Lateral', 'Centrocampista', 'Centrocampista', 'Centrocampista', 'Centrocampista', 'Centrocampista', 'Delantero', 'Delantero', 'Delantero', 'Delantero', 'Delantero'];
-/** Pierna natural para variedad en la ficha del jugador */
+/** Nombres y apellidos para generar 144 deportistas (8 equipos x 18). */
+const DEMO_FIRST_NAMES = ['Carlos', 'Miguel', 'Antonio', 'David', 'Pablo', 'Javier', 'Sergio', '\u00c1lvaro', 'Diego', 'Daniel', 'Adri\u00e1n', 'Marcos', 'Ra\u00fal', 'Iv\u00e1n', 'Roberto', 'Fernando', 'Andr\u00e9s', 'Luis'];
+const DEMO_LAST_NAMES = ['Garc\u00eda', 'L\u00f3pez', 'Ruiz', 'Mart\u00edn', 'S\u00e1nchez', 'P\u00e9rez', 'Gonz\u00e1lez', 'Rodr\u00edguez', 'Fern\u00e1ndez', 'Mart\u00ednez', 'Jim\u00e9nez', 'G\u00f3mez', 'D\u00edaz', 'Moreno', '\u00c1lvarez', 'Romero', 'Torres', 'Ram\u00edrez', 'Vargas', 'Castro', 'Reyes', 'Mora', 'Herrera', 'Medina', 'Silva', 'R\u00edos', 'Cabrera', 'Fuentes'];
+/** Posiciones f\u00fatbol: 2 PT, 4 DEF, 2 LAT, 5 MED, 5 DEL */
+const DEMO_POSITIONS_FOOTBALL = ['Portero', 'Portero', 'Defensa', 'Defensa', 'Defensa', 'Defensa', 'Lateral', 'Lateral', 'Centrocampista', 'Centrocampista', 'Centrocampista', 'Centrocampista', 'Centrocampista', 'Delantero', 'Delantero', 'Delantero', 'Delantero', 'Delantero'];
+/** Posiciones baloncesto: 3 Bases, 4 Escoltas, 4 Aleros, 3 Ala-p\u00edvots, 4 P\u00edvots */
+const DEMO_POSITIONS_BASKETBALL = ['Base', 'Base', 'Base', 'Escolta', 'Escolta', 'Escolta', 'Escolta', 'Alero', 'Alero', 'Alero', 'Alero', 'Ala-p\u00edvot', 'Ala-p\u00edvot', 'Ala-p\u00edvot', 'P\u00edvot', 'P\u00edvot', 'P\u00edvot', 'P\u00edvot'];
+/** Posiciones atletismo (especialidades) */
+const DEMO_POSITIONS_ATHLETICS = ['Velocidad 100m', 'Velocidad 100m', 'Velocidad 200m', 'Velocidad 200m', 'Velocidad 400m', 'Velocidad 400m', 'Medio fondo 800m', 'Medio fondo 1500m', 'Fondo 5000m', 'Fondo 10000m', 'Salto de altura', 'Salto de longitud', 'Salto con p\u00e9rtiga', 'Lanzamiento de peso', 'Lanzamiento de disco', 'Lanzamiento de jabalina', 'Triple salto', 'Marcha atlética'];
+/** Posiciones para equipos femeninos (f\u00fatbol) */
+const DEMO_POSITIONS_FEMALE = DEMO_POSITIONS_FOOTBALL;
+/** Pierna/mano natural */
 const DEMO_PIERNA = ['Derecha', 'Izquierda', 'Derecha', 'Izquierda', 'Ambidiestro', 'Derecha', 'Izquierda', 'Derecha', 'Izquierda', 'Derecha', 'Ambidiestro', 'Izquierda', 'Derecha', 'Izquierda', 'Derecha', 'Izquierda', 'Derecha', 'Ambidiestro'];
 
-/** Equipos demo: name = nombre corto del equipo, levelLeague = liga a la que pertenece (formato visual: "Nombre - Liga") */
-const DEMO_TEAMS_META: { teamId: number; name: string; category: string; levelLeague: string; trainingDays: string }[] = [
-  { teamId: 9001, name: 'Senior Demo', category: 'Senior', levelLeague: 'SuperLiga', trainingDays: 'Lunes, Miércoles, Viernes' },
-  { teamId: 9002, name: 'Juvenil Demo', category: 'Juvenil', levelLeague: 'SuperLiga', trainingDays: 'Martes, Jueves' },
-  { teamId: 9003, name: 'Cadete Demo', category: 'Cadete', levelLeague: 'Liga Cadete', trainingDays: 'Lunes, Miércoles' },
-  { teamId: 9004, name: 'Infantil Demo', category: 'Infantil', levelLeague: 'Liga Infantil', trainingDays: 'Martes, Jueves, Sábado' },
-  { teamId: 9005, name: 'Alevin Demo', category: 'Alevín', levelLeague: 'SuperLiga', trainingDays: 'Lunes, Viernes' },
-  { teamId: 9006, name: 'Benjamín Demo', category: 'Benjamín', levelLeague: 'Liga Benjamín', trainingDays: 'Miércoles, Sábado' },
-  { teamId: 9007, name: 'Prebenjamín Demo', category: 'Prebenjamín', levelLeague: 'Liga Prebenjamín', trainingDays: 'Jueves, Sábado' },
-  { teamId: 9008, name: 'Femenino Demo', category: 'Femenino', levelLeague: 'Liga Femenina', trainingDays: 'Lunes, Miércoles, Viernes' },
+/** Equipos del Club Deportivo Sphaira — club multideportivo con f\u00fatbol, baloncesto y atletismo */
+const DEMO_TEAMS_META: { teamId: number; name: string; category: string; levelLeague: string; trainingDays: string; sport: string }[] = [
+  { teamId: 9001, name: 'F\u00fatbol Senior', category: 'Senior', levelLeague: '3\u00aa Divisi\u00f3n Auton\u00f3mica', trainingDays: 'L:18:00-20:00,X:18:00-20:00,V:18:00-20:00', sport: 'futbol' },
+  { teamId: 9002, name: 'F\u00fatbol Juvenil A', category: 'Juvenil', levelLeague: 'Divisi\u00f3n de Honor Juvenil', trainingDays: 'M:17:00-18:30,J:17:00-18:30,S:10:00-11:30', sport: 'futbol' },
+  { teamId: 9003, name: 'F\u00fatbol Cadete A', category: 'Cadete', levelLeague: 'Liga Cadete Preferente', trainingDays: 'L:17:30-19:00,X:17:30-19:00,S:10:00-11:30', sport: 'futbol' },
+  { teamId: 9004, name: 'F\u00fatbol Infantil A', category: 'Infantil', levelLeague: 'Liga Infantil 1\u00aa Divisi\u00f3n', trainingDays: 'M:17:30-19:00,J:17:30-19:00,S:10:00-11:00', sport: 'futbol' },
+  { teamId: 9005, name: 'Baloncesto Senior', category: 'Senior', levelLeague: 'Liga EBA', trainingDays: 'L:19:00-21:00,X:19:00-21:00,V:19:00-21:00', sport: 'baloncesto' },
+  { teamId: 9006, name: 'Baloncesto Sub-18', category: 'Sub-18', levelLeague: 'Liga Nacional Junior', trainingDays: 'M:18:00-19:30,J:18:00-19:30,S:11:00-12:30', sport: 'baloncesto' },
+  { teamId: 9007, name: 'Atletismo Absoluta', category: 'Absoluta', levelLeague: 'Liga Auton\u00f3mica de Atletismo', trainingDays: 'M:17:00-19:00,J:17:00-19:00,S:09:00-11:00', sport: 'atletismo' },
+  { teamId: 9008, name: 'F\u00fatbol Femenino', category: 'Femenino Senior', levelLeague: '1\u00aa Auton\u00f3mica Femenina', trainingDays: 'L:20:00-21:30,X:20:00-21:30,V:20:00-21:30', sport: 'futbol' },
 ];
+
+/** Devuelve las posiciones correspondientes al deporte del equipo */
+function getDemoPositionsByTeam(teamIndex: number): string[] {
+  const sport = DEMO_TEAMS_META[teamIndex]?.sport ?? 'futbol';
+  if (sport === 'baloncesto') return DEMO_POSITIONS_BASKETBALL;
+  if (sport === 'atletismo') return DEMO_POSITIONS_ATHLETICS;
+  return DEMO_POSITIONS_FOOTBALL;
+}
 
 const PLAYERS_PER_TEAM = 18;
 const TEAMS_COUNT = 8;
@@ -45,12 +59,13 @@ function getDemoPlayerById(playerId: number): any | null {
 
 function buildDemoPlayersForTeam(teamId: number, teamIndex: number, nameTeam: string): any[] {
   const players: any[] = [];
+  const positions = getDemoPositionsByTeam(teamIndex);
   for (let p = 0; p < PLAYERS_PER_TEAM; p++) {
     const playerId = demoPlayerId(teamIndex, p);
     const i = teamIndex * PLAYERS_PER_TEAM + p;
     const nombre = DEMO_FIRST_NAMES[i % DEMO_FIRST_NAMES.length];
     const apellido = DEMO_LAST_NAMES[i % DEMO_LAST_NAMES.length];
-    const pos = DEMO_POSITIONS[p];
+    const pos = positions[p];
     const dorsal = p + 1;
     const añoNac = 1990 + (i % 18);
     const mesNac = 1 + (i % 12);
@@ -112,6 +127,7 @@ export class DemoDataService {
       levelLeague: t.levelLeague,
       trainingDays: t.trainingDays,
       category: t.category,
+      sport: t.sport,
       jugadoresPorEquipo: PLAYERS_PER_TEAM,
       userId: 1,
       imgClub: 'demo-club-logo.png',
@@ -137,6 +153,7 @@ export class DemoDataService {
       levelLeague: meta.levelLeague,
       trainingDays: meta.trainingDays,
       category: meta.category,
+      sport: meta.sport,
       objectiveTeam: 'Competir en la liga y formar jugadores.',
       opinionTeam: 'Grupo muy comprometido.',
       categoryTypeId: 1,
@@ -156,9 +173,14 @@ export class DemoDataService {
   static getDemoClub(): any {
     return {
       clubId: 9001,
-      name: 'Club Demo',
+      name: 'CD Sphaira',
+      fullName: 'Club Deportivo Sphaira Multideportivo',
+      city: 'Valencia',
+      provincia: 'Valencia',
+      founded: '1987',
+      sport: 'F\u00fatbol | Baloncesto | Atletismo',
       pictureClub: 'demo-club-logo.png',
-      noPicture: false
+      noPicture: false,
     };
   }
 
@@ -220,13 +242,23 @@ export class DemoDataService {
     return { data, status, error: null };
   }
 
-  /** Cuadro de mandos: 8 equipos (formato "Nombre de HH:MM a HH:MM"), últimos y próximos partidos */
+  /** Cuadro de mandos: 8 equipos (formato "Nombre de HH:MM a HH:MM"), \u00faltimos y pr\u00f3ximos partidos */
   static getDemoCuadroMandos(): any {
-    const hours = ['10:00 a 11:30', '18:00 a 19:00', '17:30 a 19:00', '18:00 a 19:00', '17:00 a 18:00', '18:00 a 19:00', '17:30 a 18:30', '19:00 a 20:30'];
+    const hours = ['18:00 a 20:00', '17:00 a 18:30', '17:30 a 19:00', '17:30 a 19:00', '19:00 a 21:00', '18:00 a 19:30', '17:00 a 19:00', '20:00 a 21:30'];
     return {
       teams: DEMO_TEAMS_META.map((t, i) => `${t.name} de ${hours[i]}`),
-      ultimos: DEMO_TEAMS_META.slice(0, 4).map((t, i) => (i % 3 === 0 ? 'V' : i % 3 === 1 ? 'E' : 'D') + ` ${t.name} ${i % 3 === 0 ? '2 - 1' : i % 3 === 1 ? '0 - 0' : '1 - 2'} Rival el Domingo 2 de marzo de 2025`),
-      proximos: DEMO_TEAMS_META.slice(0, 4).map((t, i) => `${t.name} - Rival ${String.fromCharCode(65 + i)} el Sábado 15 de marzo de 2025 de 18:00`),
+      ultimos: [
+        'V : F\u00fatbol Senior - CD Norte de Valencia 2 - 1 CD Norte de Valencia el Domingo 30 de marzo de 2025',
+        'E : Baloncesto Senior - CB Este Valencia 72 - 72 CB Este Valencia el S\u00e1bado 29 de marzo de 2025',
+        'V : F\u00fatbol Juvenil A - UD Sur Valencia 3 - 0 UD Sur Valencia el S\u00e1bado 29 de marzo de 2025',
+        'D : F\u00fatbol Femenino - CF Oeste Valencia 1 - 2 CF Oeste Valencia el Domingo 30 de marzo de 2025',
+      ],
+      proximos: [
+        'F\u00fatbol Senior - CF L\u00e9vante B el S\u00e1bado 5 de abril de 2025 de 18:00',
+        'Baloncesto Senior - CB Paiporta el S\u00e1bado 5 de abril de 2025 de 19:00',
+        'F\u00fatbol Juvenil A - CF Mestalla Juvenil el Domingo 6 de abril de 2025 de 11:00',
+        'F\u00fatbol Femenino - Valencia CF Femenino B el S\u00e1bado 5 de abril de 2025 de 12:00',
+      ],
     };
   }
 
@@ -338,15 +370,24 @@ export class DemoDataService {
 
   /** Horarios equipos por club (response.data) — 8 equipos. */
   static getDemoHorariosByClub(): any[] {
+    // Horarios basados en los d\u00edas de entrenamiento reales de cada equipo (DEMO_TEAMS_META.trainingDays)
     const slots: { [k: string]: any }[] = [
-      { lunes: 1, lunesInicio: '18:00', lunesFin: '19:30', miercoles: 1, miercolesInicio: '18:00', miercolesFin: '19:30', viernes: 1, viernesInicio: '18:00', viernesFin: '19:30' },
-      { martes: 1, martesInicio: '17:00', martesFin: '18:00', jueves: 1, juevesInicio: '17:00', juevesFin: '18:00' },
-      { lunes: 1, lunesInicio: '17:30', lunesFin: '19:00', miercoles: 1, miercolesInicio: '17:30', miercolesFin: '19:00' },
-      { martes: 1, martesInicio: '18:00', martesFin: '19:00', jueves: 1, juevesInicio: '18:00', juevesFin: '19:00', sabado: 1, sabadoInicio: '10:00', sabadoFin: '11:00' },
-      { lunes: 1, lunesInicio: '17:00', lunesFin: '18:00', viernes: 1, viernesInicio: '17:00', viernesFin: '18:00' },
-      { miercoles: 1, miercolesInicio: '18:00', miercolesFin: '19:00', sabado: 1, sabadoInicio: '11:00', sabadoFin: '12:00' },
-      { jueves: 1, juevesInicio: '17:30', juevesFin: '18:30', sabado: 1, sabadoInicio: '10:30', sabadoFin: '11:30' },
-      { lunes: 1, lunesInicio: '19:00', lunesFin: '20:30', miercoles: 1, miercolesInicio: '19:00', miercolesFin: '20:30', viernes: 1, viernesInicio: '19:00', viernesFin: '20:30' },
+      // F\u00fatbol Senior: L/X/V 18-20
+      { lunes: 1, lunesInicio: '18:00', lunesFin: '20:00', miercoles: 1, miercolesInicio: '18:00', miercolesFin: '20:00', viernes: 1, viernesInicio: '18:00', viernesFin: '20:00' },
+      // F\u00fatbol Juvenil A: M/J/S 17-18:30
+      { martes: 1, martesInicio: '17:00', martesFin: '18:30', jueves: 1, juevesInicio: '17:00', juevesFin: '18:30', sabado: 1, sabadoInicio: '10:00', sabadoFin: '11:30' },
+      // F\u00fatbol Cadete A: L/X/S 17:30-19
+      { lunes: 1, lunesInicio: '17:30', lunesFin: '19:00', miercoles: 1, miercolesInicio: '17:30', miercolesFin: '19:00', sabado: 1, sabadoInicio: '10:00', sabadoFin: '11:30' },
+      // F\u00fatbol Infantil A: M/J/S 17:30-19
+      { martes: 1, martesInicio: '17:30', martesFin: '19:00', jueves: 1, juevesInicio: '17:30', juevesFin: '19:00', sabado: 1, sabadoInicio: '10:00', sabadoFin: '11:00' },
+      // Baloncesto Senior: L/X/V 19-21
+      { lunes: 1, lunesInicio: '19:00', lunesFin: '21:00', miercoles: 1, miercolesInicio: '19:00', miercolesFin: '21:00', viernes: 1, viernesInicio: '19:00', viernesFin: '21:00' },
+      // Baloncesto Sub-18: M/J/S 18-19:30
+      { martes: 1, martesInicio: '18:00', martesFin: '19:30', jueves: 1, juevesInicio: '18:00', juevesFin: '19:30', sabado: 1, sabadoInicio: '11:00', sabadoFin: '12:30' },
+      // Atletismo: M/J/S 17-19 y 9-11
+      { martes: 1, martesInicio: '17:00', martesFin: '19:00', jueves: 1, juevesInicio: '17:00', juevesFin: '19:00', sabado: 1, sabadoInicio: '09:00', sabadoFin: '11:00' },
+      // F\u00fatbol Femenino: L/X/V 20-21:30
+      { lunes: 1, lunesInicio: '20:00', lunesFin: '21:30', miercoles: 1, miercolesInicio: '20:00', miercolesFin: '21:30', viernes: 1, viernesInicio: '20:00', viernesFin: '21:30' },
     ];
     return DEMO_TEAMS_META.map((t, i) => ({
       teamId: t.teamId,
@@ -377,54 +418,177 @@ export class DemoDataService {
     return injuries.map((inj, i) => ({ id: i + 1, injuryId: i + 1, ...inj, clubId: 9001, dateInjury: '2025-02-20', createdBy: 'Demo' }));
   }
 
-  /** Entrenadores por club (response.data.teams con .trainers) — 8 equipos con al menos un entrenador. */
+  /** Entrenadores por club (response.data.teams con .trainers) — 8 equipos, entrenadores reales. */
   static getDemoListEntrenadoresByClub(): any {
-    const trainers = ['Juan', 'María', 'Pedro', 'Laura', 'Francisco', 'Elena', 'Ricardo', 'Carmen'];
+    const trainerData = [
+      { nombre: 'Alejandro', apellido: 'Mart\u00ednez Ruiz', telefono: '655 123 456', licencia: 'UEFA B', titulacion: 'T\u00e9cnico Deportivo Superior', certDelitos: 'Aportado', seguro: 'Aportado', primerAuxilio: 'S\u00ed' },
+      { nombre: 'Laura', apellido: 'Garc\u00eda P\u00e9rez', telefono: '677 234 567', licencia: 'UEFA C', titulacion: 'T\u00e9cnico Deportivo Nivel 1', certDelitos: 'Aportado', seguro: 'Aportado', primerAuxilio: 'S\u00ed' },
+      { nombre: 'Pedro', apellido: 'S\u00e1nchez G\u00f3mez', telefono: '611 345 678', licencia: 'UEFA C', titulacion: 'T\u00e9cnico Deportivo Nivel 1', certDelitos: 'Aportado', seguro: 'Pendiente', primerAuxilio: 'No' },
+      { nombre: 'Elena', apellido: 'Fern\u00e1ndez Castro', telefono: '699 456 789', licencia: 'UEFA C', titulacion: 'T\u00e9cnico Deportivo Nivel 1', certDelitos: 'Aportado', seguro: 'Aportado', primerAuxilio: 'S\u00ed' },
+      { nombre: 'Francisco', apellido: 'L\u00f3pez Torres', telefono: '622 567 890', licencia: 'Nivel II FEB', titulacion: 'T\u00e9cnico Deportivo Superior', certDelitos: 'Aportado', seguro: 'Aportado', primerAuxilio: 'S\u00ed' },
+      { nombre: 'Mar\u00eda', apellido: 'Jim\u00e9nez Vargas', telefono: '644 678 901', licencia: 'Nivel I FEB', titulacion: 'T\u00e9cnico Deportivo Nivel 1', certDelitos: 'Aportado', seguro: 'Aportado', primerAuxilio: 'S\u00ed' },
+      { nombre: 'Ricardo', apellido: 'Moreno Silva', telefono: '666 789 012', licencia: 'Entrenador Nacional Atletismo', titulacion: 'T\u00e9cnico Deportivo Superior', certDelitos: 'Aportado', seguro: 'Aportado', primerAuxilio: 'S\u00ed' },
+      { nombre: 'Carmen', apellido: '\u00c1lvarez Herrera', telefono: '688 890 123', licencia: 'UEFA C', titulacion: 'T\u00e9cnico Deportivo Nivel 1', certDelitos: 'Aportado', seguro: 'Aportado', primerAuxilio: 'S\u00ed' },
+    ];
     return {
-      teams: DEMO_TEAMS_META.map((t, i) => ({
-        teamId: t.teamId,
-        nameTeam: t.name,
-        trainers: [{ trainerId: 7001 + i, userId: 7001 + i, nombre: trainers[i], apellido: 'Entrenador', dni: String(11111111 + i) + 'A', nameTeam: t.name, email: `${trainers[i].toLowerCase()}@demo.com` }],
-      })),
+      teams: DEMO_TEAMS_META.map((t, i) => {
+        const tr = trainerData[i];
+        return {
+          teamId: t.teamId,
+          nameTeam: t.name,
+          trainers: [{
+            trainerId: 7001 + i, userId: 7001 + i,
+            nombre: tr.nombre, apellido: tr.apellido,
+            dni: String(11111111 + i) + 'A',
+            nameTeam: t.name, teamId: t.teamId,
+            email: `${tr.nombre.toLowerCase()}.${tr.apellido.split(' ')[0].toLowerCase()}@cdsphaira.es`,
+            telefono: tr.telefono,
+            fechaDeNacimiento: `${1975 + i}-${String(1 + (i % 12)).padStart(2, '0')}-15`,
+            licenciaFederativa: tr.licencia,
+            titulacionDeportiva: tr.titulacion,
+            certDelitosSexuales: tr.certDelitos,
+            seguroResponsabilidad: tr.seguro,
+            formacionPrimerosAuxilios: tr.primerAuxilio,
+            picturePlayer: '',
+          }],
+        };
+      }),
     };
   }
 
-  /** Perfiles entrenadores (response.data array) */
+  /** Perfiles entrenadores (response.data array) — datos completos para los 8 entrenadores demo. */
   static getDemoPerfilesEntrenadores(): any[] {
-    return [
-      { userId: 7001, documentoIdentidad: '11111111A', direccion: 'Calle Demo 1', nacionalidad: 'Española', licenciaFederativa: 'Nivel 2' },
-      { userId: 7002, documentoIdentidad: '22222222B', direccion: 'Calle Demo 2', nacionalidad: 'Española', licenciaFederativa: 'Nivel 1' },
-    ];
+    return DEMO_TEAMS_META.map((_, i) => ({
+      userId: 7001 + i,
+      documentoIdentidad: String(11111111 + i) + 'A',
+      tipoDocumento: 'DNI',
+      direccion: `Calle de la Constituci\u00f3n ${i + 1}, Valencia`,
+      nacionalidad: 'Espa\u00f1ola',
+      licenciaFederativa: i < 4 ? (i < 2 ? 'UEFA B' : 'UEFA C') : i < 6 ? (i === 4 ? 'Nivel II FEB' : 'Nivel I FEB') : 'Entrenador Nacional',
+      titulacionDeportiva: 'T\u00e9cnico Deportivo',
+      certDelitosSexuales: 'Aportado',
+      certAntecedentesPenales: 'Aportado',
+      seguroResponsabilidad: i < 6 || i === 7 ? 'Aportado' : 'Pendiente',
+      formacionPrimerosAuxilios: i !== 2 ? 'S\u00ed' : 'No',
+      contactoEmergenciaNombre: `Familiar ${i + 1}`,
+      contactoEmergenciaTelefono: `600 ${String(111111 + i * 11111).slice(0, 6)}`,
+    }));
   }
 
-  /** Entrenamientos por equipo (calendario-club) */
-  static getDemoTrainingSessions(_teamId: string): any[] {
-    const baseDate = new Date();
-    baseDate.setDate(baseDate.getDate() + 2);
-    const d = (offset: number) => {
-      const x = new Date(baseDate);
-      x.setDate(x.getDate() + offset);
-      return x.toISOString().slice(0, 10);
+  /** Entrenamientos por equipo para el calendario — genera ~8 sesiones repartidas en el mes actual y el siguiente */
+  static getDemoTrainingSessions(teamId: string): any[] {
+    const id = parseInt(teamId, 10) || 9001;
+    const teamIndex = DEMO_TEAMS_META.findIndex(t => t.teamId === id);
+    const meta = DEMO_TEAMS_META[teamIndex >= 0 ? teamIndex : 0];
+    const sport = meta.sport ?? 'futbol';
+
+    const objetivos: Record<string, string[]> = {
+      futbol: ['T\u00e9cnica individual', 'Trabajo t\u00e1ctico', 'Pressing y repliegue', 'Juego de posici\u00f3n', 'Velocidad y agilidad', 'Preparaci\u00f3n de partido', 'Pelota parada', 'Recuperaci\u00f3n f\u00edsica'],
+      baloncesto: ['Tiro libre y triples', 'Defensa individual', 'Bloqueos directos', 'Transici\u00f3n ofensiva', 'Pick and roll', 'Preparaci\u00f3n de partido', 'Pases y mec\u00e1nica', 'Resistencia c\u00edclica'],
+      atletismo: ['Series de velocidad', 'Trabajo de fuerza', 'Pr\u00e1ctica de saltos', 'Lanzamientos', 'Fondo y resistencia', 'T\u00e9cnica espec\u00edfica', 'Preparaci\u00f3n competici\u00f3n', 'Evaluaci\u00f3n y tests'],
     };
-    return [
-      { trainingSessionId: 1, daySession: d(0), addressSession: 'Campo 1', startTime: '10:00', endTime: '11:30', objectiveSession: 'Técnica', warmUp: 'Carrera suave', visible: true },
-      { trainingSessionId: 2, daySession: d(2), addressSession: 'Campo 1', startTime: '18:00', endTime: '19:30', objectiveSession: 'Táctica', warmUp: 'Estiramientos', visible: true },
-    ];
+    const calentamientos: Record<string, string[]> = {
+      futbol: ['Carrera suave 10 min', 'Rondos peque\u00f1os grupos', 'Estiramientos din\u00e1micos', 'Movilidad articular', 'Activaci\u00f3n con bal\u00f3n', 'Pases cortos y calentamiento'],
+      baloncesto: ['Carrera lateral y cruce', 'Tiro libre par\u00e9ja', 'Movilidad art. hombros', 'Bote con cambio direcci\u00f3n', 'Bandeja suave', 'Pases ritmo suave'],
+      atletismo: ['Trote suave 10 min', 'Movilidad articular general', 'Progresiones 60m', 'Activaci\u00f3n neuromuscular', 'Estiramientos din\u00e1micos', 'Skipping y tobilleos'],
+    };
+    const objs = objetivos[sport] ?? objetivos['futbol'];
+    const cals = calentamientos[sport] ?? calentamientos['futbol'];
+
+    const sessions: any[] = [];
+    const now = new Date();
+    let sid = (teamIndex + 1) * 100;
+
+    // Días de entrenamiento semanales para este equipo (L=1, M=2, X=3, J=4, V=5, S=6, D=0)
+    const dayMap: Record<string, number> = { L: 1, M: 2, X: 3, J: 4, V: 5, S: 6, D: 0 };
+    const hoursMap: Record<string, { start: string; end: string }> = {};
+    const trDaysStr = meta.trainingDays ?? '';
+    const tdRegex = /([LMXJVSD]):(\d{2}:\d{2})-(\d{2}:\d{2})/g;
+    let m: RegExpExecArray | null;
+    while ((m = tdRegex.exec(trDaysStr)) !== null) {
+      hoursMap[m[1]] = { start: m[2], end: m[3] };
+    }
+    const trainingWeekDays = Object.keys(hoursMap);
+
+    // Generar 6 semanas a partir del lunes de esta semana
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+    monday.setHours(0, 0, 0, 0);
+
+    for (let week = 0; week < 6; week++) {
+      for (const dayKey of trainingWeekDays) {
+        const dayNum = dayMap[dayKey];
+        const sessionDate = new Date(monday);
+        sessionDate.setDate(monday.getDate() + week * 7 + ((dayNum - 1 + 7) % 7));
+        const dateStr = sessionDate.toISOString().slice(0, 10);
+        const hours = hoursMap[dayKey];
+        const objIdx = (sid + week) % objs.length;
+        const calIdx = (sid + week) % cals.length;
+        sessions.push({
+          trainingSessionId: sid++,
+          daySession: dateStr,
+          addressSession: sport === 'futbol' ? 'Campo Municipal Norte' : sport === 'baloncesto' ? 'Pab. Cubierto Sphaira' : 'Pista de Atletismo',
+          startTime: hours.start,
+          endTime: hours.end,
+          objectiveSession: objs[objIdx],
+          warmUp: cals[calIdx],
+          visible: true,
+        });
+      }
+    }
+    return sessions;
   }
 
-  /** Partidos por equipo (calendario-club) */
+  /** Partidos por equipo para el calendario — genera partidos realistas en los pr\u00f3ximos 3 meses */
   static getDemoMatchPreparations(teamId: string): any[] {
-    const baseDate = new Date();
-    baseDate.setDate(baseDate.getDate() + 5);
-    const d = (offset: number) => {
-      const x = new Date(baseDate);
-      x.setDate(x.getDate() + offset);
-      return x.toISOString().slice(0, 10);
-    };
-    return [
-      { matchPreparationId: 1, matchDate: d(0), hora: 18, minutos: 0, horaEmpieza: 17, minutosEmpieza: 30, rivalName: 'Club Norte', terreno: 'local', tipoPartido: 'Liga', lugar: 'Campo Municipal', visible: true },
-      { matchPreparationId: 2, matchDate: d(7), hora: 11, minutos: 0, horaEmpieza: 10, minutosEmpieza: 30, rivalName: 'Escuela Sur', terreno: 'visitante', tipoPartido: 'Copa', lugar: 'Estadio Sur', visible: true },
-    ];
+    const id = parseInt(teamId, 10) || 9001;
+    const teamIndex = DEMO_TEAMS_META.findIndex(t => t.teamId === id);
+    const meta = DEMO_TEAMS_META[teamIndex >= 0 ? teamIndex : 0];
+    const sport = meta.sport ?? 'futbol';
+
+    const rivalesFoot = ['CD Norte Valencia', 'UD Levante B', 'CF Mestalla', 'Paterna CF', 'Valencia CF B', 'CD Saguntino', 'Benaguasil CF', 'Atletic Llombai', 'CD Burjassot', 'CF Gandia'];
+    const rivalesBask = ['CB Este Valencia', 'CB Paiporta', 'Cl\u00ednica Baviera Valencia', 'CB L\'Alcudia', 'CB Alzira', 'CB Algemesi', 'CB Torrent'];
+    const rivalesAthl = ['CA Valencia', 'Playas de Castell\u00f3n', 'Atletisme Alacant', 'CA Elx', 'CA Gandia'];
+
+    const rivals = sport === 'futbol' ? rivalesFoot : sport === 'baloncesto' ? rivalesBask : rivalesAthl;
+    const tiposPartido = sport === 'atletismo' ? ['Competici\u00f3n', 'Meeting', 'Control Federativo'] : ['Liga', 'Liga', 'Liga', 'Copa', 'Amistoso'];
+    const lugares = sport === 'futbol'
+      ? ['Campo Municipal Norte', 'Estadio Antonio Puchades', 'Ciudad Deportiva Valencia', 'Campo El Turia', 'Instalaciones Rivales']
+      : sport === 'baloncesto'
+      ? ['Pab. Cubierto Sphaira', 'Palacio de los Deportes', 'Pabellon Municipal Este', 'Pabellón La Rambleta']
+      : ['Pista Atletismo Sphaira', 'Estadio Municipal de Atletismo', 'Pista Cubierta Valencia'];
+
+    const matches: any[] = [];
+    const now = new Date();
+    let mid = (teamIndex + 1) * 200;
+
+    // ~2 partidos por mes durante 3 meses
+    for (let i = 0; i < 6; i++) {
+      const matchDate = new Date(now);
+      matchDate.setDate(now.getDate() + (i * 14) + 4 + (teamIndex % 3));
+      const isHome = (mid + i) % 2 === 0;
+      const rival = rivals[(mid + i) % rivals.length];
+      const tipo = tiposPartido[(mid + i) % tiposPartido.length];
+      const lugar = isHome ? lugares[0] : lugares[1 + (i % (lugares.length - 1))];
+      const hora = sport === 'football' ? (i % 2 === 0 ? 18 : 11) : sport === 'basketball' ? (i % 2 === 0 ? 19 : 12) : 10;
+      const minutos = 0;
+      const horaE = hora - 1;
+      const minutosE = 30;
+      matches.push({
+        matchPreparationId: mid + i,
+        matchDate: matchDate.toISOString().slice(0, 10),
+        hora,
+        minutos,
+        horaEmpieza: horaE,
+        minutosEmpieza: minutosE,
+        rivalName: rival,
+        terreno: isHome ? 'local' : 'visitante',
+        tipoPartido: tipo,
+        lugar,
+        visible: true,
+      });
+    }
+    return matches;
   }
 
   /** Equipos por club (pantalla Equipos con perfil Club). response.data para getTeamByClub */
@@ -628,30 +792,63 @@ export class DemoDataService {
   }
 
   /** Clasificación y resultados (getTodo). response.data — 8 equipos demo en clasificación */
-  static getDemoClasificacionTodo(_jornada: string): any {
+  static getDemoClasificacionTodo(jornada: string): any {
+    const j = parseInt(jornada || '1', 10);
     const puntos = [28, 25, 22, 19, 17, 15, 12, 10];
+    const rivals = ['Atlético Norte', 'Escuela Sur FC', 'Deportivo Este', 'Club Oeste',
+                    'Real Bahía', 'Sporting Centro', 'Unión Montaña', 'FC Ribera'];
+    const partidos: any[] = [];
+    const teams = DEMO_TEAMS_META;
+    for (let i = 0; i < teams.length && i < rivals.length; i++) {
+      const gl = (i % 3 === 0) ? 2 : (i % 3 === 1) ? 1 : 0;
+      const gv = (i % 3 === 0) ? 0 : (i % 3 === 1) ? 1 : 1;
+      const jDate = new Date('2025-09-01');
+      jDate.setDate(jDate.getDate() + (j - 1) * 7 + i);
+      partidos.push({
+        jornada: j,
+        local: teams[i % teams.length].name,
+        visitante: rivals[i],
+        golesLocal: gl,
+        golesVisitante: gv,
+        fecha: jDate.toISOString().split('T')[0],
+        hora: `${17 + (i % 4)}:00h`,
+        estadio: `Campo Municipal ${i + 1}`,
+        codActa: `ACTA-${j}-${i + 1}`,
+      });
+    }
+    const now = new Date();
+    now.setMinutes(0, 0, 0);
     return {
       clasificacion: DEMO_TEAMS_META.map((t, i) => ({
         posicion: i + 1,
         nombre: t.name,
         nombreEquipo: t.name,
-        puntos: puntos[i],
+        puntos: puntos[i] ?? 5,
         jugados: 12,
-        ganados: Math.floor(puntos[i] / 3),
-        empatados: puntos[i] % 3,
-        perdidos: 12 - Math.floor(puntos[i] / 3) - (puntos[i] % 3),
+        ganados: Math.floor((puntos[i] ?? 5) / 3),
+        empatados: (puntos[i] ?? 5) % 3,
+        perdidos: 12 - Math.floor((puntos[i] ?? 5) / 3) - ((puntos[i] ?? 5) % 3),
         golesFavor: 20 + (i * 2),
         golesContra: 15 - i,
         golesAFavor: 20 + (i * 2),
         golesEnContra: 15 - i,
+        forma: ['G', 'G', 'E', 'P', 'G'].slice(0, 5).join(''),
+        datos: {
+          'Pts': puntos[i] ?? 5,
+          'J':   12,
+          'G':   Math.floor((puntos[i] ?? 5) / 3),
+          'E':   (puntos[i] ?? 5) % 3,
+          'P':   12 - Math.floor((puntos[i] ?? 5) / 3) - ((puntos[i] ?? 5) % 3),
+          'GF':  20 + (i * 2),
+          'GC':  15 - i,
+        },
       })),
-      partidos: [
-        { jornada: 1, local: DEMO_TEAMS_META[0].name, visitante: 'Club Norte', golesLocal: 2, golesVisitante: 1 },
-        { jornada: 1, local: DEMO_TEAMS_META[1].name, visitante: 'Escuela Sur', golesLocal: 1, golesVisitante: 1 },
-      ],
+      partidos,
       totalJornadas: 22,
-      columnas: ['goles'],
+      columnas: ['goles', 'forma'],
+      headers: ['Pts', 'J', 'G', 'E', 'P', 'GF', 'GC', 'Forma'],
       jornadaNavegable: true,
+      lastUpdated: now.toISOString(),
     };
   }
 
@@ -1242,6 +1439,52 @@ export class DemoDataService {
       tarRojas: 0,
       numTitulares: 15,
     };
+  }
+
+  /** Asistencia por equipo (getListsAsistenciaByTeam). response.data = { players, asistMultasPlayers, asistenciaTotales } */
+  static getDemoListAsistenciaByTeam(teamId?: number): any {
+    const id = teamId || 9001;
+    const teamIndex = DEMO_TEAMS_META.findIndex(t => t.teamId === id);
+    const idx = teamIndex >= 0 ? teamIndex : 0;
+    const meta = DEMO_TEAMS_META[idx];
+    const allPlayers = buildDemoPlayersForTeam(meta.teamId, idx, meta.name);
+    const players = allPlayers.map(p => `${p.nombre} ${p.apellido}`);
+
+    // Generar 10 sesiones de entrenamiento en los \u00faltimos 5 semanas
+    const sessions: any[] = [];
+    const base = new Date('2025-03-03');
+    for (let week = 0; week < 5; week++) {
+      const days = [1, 3, 5]; // L,X,V
+      for (const d of days) {
+        const date = new Date(base);
+        date.setDate(base.getDate() + week * 7 + (d - 1));
+        const dateStr = date.toISOString().split('T')[0];
+        const asistencia = players.map((_, pi) => {
+          const seed = (pi + week + d) % 10;
+          return seed < 1 ? 0 : 1;
+        });
+        const multas = asistencia.map(a => (a === 0 ? 1 : 0));
+        const multaPagada = multas.map((m, mi) => (m === 1 && (mi + week) % 3 === 0 ? 1 : 0));
+        sessions.push({
+          fecha: dateStr,
+          asistencia,
+          multas,
+          multaPagada,
+          idsPk: players.map((_, pi) => 70000 + idx * 500 + week * 30 + d * 10 + pi)
+        });
+      }
+    }
+
+    // Totales de asistencia por jugador
+    const asistenciaTotales = players.map((nombre, pi) => {
+      const totalSessions = sessions.length;
+      const attended = sessions.filter(s => s.asistencia[pi] === 1).length;
+      const absent = totalSessions - attended;
+      const pct = Math.round((attended / totalSessions) * 100);
+      return { nombre, totalSessions, attended, absent, pct };
+    });
+
+    return { players, asistMultasPlayers: sessions, asistenciaTotales };
   }
 
   /** Asistencia por jugador (getListsAsistenciaByTeamYPlayer). response.data = array. Campos: fecha, asistencia (0/1), tipo. */

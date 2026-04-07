@@ -504,6 +504,11 @@ $g-table-head: #002c40;
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
+
+    &--demo {
+      object-fit: contain;
+      padding: 4px;
+    }
   }
 
   &:has(.avatar-logo) {

@@ -91,7 +91,7 @@
             </th>
 
             <th class="sortable col-highlight" (click)="sortBy('goles')">
-              {{ 'PLAYERS.TABLE.GOALS' | translate }}
+              {{ scoringPluralLabel }}
               <i class="bi sort-icon" [ngClass]="{
                 'bi-chevron-up':     sortColumn === 'goles' && sortDirection === 'asc',
                 'bi-chevron-down':   sortColumn === 'goles' && sortDirection === 'desc',
@@ -100,7 +100,7 @@
             </th>
 
             <th class="sortable" (click)="sortBy('mediaGolesPorPartido')">
-              {{ 'PLAYERS.TABLE.MEDIA_GOALS_MATCH' | translate }}
+              {{ mediaScoringPerMatchLabel }}
               <i class="bi sort-icon" [ngClass]="{
                 'bi-chevron-up':     sortColumn === 'mediaGolesPorPartido' && sortDirection === 'asc',
                 'bi-chevron-down':   sortColumn === 'mediaGolesPorPartido' && sortDirection === 'desc',
@@ -144,7 +144,7 @@
               }"></i>
             </th>
 
-            <th class="sortable" (click)="sortBy('penaltisConvertidos')">
+            <th class="sortable" *ngIf="showPenaltyColumns" (click)="sortBy('penaltisConvertidos')">
               {{ 'PLAYERS.TABLE.GOALS_PENALTY' | translate }}
               <i class="bi sort-icon" [ngClass]="{
                 'bi-chevron-up':     sortColumn === 'penaltisConvertidos' && sortDirection === 'asc',
@@ -153,7 +153,7 @@
               }"></i>
             </th>
 
-            <th class="sortable" (click)="sortBy('tiroLibre')">
+            <th class="sortable" *ngIf="showPenaltyColumns" (click)="sortBy('tiroLibre')">
               {{ 'PLAYERS.TABLE.GOALS_FREE_KICK' | translate }}
               <i class="bi sort-icon" [ngClass]="{
                 'bi-chevron-up':     sortColumn === 'tiroLibre' && sortDirection === 'asc',
@@ -162,7 +162,7 @@
               }"></i>
             </th>
 
-            <th class="sortable" (click)="sortBy('penaltisFallados')">
+            <th class="sortable" *ngIf="showPenaltyColumns" (click)="sortBy('penaltisFallados')">
               {{ 'PLAYERS.TABLE.PENALTIES_MISSED' | translate }}
               <i class="bi sort-icon" [ngClass]="{
                 'bi-chevron-up':     sortColumn === 'penaltisFallados' && sortDirection === 'asc',
@@ -171,7 +171,7 @@
               }"></i>
             </th>
 
-            <th>{{ 'PLAYERS.TABLE.CARDS' | translate }}</th>
+            <th *ngIf="showCardsColumn">{{ 'PLAYERS.TABLE.CARDS' | translate }}</th>
 
           </tr>
         </thead>
@@ -200,11 +200,11 @@
             <td class="td-num">{{ player.golesAsistencias }}</td>
             <td class="td-num">{{ player.mediaAsistPorPartido }}</td>
             <td class="td-num">{{ player.mediaGolesAsistenciasPorPartido }}</td>
-            <td class="td-num">{{ player.golesPenalti }}</td>
-            <td class="td-num">{{ player.golesFalta }}</td>
-            <td class="td-num">{{ player.penaltisFallados }}</td>
+            <td class="td-num" *ngIf="showPenaltyColumns">{{ player.golesPenalti }}</td>
+            <td class="td-num" *ngIf="showPenaltyColumns">{{ player.golesFalta }}</td>
+            <td class="td-num" *ngIf="showPenaltyColumns">{{ player.penaltisFallados }}</td>
 
-            <td class="cards-cell">
+            <td class="cards-cell" *ngIf="showCardsColumn">
               <span class="badge-card badge-yellow">{{ player.tarAmarilla }}</span>
               <span class="badge-card badge-red">{{ player.tarRojas }}</span>
             </td>
@@ -273,7 +273,7 @@
         {{ 'AI_PANEL.HELP_TEXT' | translate }}
       </p>
       <div class="suggestion-chips">
-        <button class="chip" (click)="useSuggestion('¿Quién es el goleador del equipo?')">
+        <button class="chip" (click)="useSuggestion(aiSuggestionTopScorer)">
           <i class="bi bi-trophy-fill"></i>
           {{ 'AI_PANEL.SUGGESTION_TOP_SCORER' | translate }}
         </button>
@@ -285,11 +285,11 @@
           <i class="bi bi-graph-up-arrow"></i>
           {{ 'AI_PANEL.SUGGESTION_PERFORMANCE' | translate }}
         </button>
-        <button class="chip" (click)="useSuggestion('¿Qué jugadores tienen más tarjetas?')">
+        <button class="chip" *ngIf="showCardsColumn" (click)="useSuggestion('¿Qué jugadores tienen más tarjetas?')">
           <i class="bi bi-square-fill chip-icon-yellow"></i>
           {{ 'AI_PANEL.SUGGESTION_CARDS' | translate }}
         </button>
-        <button class="chip" (click)="useSuggestion('Compara goles vs asistencias')">
+        <button class="chip" (click)="useSuggestion(aiSuggestionCompareScoring)">
           <i class="bi bi-arrow-left-right"></i>
           {{ 'AI_PANEL.SUGGESTION_COMPARISON' | translate }}
         </button>

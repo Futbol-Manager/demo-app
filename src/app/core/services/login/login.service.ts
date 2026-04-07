@@ -219,7 +219,7 @@ export class LoginService {
     };
     const profileName = profileNames[profileId] || 'Club';
     const demoAvatars: Record<number, string> = {
-      1: 'demo-club-logo.png',
+      1: 'demo-club-logo.svg',
       2: 'demo-coach-avatar.svg',
       3: 'demo-player-avatar.svg',
     };
@@ -264,7 +264,7 @@ export class LoginService {
     const profileId: 1 | 2 | 3 = role === 'club' ? 1 : role === 'coach' ? 2 : 3;
     const profileNames: Record<DemoRole, string> = { club: 'Club', coach: 'Entrenador', player: 'Jugador' };
     const demoAvatars: Record<DemoRole, string> = {
-      club:   'demo-club-logo.png',
+      club:   'demo-club-logo.svg',
       coach:  'demo-coach-avatar.svg',
       player: 'demo-player-avatar.svg',
     };
@@ -312,7 +312,7 @@ export class LoginService {
     }
     const profileNames = { club: 'Club', coach: 'Entrenador', player: 'Jugador' };
     const profileId = role === 'club' ? 1 : role === 'coach' ? 2 : 3;
-    const demoAvatars = { club: 'demo-club-logo.png', coach: 'demo-coach-avatar.svg', player: 'demo-player-avatar.svg' };
+    const demoAvatars = { club: 'demo-club-logo.svg', coach: 'demo-coach-avatar.svg', player: 'demo-player-avatar.svg' };
     const updated = {
       ...user,
       profileType: {

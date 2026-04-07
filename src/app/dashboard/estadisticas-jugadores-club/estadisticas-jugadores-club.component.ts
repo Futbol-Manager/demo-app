@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
@@ -11,6 +11,9 @@ import { AiChatService } from 'src/app/core/services/ai-chat/ai-chat.service';
 import { AiPageContextService } from 'src/app/core/services/ai-chat/ai-page-context.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
+import { getSportConfig, SportConfig } from 'src/app/core/models/sport/sport-config.model';
+import { SportContextService } from 'src/app/core/services/sport/sport-context.service';
+import { sportScoringPlural } from 'src/app/core/utils/sport-ui-i18n';
 import * as $ from 'jquery';
 
 @Component({
@@ -59,6 +62,10 @@ export class EstadisticasJugadoresClubComponent implements OnInit, OnDestroy {
 
   userId = 0;
 
+  sportConfig: SportConfig = getSportConfig('futbol');
+  currentSport = 'futbol';
+  private langSub?: Subscription;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -71,9 +78,45 @@ export class EstadisticasJugadoresClubComponent implements OnInit, OnDestroy {
     private aiPageContext: AiPageContextService,
     private loginService: LoginService,
     private tutorialService: TutorialService,
+    private sportContextService: SportContextService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
+  /** Columnas de penaltis/tiros libres (fútbol / fútbol sala). */
+  get showPenaltyColumns(): boolean {
+    const c = this.sportConfig.playerStatsColumns;
+    return c.includes('golesPenalti') || c.includes('penaltis');
+  }
+
+  /** Tarjetas amarillas/rojas u otras tarjetas del deporte. */
+  get showCardsColumn(): boolean {
+    const c = this.sportConfig.playerStatsColumns;
+    return c.includes('tarjetasAmarillas') || c.includes('tarjetasRojas') || c.includes('tarjetas');
+  }
+
+  get scoringPluralLabel(): string {
+    return sportScoringPlural(this.translate, this.currentSport, this.sportConfig.scoringUnitPlural);
+  }
+
+  get mediaScoringPerMatchLabel(): string {
+    return this.translate.instant('SPORT_UI.MEDIA_SCORING_PER_MATCH', {
+      scoringUnit: this.scoringPluralLabel.toLowerCase(),
+    });
+  }
+
+  get aiSuggestionTopScorer(): string {
+    const unit = this.scoringPluralLabel.toLowerCase();
+    return this.translate.instant('SPORT_UI.AI_TOP_SCORER_PROMPT', { unit });
+  }
+
+  get aiSuggestionCompareScoring(): string {
+    const unit = this.scoringPluralLabel.toLowerCase();
+    return this.translate.instant('SPORT_UI.AI_COMPARE_SCORING_ASSISTS', { unit });
+  }
+
   ngOnInit(): void {
+    this.currentSport = this.sportContextService.getSport();
+    this.sportConfig = getSportConfig(this.currentSport);
     this.loginService.usuarioActual.pipe().subscribe(user => {
       if (user) this.userId = user.userId;
     });
@@ -82,6 +125,7 @@ export class EstadisticasJugadoresClubComponent implements OnInit, OnDestroy {
     });
     this.cargarTablaJugadores();
     this.initVoiceRecognition();
+    this.langSub = this.translate.onLangChange.subscribe(() => this.cdr.markForCheck());
     setTimeout(() => this.tutorialService.start('estadisticas-jugadores-club', true), 600);
   }
 
@@ -129,6 +173,7 @@ export class EstadisticasJugadoresClubComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.langSub?.unsubscribe();
     this.voiceTranscriptSub?.unsubscribe();
     this.voiceListeningSub?.unsubscribe();
     this.voiceErrorSub?.unsubscribe();

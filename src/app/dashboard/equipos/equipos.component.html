@@ -92,34 +92,75 @@
 
     </div>
 
-    <!-- SEASON SELECTOR -->
-    <div class="season-bar" data-tutorial="equipos-temporada">
-      <label class="season-label">
-        <i class="bi bi-calendar-event"></i>
+    <!-- FILTERS BAR: temporada + deporte -->
+    <div class="filters-bar" data-tutorial="equipos-temporada">
+
+      <!-- Temporada: pills -->
+      <span class="filter-group-label">
+        <i class="bi bi-calendar3"></i>
         {{ 'TITLES.SEASON' | translate }}
-      </label>
-      <select class="season-select" [(ngModel)]="temporada"
-        (change)="profileId === 1 ? cargarListadoEquiposForClub() : cargarListadoEquipos()">
-        <option *ngFor="let s of seasons" [value]="s.value">{{ s.label }}</option>
-      </select>
+      </span>
+      <div class="season-pills">
+        <button type="button"
+          *ngFor="let s of seasons"
+          class="season-pill"
+          [class.season-pill--active]="temporada === s.value"
+          (click)="temporada = s.value; profileId === 1 ? cargarListadoEquiposForClub() : cargarListadoEquipos()">
+          {{ s.label }}
+          <span *ngIf="temporada === s.value" class="season-pill-dot"></span>
+        </button>
+      </div>
+
+      <!-- Separador + filtro de deporte (solo cuando hay 2+ deportes) -->
+      <span class="filter-divider" *ngIf="showSportFilter"></span>
+
+      <ng-container *ngIf="showSportFilter">
+        <span class="filter-group-label">
+          <i class="bi bi-funnel-fill"></i>
+          {{ 'EQUIPOS.SPORT_LABEL' | translate }}
+        </span>
+        <div class="sport-filter-pills">
+          <button type="button"
+            class="sport-filter-pill"
+            [class.sport-filter-pill--active]="sportFilter === 'all'"
+            (click)="setSportFilter('all')">
+            <span>{{ 'COMMON.ALL' | translate }}</span>
+          </button>
+          <button type="button"
+            *ngFor="let s of uniqueSportsInTeams"
+            class="sport-filter-pill"
+            [class.sport-filter-pill--active]="sportFilter === s.key"
+            (click)="setSportFilter(s.key)">
+            {{ s.emoji }} <span>{{ 'EQUIPOS.SPORTS.' + s.key | translate }}</span>
+          </button>
+        </div>
+      </ng-container>
+
     </div>
 
     <!-- TEAMS GRID -->
     <div *ngIf="profileId < 3" class="teams-grid" cdkDropList (cdkDropListDropped)="dropTeam($event)" data-tutorial="equipos-listado">
 
-      <div *ngFor="let team of listTeam" class="team-card" cdkDrag (click)="navegarACalendario(team.teamId, 0)">
+      <div *ngFor="let team of filteredTeams" class="team-card" cdkDrag (click)="navegarACalendario(team.teamId, 0)">
 
         <!-- Banner superior -->
         <div class="tc-banner">
           <div class="tc-banner-overlay"></div>
+
+          <!-- Badge de deporte (top-right) -->
+          <div class="tc-sport-badge">
+            <span class="tc-sport-emoji">{{ getSportEmoji(team.sport) }}</span>
+            <span class="tc-sport-name">{{ 'EQUIPOS.SPORTS.' + (team.sport || 'futbol') | translate }}</span>
+          </div>
+
           <div class="tc-shield-wrap">
             <div class="tc-shield">
               <!-- En demo: src estático (mismo patrón que header/sidebar) para que el asset cargue bien -->
               <img *ngIf="isDemo"
-                   src="assets/images/user/demo-club-logo.png"
+                   src="assets/images/user/demo-club-logo.svg"
                    alt="Escudo del club"
-                   class="tc-shield-img"
-                   (error)="$any($event.target).src='assets/images/user/demo-club-logo.png'" />
+                   class="tc-shield-img tc-shield-img--demo"
+                   (error)="$any($event.target).src='assets/images/user/demo-club-logo.svg'" />
               <img *ngIf="!isDemo && (team.imgClub || pictureClub)"
                    [src]="getShieldImageSrc(team)"
                    alt="Escudo del club"
@@ -185,9 +226,10 @@
       </div>
 
       <!-- Empty teams -->
-      <div *ngIf="listTeam.length === 0" class="teams-empty">
+      <div *ngIf="filteredTeams.length === 0" class="teams-empty">
         <i class="bi bi-shield-slash"></i>
-        <p>{{ 'EQUIPOS.NO_TEAMS' | translate }}</p>
+        <p *ngIf="sportFilter === 'all'">{{ 'EQUIPOS.NO_TEAMS' | translate }}</p>
+        <p *ngIf="sportFilter !== 'all'">{{ 'EQUIPOS.NO_TEAMS_SPORT' | translate }}</p>
       </div>
 
     </div>

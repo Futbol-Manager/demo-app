@@ -6,8 +6,8 @@
 // styles.scss
 @import "@fortawesome/fontawesome-free/css/all.css";
 
-/* Archivo - Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&display=swap');
+/* Plus Jakarta Sans - Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 
 /* ——— Design tokens (light / dark) ——— */
 @import './themes.scss';
@@ -15,7 +15,7 @@
 html,
 body {
   height: 100%;
-  font-family: 'Archivo', system-ui, -apple-system, BlinkMacSystemFont,
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont,
     'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
 }
 
