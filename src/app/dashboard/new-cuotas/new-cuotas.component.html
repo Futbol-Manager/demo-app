@@ -464,10 +464,14 @@
 
                 <!-- ESTADO -->
                 <td class="status-cell">
-                  <span class="status-pill" [ngClass]="player.estadoFiltrado > 0 ? 'status-pill--ok' : 'status-pill--vencida'">
+                  <span class="status-pill"
+                        [ngClass]="isNoQuota(player, true) ? 'status-pill--no-quota' : (player.estadoFiltrado > 0 ? 'status-pill--ok' : 'status-pill--vencida')">
                     <span class="status-pill-dot"></span>
-                    <i class="bi status-pill-icon" [ngClass]="player.estadoFiltrado > 0 ? 'bi-check2' : 'bi-exclamation-lg'"></i>
-                    <span class="status-pill-text">{{ player.estadoFiltrado > 0 ? 'Al día' : 'Vencida' }}</span>
+                    <i class="bi status-pill-icon"
+                       [ngClass]="isNoQuota(player, true) ? 'bi-dash-circle' : (player.estadoFiltrado > 0 ? 'bi-check2' : 'bi-exclamation-lg')"></i>
+                    <span class="status-pill-text">
+                      {{ isNoQuota(player, true) ? 'Sin cuotas' : (player.estadoFiltrado > 0 ? 'Al día' : 'Vencida') }}
+                    </span>
                   </span>
                 </td>
 
@@ -687,10 +691,14 @@
                   <td>{{ player.nameTeam || ('CUOTAS.NO_TEAM' | translate) }}</td>
 
                   <td class="status-cell">
-                    <span class="status-pill" [ngClass]="player.estado > 0 ? 'status-pill--ok' : 'status-pill--vencida'">
+                    <span class="status-pill"
+                          [ngClass]="isNoQuota(player) ? 'status-pill--no-quota' : (player.estado > 0 ? 'status-pill--ok' : 'status-pill--vencida')">
                       <span class="status-pill-dot"></span>
-                      <i class="bi status-pill-icon" [ngClass]="player.estado > 0 ? 'bi-check2' : 'bi-exclamation-lg'"></i>
-                      <span class="status-pill-text">{{ player.estado > 0 ? 'Al día' : 'Vencida' }}</span>
+                      <i class="bi status-pill-icon"
+                         [ngClass]="isNoQuota(player) ? 'bi-dash-circle' : (player.estado > 0 ? 'bi-check2' : 'bi-exclamation-lg')"></i>
+                      <span class="status-pill-text">
+                        {{ isNoQuota(player) ? 'Sin cuotas' : (player.estado > 0 ? 'Al día' : 'Vencida') }}
+                      </span>
                     </span>
                   </td>
 

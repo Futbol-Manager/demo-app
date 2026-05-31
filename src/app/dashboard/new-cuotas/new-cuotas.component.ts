@@ -231,7 +231,7 @@ export class NewCuotasComponent implements OnInit {
   recordatorioEnviado = false;
 
   get jugadoresConVencida(): any[] {
-    return this.listaPlayers.filter((p: any) => p.estado != null && +p.estado <= 0);
+    return this.listaPlayers.filter((p: any) => p.estado != null && +p.estado <= 0 && !this.isNoQuota(p));
   }
 
   abrirModalRecordatorio(): void {
@@ -352,7 +352,7 @@ export class NewCuotasComponent implements OnInit {
         if (!statsMap.has(pid)) statsMap.set(pid, { jugadoresConPago: 0, jugadoresPagados: 0, totalEsperado: 0, totalRecaudado: 0 });
         const s = statsMap.get(pid)!;
         const imp = this.calcularImporteBaseCuota(c);
-        const pagado = Math.min(this.sumarImportePagadoEnHistorial(historial, pid), imp);
+        const pagado = Math.min(this.sumarImportePagadoEnHistorial(historial, pid, c.pagoClubOriginalId), imp);
         s.jugadoresConPago++;
         s.totalEsperado += imp;
         s.totalRecaudado += pagado;
@@ -567,7 +567,12 @@ export class NewCuotasComponent implements OnInit {
       .subscribe({
         next: (response: Response) => {
           if (response.data) {
-            this.listaPagosClub = response.data;
+            const data = response.data;
+            const pagos = data.pagos ? data.pagos : data;
+            this.listaPagosClub = pagos;
+            if (this.showModalCuotas) {
+              this.listaCuotas = pagos;
+            }
           }
         },
         error: (err) => {
@@ -881,6 +886,11 @@ export class NewCuotasComponent implements OnInit {
     return Math.min((pagado / total) * 100, 100);
   }
 
+  isNoQuota(player: any, filtered = false): boolean {
+    const val = filtered ? player.totalAPagarFiltrado : player.totalAPagar;
+    return !val || parseFloat(val) === 0 || isNaN(parseFloat(val));
+  }
+
   get totalPaginas(): number {
     return Math.ceil(this.listaPlayersFiltrados.length / this.itemsPorPagina);
   }
@@ -994,9 +1004,10 @@ export class NewCuotasComponent implements OnInit {
       const matchText = !texto ||
         `${p.nombre || ''} ${p.apellido || ''}`.toLowerCase().includes(texto) ||
         (p.nameTeam && p.nameTeam.toLowerCase().includes(texto));
+      const noQuota = this.isNoQuota(p);
       const matchEstado = this.filtroEstado === 'todos' ||
-        (this.filtroEstado === 'ok' && +p.estado > 0) ||
-        (this.filtroEstado === 'vencida' && +p.estado <= 0);
+        (this.filtroEstado === 'ok' && (+p.estado > 0 || noQuota)) ||
+        (this.filtroEstado === 'vencida' && +p.estado <= 0 && !noQuota);
       const matchEquipo = !this.filtroEquipo || p.nameTeam === this.filtroEquipo;
       return matchText && matchEstado && matchEquipo;
     });
@@ -1136,7 +1147,8 @@ export class NewCuotasComponent implements OnInit {
           this.playerCuotasCache.set(player.playerId, cuotasResp.data);
         }
         if (allCuotasResp?.data !== null) {
-          this.listAllCuotas = allCuotasResp.data;
+          const allData = allCuotasResp.data;
+          this.listAllCuotas = allData.pagos ? allData.pagos : allData;
         }
         this.loadingPlayerId = null;
         this.showModalCuotasJugador = true;
@@ -1210,9 +1222,9 @@ export class NewCuotasComponent implements OnInit {
       .getListPagosClub(this.clubId, this.temporadaStoredValue)
       .subscribe(
         (response: Response) => {
-          // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data !== null) {
-            this.listaCuotas = response.data;
+            const data = response.data;
+            this.listaCuotas = data.pagos ? data.pagos : data;
           }
           this.showModalCuotas = true;
         },
@@ -1309,29 +1321,52 @@ export class NewCuotasComponent implements OnInit {
   }
 
   private _doEliminarCuota(cuota: any, index: number): void {
-    let pago =
-      cuota.PagoClubId != null && cuota.PagoClubId != undefined
-        ? cuota.PagoClubId
-        : cuota.pagoClubId;
+    const pago = cuota.pagoClubId ?? cuota.PagoClubId;
 
     this.clubService.deletePagoClub(pago).subscribe(
       (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data) {
-          this.listaCuotas.splice(index, 1);
+          this.toastr.success('Pago eliminado correctamente.');
+          this.loadPagosClub();
           this.reloadTabla();
+        } else if (response.error?.code === 2) {
+          this.openConfirm({
+            title: 'Eliminar pago permanentemente',
+            message: `El pago <strong>"${cuota.titulo ?? ''}"</strong> tiene jugadores que ya han realizado pagos. Al eliminarlo, <strong>se conservará el historial de pagos</strong>, pero la cuota se eliminará de forma permanente.`,
+            confirmText: 'Eliminar permanentemente',
+            type: 'danger',
+            icon: 'bi-exclamation-triangle-fill',
+            callback: () => this._doEliminarCuotaForce(pago, index),
+          });
         } else {
-          this.toastr.error('Error: ', response.error.msg);
-          console.error(
-            'La respuesta del servicio no tiene la estructura esperada',
-            response
-          );
+          this.toastr.error('No se pudo eliminar el pago.');
         }
       },
       (error) => {
-        console.error('Error al cargar el listado de equipos', error);
+        console.error('Error al eliminar cuota', error);
+        this.toastr.error('No se pudo eliminar el pago.');
       }
     );
+  }
+
+  private _doEliminarCuotaForce(pagoClubId: number, index: number): void {
+    this.clubService.deletePagoClubForce(pagoClubId).subscribe({
+      next: (response: Response) => {
+        if (response.data) {
+          this.toastr.success('La cuota ha sido eliminada permanentemente.');
+          this.loadPagosClub();
+          this.loadTabla();
+          this.playerHistoryCache.clear();
+          this.playerDetailCache.clear();
+          this.playerCuotasCache.clear();
+        } else {
+          this.toastr.error('Error al eliminar la cuota permanentemente.');
+        }
+      },
+      error: () => {
+        this.toastr.error('Error al eliminar la cuota permanentemente.');
+      },
+    });
   }
 
   abrirModalCuota() {
@@ -1723,11 +1758,14 @@ export class NewCuotasComponent implements OnInit {
       );
   }
 
-  /** Suma el importe pagado para una cuota concreta (usando el historial del modal) */
-  sumarImportePagadoEnHistorial(historial: any[], pagoClubId: number): number {
+  sumarImportePagadoEnHistorial(historial: any[], pagoClubId: number, pagoClubOriginalId?: number): number {
     const idObjetivo = +pagoClubId;
+    const idOriginal = pagoClubOriginalId ? +pagoClubOriginalId : 0;
     return (historial || [])
-      .filter((h: any) => +(h.pagoClubId ?? h.PagoClubId ?? 0) === idObjetivo)
+      .filter((h: any) => {
+        const hId = +(h.pagoClubId ?? h.PagoClubId ?? 0);
+        return hId === idObjetivo || (idOriginal > 0 && hId === idOriginal);
+      })
       .reduce((sum: number, h: any) => {
         const importe = h?.importe ?? h?.importePagado ?? h?.amount ?? h?.total;
         return sum + (parseFloat(importe) || 0);
@@ -1852,9 +1890,13 @@ export class NewCuotasComponent implements OnInit {
     const totalAPagar = obligatorias.reduce(
       (s: number, c: any) => s + this.calcularImporteBaseCuota(c), 0
     );
-    const totalPagado = obligatorias.reduce(
+    let totalPagado = obligatorias.reduce(
       (s: number, c: any) => s + calcPagadoCuota(c.pagoClubId), 0
     );
+    const pagadoCuotasEliminadas = historialData
+      .filter((h: any) => h.cuotaEliminada === 1)
+      .reduce((s: number, h: any) => s + (parseFloat(h.importe) || 0), 0);
+    totalPagado += pagadoCuotasEliminadas;
     const restante = Math.max(0, totalAPagar - totalPagado);
     const pagadasCount = obligatorias.filter((c: any) => {
       const imp = this.calcularImporteBaseCuota(c);

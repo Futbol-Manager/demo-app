@@ -574,6 +574,18 @@ th:hover i {
 
     .status-pill-icon { color: #ef4444; font-size: 0.82rem; }
   }
+
+  &--no-quota {
+    background: rgba(148, 163, 184, 0.1);
+    color: #64748b;
+    border: 1.5px solid rgba(148, 163, 184, 0.3);
+
+    .status-pill-dot {
+      background: #94a3b8;
+    }
+
+    .status-pill-icon { color: #94a3b8; font-size: 0.78rem; }
+  }
 }
 
 .status-pill-dot {

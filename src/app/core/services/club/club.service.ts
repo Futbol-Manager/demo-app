@@ -1945,7 +1945,18 @@ export class ClubService {
       return this.http.delete<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY;
+    }
+  }
+
+  deletePagoClubForce(pagoClubId: number): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+      const url: string = environment.apiUrl + `club/deletepagoclubforce/${pagoClubId}`;
+      return this.http.delete<Response>(url, { headers });
+    } else {
+      return EMPTY;
     }
   }
 
