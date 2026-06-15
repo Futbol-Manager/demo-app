@@ -29,11 +29,14 @@ export class DemoCouponService {
    * @param email     email del lead
    * @param language  código ISO del idioma seleccionado (es, en, fr, de, pt, it, ca, gl, eu)
    */
-  generateCoupon(email: string, language: string = 'es'): Observable<DemoCouponResponse | null> {
+  generateCoupon(email: string, language: string = 'es', phone: string = ''): Observable<DemoCouponResponse | null> {
     const base = this.baseUrl.replace(/\/$/, '');
+    const body: { email: string; language: string; phone?: string } = { email, language };
+    const trimmedPhone = (phone || '').trim();
+    if (trimmedPhone) body.phone = trimmedPhone;
     return this.http.post<DemoCouponResponse>(
       `${base}/public/demo-coupon/generate`,
-      { email, language }
+      body
     ).pipe(
       catchError(() => of(null))
     );

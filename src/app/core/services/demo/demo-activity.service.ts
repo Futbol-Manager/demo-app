@@ -20,9 +20,13 @@ export interface DemoActivitySummary {
 
 export interface DemoLeadPayload {
   email: string;
+  phone?: string;
   demoRole: string;
   activitySummary: DemoActivitySummary;
 }
+
+/** Clave de sessionStorage donde se guarda el teléfono capturado al acceder a la demo. */
+const SESSION_KEY_PHONE = 'demoPhone';
 
 /** Normaliza la URL del router a un nombre de pantalla legible */
 function routeToScreenName(url: string): string {
@@ -200,11 +204,13 @@ export class DemoActivityService {
     }
     const url = `${baseUrl.replace(/\/$/, '')}/public/demo-lead`;
     const role = this.demoService.getDemoRole();
+    const phone = (sessionStorage.getItem(SESSION_KEY_PHONE) || '').trim();
     const payload: DemoLeadPayload = {
       email:           email.trim(),
       demoRole:        role || '',
       activitySummary: this.getActivitySummary(),
     };
+    if (phone) payload.phone = phone;
     return this.http.post<{ status?: number; data?: unknown; error?: { msg?: string } }>(url, payload).pipe(
       map((res) => {
         if (res.status === 200) return { success: true };

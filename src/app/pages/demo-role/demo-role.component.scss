@@ -1339,6 +1339,29 @@ $muted:    rgba(255,255,255,0.65);
   .email-icon--valid   { color: #22c55e; }
   .email-icon--invalid { color: #ef4444; }
 }
+.email-modal__phone-wrap {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  margin-top: 10px;
+}
+.email-modal__phone-prefix {
+  flex: 0 0 auto;
+  padding: 13px 10px;
+  border: 1.5px solid rgba(0,0,0,0.12);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: $navy;
+  background: #fff;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  &:focus { border-color: $primary; box-shadow: 0 0 0 3px rgba($primary,0.12); }
+}
+.email-modal__phone-input {
+  flex: 1 1 auto;
+  padding-right: 16px;
+}
 .email-modal__error {
   font-size: 0.78rem; color: #ef4444;
   margin: 6px 0 0;

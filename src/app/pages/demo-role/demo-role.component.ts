@@ -434,6 +434,35 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
   /** true en cuanto el usuario ha modificado el campo (activa validación en tiempo real) */
   emailTouched = false;
 
+  // ── Teléfono (obligatorio para acceder a la demo) ──────────────────────────
+  /** Prefijo internacional seleccionado (ej. '+34'). */
+  phonePrefix = '+34';
+  /** Número de teléfono sin prefijo (solo dígitos). */
+  phoneNumber = '';
+  /** true en cuanto el usuario ha tocado el campo de teléfono. */
+  phoneTouched = false;
+  /** Lista curada de prefijos de país más habituales para la demo. */
+  readonly phonePrefixes: ReadonlyArray<{ code: string; label: string }> = [
+    { code: '+34',  label: '🇪🇸 +34' },
+    { code: '+351', label: '🇵🇹 +351' },
+    { code: '+33',  label: '🇫🇷 +33' },
+    { code: '+49',  label: '🇩🇪 +49' },
+    { code: '+39',  label: '🇮🇹 +39' },
+    { code: '+44',  label: '🇬🇧 +44' },
+    { code: '+1',   label: '🇺🇸 +1' },
+    { code: '+52',  label: '🇲🇽 +52' },
+    { code: '+54',  label: '🇦🇷 +54' },
+    { code: '+57',  label: '🇨🇴 +57' },
+    { code: '+56',  label: '🇨🇱 +56' },
+    { code: '+58',  label: '🇻🇪 +58' },
+    { code: '+591', label: '🇧🇴 +591' },
+    { code: '+593', label: '🇪🇨 +593' },
+    { code: '+595', label: '🇵🇾 +595' },
+    { code: '+598', label: '🇺🇾 +598' },
+    { code: '+51',  label: '🇵🇪 +51' },
+    { code: '+212', label: '🇲🇦 +212' },
+  ];
+
   // ── Cupón demo ────────────────────────────────────────────────────────────
   /**
    * Paso del modal: 'email' → captura de email | 'coupon' → muestra el cupón generado.
@@ -531,6 +560,29 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     this.emailAlreadyHasCoupon = false;
     // Limpiar error de servidor si el usuario corrige
     if (this.emailError && this.isValidEmail) this.emailError = '';
+  }
+
+  /** Solo dígitos en el número y validación de longitud (6-15 dígitos). */
+  get isValidPhone(): boolean {
+    const digits = this.phoneNumber.replace(/\D/g, '');
+    return digits.length >= 6 && digits.length <= 15;
+  }
+
+  /** Teléfono completo en formato internacional (prefijo + dígitos). */
+  get fullPhone(): string {
+    const digits = this.phoneNumber.replace(/\D/g, '');
+    return digits ? `${this.phonePrefix}${digits}` : '';
+  }
+
+  /** true cuando email Y teléfono son válidos (requisito para acceder a la demo). */
+  get canSubmitDemoAccess(): boolean {
+    return this.isValidEmail && this.isValidPhone;
+  }
+
+  /** Limpia el número conforme se escribe (solo dígitos y espacios). */
+  onPhoneInput(): void {
+    this.phoneTouched = true;
+    this.phoneNumber = this.phoneNumber.replace(/[^\d\s]/g, '');
   }
   get slideProgress(): number { return (this.currentSlide / Math.max(this.introSlides.length - 1, 1)) * 100; }
 
@@ -886,6 +938,7 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     this.isLoading      = false;
     this.emailError     = '';
     this.emailTouched   = false;
+    this.phoneTouched   = false;
     this.emailAlreadyHasCoupon = false;
     this.cdr.markForCheck();
   }
@@ -895,14 +948,18 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
    * Ya NO navega al dashboard — solo cambia el modal al paso 2 (mostrar cupón).
    */
   confirmDemoAccess(): void {
-    if (!this.isValidEmail) {
-      this.emailError = this.translate.instant('DEMO_INTRO.EMAIL_ERROR');
+    if (!this.canSubmitDemoAccess) {
+      this.emailTouched = true;
+      this.phoneTouched = true;
+      if (!this.isValidEmail) this.emailError = this.translate.instant('DEMO_INTRO.EMAIL_ERROR');
       return;
     }
     if (this.isCouponLoading) return;
 
     const email = this.emailValue.trim();
+    const phone = this.fullPhone;
     sessionStorage.setItem('demoEmail', email);
+    sessionStorage.setItem('demoPhone', phone);
 
     // Marcar que el usuario completó el flujo del email: el modal no volverá a aparecer
     this.demoCouponService.markModalShown();
@@ -913,7 +970,7 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     this.emailError       = '';
     this.cdr.markForCheck();
 
-    this.demoCouponService.generateCoupon(email, this.activeLang).subscribe({
+    this.demoCouponService.generateCoupon(email, this.activeLang, phone).subscribe({
       next: (res) => {
         if (this.destroyed) return;
         this.isCouponLoading = false;
@@ -973,8 +1030,18 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
    * Navega directamente al dashboard usando solo el email introducido.
    */
   skipCouponModal(): void {
+    // El teléfono y el email siguen siendo obligatorios para acceder a la demo,
+    // aunque el usuario decida saltar la generación del cupón.
+    if (!this.canSubmitDemoAccess) {
+      this.emailTouched = true;
+      this.phoneTouched = true;
+      if (!this.isValidEmail) this.emailError = this.translate.instant('DEMO_INTRO.EMAIL_ERROR');
+      return;
+    }
     const email = this.emailValue.trim();
     const role  = this.selectedRole;
+    sessionStorage.setItem('demoEmail', email);
+    sessionStorage.setItem('demoPhone', this.fullPhone);
     this.showEmailModal = false;
     this.cdr.markForCheck();
     if (email && role) {

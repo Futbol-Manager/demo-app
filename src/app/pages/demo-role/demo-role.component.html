@@ -497,8 +497,34 @@
         <i class="fas fa-exclamation-circle"></i> {{ emailError }}
       </p>
 
+      <!-- Teléfono obligatorio: prefijo de país + número -->
+      <div class="email-modal__phone-wrap">
+        <select
+          [(ngModel)]="phonePrefix"
+          class="email-modal__phone-prefix"
+          [attr.aria-label]="'DEMO_INTRO.PHONE_PREFIX' | translate">
+          <option *ngFor="let p of phonePrefixes" [value]="p.code">{{ p.label }}</option>
+        </select>
+        <input
+          type="tel"
+          [(ngModel)]="phoneNumber"
+          [placeholder]="'DEMO_INTRO.PHONE_PLACEHOLDER' | translate"
+          class="email-modal__input email-modal__phone-input"
+          [class.email-modal__input--error]="phoneTouched && !isValidPhone"
+          [class.email-modal__input--valid]="phoneTouched && isValidPhone"
+          (input)="onPhoneInput()"
+          (blur)="phoneTouched = true"
+          (keydown.enter)="confirmDemoAccess()"
+          autocomplete="tel-national"
+          inputmode="tel">
+      </div>
+
+      <p class="email-modal__error" *ngIf="phoneTouched && !isValidPhone">
+        <i class="fas fa-exclamation-circle"></i> {{ 'DEMO_INTRO.PHONE_INVALID' | translate }}
+      </p>
+
       <button class="email-modal__btn" (click)="confirmDemoAccess()"
-              [disabled]="isCouponLoading || !isValidEmail" type="button">
+              [disabled]="isCouponLoading || !canSubmitDemoAccess" type="button">
         <span *ngIf="!isCouponLoading">
           {{ 'DEMO_INTRO.COUPON_BTN' | translate }} &nbsp;<i class="fas fa-gift"></i>
         </span>
