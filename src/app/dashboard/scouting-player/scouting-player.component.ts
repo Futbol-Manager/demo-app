@@ -1,6 +1,7 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
+import { Subscription } from 'rxjs';
 import { ScoutingPlayer } from 'src/app/core/services/player/player.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { TrainingService } from 'src/app/core/services/training/training.service';
@@ -47,6 +48,7 @@ export class ScoutingPlayerComponent implements OnInit, AfterViewInit, OnDestroy
   chartAsistencia: Chart | null = null;
   profileImageError = false;
   activeTabGraficas: 'estadisticas' | 'asistencia' = 'estadisticas';
+  private subs = new Subscription();
 
   get profileImageUrl(): string | null {
     if (this.scoutingPlayer?.imagenPerfil) {
@@ -81,16 +83,16 @@ export class ScoutingPlayerComponent implements OnInit, AfterViewInit, OnDestroy
 
   ngOnInit(): void {
     setTimeout(() => this.tutorialService.start('scouting-player', true), 600);
-    this.route.params.subscribe(params => {
+    this.subs.add(this.route.params.subscribe(params => {
       this.playerId = +params['playerId'] || 0;
-    });
-    this.route.queryParams.subscribe(q => {
+    }));
+    this.subs.add(this.route.queryParams.subscribe(q => {
       this.teamId = q['teamId'] ? +q['teamId'] : 0;
-    });
+    }));
 
-    this.loginService.usuarioActual.subscribe(user => {
+    this.subs.add(this.loginService.usuarioActual.subscribe(user => {
       this.userId = user?.userId ?? 0;
-    });
+    }));
 
     this.cargarForm();
   }
@@ -104,6 +106,7 @@ export class ScoutingPlayerComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   ngOnDestroy(): void {
+    this.subs.unsubscribe();
     [this.radarChart, this.chartEstadisticas, this.chartAsistencia].forEach(c => {
       if (c) c.destroy();
     });

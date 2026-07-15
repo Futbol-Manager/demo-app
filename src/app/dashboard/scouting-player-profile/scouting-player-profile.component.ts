@@ -9,6 +9,7 @@ import { getSportConfig, SportConfig } from 'src/app/core/models/sport/sport-con
 import { SportContextService } from 'src/app/core/services/sport/sport-context.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { sportPositionLabel, sportScoringPlural, sportSectionOnField } from 'src/app/core/utils/sport-ui-i18n';
 
 @Component({
@@ -111,12 +112,17 @@ export class ScoutingPlayerProfileComponent implements OnInit, OnDestroy {
     this.sportConfig = getSportConfig(s);
     this.langSub = this.translate.onLangChange.subscribe(() => this.cdr.markForCheck());
     const routePlayerId = +this.route.snapshot.paramMap.get('playerId')!;
-    this.loginService.usuarioActual.subscribe(user => {
+    this.loginService.usuarioActual.pipe(take(1)).subscribe(user => {
       this.playerId = routePlayerId || user?.playerId || 0;
       this.initForm();
       if (this.playerId) {
         this.loadProfile();
-        this.checkVideoSubscription();
+        const sessionId = this.route.snapshot.queryParamMap.get('session_id');
+        if (sessionId && !isDemoMode()) {
+          this.verifyVideoCheckout(sessionId);
+        } else {
+          this.checkVideoSubscription();
+        }
       } else {
         this.loading = false;
       }
@@ -340,8 +346,28 @@ export class ScoutingPlayerProfileComponent implements OnInit, OnDestroy {
   }
 
   removeCv(): void {
-    this.cvUrl = null;
-    this.cvFileName = null;
+    if (!this.cvUrl && !this.cvFileName) return;
+    if (isDemoMode()) {
+      this.cvUrl = null;
+      this.cvFileName = null;
+      return;
+    }
+    const prevUrl = this.cvUrl;
+    const prevName = this.cvFileName;
+    this.cvUploading = true;
+    this.http.delete<any>(`${this.apiBase}/${this.playerId}/cv`, { headers: this.headers })
+      .subscribe({
+        next: () => {
+          this.cvUrl = null;
+          this.cvFileName = null;
+          this.cvUploading = false;
+        },
+        error: () => {
+          this.cvUrl = prevUrl;
+          this.cvFileName = prevName;
+          this.cvUploading = false;
+        }
+      });
   }
 
   // ── Posiciones ──────────────────────────────────────────────
@@ -406,21 +432,114 @@ export class ScoutingPlayerProfileComponent implements OnInit, OnDestroy {
       });
   }
 
+  /** Inicia la suscripción de vídeo (2,99 €/mes) vía Stripe Checkout. */
+  subscribeVideo(): void {
+    if (this.videoSubscriptionLoading) return;
+    if (isDemoMode()) {
+      this.videoSubscription = true;
+      return;
+    }
+    this.videoSubscriptionLoading = true;
+    const returnUrl = window.location.origin + window.location.pathname;
+    const body = { successUrl: returnUrl, cancelUrl: returnUrl };
+    this.http.post<any>(`${this.apiBase}/${this.playerId}/video-subscription/checkout`, body, { headers: this.headers })
+      .subscribe({
+        next: res => {
+          if (res?.data?.alreadyActive) {
+            this.videoSubscription = true;
+            this.videoSubscriptionLoading = false;
+            return;
+          }
+          const url = res?.data?.checkoutUrl;
+          if (url) { window.location.href = url; }
+          else { this.videoSubscriptionLoading = false; }
+        },
+        error: () => { this.videoSubscriptionLoading = false; }
+      });
+  }
+
+  /** Verifica la sesión de Checkout al volver del pago y activa la suscripción. */
+  private verifyVideoCheckout(sessionId: string): void {
+    this.videoSubscriptionLoading = true;
+    this.http.post<any>(`${this.apiBase}/${this.playerId}/video-subscription/verify`, { sessionId }, { headers: this.headers })
+      .subscribe({
+        next: res => {
+          this.videoSubscription = res?.data?.active === true;
+          this.videoSubscriptionLoading = false;
+        },
+        error: () => { this.videoSubscriptionLoading = false; this.checkVideoSubscription(); }
+      });
+  }
+
   triggerVideoFileUpload(): void {
     this.videoFileInput?.nativeElement.click();
   }
 
+  /**
+   * Subida directa a Backblaze B2 mediante URL prefirmada:
+   * 1) pedimos la URL PUT, 2) subimos a B2, 3) confirmamos el registro en BD.
+   */
   onVideoFileSelected(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
     if (!file) return;
+    if (isDemoMode()) {
+      this.videoUploading = false;
+      if (input) input.value = '';
+      return;
+    }
     this.videoUploading = true;
-    const fd = new FormData();
-    fd.append('file', file);
-    this.http.post<any>(`${this.apiBase}/${this.playerId}/video/upload`, fd, { headers: this.uploadHeaders })
+
+    const contentType = file.type || 'video/mp4';
+    const urlBody = { filename: file.name, contentType, sizeBytes: file.size };
+
+    this.http.post<any>(`${this.apiBase}/${this.playerId}/video/upload-url`, urlBody, { headers: this.headers })
       .subscribe({
-        next: () => { this.videoUploading = false; this.loadVideos(); },
-        error: () => { this.videoUploading = false; }
+        next: res => {
+          const uploadUrl = res?.data?.uploadUrl;
+          const fileKey = res?.data?.fileKey;
+          if (!uploadUrl || !fileKey) { this.finishVideoUpload(input); return; }
+          const putHeaders = new HttpHeaders({ 'Content-Type': contentType });
+          this.http.put(uploadUrl, file, { headers: putHeaders, responseType: 'text' })
+            .subscribe({
+              next: () => this.confirmVideoUpload(input, fileKey, file, contentType),
+              error: () => this.finishVideoUpload(input)
+            });
+        },
+        error: () => this.finishVideoUpload(input)
       });
+  }
+
+  private confirmVideoUpload(input: HTMLInputElement, fileKey: string, file: File, contentType: string): void {
+    const title = file.name.replace(/\.[^/.]+$/, '');
+    const body = { fileKey, title, description: '', sizeBytes: file.size, contentType };
+    this.http.post<any>(`${this.apiBase}/${this.playerId}/video/confirm`, body, { headers: this.headers })
+      .subscribe({
+        next: () => { this.finishVideoUpload(input); this.loadVideos(); },
+        error: () => this.finishVideoUpload(input)
+      });
+  }
+
+  private finishVideoUpload(input: HTMLInputElement): void {
+    this.videoUploading = false;
+    if (input) input.value = '';
+  }
+
+  /** Abre un vídeo: los DIRECT (subidos) requieren URL prefirmada; el resto es enlace directo. */
+  openVideo(v: any): void {
+    if (v?.plataforma === 'DIRECT') {
+      const videoId = v.videoId ?? v.playerVideoId;
+      this.http.get<any>(`${this.apiBase}/${this.playerId}/video/${videoId}/playback`, { headers: this.headers })
+        .subscribe({
+          next: res => { const url = res?.data?.url; if (url) window.open(url, '_blank'); }
+        });
+    } else if (v?.url) {
+      window.open(v.url, '_blank');
+    }
+  }
+
+  isDirectVideo(v: any): boolean {
+    return v?.plataforma === 'DIRECT';
   }
 
   getPlatformIcon(platform: string): string {

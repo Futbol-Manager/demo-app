@@ -315,10 +315,10 @@
                   <span class="sp-video-platform">{{ getPlatformLabel(v.plataforma) }}</span>
                 </div>
                 <div class="sp-video-actions">
-                  <a [href]="v.url" target="_blank" class="sp-btn-icon sp-btn-icon--green">
-                    <i class="bi bi-box-arrow-up-right"></i>
-                  </a>
-                  <button type="button" class="sp-btn-icon sp-btn-icon--red" (click)="deleteVideo(v.playerVideoId)">
+                  <button type="button" class="sp-btn-icon sp-btn-icon--green" (click)="openVideo(v)">
+                    <i [class]="isDirectVideo(v) ? 'bi bi-play-fill' : 'bi bi-box-arrow-up-right'"></i>
+                  </button>
+                  <button type="button" class="sp-btn-icon sp-btn-icon--red" (click)="deleteVideo(v.videoId ?? v.playerVideoId)">
                     <i class="bi bi-trash3"></i>
                   </button>
                 </div>
@@ -385,9 +385,10 @@
                 </div>
                 <div class="sp-paywall-cta">
                   <span class="sp-paywall-price">Desde <strong>2,99 €</strong>/mes</span>
-                  <a href="/dashboard/planes" class="sp-btn sp-btn--upgrade">
-                    <i class="bi bi-lightning-charge-fill"></i> Ver planes
-                  </a>
+                  <button type="button" class="sp-btn sp-btn--upgrade" [disabled]="videoSubscriptionLoading" (click)="subscribeVideo()">
+                    <span *ngIf="videoSubscriptionLoading" class="spinner-border spinner-border-sm me-1" role="status"></span>
+                    <i *ngIf="!videoSubscriptionLoading" class="bi bi-lightning-charge-fill"></i> Suscribirme
+                  </button>
                 </div>
               </div>
 
