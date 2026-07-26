@@ -197,7 +197,8 @@
           </div>
         </div>
 
-        <!-- GESTIÓN / ERP — En construcción -->
+        <!-- GESTIÓN / ERP — retirado del producto en jul-2026, no se muestra en
+             la demo para no enseñárselo a los prospectos.
         <div class="col-6 col-md-4">
           <div (click)="irAPantallaClub(15)" class="dashboard-card erp-card" role="button" tabindex="0">
             <div class="overlay">
@@ -210,6 +211,7 @@
             </div>
           </div>
         </div>
+        -->
 
       </div>
     </div>
@@ -588,6 +590,8 @@
           </div>
         </div>
 
+        <!-- ERP (staff) — retirado del producto en jul-2026, igual que la
+             tarjeta del dueño del club de más arriba.
         <div class="col-6 col-md-4" *ngIf="staffPermissions.includes('ERP')">
           <div class="dashboard-card" (click)="navegarStaff('/dashboard/erp')" role="button" tabindex="0">
             <img src="assets/images/pagarcuota.jpg" [attr.alt]="'NAV.ERP' | translate">
@@ -597,6 +601,7 @@
             </div>
           </div>
         </div>
+        -->
 
       </div>
     </div>

@@ -64,7 +64,8 @@ export class StaffClubComponent implements OnInit {
     { key: 'SCOUTING',       label: 'STAFF.PERM_SCOUTING',         icon: 'bi-binoculars-fill' },
     { key: 'AI_ASSISTANT',   label: 'STAFF.PERM_AI_ASSISTANT',     icon: 'bi-robot' },
     { key: 'VIDEO_ANALYSIS', label: 'STAFF.PERM_VIDEO_ANALYSIS',   icon: 'bi-play-circle-fill' },
-    { key: 'ERP',            label: 'STAFF.PERM_ERP',              icon: 'bi-gear-fill' },
+    // ERP retirado del producto en jul-2026: no se ofrece el permiso porque el
+    // apartado ya no aparece en ningún menú.
   ];
 
   // ── Estado del componente ────────────────────────────────────────────────
@@ -361,18 +362,15 @@ export class StaffClubComponent implements OnInit {
     return this.PERMISSION_STANDALONE.find(p => p.key === key)?.label ?? key;
   }
 
+  /**
+   * Casillas del modal, todas a `false`. Se deriva de los catálogos en lugar de
+   * repetir las claves: así no se puede quedar una casilla imposible de marcar
+   * (o una clave retirada, como ERP, sobreviviendo aquí).
+   */
   private buildDefaultPermissionsMap(): Record<string, boolean> {
     const map: Record<string, boolean> = {};
-    const groupKeys = [
-      'DASHBOARD_PLAYERS', 'DASHBOARD_COACHES', 'DASHBOARD_STATS_PLR',
-      'DASHBOARD_STATS_TEAM', 'DASHBOARD_CALENDAR', 'DASHBOARD_INJURIES',
-    ];
-    const standaloneKeys = [
-      'TEAMS', 'DOCUMENTS', 'PAYMENTS', 'CLOTHING', 'SPONSORS',
-      'NOTIFICATIONS', 'VIDEO_LIBRARY', 'SCOUTING', 'AI_ASSISTANT',
-      'VIDEO_ANALYSIS', 'ERP',
-    ];
-    [...groupKeys, ...standaloneKeys].forEach(k => (map[k] = false));
+    this.PERMISSION_GROUPS.forEach(g => g.children.forEach(c => (map[c.key] = false)));
+    this.PERMISSION_STANDALONE.forEach(item => (map[item.key] = false));
     return map;
   }
 }
