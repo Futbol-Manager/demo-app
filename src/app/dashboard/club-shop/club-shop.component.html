@@ -214,8 +214,13 @@
           {{ 'CLUB_SHOP.DEMO_NOTICE' | translate }}
         </div>
 
-        <button class="btn-checkout" disabled>
-          <i class="bi bi-lock-fill me-2"></i>{{ 'CLUB_SHOP.PAY' | translate }} {{ formatPrice(cartTotal) }}
+        <button class="btn-checkout" (click)="checkout()" [disabled]="processingCheckout || cartItems.length === 0">
+          <ng-container *ngIf="!processingCheckout">
+            <i class="bi bi-lock-fill me-2"></i>{{ 'CLUB_SHOP.PAY' | translate }} {{ formatPrice(cartTotal) }}
+          </ng-container>
+          <ng-container *ngIf="processingCheckout">
+            <i class="bi bi-arrow-repeat spin me-2"></i>{{ 'CLUB_SHOP.PROCESSING' | translate }}
+          </ng-container>
         </button>
 
         <div class="trust-badges">
@@ -229,13 +234,64 @@
 
   <!-- PEDIDOS -->
   <div *ngIf="activeTab === 'orders'" class="orders-section" data-tutorial="shop-orders">
-    <div class="empty-state">
+
+    <!-- Vacio -->
+    <div *ngIf="orders.length === 0" class="empty-state">
       <div class="empty-icon"><i class="bi bi-receipt"></i></div>
       <h3>{{ 'CLUB_SHOP.ORDERS_EMPTY_TITLE' | translate }}</h3>
       <p>{{ 'CLUB_SHOP.ORDERS_EMPTY_TEXT' | translate }}</p>
       <button class="btn-primary-sph" (click)="switchTab('catalog')">
         <i class="bi bi-grid-3x3-gap me-2"></i>{{ 'CLUB_SHOP.EXPLORE_CATALOG' | translate }}
       </button>
+    </div>
+
+    <!-- Lista de pedidos -->
+    <div *ngIf="orders.length > 0" class="orders-list">
+      <div class="order-card" *ngFor="let o of orders; trackBy: trackByOrder">
+        <div class="order-head" (click)="toggleOrder(o.orderId)">
+          <div class="order-head-left">
+            <span class="order-ref">#{{ o.orderId }}</span>
+            <span class="order-date">{{ o.createdAt | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="order-head-right">
+            <span class="order-status" [ngClass]="'st-' + statusClass(o.status)">{{ statusLabel(o.status) }}</span>
+            <span class="order-total">{{ formatPrice(o.total) }}</span>
+            <i class="bi order-chevron" [class.bi-chevron-down]="!isOrderExpanded(o.orderId)" [class.bi-chevron-up]="isOrderExpanded(o.orderId)"></i>
+          </div>
+        </div>
+
+        <div class="order-body" *ngIf="isOrderExpanded(o.orderId)">
+          <!-- Timeline -->
+          <div class="order-timeline">
+            <div class="tl-step" *ngFor="let step of orderTimeline(o); trackBy: trackByIdx"
+                 [class.done]="step.done" [class.active]="step.active">
+              <div class="tl-icon"><i class="bi" [ngClass]="step.icon"></i></div>
+              <div class="tl-meta">
+                <span class="tl-label">{{ statusLabel(step.key) }}</span>
+                <span class="tl-date" *ngIf="step.date">{{ step.date | date:'dd/MM HH:mm' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Items -->
+          <div class="order-items">
+            <div class="order-item" *ngFor="let it of o.items; trackBy: trackByIdx">
+              <img [src]="it.product.image" [alt]="productName(it.product)" />
+              <div class="oi-info">
+                <span class="oi-name">{{ productName(it.product) }}</span>
+                <small *ngIf="it.variant" class="oi-variant">{{ it.variant }}</small>
+              </div>
+              <span class="oi-qty">x{{ it.qty }}</span>
+              <span class="oi-price">{{ formatPrice(it.product.price * it.qty) }}</span>
+            </div>
+          </div>
+
+          <div class="order-footer">
+            <span>{{ orderItemsCount(o) }} {{ 'CLUB_SHOP.ITEMS' | translate }}</span>
+            <strong>{{ 'CLUB_SHOP.TOTAL' | translate }}: {{ formatPrice(o.total) }}</strong>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -249,4 +305,26 @@
     <span class="toast-product">{{ tr('CLUB_SHOP.PRODUCTS.' + cartToastKey + '.NAME') }}</span>
   </div>
   <i class="bi bi-check-circle-fill toast-check"></i>
+</div>
+
+<!-- MODAL EXITO CHECKOUT -->
+<div *ngIf="checkoutSuccessOrder" class="checkout-success-backdrop" (click)="closeCheckoutSuccess()">
+  <div class="checkout-success-card" (click)="$event.stopPropagation()">
+    <div class="cs-icon"><i class="bi bi-check-circle-fill"></i></div>
+    <h3 class="cs-title">{{ 'CLUB_SHOP.CHECKOUT_SUCCESS_TITLE' | translate }}</h3>
+    <p class="cs-text">{{ 'CLUB_SHOP.CHECKOUT_SUCCESS_TEXT' | translate }}</p>
+    <div class="cs-ref">
+      <span>{{ 'CLUB_SHOP.ORDER_REF' | translate }}</span>
+      <strong>#{{ checkoutSuccessOrder.orderId }}</strong>
+    </div>
+    <div class="cs-demo-note">
+      <i class="bi bi-info-circle me-1"></i>{{ 'CLUB_SHOP.DEMO_NOTICE' | translate }}
+    </div>
+    <div class="cs-actions">
+      <button class="btn-ghost" (click)="closeCheckoutSuccess()">{{ 'COMMON.CLOSE' | translate }}</button>
+      <button class="btn-primary-sph" (click)="closeCheckoutSuccess(true)">
+        <i class="bi bi-receipt me-2"></i>{{ 'CLUB_SHOP.VIEW_ORDER' | translate }}
+      </button>
+    </div>
+  </div>
 </div>

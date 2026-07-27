@@ -23,6 +23,19 @@ export interface DemoCartItem {
   variant?: string;
 }
 
+export type DemoOrderStatus = 'PENDING_PAYMENT' | 'PAID' | 'PREPARING' | 'DELIVERED';
+
+export interface DemoOrder {
+  orderId: number;
+  createdAt: Date;
+  paidAt: Date | null;
+  preparingAt: Date | null;
+  deliveredAt: Date | null;
+  items: DemoCartItem[];
+  total: number;
+  status: DemoOrderStatus;
+}
+
 @Component({
   selector: 'app-club-shop',
   templateUrl: './club-shop.component.html',
@@ -38,6 +51,15 @@ export class ClubShopComponent implements OnInit {
   cartItems: DemoCartItem[] = [];
   cartToastVisible = false;
   cartToastKey = '';
+
+  // Checkout simulado (demo: no hay cobro real)
+  processingCheckout = false;
+  checkoutSuccessOrder: DemoOrder | null = null;
+
+  // Pedidos (mock): uno de ejemplo entregado + los creados en el checkout demo
+  orders: DemoOrder[] = [];
+  expandedOrders = new Set<number>();
+  private orderSeq = 1001;
 
   readonly products: DemoProduct[] = [
     {
@@ -167,7 +189,34 @@ export class ClubShopComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.seedDemoOrders();
     setTimeout(() => this.tutorialService.start('tienda-club', true), 600);
+  }
+
+  /** Siembra un pedido de ejemplo ya entregado para poblar la pestaña "Pedidos". */
+  private seedDemoOrders(): void {
+    const jacket = this.products.find(p => p.key === 'JACKET');
+    const ball = this.products.find(p => p.key === 'BALL');
+    if (!jacket || !ball) return;
+    const now = Date.now();
+    const day = 86400000;
+    const items: DemoCartItem[] = [
+      { product: jacket, qty: 1, variant: 'M' },
+      { product: ball, qty: 2 },
+    ];
+    const total = items.reduce((s, i) => s + i.product.price * i.qty, 0);
+    this.orders = [
+      {
+        orderId: this.orderSeq++,
+        createdAt: new Date(now - 12 * day),
+        paidAt: new Date(now - 12 * day + 3600000),
+        preparingAt: new Date(now - 11 * day),
+        deliveredAt: new Date(now - 9 * day),
+        items,
+        total,
+        status: 'DELIVERED',
+      },
+    ];
   }
 
   goBack(): void { this.location.back(); }
@@ -261,6 +310,88 @@ export class ClubShopComponent implements OnInit {
 
   starArray(): number[] { return [1, 2, 3, 4, 5]; }
 
+  // ---------------------------------------------------------------------------
+  // Checkout simulado (demo): no hay cobro real, se crea un pedido "pagado"
+  // ---------------------------------------------------------------------------
+
+  checkout(): void {
+    if (this.processingCheckout || this.cartItems.length === 0) return;
+    this.processingCheckout = true;
+    const now = new Date();
+    setTimeout(() => {
+      const order: DemoOrder = {
+        orderId: this.orderSeq++,
+        createdAt: now,
+        paidAt: now,
+        preparingAt: null,
+        deliveredAt: null,
+        items: this.cartItems.map(i => ({ product: i.product, qty: i.qty, variant: i.variant })),
+        total: this.cartTotal,
+        status: 'PAID',
+      };
+      this.orders = [order, ...this.orders];
+      this.cartItems = [];
+      this.processingCheckout = false;
+      this.checkoutSuccessOrder = order;
+      this.expandedOrders.add(order.orderId);
+    }, 1400);
+  }
+
+  closeCheckoutSuccess(goToOrders = false): void {
+    this.checkoutSuccessOrder = null;
+    if (goToOrders) this.switchTab('orders');
+  }
+
+  toggleOrder(orderId: number): void {
+    if (this.expandedOrders.has(orderId)) this.expandedOrders.delete(orderId);
+    else this.expandedOrders.add(orderId);
+  }
+
+  isOrderExpanded(orderId: number): boolean {
+    return this.expandedOrders.has(orderId);
+  }
+
+  orderItemsCount(order: DemoOrder): number {
+    return order.items.reduce((s, i) => s + i.qty, 0);
+  }
+
+  statusLabel(status: DemoOrderStatus): string {
+    return this.tr(`CLUB_SHOP.ORDER_STATUS.${status}`);
+  }
+
+  statusClass(status: DemoOrderStatus): string {
+    return status.toLowerCase().replace(/_/g, '-');
+  }
+
+  /** Índice de progreso: 0=creado, 1=pagado, 2=preparando, 3=entregado. */
+  private statusStep(status: DemoOrderStatus): number {
+    switch (status) {
+      case 'PENDING_PAYMENT': return 0;
+      case 'PAID': return 1;
+      case 'PREPARING': return 2;
+      case 'DELIVERED': return 3;
+      default: return 0;
+    }
+  }
+
+  orderTimeline(order: DemoOrder): { key: DemoOrderStatus; icon: string; date: Date | null; done: boolean; active: boolean }[] {
+    const current = this.statusStep(order.status);
+    const steps: { key: DemoOrderStatus; icon: string; date: Date | null }[] = [
+      { key: 'PENDING_PAYMENT', icon: 'bi-cart-check', date: order.createdAt },
+      { key: 'PAID', icon: 'bi-credit-card', date: order.paidAt },
+      { key: 'PREPARING', icon: 'bi-box-seam', date: order.preparingAt },
+      { key: 'DELIVERED', icon: 'bi-truck', date: order.deliveredAt },
+    ];
+    return steps.map((s, idx) => ({
+      key: s.key,
+      icon: s.icon,
+      date: s.date,
+      done: idx < current,
+      active: idx === current,
+    }));
+  }
+
   trackById(_: number, p: DemoProduct): number { return p.id; }
   trackByIdx(i: number): number { return i; }
+  trackByOrder(_: number, o: DemoOrder): number { return o.orderId; }
 }

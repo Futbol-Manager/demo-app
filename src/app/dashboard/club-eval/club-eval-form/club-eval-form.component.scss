@@ -1,0 +1,391 @@
+$green: #31b270;
+$navy: #002c40;
+$gray: #636363;
+$bg: #f4f4f4;
+$white: #ffffff;
+$green-light: #c4e8d6;
+$warn: #e07b39;
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.15s ease;
+}
+
+.modal-card {
+  background: $white;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  animation: slideUp 0.2s ease;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #f0f0f0;
+  background: $navy;
+  border-radius: 20px 20px 0 0;
+  color: $white;
+
+  h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+.btn-close-modal {
+  background: transparent;
+  border: none;
+  color: $white;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 4px;
+  opacity: 0.8;
+  &:hover { opacity: 1; }
+}
+
+.modal-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+// Form elements
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: $navy;
+  }
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-input {
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  color: $navy;
+  outline: none;
+  transition: border-color 0.2s;
+  &:focus { border-color: $green; }
+}
+
+.form-textarea {
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  color: $navy;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  &:focus { border-color: $green; }
+}
+
+// Star rating
+.star-rating {
+  display: flex;
+  gap: 8px;
+
+  .bi {
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: transform 0.15s, color 0.15s;
+    &.bi-star-fill { color: $warn; }
+    &.bi-star { color: rgba($navy, 0.18); }
+    &:hover { transform: scale(1.15); }
+  }
+}
+
+// Scores
+.scores-section label { margin-bottom: 4px; }
+
+.scores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.score-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.score-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.score-name {
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: $navy;
+}
+
+.score-num {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: $green;
+  min-width: 20px;
+  text-align: right;
+}
+
+.score-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  background: linear-gradient(to right, $green 0%, $green var(--pct), #e5e7eb var(--pct), #e5e7eb 100%);
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: $navy;
+    cursor: pointer;
+    border: 2px solid $white;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    transition: transform 0.1s;
+    &:hover { transform: scale(1.1); }
+  }
+}
+
+.score-marks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: rgba($gray, 0.65);
+  padding: 0 2px;
+}
+
+// Toggle
+.toggle-group {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+
+  input { display: none; }
+
+  .toggle-slider {
+    width: 44px;
+    height: 24px;
+    background: rgba($navy, 0.2);
+    border-radius: 12px;
+    transition: background 0.2s;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 2px;
+      top: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: $white;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    }
+  }
+
+  input:checked + .toggle-slider {
+    background: $green;
+    &::after { transform: translateX(20px); }
+  }
+}
+
+// Buttons
+.btn-cancel {
+  background: transparent;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-weight: 600;
+  color: $gray;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  &:hover { border-color: $gray; }
+}
+
+.btn-save {
+  background: $green;
+  color: $white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 24px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 0.2s;
+  &:hover { opacity: 0.9; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+// Selector de evento del calendario
+.event-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: $gray;
+  padding: 8px 0;
+}
+
+.event-type-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 1.5px solid #e5e7eb;
+  background: $white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $gray;
+  cursor: pointer;
+  transition: all 0.18s;
+
+  i { font-size: 0.85rem; }
+
+  &:hover {
+    border-color: $green;
+    color: $navy;
+  }
+
+  &.active {
+    background: $navy;
+    border-color: $navy;
+    color: $white;
+    i { color: $white; }
+  }
+
+  // Partido activo → verde Sphaira
+  &.active:nth-child(2) {
+    background: #289960;
+    border-color: #289960;
+  }
+
+  // Entrenamiento activo → navy con tono medio (sin colores externos)
+  &.active:nth-child(3) {
+    background: #155880;
+    border-color: #155880;
+  }
+}
+
+.event-select-wrap {
+  margin-top: 4px;
+}
+
+.event-select {
+  width: 100%;
+}
+
+.event-empty {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: rgba($gray, 0.65);
+  margin: 6px 0 0;
+  i { color: $green; }
+}
+
+.spin { animation: spin 0.7s linear infinite; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+// ─── DARK MODE ────────────────────────────────────────────────────────────────
+:host-context(body.dark) {
+  /* Modal card */
+  .modal-card { background: var(--bg-card); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+  .modal-body { background: var(--bg-card); }
+  .modal-footer { background: var(--bg-card); border-top-color: var(--border-color); }
+
+  /* Form elements */
+  .form-group label { color: var(--text-primary); }
+  .form-input, .form-textarea {
+    background: var(--bg-surface); border-color: var(--border-color); color: var(--text-primary);
+    &::placeholder { color: var(--text-muted); }
+    &:focus { border-color: #31b270; }
+  }
+
+  /* Star rating */
+  .star-rating .bi-star { color: rgba(255,255,255,0.15); }
+
+  /* Scores */
+  .score-name { color: var(--text-primary); }
+  .score-marks { color: var(--text-muted); }
+  .score-slider { background: linear-gradient(to right, #31b270 0%, #31b270 var(--pct), rgba(255,255,255,0.1) var(--pct), rgba(255,255,255,0.1) 100%); }
+
+  /* Event calendar pills */
+  .pill { background: var(--bg-surface); border-color: var(--border-color); color: var(--text-muted); &:hover { border-color: #31b270; color: var(--text-primary); } &.active { background: #002c40; border-color: #002c40; color: #fff; } }
+  .event-loading { color: var(--text-muted); }
+  .event-empty { color: var(--text-muted); }
+
+  /* Buttons */
+  .btn-cancel { background: transparent; border-color: var(--border-color); color: var(--text-muted); &:hover { border-color: var(--text-muted); } }
+}

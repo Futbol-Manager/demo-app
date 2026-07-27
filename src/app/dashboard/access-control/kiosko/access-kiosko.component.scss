@@ -1,0 +1,968 @@
+@use 'sass:color';
+
+$navy: #002c40;
+$navy-deep: #001e2e;
+$green: #31b270;
+$green-dark: #1f7a4d;
+$amber: #f59e0b;
+$red: #d92d20;
+
+.kiosko-root {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, $navy-deep 0%, $navy 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  // El kiosko es full-screen y debe cubrir la sidebar y el header del
+  // dashboard del club, que tienen z-index alto. 9999 garantiza que ningún
+  // elemento del layout principal asome por encima.
+  z-index: 9999;
+  transition: background 0.4s ease;
+
+  &--allowed {
+    background: linear-gradient(135deg, $green-dark 0%, $green 100%);
+  }
+  &--warning {
+    background: linear-gradient(135deg, color.adjust($amber, $lightness: -10%) 0%, $amber 100%);
+  }
+  &--denied {
+    background: linear-gradient(135deg, color.adjust($red, $lightness: -10%) 0%, $red 100%);
+  }
+}
+
+// ----- Top bar -----
+.kiosko-topbar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #fff;
+
+    i { color: $green; }
+  }
+}
+
+.kiosko-topbar-left { justify-self: start; }
+.kiosko-topbar-center { justify-self: center; }
+.kiosko-topbar-right {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Tablet en vertical o ventanas de portátil estrechas:
+   reducimos padding del topbar y permitimos wrap en los controles. */
+@media (max-width: 1024px) {
+  .kiosko-topbar {
+    padding: 0.85rem 1rem;
+    gap: 0.6rem;
+
+    h1 { font-size: 1.1rem; }
+  }
+}
+
+/* Móvil: el topbar pasa a 2 filas (cabecera arriba, controles debajo)
+   para que ningún botón se solape ni se recorte. */
+@media (max-width: 700px) {
+  .kiosko-topbar {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    row-gap: 0.65rem;
+
+    h1 { font-size: 1rem; }
+  }
+
+  .kiosko-topbar-left { grid-column: 1; grid-row: 1; }
+  .kiosko-topbar-center {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+  .kiosko-topbar-right {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: stretch;
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+
+.kiosko-exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover { background: rgba(255, 255, 255, 0.12); }
+}
+
+.kiosko-select {
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.92rem;
+
+  option {
+    color: $navy;
+  }
+}
+
+.kiosko-point-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.kiosko-direction {
+  display: inline-flex;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.kiosko-direction-btn {
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.75);
+  padding: 0.55rem 1rem;
+  border-radius: 9px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &--active {
+    background: $green;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba($green, 0.35);
+  }
+}
+
+/* En móvil, el texto del botón puede ocultarse y dejar solo el icono
+   para que los dos botones (IN/OUT) + selector de punto entren bien. */
+@media (max-width: 480px) {
+  .kiosko-exit {
+    padding: 0.45rem 0.7rem;
+    font-size: 0.82rem;
+  }
+
+  .kiosko-direction-btn {
+    padding: 0.55rem 0.7rem;
+    font-size: 0.78rem;
+  }
+
+  .kiosko-select {
+    max-width: 130px;
+    font-size: 0.85rem;
+  }
+
+  .kiosko-scanner {
+    padding: 0.85rem;
+    border-radius: 14px;
+  }
+
+  .kiosko-scanner-idle {
+    padding: 1.5rem 1rem;
+
+    > i {
+      font-size: 3rem;
+      width: 84px;
+      height: 84px;
+      border-radius: 22px;
+    }
+
+    h2 { font-size: 1.2rem; }
+
+    // CTA "Iniciar cámara" en móvil: ocupa todo el ancho del panel y se
+    // mantiene cómodo de pulsar con el dedo (mínimo 48 px de alto).
+    .kiosko-btn--primary {
+      width: 100%;
+      max-width: 360px;
+      padding: 0.95rem 1.4rem;
+      font-size: 1rem;
+      border-radius: 14px;
+      box-shadow:
+        0 8px 22px rgba($green, 0.4),
+        0 0 0 3px rgba($green, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
+  }
+}
+
+/* Tablet vertical / desktop estrecho: tamaño intermedio del CTA. */
+@media (min-width: 481px) and (max-width: 900px) {
+  .kiosko-scanner-idle .kiosko-btn--primary {
+    padding: 1rem 1.9rem;
+    font-size: 1.05rem;
+  }
+}
+
+/* En modo móvil garantizamos que el panel scanner tenga altura mínima
+   (la cámara y el frame se ven correctos). */
+@media (max-width: 900px) {
+  .kiosko-video-wrap {
+    min-height: 320px;
+  }
+
+  .kiosko-aside {
+    max-height: 260px;
+  }
+}
+
+// ----- Main grid -----
+.kiosko-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  overflow: hidden;
+}
+
+/* Tablet horizontal y portátil: reducimos gaps y padding. */
+@media (max-width: 1100px) {
+  .kiosko-main {
+    gap: 1rem;
+    padding: 1rem;
+  }
+}
+
+/* Tablet vertical / móvil ancho: una sola columna y permitir scroll
+   vertical en la página completa (el aside ya no roba alto al scanner). */
+@media (max-width: 900px) {
+  .kiosko-main {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* Permitimos altura natural del scanner; sin esto, en móvil colapsa
+     porque el flex padre tiene `overflow: hidden`. */
+  .kiosko-root {
+    overflow-y: auto;
+  }
+}
+
+/* Móvil estrecho: padding mínimo para aprovechar todo el ancho. */
+@media (max-width: 480px) {
+  .kiosko-main {
+    padding: 0.65rem;
+    gap: 0.65rem;
+  }
+}
+
+// ----- Scanner section -----
+.kiosko-scanner {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+  padding: 1.25rem;
+  overflow: hidden;
+}
+
+.kiosko-video-wrap {
+  position: relative;
+  flex: 1;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #000;
+
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+/* Contenedor del fallback html5-qrcode dentro de .kiosko-video-wrap.
+   La librería inyecta su propio <video> y otros elementos dentro de este
+   div, así que cubrimos toda la zona del wrapper por detrás del overlay
+   (que tiene z-index implícito mayor por venir después en el flujo). */
+.kiosko-video-fallback {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+
+  ::ng-deep video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+}
+
+.kiosko-video-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.kiosko-video-frame {
+  width: 60%;
+  aspect-ratio: 1;
+  max-width: 380px;
+  border: 4px solid rgba($green, 0.85);
+  border-radius: 24px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
+}
+
+.kiosko-video-hint {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(0, 0, 0, 0.55);
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+}
+
+.kiosko-cam-stop {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 0.5rem 0.85rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  pointer-events: all;
+
+  &:hover { background: rgba(0, 0, 0, 0.75); }
+}
+
+.kiosko-scanner-idle {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  text-align: center;
+  border: 2px dashed rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+
+  // El selector de hijo directo (`> i`) es importante: en este bloque hay
+  // un icono "hero" gigante de QR como ilustración, pero el botón
+  // primario también contiene un <i> propio que NO debe heredar este
+  // formato (si no, se vuelve un cuadrado de 120 px sin sentido dentro
+  // del botón).
+  > i {
+    font-size: 4rem;
+    color: $green;
+    background: rgba($green, 0.08);
+    width: 120px;
+    height: 120px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+  }
+
+  p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.75);
+    max-width: 420px;
+  }
+}
+
+// ----- Manual input -----
+.kiosko-manual {
+  background: rgba(0, 0, 0, 0.18);
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+.kiosko-manual-row {
+  display: flex;
+  gap: 0.6rem;
+
+  input {
+    flex: 1;
+    padding: 0.7rem 0.95rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 0.95rem;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $green;
+      box-shadow: 0 0 0 3px rgba($green, 0.2);
+    }
+  }
+}
+
+// ----- Aside (occupancy) -----
+.kiosko-aside {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+  padding: 1.25rem;
+  overflow-y: auto;
+
+  h2 {
+    margin: 0 0 1rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    i { color: $green; }
+  }
+}
+
+.kiosko-occupancy {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+
+  li {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 0.2rem 0.8rem;
+    padding: 0.85rem 1rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  &__full {
+    border-color: rgba($amber, 0.55);
+    background: rgba($amber, 0.08);
+  }
+
+  &__name {
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    i { color: rgba(255, 255, 255, 0.6); }
+  }
+
+  &__count {
+    grid-row: 1 / span 2;
+    grid-column: 2;
+    align-self: center;
+    text-align: right;
+
+    strong {
+      font-size: 1.6rem;
+      font-weight: 800;
+    }
+
+    span {
+      color: rgba(255, 255, 255, 0.55);
+      font-weight: 500;
+    }
+  }
+
+  &__meta {
+    grid-column: 1;
+    display: flex;
+    gap: 0.8rem;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+
+    span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+  }
+
+  &__empty {
+    grid-template-columns: 1fr !important;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 2rem !important;
+
+    i {
+      display: block;
+      font-size: 1.6rem;
+      margin-bottom: 0.4rem;
+    }
+  }
+}
+
+// ----- Aside · últimos accesos del día -----
+.kiosko-aside-h2--secondary {
+  margin-top: 1.5rem !important;
+}
+
+.kiosko-recent {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &__item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.6rem 0.8rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-left: 3px solid rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    transition: background 0.15s ease;
+
+    &:hover { background: rgba(255, 255, 255, 0.09); }
+
+    &--in     { border-left-color: $green; }
+    &--out    { border-left-color: rgba(255, 255, 255, 0.4); }
+    &--warning { border-left-color: $amber; }
+    &--denied  { border-left-color: $red; }
+  }
+
+  &__dir {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  &__body {
+    min-width: 0;
+  }
+
+  &__name {
+    margin: 0;
+    font-weight: 600;
+    font-size: 0.95rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__meta {
+    margin: 0.15rem 0 0;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.65);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+
+    span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+  }
+
+  &__time {
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__badge {
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.85rem;
+    font-weight: 700;
+
+    &--allowed {
+      background: rgba($green, 0.18);
+      color: $green;
+    }
+    &--warning {
+      background: rgba($amber, 0.18);
+      color: $amber;
+    }
+    &--denied {
+      background: rgba($red, 0.18);
+      color: $red;
+    }
+  }
+
+  &__empty {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 1.5rem !important;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    border-left: 1px dashed rgba(255, 255, 255, 0.1) !important;
+
+    i {
+      display: block;
+      font-size: 1.4rem;
+      margin-bottom: 0.3rem;
+    }
+  }
+}
+
+// ----- Buttons / notes -----
+.kiosko-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.4rem;
+  border-radius: 12px;
+  border: none;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &--primary {
+    background: $green;
+    color: #fff;
+    box-shadow: 0 6px 18px rgba($green, 0.35);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// CTA "Iniciar cámara" del estado idle: es el botón que el portero pulsa
+// 95 % de las veces que entra al modo, así que merece una variante más
+// llamativa con gradiente, halo pulsante y un hover claramente afordable.
+.kiosko-scanner-idle .kiosko-btn--primary {
+  position: relative;
+  isolation: isolate;
+  margin-top: 0.5rem;
+  padding: 1.05rem 2.2rem;
+  font-size: 1.1rem;
+  letter-spacing: 0.01em;
+  border-radius: 16px;
+  background: linear-gradient(135deg, $green 0%, $green-dark 100%);
+  box-shadow:
+    0 12px 32px rgba($green, 0.42),
+    0 0 0 4px rgba($green, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.25s ease,
+    filter 0.2s ease;
+
+  // Reset del estilo "hero icon" (no aplica al icono interno del botón
+  // gracias al `> i` de arriba, pero por si acaso forzamos tamaños sanos).
+  i {
+    font-size: 1.15rem;
+    color: #fff;
+    width: auto;
+    height: auto;
+    background: none;
+    border-radius: 0;
+    display: inline;
+  }
+
+  // Halo pulsante detrás del botón (animación lenta para llamar la
+  // atención sin marear).
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 22px;
+    background: radial-gradient(circle, rgba($green, 0.55), transparent 70%);
+    opacity: 0;
+    z-index: -1;
+    animation: kiosko-cta-pulse 2.6s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-3px) scale(1.02);
+    filter: brightness(1.05);
+    box-shadow:
+      0 18px 42px rgba($green, 0.55),
+      0 0 0 6px rgba($green, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(-1px) scale(1);
+  }
+
+  // Respeto a usuarios que prefieren menos animación.
+  @media (prefers-reduced-motion: reduce) {
+    &::before { animation: none; opacity: 0.35; }
+  }
+}
+
+@keyframes kiosko-cta-pulse {
+  0%, 100% { opacity: 0; transform: scale(0.94); }
+  50%      { opacity: 0.55; transform: scale(1.08); }
+}
+
+.kiosko-note {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.kiosko-error-line {
+  color: rgba($red, 1);
+  background: rgba($red, 0.15);
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+}
+
+// ----- Loading / off states -----
+.kiosko-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  padding: 3rem;
+  text-align: center;
+
+  i {
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+  }
+  p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 420px;
+  }
+}
+
+.kiosko-spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top-color: $green;
+  border-radius: 50%;
+  animation: kiosko-spin 0.8s linear infinite;
+}
+
+@keyframes kiosko-spin {
+  to { transform: rotate(360deg); }
+}
+
+// ----- Feedback overlay -----
+.kiosko-feedback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+  z-index: 1100;
+  animation: kiosko-fade-in 0.2s ease;
+}
+
+@keyframes kiosko-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.kiosko-feedback-card {
+  background: rgba(255, 255, 255, 0.96);
+  color: $navy;
+  padding: 2.25rem 2.5rem;
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  max-width: 520px;
+  min-width: 340px;
+  animation: kiosko-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  h2 {
+    margin: 0.5rem 0 1rem;
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+}
+
+/* En móviles muy estrechos (<400px) la tarjeta no cabe con `min-width: 340px`
+   + paddings, así que la dejamos fluida y reducimos paddings. */
+@media (max-width: 480px) {
+  .kiosko-feedback-card {
+    min-width: 0;
+    width: calc(100% - 2rem);
+    padding: 1.5rem 1.25rem;
+
+    h2 { font-size: 1.5rem; }
+  }
+
+  .kiosko-feedback-icon i { font-size: 3.5rem; }
+}
+
+@keyframes kiosko-pop {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.kiosko-feedback-icon i {
+  font-size: 4.5rem;
+  display: block;
+
+  .kiosko-root--allowed & { color: $green; }
+  .kiosko-root--warning & { color: $amber; }
+  .kiosko-root--denied  & { color: $red;   }
+}
+
+.kiosko-feedback-subject {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-align: left;
+  background: rgba($navy, 0.04);
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+}
+
+.kiosko-feedback-photo {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+.kiosko-feedback-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.kiosko-feedback-name {
+  margin: 0 0 0.2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: $navy;
+}
+
+.kiosko-feedback-type {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba($navy, 0.55);
+}
+
+.kiosko-feedback-message {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+  color: rgba($navy, 0.75);
+}
+
+.kiosko-feedback-payment {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  color: rgba($navy, 0.7);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+
+  i { color: $green-dark; }
+}

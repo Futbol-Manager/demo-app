@@ -1,0 +1,58 @@
+<div class="aem-backdrop" (click)="onBackdrop($event)">
+  <div class="aem-modal" role="dialog" aria-modal="true">
+    <header class="aem-header" [class.aem-header--warn]="isWarn">
+      <div class="aem-header__icon">
+        <i class="bi" [ngClass]="headerIcon"></i>
+      </div>
+      <div class="aem-header__text">
+        <h3>{{ titleKey | translate }}</h3>
+        <p *ngIf="abonadoNombre">
+          {{ 'SUBS.REASON.FOR' | translate }} <strong>{{ abonadoNombre }}</strong>
+        </p>
+      </div>
+      <button type="button" class="aem-close" (click)="onCancel()"
+              [attr.aria-label]="'COMMON.CANCEL' | translate">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </header>
+
+    <section class="aem-body">
+      <p class="aem-sub">{{ subtitleKey | translate }}</p>
+
+      <label class="aem-label" for="aem-motivo">
+        {{ 'SUBS.REASON.LABEL' | translate }}
+        <span class="aem-optional">{{ 'SUBS.REASON.OPTIONAL' | translate }}</span>
+      </label>
+      <textarea id="aem-motivo"
+                class="aem-textarea"
+                rows="4"
+                maxlength="2000"
+                [(ngModel)]="motivo"
+                [placeholder]="'SUBS.REASON.PLACEHOLDER' | translate"
+                [disabled]="saving"></textarea>
+      <div class="aem-counter">{{ motivo.length }} / 2000</div>
+      <p class="aem-hint">
+        <i class="bi bi-shield-lock"></i>
+        {{ 'SUBS.REASON.PRIVATE_HINT' | translate }}
+      </p>
+    </section>
+
+    <footer class="aem-footer">
+      <button type="button" class="aem-btn aem-btn--ghost"
+              (click)="onCancel()"
+              [disabled]="saving">
+        {{ 'COMMON.CANCEL' | translate }}
+      </button>
+      <button type="button"
+              class="aem-btn"
+              [class.aem-btn--warn]="isWarn"
+              [class.aem-btn--primary]="!isWarn"
+              (click)="onConfirm()"
+              [disabled]="saving">
+        <i class="bi bi-arrow-repeat aem-spin" *ngIf="saving"></i>
+        <span *ngIf="!saving">{{ confirmKey | translate }}</span>
+        <span *ngIf="saving">{{ 'COMMON.SAVING' | translate }}</span>
+      </button>
+    </footer>
+  </div>
+</div>

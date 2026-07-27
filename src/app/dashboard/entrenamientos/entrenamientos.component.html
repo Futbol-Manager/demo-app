@@ -1,0 +1,15 @@
+<div class="entrenamientos-page">
+  <div class="page-tabs">
+    <button [class.active]="tab === 'methodologies'" (click)="tab = 'methodologies'">
+      <i class="bi bi-diagram-3"></i> {{ 'ENTRENAMIENTOS.TAB_METHODOLOGIES' | translate }}
+    </button>
+    <button [class.active]="tab === 'tasks'" (click)="tab = 'tasks'">
+      <i class="bi bi-clipboard2-check"></i> {{ 'ENTRENAMIENTOS.TAB_CLUB_TASKS' | translate }}
+    </button>
+  </div>
+
+  <div class="page-content">
+    <app-metodologias *ngIf="tab === 'methodologies'"></app-metodologias>
+    <app-entrenamientos-club *ngIf="tab === 'tasks'"></app-entrenamientos-club>
+  </div>
+</div>

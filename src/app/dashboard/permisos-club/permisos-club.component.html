@@ -1,0 +1,183 @@
+<div class="permisos-root">
+  <header class="permisos-page-header">
+    <div class="permisos-header-back">
+      <button type="button" class="permisos-btn-back" (click)="goBack()">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+        <span>{{ 'COMMON.BACK' | translate }}</span>
+      </button>
+    </div>
+    <div class="permisos-header-center">
+      <h1 class="permisos-header-title">{{ 'PERMISOS_CLUB.TITLE' | translate }}</h1>
+      <p class="permisos-header-subtitle">{{ 'PERMISOS_CLUB.SUBTITLE' | translate }}</p>
+    </div>
+    <div class="permisos-header-spacer"></div>
+  </header>
+
+  <div class="permisos-page-content">
+    <div *ngIf="loading" class="permisos-state permisos-state--loading">
+      <div class="permisos-spinner" role="status" aria-live="polite"></div>
+      <p>{{ 'PERMISOS_CLUB.LOADING' | translate }}</p>
+    </div>
+
+    <div *ngIf="!loading && !clubId" class="permisos-state permisos-state--warn">
+      <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+      <p>{{ 'PERMISOS_CLUB.NO_CLUB' | translate }}</p>
+    </div>
+
+    <ng-container *ngIf="!loading && clubId">
+      <!-- Selector de deporte del menú del club -->
+      <section class="club-sport" aria-labelledby="club-sport-title">
+        <div class="club-sport__text">
+          <h2 id="club-sport-title" class="permisos-section-title">{{ 'PERMISOS_CLUB.SPORT.TITLE' | translate }}</h2>
+          <p class="permisos-section-help">{{ 'PERMISOS_CLUB.SPORT.HELP' | translate }}</p>
+        </div>
+        <div class="club-sport__options" role="radiogroup" [attr.aria-label]="'PERMISOS_CLUB.SPORT.TITLE' | translate">
+          <button type="button"
+                  *ngFor="let sport of menuSports"
+                  class="club-sport__option"
+                  [class.club-sport__option--active]="modules.menuSport === sport"
+                  [disabled]="saving"
+                  role="radio"
+                  [attr.aria-checked]="modules.menuSport === sport"
+                  (click)="onSelectSport(sport)">
+            <span class="club-sport__emoji" aria-hidden="true">{{ sportEmoji(sport) }}</span>
+            <span>{{ 'EQUIPOS.SPORTS.' + sport | translate }}</span>
+            <i *ngIf="modules.menuSport === sport" class="bi bi-check-circle-fill club-sport__check" aria-hidden="true"></i>
+          </button>
+        </div>
+      </section>
+
+      <div class="permisos-toolbar">
+        <div class="permisos-toolbar-text">
+          <h2 class="permisos-section-title">{{ 'PERMISOS_CLUB.SECTION_TITLE' | translate }}</h2>
+          <p class="permisos-section-help">{{ 'PERMISOS_CLUB.SECTION_HELP' | translate }}</p>
+        </div>
+      </div>
+
+      <div class="permisos-cards">
+        <article class="perm-card perm-card--master">
+          <div class="perm-card__main">
+            <div class="perm-card__icon perm-card__icon--pro">
+              <i class="bi bi-trophy-fill" aria-hidden="true"></i>
+            </div>
+            <div class="perm-card__body">
+              <div class="perm-card__head">
+                <h3 class="perm-card__name">{{ 'PERMISOS_CLUB.PRO.TITLE' | translate }}</h3>
+                <span *ngIf="modules.professionalModeEnabled" class="perm-pill perm-pill--on">{{ 'PERMISOS_CLUB.ACTIVE' | translate }}</span>
+                <span *ngIf="!modules.professionalModeEnabled" class="perm-pill perm-pill--off">{{ 'PERMISOS_CLUB.INACTIVE' | translate }}</span>
+                <span class="perm-badge-pro">{{ 'PERMISOS_CLUB.PRO_BADGE' | translate }}</span>
+              </div>
+              <p class="perm-card__desc">{{ 'PERMISOS_CLUB.PRO.DESC' | translate }}</p>
+              <p class="perm-card__desc perm-card__desc--emphasis">
+                <strong>{{ 'PERMISOS_CLUB.PRO.DESC_STRONG' | translate }}</strong>
+              </p>
+              <ul class="perm-card__bullets">
+                <li><i class="bi bi-check2" aria-hidden="true"></i>{{ 'PERMISOS_CLUB.PRO.B1' | translate }}</li>
+                <li><i class="bi bi-check2" aria-hidden="true"></i>{{ 'PERMISOS_CLUB.PRO.B2' | translate }}</li>
+                <li><i class="bi bi-check2" aria-hidden="true"></i>{{ 'PERMISOS_CLUB.PRO.B3' | translate }}</li>
+                <li><i class="bi bi-check2" aria-hidden="true"></i>{{ 'PERMISOS_CLUB.PRO.B4' | translate }}</li>
+              </ul>
+            </div>
+          </div>
+          <div class="perm-card__toggle">
+            <label class="perm-switch" [class.perm-switch--disabled]="saving">
+              <input type="checkbox" [checked]="modules.professionalModeEnabled" [disabled]="saving" (change)="onToggleProfessionalMode($event)" />
+              <span class="perm-switch-slider"></span>
+            </label>
+          </div>
+        </article>
+
+        <article class="perm-card">
+          <div class="perm-card__main">
+            <div class="perm-card__icon perm-card__icon--wellness">
+              <i class="bi bi-clipboard2-pulse" aria-hidden="true"></i>
+            </div>
+            <div class="perm-card__body">
+              <div class="perm-card__head">
+                <h3 class="perm-card__name">{{ 'PERMISOS_CLUB.WELLNESS.TITLE' | translate }}</h3>
+                <span *ngIf="modules.wellnessEnabled" class="perm-pill perm-pill--on">{{ 'PERMISOS_CLUB.ACTIVE' | translate }}</span>
+                <span *ngIf="!modules.wellnessEnabled" class="perm-pill perm-pill--off">{{ 'PERMISOS_CLUB.INACTIVE' | translate }}</span>
+              </div>
+              <p class="perm-card__desc">{{ 'PERMISOS_CLUB.WELLNESS.DESC' | translate }}</p>
+              <ul class="perm-card__bullets">
+                <li><i class="bi bi-check2" aria-hidden="true"></i>{{ 'PERMISOS_CLUB.WELLNESS.B1' | translate }}</li>
+                <li><i class="bi bi-check2" aria-hidden="true"></i>{{ 'PERMISOS_CLUB.WELLNESS.B2' | translate }}</li>
+                <li><i class="bi bi-check2" aria-hidden="true"></i>{{ 'PERMISOS_CLUB.WELLNESS.B3' | translate }}</li>
+              </ul>
+            </div>
+          </div>
+          <div class="perm-card__toggle">
+            <label class="perm-switch" [class.perm-switch--disabled]="saving">
+              <input type="checkbox" [checked]="modules.wellnessEnabled" [disabled]="saving" (change)="onToggleWellness($event)" />
+              <span class="perm-switch-slider"></span>
+            </label>
+          </div>
+        </article>
+
+        <article class="perm-card">
+          <div class="perm-card__main">
+            <div class="perm-card__icon perm-card__icon--rpe">
+              <i class="bi bi-lightning-charge-fill" aria-hidden="true"></i>
+            </div>
+            <div class="perm-card__body">
+              <div class="perm-card__head">
+                <h3 class="perm-card__name">{{ 'PERMISOS_CLUB.RPE.TITLE' | translate }}</h3>
+                <span *ngIf="modules.rpeEnabled" class="perm-pill perm-pill--on">{{ 'PERMISOS_CLUB.ACTIVE' | translate }}</span>
+                <span *ngIf="!modules.rpeEnabled" class="perm-pill perm-pill--off">{{ 'PERMISOS_CLUB.INACTIVE' | translate }}</span>
+              </div>
+              <p class="perm-card__desc">{{ 'PERMISOS_CLUB.RPE.DESC' | translate }}</p>
+              <ul class="perm-card__bullets">
+                <li><i class="bi bi-check2" aria-hidden="true"></i>{{ 'PERMISOS_CLUB.RPE.B1' | translate }}</li>
+                <li><i class="bi bi-check2" aria-hidden="true"></i>{{ 'PERMISOS_CLUB.RPE.B2' | translate }}</li>
+                <li><i class="bi bi-check2" aria-hidden="true"></i>{{ 'PERMISOS_CLUB.RPE.B3' | translate }}</li>
+              </ul>
+            </div>
+          </div>
+          <div class="perm-card__toggle">
+            <label class="perm-switch" [class.perm-switch--disabled]="saving">
+              <input type="checkbox" [checked]="modules.rpeEnabled" [disabled]="saving" (change)="onToggleRpe($event)" />
+              <span class="perm-switch-slider"></span>
+            </label>
+          </div>
+        </article>
+
+        <!-- Control de accesos por QR (Modo portero) — activado 2026-05-18 al
+             completarse Fase 2 (filtros + paginación, historial por sujeto,
+             scheduleJson, allowedCollectives, gracePeriodDays, push DENIED,
+             PDF carnets). Toggle persistido en clubs.access_control_enabled. -->
+        <article class="perm-card">
+          <div class="perm-card__main">
+            <div class="perm-card__icon perm-card__icon--access">
+              <i class="bi bi-qr-code" aria-hidden="true"></i>
+            </div>
+            <div class="perm-card__body">
+              <div class="perm-card__head">
+                <h3 class="perm-card__name">{{ 'PERMISOS_CLUB.ACCESS.TITLE' | translate }}</h3>
+                <span *ngIf="modules.accessControlEnabled" class="perm-pill perm-pill--on">{{ 'PERMISOS_CLUB.ACTIVE' | translate }}</span>
+                <span *ngIf="!modules.accessControlEnabled" class="perm-pill perm-pill--off">{{ 'PERMISOS_CLUB.INACTIVE' | translate }}</span>
+              </div>
+              <p class="perm-card__desc">{{ 'PERMISOS_CLUB.ACCESS.DESC' | translate }}</p>
+              <ul class="perm-card__bullets">
+                <li><i class="bi bi-check2" aria-hidden="true"></i>{{ 'PERMISOS_CLUB.ACCESS.B1' | translate }}</li>
+                <li><i class="bi bi-check2" aria-hidden="true"></i>{{ 'PERMISOS_CLUB.ACCESS.B2' | translate }}</li>
+                <li><i class="bi bi-check2" aria-hidden="true"></i>{{ 'PERMISOS_CLUB.ACCESS.B3' | translate }}</li>
+              </ul>
+              <a *ngIf="modules.accessControlEnabled"
+                 class="perm-card__cta"
+                 [routerLink]="['/dashboard/access-control']">
+                <i class="bi bi-gear-fill" aria-hidden="true"></i>
+                {{ 'PERMISOS_CLUB.ACCESS.OPEN' | translate }}
+              </a>
+            </div>
+          </div>
+          <div class="perm-card__toggle">
+            <label class="perm-switch" [class.perm-switch--disabled]="saving">
+              <input type="checkbox" [checked]="modules.accessControlEnabled" [disabled]="saving" (change)="onToggleAccessControl($event)" />
+              <span class="perm-switch-slider"></span>
+            </label>
+          </div>
+        </article>
+      </div>
+    </ng-container>
+  </div>
+</div>

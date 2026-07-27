@@ -20,6 +20,16 @@ export interface TutorialScreen {
 
 const STORAGE_KEY_PREFIX = 'sphaira_tutorial_done_';
 
+/** Origen de la apertura del tutorial: el ngOnInit de una pantalla o una acción del usuario. */
+export type TutorialTrigger = 'auto' | 'user';
+
+/**
+ * Interruptor global de los tutoriales que se abrían solos al entrar en cada pantalla.
+ * Ponerlo en true restaura el comportamiento anterior sin tocar los ~47 componentes
+ * que siguen llamando a start() en su ngOnInit.
+ */
+const AUTO_START_ENABLED = false;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -5067,8 +5077,15 @@ export class TutorialService {
   }
 
   /** Abre el tutorial de una pantalla. Si estaba marcado como "no mostrar", no hace nada a menos que force = true.
-   *  Selecciona automáticamente la variante de idioma cuando existe (ej. 'dashboard-inicio-en'). */
-  start(screenId: string, force = false): void {
+   *  Selecciona automáticamente la variante de idioma cuando existe (ej. 'dashboard-inicio-en').
+   *
+   *  `trigger` distingue quién abre el tutorial. Las pantallas lo invocan en su ngOnInit
+   *  (trigger 'auto') y eso hacía que el visitante recibiera un modal con voz en off cada
+   *  vez que pulsaba una sección, impidiéndole explorar. Con AUTO_START_ENABLED en false
+   *  solo se abre cuando lo pide el usuario ('user'), y el recorrido guiado de la demo se
+   *  encarga de enseñar las pantallas clave. */
+  start(screenId: string, force = false, trigger: TutorialTrigger = 'auto'): void {
+    if (trigger === 'auto' && !AUTO_START_ENABLED) return;
     const lang = this.getCurrentLang();
     const resolvedId = lang !== 'es' && this.screens.has(`${screenId}-${lang}`)
       ? `${screenId}-${lang}`

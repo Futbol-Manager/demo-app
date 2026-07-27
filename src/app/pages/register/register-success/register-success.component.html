@@ -1,0 +1,158 @@
+<div class="success-page">
+  <div class="success-card">
+
+    <!-- Cabecera con escudo del club (si lo tenemos) -->
+    <div class="success-header">
+      <div class="success-club" *ngIf="clubName">
+        <div class="success-club-shield">
+          <img *ngIf="clubPicture" [src]="clubPicture" [alt]="clubName" />
+          <i *ngIf="!clubPicture" class="bi bi-shield-fill"></i>
+        </div>
+        <p class="success-club-name">{{ clubName }}</p>
+      </div>
+
+      <div class="success-check">
+        <i class="bi bi-check-lg"></i>
+      </div>
+
+      <h1 class="success-title">{{ (pagosConfigurados ? 'REGISTER_SUCCESS.TITLE_DONE' : 'REGISTER_SUCCESS.TITLE') | translate }}</h1>
+      <p class="success-subtitle">{{ (pagosConfigurados ? 'REGISTER_SUCCESS.SUBTITLE_DONE' : 'REGISTER_SUCCESS.SUBTITLE') | translate }}</p>
+    </div>
+
+    <section class="success-payment-done" *ngIf="pagosConfigurados">
+      <div class="success-payment-done__icon">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+      <div class="success-payment-done__body">
+        <h2 class="success-payment-done__title">{{ 'REGISTER_SUCCESS.PAYMENTS_DONE_TITLE' | translate }}</h2>
+        <p class="success-payment-done__text">{{ 'REGISTER_SUCCESS.PAYMENTS_DONE_TEXT' | translate }}</p>
+      </div>
+    </section>
+
+    <section class="success-payment" *ngIf="pedirTarjeta">
+      <div class="success-payment__icon">
+        <i class="bi bi-credit-card-2-front"></i>
+      </div>
+      <div class="success-payment__body">
+        <h2 class="success-payment__title">{{ 'REGISTER_SUCCESS.PAYMENT_TITLE' | translate }}</h2>
+        <p class="success-payment__lead">
+          {{ (pagoChildren.length > 1
+              ? 'REGISTER_SUCCESS.PAYMENT_LEAD_MULTI'
+              : 'REGISTER_SUCCESS.PAYMENT_LEAD') | translate }}
+        </p>
+      </div>
+
+      <button *ngIf="pagoChildren.length <= 1"
+              class="success-payment__btn" type="button" (click)="irAConfigurarPago()">
+        <i class="bi bi-credit-card"></i>
+        <span>{{ 'REGISTER_SUCCESS.PAYMENT_CTA' | translate }}</span>
+      </button>
+
+      <div *ngIf="pagoChildren.length > 1" class="success-payment__children">
+        <button *ngFor="let child of pagoChildren"
+                class="success-payment__btn success-payment__btn--child" type="button"
+                (click)="irAConfigurarPago(child)">
+          <i class="bi bi-credit-card"></i>
+          <span>
+            {{ child.nombre
+                ? ('REGISTER_SUCCESS.PAYMENT_CTA_FOR' | translate:{ name: child.nombre })
+                : ('REGISTER_SUCCESS.PAYMENT_CTA' | translate) }}
+          </span>
+        </button>
+      </div>
+    </section>
+
+    <section class="success-documents" *ngIf="clubDocuments.length > 0">
+      <header class="success-documents__header">
+        <i class="bi bi-folder2-open success-documents__icon" aria-hidden="true"></i>
+        <div>
+          <h2 class="success-documents__title">{{ 'REGISTER_SUCCESS.DOCUMENTS_TITLE' | translate }}</h2>
+          <p class="success-documents__lead">{{ 'REGISTER_SUCCESS.DOCUMENTS_LEAD' | translate }}</p>
+        </div>
+      </header>
+
+      <ul class="success-documents__list">
+        <li class="success-document"
+            *ngFor="let doc of clubDocuments; trackBy: trackByDocument">
+          <i class="bi success-document__icon" [ngClass]="documentIconFor(doc)" aria-hidden="true"></i>
+          <div class="success-document__info">
+            <strong class="success-document__title">{{ doc.label }}</strong>
+            <p class="success-document__desc" *ngIf="doc.text">{{ doc.text }}</p>
+            <small class="success-document__meta">
+              <span *ngIf="doc.fileName">{{ doc.fileName }}</span>
+              <span *ngIf="doc.fileName && doc.fileSize"> · </span>
+              <span *ngIf="doc.fileSize">{{ formatFileSize(doc.fileSize) }}</span>
+            </small>
+          </div>
+          <a class="success-document__download"
+             [href]="doc.fileUrl"
+             target="_blank"
+             rel="noopener"
+             [download]="doc.fileName || true">
+            <i class="bi bi-download"></i>
+            <span>{{ 'CLUB_REGISTER_FORM.DOWNLOAD' | translate }}</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <div class="success-app-block">
+      <p class="success-app-lead">{{ 'REGISTER_SUCCESS.APP_LEAD' | translate }}</p>
+
+      <div class="success-store-buttons" *ngIf="os === 'ios'">
+        <button class="store-btn store-btn--ios" type="button" (click)="openStore('ios')">
+          <i class="bi bi-apple"></i>
+          <span class="store-btn-text">
+            <span class="store-btn-small">{{ 'REGISTER_SUCCESS.DOWNLOAD_ON' | translate }}</span>
+            <span class="store-btn-large">App Store</span>
+          </span>
+        </button>
+      </div>
+
+      <div class="success-store-buttons" *ngIf="os === 'android'">
+        <button class="store-btn store-btn--android" type="button" (click)="openStore('android')">
+          <i class="bi bi-google-play"></i>
+          <span class="store-btn-text">
+            <span class="store-btn-small">{{ 'REGISTER_SUCCESS.GET_IT_ON' | translate }}</span>
+            <span class="store-btn-large">Google Play</span>
+          </span>
+        </button>
+      </div>
+
+      <div class="success-store-buttons success-store-buttons--dual" *ngIf="os === 'desktop'">
+        <button class="store-btn store-btn--ios" type="button" (click)="openStore('ios')">
+          <i class="bi bi-apple"></i>
+          <span class="store-btn-text">
+            <span class="store-btn-small">{{ 'REGISTER_SUCCESS.DOWNLOAD_ON' | translate }}</span>
+            <span class="store-btn-large">App Store</span>
+          </span>
+        </button>
+        <button class="store-btn store-btn--android" type="button" (click)="openStore('android')">
+          <i class="bi bi-google-play"></i>
+          <span class="store-btn-text">
+            <span class="store-btn-small">{{ 'REGISTER_SUCCESS.GET_IT_ON' | translate }}</span>
+            <span class="store-btn-large">Google Play</span>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <div class="success-divider">
+      <span>{{ 'REGISTER_SUCCESS.OR' | translate }}</span>
+    </div>
+
+    <button class="success-web-btn" type="button" (click)="continueToWeb()">
+      <i class="bi bi-globe"></i>
+      <span>
+        {{ (autoLoginOk
+            ? 'REGISTER_SUCCESS.CONTINUE_WEB'
+            : 'REGISTER_SUCCESS.GO_LOGIN') | translate }}
+      </span>
+    </button>
+
+    <p class="success-help">
+      {{ 'REGISTER_SUCCESS.HELP' | translate }}
+      <a href="mailto:info@sphairatech.com">info&#64;sphairatech.com</a>
+    </p>
+  </div>
+</div>

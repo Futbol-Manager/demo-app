@@ -1,0 +1,2892 @@
+@use 'sass:color';
+
+// Paleta Sphaira
+$navy:        #002c40;
+$navy-deep:   #001e2e;
+$green:       #31b270;
+$green-light: #c4e8d6;
+$gray-text:   #636363;
+$bg-light:    #f4f4f4;
+$white:       #ffffff;
+
+$danger:      #dc3545;
+$warning:     #f59e0b;
+$info:        #3b82f6;
+
+$radius-md: 10px;
+$radius-lg: 14px;
+$radius-xl: 18px;
+
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 4px 14px rgba(0, 44, 64, 0.08);
+$shadow-lg: 0 8px 24px rgba(0, 44, 64, 0.14);
+
+:host {
+  display: block;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: $bg-light;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.abonado-detail {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ????????????????????????????? HEADER ????????????????????????????? */
+.detail-header {
+  background: linear-gradient(135deg, $green 0%, $navy 100%);
+  border-radius: $radius-xl;
+  padding: 18px 24px 22px;
+  margin-bottom: 18px;
+  color: $white;
+  box-shadow: $shadow-md;
+
+  .back-btn {
+    background: rgba(255, 255, 255, 0.15);
+    color: $white;
+    border: 0;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.15s;
+
+    &:hover { background: rgba(255, 255, 255, 0.25); }
+  }
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .avatar-wrap {
+    position: relative;
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid rgba(255, 255, 255, 0.4);
+    flex-shrink: 0;
+
+    /* Variante editable: el club puede pulsar el avatar para cambiar
+       la foto del abonado. Se renderiza como <button> con overlay. */
+    &--editable {
+      cursor: pointer;
+      padding: 0;
+      appearance: none;
+      color: inherit;
+      font: inherit;
+      transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+
+      &:hover:not(:disabled) {
+        transform: scale(1.03);
+        border-color: rgba(255, 255, 255, 0.85);
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+
+        .avatar-overlay { opacity: 1; }
+      }
+      &:focus-visible {
+        outline: 3px solid rgba(255, 255, 255, 0.85);
+        outline-offset: 2px;
+      }
+      &:disabled { cursor: wait; }
+    }
+
+    &--uploading .avatar-overlay { opacity: 1; }
+  }
+
+  .avatar-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.65) 100%);
+    color: $white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    opacity: 0;
+    transition: opacity 160ms ease;
+    pointer-events: none;
+
+    i { font-size: 18px; }
+  }
+
+  .avatar-overlay-text {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    text-align: center;
+    padding: 0 4px;
+    line-height: 1.1;
+  }
+
+  .avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .avatar-initials {
+    font-size: 32px;
+    font-weight: 800;
+    color: $white;
+    letter-spacing: 1px;
+  }
+
+  .header-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .detail-name {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0;
+    line-height: 1.1;
+  }
+
+  .detail-meta {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .meta-chip {
+    background: rgba(255, 255, 255, 0.15);
+    color: $white;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .autosave-status {
+    background: rgba(255, 255, 255, 0.18);
+    color: $white;
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    &--saved {
+      background: rgba(49, 178, 112, 0.95);
+    }
+  }
+
+  /* Botones de cambio de estado en la cabecera (Bloque 6).
+     Se muestran cuando el abonado NO est� pendiente: "dar de baja"
+     si est� activo, "reactivar" si ya est� dado de baja. */
+  .btn-estado {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    background: rgba(255, 255, 255, 0.08);
+    color: $white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+
+    i { font-size: 13px; }
+
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.18);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0, 44, 64, 0.22);
+    }
+
+    &:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    &--deactivate {
+      background: rgba(231, 76, 60, 0.95);
+      border-color: rgba(231, 76, 60, 0.95);
+      &:hover:not(:disabled) {
+        background: rgba(192, 57, 43, 1);
+        box-shadow: 0 6px 16px rgba(231, 76, 60, 0.4);
+      }
+    }
+
+    &--reactivate {
+      background: rgba(49, 178, 112, 0.95);
+      border-color: rgba(49, 178, 112, 0.95);
+      &:hover:not(:disabled) {
+        background: rgba(34, 142, 88, 1);
+        box-shadow: 0 6px 16px rgba(49, 178, 112, 0.4);
+      }
+    }
+  }
+}
+
+.status-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  &--active {
+    background: $green;
+    color: $white;
+  }
+  &--pending {
+    background: $warning;
+    color: $white;
+  }
+  &--inactive {
+    background: $gray-text;
+    color: $white;
+  }
+  &--self {
+    background: rgba(255, 255, 255, 0.18);
+    color: $white;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+  }
+  &--paid {
+    background: $green;
+    color: $white;
+  }
+  &--pending-pay {
+    background: $warning;
+    color: $white;
+  }
+  &--no-payment {
+    background: #e5e7eb;
+    color: $gray-text;
+  }
+}
+
+/* ????????????????????????????? PENDING BANNER ????????????????????????????? */
+.pending-banner {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-left: 5px solid $warning;
+  border-radius: $radius-lg;
+  padding: 16px 22px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  box-shadow: $shadow-sm;
+
+  .pending-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    min-width: 240px;
+  }
+
+  .pending-icon {
+    width: 50px;
+    height: 50px;
+    background: $warning;
+    color: $white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .pending-text {
+    h3 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      color: #78350f;
+    }
+    p {
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: #92400e;
+    }
+  }
+
+  .pending-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+
+    .btn {
+      border: 0;
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.1s, box-shadow 0.15s;
+
+      &:hover { transform: translateY(-1px); }
+      &:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    }
+
+    .btn-success {
+      background: $green;
+      color: $white;
+      box-shadow: 0 2px 8px rgba(49, 178, 112, 0.35);
+    }
+    .btn-danger {
+      background: $danger;
+      color: $white;
+      box-shadow: 0 2px 8px rgba(220, 53, 69, 0.35);
+    }
+  }
+}
+
+/* ????????????????????????????? TABS ????????????????????????????? */
+.tabs-bar {
+  background: $white;
+  border-radius: $radius-lg;
+  padding: 6px;
+  margin-bottom: 18px;
+  display: inline-flex;
+  gap: 4px;
+  box-shadow: $shadow-sm;
+
+  .tab-btn {
+    background: transparent;
+    border: 0;
+    color: $gray-text;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 9px 18px;
+    border-radius: $radius-md;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s;
+
+    &:hover { background: $bg-light; color: $navy; }
+
+    &--active {
+      background: linear-gradient(135deg, $green 0%, $navy 100%);
+      color: $white;
+      box-shadow: 0 2px 8px rgba(0, 44, 64, 0.25);
+    }
+  }
+}
+
+/* ????????????????????????????? BENTO ????????????????????????????? */
+.bento {
+  background: $white;
+  border-radius: $radius-lg;
+  margin-bottom: 16px;
+  padding: 20px 22px 22px;
+  box-shadow: $shadow-sm;
+
+  .bento-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(0, 44, 64, 0.06);
+    margin-bottom: 16px;
+
+    .bento-head-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: $radius-md;
+      background: linear-gradient(135deg, $green 0%, $navy 100%);
+      color: $white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .bento-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      color: $navy;
+    }
+
+    .bento-sub {
+      margin: 2px 0 0;
+      font-size: 13px;
+      color: $gray-text;
+    }
+
+    .bento-head-actions {
+      margin-left: auto;
+    }
+  }
+}
+
+/* =======================================================================
+   GRID + CAMPOS REUTILIZABLES
+   Antes estaban anidados dentro de `.bento {}`, lo que rompía el modal
+   "Vincular socio" (que NO está envuelto en `.bento`). Al sacarlos al
+   nivel raíz se aplican también en modals y futuros wrappers.
+   ======================================================================= */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  &--full {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    font-size: 12px;
+    font-weight: 700;
+    color: $gray-text;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  input, select, textarea {
+    border: 1px solid rgba(0, 44, 64, 0.12);
+    border-radius: $radius-md;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: $navy;
+    background: $white;
+    font-family: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &:focus {
+      outline: none;
+      border-color: $green;
+      box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.15);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  /* Input bloqueado (lectura) — se usa en el modal "Registrar pago"
+     cuando hay una cuota concreta seleccionada: el importe queda
+     fijado al restante de esa cuota para evitar pagos parciales o
+     sobrepagos sobre el concepto. Visualmente apagado pero con borde
+     verde tenue (consistente con el chip de la cuota seleccionada). */
+  input.is-locked {
+    background: rgba(49, 178, 112, 0.05);
+    border-color: rgba(49, 178, 112, 0.3);
+    color: $navy;
+    font-weight: 600;
+    cursor: not-allowed;
+  }
+}
+
+/* Hint debajo de un `.field` — usado en el modal "Registrar pago"
+   bajo el selector "Cuota a asociar" para mostrar estado de carga,
+   vacío, o que el importe está bloqueado. */
+.field-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: $gray-text;
+  line-height: 1.4;
+
+  i {
+    font-size: 11px;
+  }
+
+  &--empty {
+    color: color.adjust($gray-text, $lightness: -5%);
+    font-style: italic;
+  }
+
+  &--info {
+    color: color.adjust($green, $lightness: -22%);
+    font-weight: 600;
+    i {
+      color: $green;
+    }
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Toolbar de edición de la pestaña "Datos personales".
+   Aparece al principio del panel y alterna entre "Editar" / "Hecho".
+   Unifica la UX con el modal de jugador (PlayerInfoDialogComponent):
+   vista lectura por defecto + botón explícito para entrar en edición.
+   ────────────────────────────────────────────────────────────────────── */
+.abonado-edit-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: $gray-text;
+    font-weight: 500;
+
+    &--ok {
+      color: $green;
+    }
+  }
+
+  // Variante usada en la pestaña "Datos personales" desde el
+  // rediseño 2026-05-25: la ficha es siempre editable, así que la
+  // toolbar solo muestra hints de autosave. Reservamos altura
+  // mínima para que el layout no salte cuando aparece "Guardando…"
+  // y reducimos el margen inferior porque ya no hay botón
+  // Editar/Hecho que necesite separación grande.
+  &--autosave-only {
+    min-height: 22px;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Modo lectura del tab-panel "Datos personales".
+   Aplica visual "texto plano" a todos los inputs/selects/textareas:
+   sin borde, sin fondo, sin padding lateral, y bloquea pointer-events
+   para impedir cualquier interacción accidental. El usuario tiene que
+   pulsar "Editar" explícitamente para empezar a modificar.
+   ────────────────────────────────────────────────────────────────────── */
+.tab-panel--readonly {
+  .field {
+    input, select, textarea {
+      border-color: transparent;
+      background: transparent;
+      padding-left: 0;
+      padding-right: 0;
+      pointer-events: none;
+      cursor: default;
+      color: $navy;
+      font-weight: 500;
+
+      &:focus {
+        outline: none;
+        border-color: transparent;
+        box-shadow: none;
+      }
+    }
+
+    /* Quita la flecha del select para que se vea como un valor de
+       texto plano cuando estamos en modo lectura. */
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: none;
+    }
+  }
+
+  /* Campos custom (Extras del club): mismo tratamiento. */
+  .field-check {
+    border-color: transparent;
+    background: transparent;
+    pointer-events: none;
+    cursor: default;
+  }
+  .field-multi label {
+    pointer-events: none;
+    cursor: default;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Variantes para el bloque "Extras del club" (campos dinámicos del schema
+   del club). Mantienen la misma estética que `.field`: bordes suaves,
+   tipografía y espaciados consistentes con los inputs canónicos.
+   ────────────────────────────────────────────────────────────────────── */
+
+/* Checkbox / consent: label en línea con el input, padding y borde
+   en el contenedor para que NO parezca un control suelto pegado al borde
+   del bento. */
+.field-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(0, 44, 64, 0.12);
+  border-radius: $radius-md;
+  background: $white;
+  cursor: pointer;
+  font-size: 14px;
+  color: $navy;
+  font-weight: 500;
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+  width: fit-content;
+  max-width: 100%;
+
+  &:hover { border-color: rgba(0, 44, 64, 0.24); }
+
+  input[type='checkbox'] {
+    width: 18px;
+    height: 18px;
+    accent-color: $green;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  span { line-height: 1.3; }
+}
+
+/* Wrapper para `multi_check`: rejilla flexible que apila los chips de
+   selección múltiple con saltos automáticos. */
+.field-multi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  .field-check { font-weight: 500; }
+}
+
+/* Texto auxiliar bajo un checkbox (p.ej. términos legales del consent). */
+.field-text {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: $gray-text;
+}
+
+/* Bloque tipo `info`: texto informativo sin input editable. Recuadro suave
+   con barra lateral verde para destacarlo como contenido informativo del
+   club, no como dato del abonado. */
+.field--info {
+  background: rgba(49, 178, 112, 0.06);
+  border-left: 3px solid $green;
+  border-radius: $radius-md;
+  padding: 12px 14px;
+
+  .field-info-title {
+    margin: 0 0 4px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: $navy;
+  }
+  .field-info-text {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: $gray-text;
+  }
+}
+
+/* Enlace de descarga del documento adjuntado por el club (campo
+   `type=document`). Mismo registro visual que los inputs: borde sutil,
+   radio consistente, hover apenas marcado. */
+.field-doc-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid rgba(0, 44, 64, 0.12);
+  border-radius: $radius-md;
+  background: $bg-light;
+  color: $navy;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+  width: fit-content;
+  max-width: 100%;
+
+  i { color: $green; font-size: 16px; }
+
+  &:hover {
+    border-color: $green;
+    background: rgba(49, 178, 112, 0.08);
+  }
+}
+
+/* Marcador "sin dato" para los `document` cuando el club no adjuntó nada. */
+.field-empty {
+  display: inline-block;
+  padding: 8px 0;
+  color: rgba(99, 99, 99, 0.6);
+  font-size: 14px;
+}
+
+/* ????????????????????????????? PAY SUMMARY ????????????????????????????? */
+.pay-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+
+  /* Variante para clubes ad-hoc sin temporada: solo 2 tarjetas grandes
+     (Total pagado + Al día). Hacemos cada una más amplia para que no
+     queden como dos pildoritas perdidas en el ancho del bento. */
+  &--open {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+}
+
+.pay-card {
+  background: $bg-light;
+  border-radius: $radius-md;
+  padding: 14px 16px;
+  border-left: 4px solid $navy;
+
+  &--green { border-left-color: $green; }
+  &--orange { border-left-color: $warning; }
+  &--blue { border-left-color: $info; }
+
+  .pay-card-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: $gray-text;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .pay-card-value {
+    font-size: 22px;
+    font-weight: 800;
+    color: $navy;
+    margin-top: 4px;
+
+    &--small {
+      font-size: 14px;
+      margin-top: 6px;
+    }
+  }
+
+  /* Línea contextual al pie de la tarjeta: "Último pago: 13/05/2026"
+     o "3 pagos registrados". Sutil, para no competir con el valor. */
+  .pay-card-foot {
+    margin-top: 8px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: $gray-text;
+    letter-spacing: 0.2px;
+  }
+
+  /* En la variante --open ampliamos un poco las tarjetas para que el
+     dato principal respire (es lo único que destaca en clubes ad-hoc). */
+  .pay-summary--open & {
+    padding: 18px 20px;
+
+    .pay-card-value {
+      font-size: 26px;
+    }
+  }
+}
+
+.pay-history-table {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  .pay-history-row {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr 1.1fr 0.9fr 1.6fr;
+    gap: 10px;
+    padding: 11px 14px;
+    border-radius: $radius-md;
+    background: $bg-light;
+    font-size: 13.5px;
+    color: $navy;
+    align-items: center;
+
+    &--head {
+      background: transparent;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: $gray-text;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      padding: 6px 14px;
+    }
+
+    .amount {
+      font-weight: 700;
+    }
+
+    .comment {
+      color: $gray-text;
+      font-size: 13px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 720px) {
+      grid-template-columns: 1fr 1fr;
+      &--head { display: none; }
+    }
+  }
+}
+
+.amount-chip {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+
+  &--green {
+    background: rgba(49, 178, 112, 0.15);
+    color: $green;
+  }
+  &--red {
+    background: rgba(220, 53, 69, 0.12);
+    color: $danger;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 28px 12px;
+  color: $gray-text;
+
+  i {
+    font-size: 36px;
+    opacity: 0.35;
+    margin-bottom: 8px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+/* ????????????????????????????? BUTTONS ????????????????????????????? */
+.btn-primary-sph,
+.btn-secondary-sph {
+  border: 0;
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  transition: transform 0.1s, box-shadow 0.15s;
+
+  &:hover:not(:disabled) { transform: translateY(-1px); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.btn-primary-sph {
+  background: linear-gradient(135deg, $green 0%, $navy 100%);
+  color: $white;
+  box-shadow: 0 2px 8px rgba(0, 44, 64, 0.25);
+}
+
+.btn-secondary-sph {
+  background: $bg-light;
+  color: $navy;
+}
+
+/* ????????????????????????????? STATES ????????????????????????????? */
+.state {
+  background: $white;
+  border-radius: $radius-lg;
+  padding: 60px 20px;
+  text-align: center;
+  max-width: 600px;
+  margin: 80px auto;
+  box-shadow: $shadow-sm;
+
+  i {
+    font-size: 48px;
+    color: $warning;
+    margin-bottom: 18px;
+  }
+
+  h2 {
+    margin: 0 0 6px;
+    color: $navy;
+    font-weight: 800;
+  }
+
+  p {
+    color: $gray-text;
+    margin-bottom: 20px;
+  }
+
+  .loader {
+    width: 48px;
+    height: 48px;
+    border: 4px solid $bg-light;
+    border-top-color: $green;
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+    margin: 0 auto 14px;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ????????????????????????????? MODAL ????????????????????????????? */
+.sph-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 44, 64, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9000;
+  backdrop-filter: blur(6px);
+}
+
+.sph-modal {
+  background: $white;
+  border-radius: $radius-xl;
+  width: min(580px, 92vw);
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: $shadow-lg;
+  animation: modalIn 0.18s ease-out;
+
+  .sph-modal-head {
+    background: linear-gradient(135deg, $green 0%, $navy 100%);
+    color: $white;
+    padding: 16px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    h2 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+
+  .sph-modal-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: 0;
+    color: $white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover { background: rgba(255, 255, 255, 0.35); }
+  }
+
+  .sph-modal-body {
+    padding: 18px 22px;
+    overflow-y: auto;
+  }
+
+  .sph-modal-foot {
+    padding: 14px 22px;
+    border-top: 1px solid rgba(0, 44, 64, 0.06);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+}
+
+@keyframes modalIn {
+  from { transform: translateY(-6px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* =======================================================================
+   PR2 - Tab Documentos
+   ======================================================================= */
+
+.tab-count {
+  display: inline-flex;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  margin-left: 6px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: rgba(49, 178, 112, 0.15);
+  color: $green;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tab-btn--active .tab-count {
+  background: rgba(255, 255, 255, 0.25);
+  color: $white;
+}
+
+.dropzone {
+  margin: 18px 0 0;
+  padding: 28px;
+  border: 2px dashed rgba(0, 44, 64, 0.18);
+  border-radius: 16px;
+  background: rgba(244, 244, 244, 0.55);
+  text-align: center;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+
+  &--over {
+    border-color: $green;
+    background: rgba(196, 232, 214, 0.35);
+    transform: scale(1.01);
+  }
+
+  &--has-file {
+    text-align: left;
+    padding: 18px 22px;
+    background: $white;
+    border-color: rgba(49, 178, 112, 0.35);
+    border-style: solid;
+  }
+
+  .dropzone-icon {
+    font-size: 36px;
+    color: rgba(0, 44, 64, 0.35);
+    margin-bottom: 10px;
+  }
+
+  .dropzone-text {
+    margin: 6px 0 14px;
+    color: $gray-text;
+    font-size: 14px;
+  }
+}
+
+.pending-file {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0, 44, 64, 0.08);
+  margin-bottom: 12px;
+
+  i.fas {
+    font-size: 28px;
+    color: $green;
+  }
+
+  .pending-file-meta {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .pending-file-name {
+    font-weight: 600;
+    color: $navy;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .pending-file-size {
+    font-size: 12px;
+    color: $gray-text;
+    margin-top: 2px;
+  }
+}
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 44, 64, 0.1);
+  background: $white;
+  color: $navy;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+  &:hover:not(:disabled) {
+    background: rgba(0, 44, 64, 0.05);
+    border-color: rgba(0, 44, 64, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  &--primary {
+    background: rgba(49, 178, 112, 0.1);
+    color: $green;
+    border-color: rgba(49, 178, 112, 0.25);
+    &:hover:not(:disabled) {
+      background: rgba(49, 178, 112, 0.18);
+    }
+  }
+
+  &--danger {
+    background: rgba(220, 53, 69, 0.08);
+    color: #dc3545;
+    border-color: rgba(220, 53, 69, 0.2);
+    &:hover:not(:disabled) {
+      background: rgba(220, 53, 69, 0.16);
+    }
+  }
+}
+
+.pending-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &--full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 12px;
+      font-weight: 600;
+      color: $gray-text;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    input, select, textarea {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 44, 64, 0.12);
+      background: $white;
+      color: $navy;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+
+      &:focus {
+        border-color: $green;
+        box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.15);
+      }
+    }
+  }
+
+  .pending-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 4px;
+  }
+}
+
+.docs-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 22px;
+  color: $gray-text;
+  font-size: 14px;
+
+  .loader--inline {
+    width: 18px;
+    height: 18px;
+    border-width: 3px;
+  }
+}
+
+/* Lista vertical de documentos (antes era grid de cards con preview
+   grande tipo galería). Decisión 2026-05-17: la mayoría de docs del
+   abonado son PDFs/imágenes administrativos donde la previsualización
+   grande aportaba poco y ocupaba mucho. Ahora cada documento ocupa
+   una fila densa con thumbnail/icono pequeño + metadatos + acciones,
+   facilitando ver muchos documentos de un vistazo. */
+.docs-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 0 4px;
+}
+
+.doc-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  background: $white;
+  border: 1px solid rgba(0, 44, 64, 0.08);
+  border-radius: 12px;
+  padding: 10px 14px;
+  transition: border-color 0.18s, box-shadow 0.18s, opacity 0.18s;
+
+  &:hover {
+    border-color: rgba(0, 44, 64, 0.16);
+    box-shadow: 0 2px 10px rgba(0, 44, 64, 0.06);
+  }
+
+  &.is-deleting {
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  /* Thumbnail compacto a la izquierda, 48×48 px. Reemplaza el preview
+     anterior de 130 px de alto. Para imágenes muestra una mini-vista;
+     para PDFs/otros muestra el icono emoji centrado. */
+  .doc-card-preview {
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(0, 44, 64, 0.06) 0%, rgba(49, 178, 112, 0.08) 100%);
+    border-radius: 10px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .doc-card-icon {
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  /* Cuerpo en línea: nombre arriba; debajo pill de tipo + metadatos. */
+  .doc-card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .doc-card-type {
+    order: 2;
+    .status-pill {
+      font-size: 10px;
+    }
+  }
+
+  .doc-card-name {
+    order: 1;
+    font-weight: 600;
+    color: $navy;
+    font-size: 14px;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Inline con la pill: ‹DNI›  ·  134 KB  ·  17/05/2026 */
+  .doc-card-meta {
+    order: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11.5px;
+    color: $gray-text;
+  }
+
+  /* Reagrupamos type + meta en una sola fila usando un wrapper
+     virtual: type tiene order 2 y meta también; ambos comparten línea
+     con flex-wrap. */
+  .doc-card-type,
+  .doc-card-meta {
+    display: inline-flex;
+  }
+  /* Para que tipo y meta queden lado a lado en una sola línea, los
+     metemos en un contenedor flexible. Como el HTML actual no permite
+     wrapper extra sin modificarlo, simulamos con un pseudo-row vía
+     gap + display flex en el body: */
+  .doc-card-body {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 10px;
+    row-gap: 2px;
+    .doc-card-name { flex: 1 1 100%; }
+  }
+
+  .doc-card-desc {
+    order: 3;
+    flex: 1 1 100%;
+    font-size: 12px;
+    color: $gray-text;
+    margin: 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Acciones siempre a la derecha de la fila. */
+  .doc-card-actions {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    padding: 0;
+    border-top: 0;
+  }
+}
+
+/* En anchos muy pequeños mantenemos la fila pero envolvemos acciones
+   debajo si el nombre es largo. */
+@media (max-width: 480px) {
+  .doc-card {
+    flex-wrap: wrap;
+    .doc-card-actions {
+      flex: 1 1 100%;
+      justify-content: flex-end;
+      padding-top: 6px;
+      border-top: 1px solid rgba(0, 44, 64, 0.06);
+    }
+  }
+}
+
+/* =======================================================================
+   Documentos del club (Bloque 8 / Fase 2)
+   Estilos para la sección que lista los docs requeridos por el club al
+   abonado. Reutilizan .doc-card pero con variantes para resaltar pendientes
+   y completados.
+   ======================================================================= */
+.doc-card--row {
+  .doc-card-icon-row {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(0, 44, 64, 0.06);
+    color: #002c40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex: 0 0 auto;
+  }
+
+  &.doc-card--pending .doc-card-icon-row {
+    background: rgba(245, 158, 11, 0.12);
+    color: #b45309;
+  }
+
+  &.doc-card--done .doc-card-icon-row {
+    background: rgba(49, 178, 112, 0.12);
+    color: #1f7a4d;
+  }
+
+  .doc-card-desc--small {
+    font-size: 12px;
+    color: rgba(0, 44, 64, 0.6);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.status-pill--warning {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #b45309 !important;
+}
+
+/* =======================================================================
+   Modal "Subir respuesta del abonado"
+   ======================================================================= */
+.sph-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 44, 64, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.sph-modal {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 30px 80px rgba(0, 44, 64, 0.35);
+  overflow: hidden;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+
+  &--md { max-width: 520px; }
+
+  .sph-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(0, 44, 64, 0.08);
+
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #002c40;
+    }
+  }
+
+  .sph-modal-close {
+    background: transparent;
+    border: 0;
+    color: rgba(0, 44, 64, 0.55);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+
+    &:hover {
+      background: rgba(0, 44, 64, 0.06);
+      color: #002c40;
+    }
+  }
+
+  .sph-modal-body {
+    padding: 16px 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .sph-modal-doc-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: #002c40;
+    font-size: 14px;
+
+    strong { font-weight: 700; }
+
+    i { color: #31b270; }
+  }
+
+  .sph-modal-doc-desc {
+    margin: 0;
+    color: rgba(0, 44, 64, 0.65);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .sph-modal-label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(0, 44, 64, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+
+    input[type='file'],
+    textarea {
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: 0;
+      text-transform: none;
+      color: #002c40;
+      padding: 10px 12px;
+      border: 1px solid rgba(0, 44, 64, 0.12);
+      border-radius: 10px;
+      background: #f9fafb;
+      outline: none;
+      resize: vertical;
+
+      &:focus {
+        border-color: #31b270;
+        background: #ffffff;
+        box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.15);
+      }
+    }
+
+    input[type='file'] {
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+  }
+
+  .sph-modal-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #1f7a4d;
+    margin: 0;
+  }
+
+  .sph-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 20px 16px;
+    border-top: 1px solid rgba(0, 44, 64, 0.08);
+  }
+}
+
+/* =======================================================================
+   PR2 - Tab Comunicaciones (timeline)
+   ======================================================================= */
+
+.timeline {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0 0 0 36px;
+  position: relative;
+
+  &:before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 4px;
+    bottom: 4px;
+    width: 2px;
+    background: linear-gradient(180deg, rgba(49, 178, 112, 0.4), rgba(0, 44, 64, 0.1));
+    border-radius: 2px;
+  }
+}
+
+.timeline-item {
+  position: relative;
+  padding: 0 0 18px 0;
+
+  .tl-marker {
+    position: absolute;
+    left: -36px;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $white;
+    border: 2px solid $green;
+    color: $green;
+    font-size: 14px;
+    box-shadow: 0 2px 6px rgba(0, 44, 64, 0.08);
+
+    &.tl-channel--push {
+      border-color: #f59e0b;
+      color: #f59e0b;
+    }
+    &.tl-channel--sms {
+      border-color: #3b82f6;
+      color: #3b82f6;
+    }
+  }
+
+  .tl-card {
+    background: $white;
+    border: 1px solid rgba(0, 44, 64, 0.08);
+    border-radius: 12px;
+    padding: 12px 16px 14px;
+    transition: transform 0.15s, box-shadow 0.15s;
+
+    &:hover {
+      transform: translateX(2px);
+      box-shadow: 0 4px 14px rgba(0, 44, 64, 0.06);
+    }
+  }
+
+  .tl-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .tl-channel-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: $gray-text;
+    letter-spacing: 0.6px;
+    background: rgba(0, 44, 64, 0.05);
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+
+  .tl-date {
+    font-size: 12px;
+    color: $gray-text;
+    margin-left: auto;
+  }
+
+  .tl-subject {
+    margin: 4px 0 6px;
+    font-size: 15px;
+    font-weight: 700;
+    color: $navy;
+  }
+
+  .tl-body {
+    color: $gray-text;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0;
+    white-space: pre-wrap;
+  }
+
+  .tl-error {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #b91c1c;
+    background: rgba(220, 53, 69, 0.06);
+    padding: 6px 10px;
+    border-radius: 8px;
+    border-left: 3px solid #dc3545;
+
+    i { margin-right: 5px; }
+  }
+}
+
+/* Estado del env�o (success/failed/queued) */
+.state-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &--ok       { background: rgba(49, 178, 112, 0.12); color: $green; }
+  &--ko       { background: rgba(220, 53, 69, 0.10);  color: #b91c1c; }
+  &--pending  { background: rgba(245, 158, 11, 0.12); color: #b45309; }
+  &--neutral  { background: rgba(0, 44, 64, 0.05);    color: $gray-text; }
+}
+
+/* Status pill gen�rica (cuando no existe alguna variante) */
+.status-pill--neutral {
+  background: rgba(0, 44, 64, 0.05);
+  color: $gray-text;
+}
+
+/* Modal ancho para enviar comunicaci�n */
+.sph-modal--wide {
+  max-width: 720px;
+}
+
+.templates-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+
+  .templates-label {
+    font-size: 12px;
+    color: $gray-text;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+
+  .chip {
+    border: 1px solid rgba(0, 44, 64, 0.12);
+    background: $white;
+    color: $navy;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+    &:hover {
+      background: rgba(49, 178, 112, 0.08);
+      border-color: rgba(49, 178, 112, 0.35);
+      color: $green;
+    }
+  }
+}
+
+/* =======================================================================
+   PR3 - Tab Familiares
+   ======================================================================= */
+
+.fam-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 14px;
+  padding: 14px 0 4px;
+}
+
+.fam-card {
+  background: $white;
+  border: 1px solid rgba(0, 44, 64, 0.08);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 44, 64, 0.08);
+  }
+
+  &.is-deleting {
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  .fam-card-head {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid rgba(0, 44, 64, 0.05);
+    background: linear-gradient(135deg, rgba(0, 44, 64, 0.03) 0%, rgba(49, 178, 112, 0.05) 100%);
+  }
+
+  .fam-avatar {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, $green, $navy);
+    color: $white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .fam-head-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .fam-relation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 4px;
+
+    .status-pill {
+      font-size: 10px;
+    }
+  }
+
+  .fam-name {
+    margin: 2px 0 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: $navy;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .fam-meta {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: $gray-text;
+  }
+
+  .fam-card-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .fam-card-body {
+    padding: 12px 16px 16px;
+  }
+
+  .fam-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      &--full { grid-column: 1 / -1; }
+
+      label {
+        font-size: 11px;
+        font-weight: 600;
+        color: $gray-text;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+
+      input, select, textarea {
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 44, 64, 0.12);
+        background: $white;
+        color: $navy;
+        font-size: 13px;
+        outline: none;
+        transition: border-color 0.15s, box-shadow 0.15s;
+
+        &:focus {
+          border-color: $green;
+          box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.15);
+        }
+      }
+    }
+  }
+
+  .fam-readonly {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(49, 178, 112, 0.06);
+    color: $green;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12px;
+
+    i { font-size: 14px; }
+  }
+}
+
+/* Pills exclusivas de familiares (socio / externo). */
+.status-pill--member {
+  background: rgba(49, 178, 112, 0.12);
+  color: $green;
+}
+
+.status-pill--external {
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+}
+
+/* Modal de b�squeda de socios para vincular */
+.search-results {
+  margin-top: 12px;
+  max-height: 340px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 4px;
+}
+
+.search-result-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 44, 64, 0.08);
+  background: $white;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+  color: $navy;
+
+  &:hover {
+    background: rgba(49, 178, 112, 0.05);
+    border-color: rgba(49, 178, 112, 0.25);
+  }
+
+  &--selected {
+    background: rgba(49, 178, 112, 0.12);
+    border-color: $green;
+
+    .result-avatar { background: linear-gradient(135deg, $green, $navy); }
+  }
+
+  .result-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(0, 44, 64, 0.7);
+    color: $white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 12px;
+    flex: 0 0 36px;
+  }
+
+  .result-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .result-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: $navy;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .result-meta {
+    display: flex;
+    gap: 10px;
+    font-size: 11px;
+    color: $gray-text;
+    margin-top: 2px;
+  }
+
+  i.fa-check-circle {
+    color: $green;
+    font-size: 18px;
+  }
+}
+
+/* =======================================================================
+   PR3 - Tab Actividad (markers extra para el timeline existente)
+   ======================================================================= */
+
+.tl-marker.act-marker--green   { border-color: $green;   color: $green; }
+.tl-marker.act-marker--orange  { border-color: #f59e0b;  color: #f59e0b; }
+.tl-marker.act-marker--red     { border-color: #dc3545;  color: #dc3545; }
+.tl-marker.act-marker--blue    { border-color: #3b82f6;  color: #3b82f6; }
+.tl-marker.act-marker--violet  { border-color: #8b5cf6;  color: #8b5cf6; }
+.tl-marker.act-marker--neutral { border-color: rgba(0, 44, 64, 0.25); color: $gray-text; }
+
+.act-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.act-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(0, 44, 64, 0.05);
+  color: $navy;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  letter-spacing: 0.3px;
+}
+
+/* =======================================================================
+   PR4 - Tab Carnet + Beneficios
+   ======================================================================= */
+
+.bento--carnet-wrap {
+  /* Solo gestiona el header; el carnet visual va contenido aparte. */
+}
+
+/* =======================================================================
+   Carnet horizontal estilo ID-1 (ratio 1.585:1) — PR4 rediseño
+   Replicamos el mismo lenguaje visual que el carnet del lado del abonado
+   (`mi-abonado/abonado-carnet`) para que el club vea exactamente la
+   misma tarjeta que el socio cuando se identifica.
+   ======================================================================= */
+.sph-carnet {
+  display: flex;
+  justify-content: center;
+  padding: 22px 0 14px;
+}
+
+$sph-carnet-ratio: 1.585;
+
+.sph-carnet-card {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  aspect-ratio: #{$sph-carnet-ratio};
+
+  display: grid;
+  /* Proporciones balanceadas: foto generosa, datos al centro, QR
+     suficientemente grande para escanearse a un palmo de distancia. */
+  grid-template-columns: minmax(160px, 30%) minmax(0, 1fr) minmax(170px, 34%);
+  grid-template-rows: 1fr 40px;
+  grid-template-areas:
+    "photo data qr"
+    "footer footer footer";
+
+  background: $white;
+  color: $navy;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow:
+    0 18px 44px rgba(0, 44, 64, 0.18),
+    0 2px 6px rgba(0, 44, 64, 0.08);
+  border: 1px solid rgba(0, 44, 64, 0.08);
+
+  /* Acento superior dependiente del estado del abonado. */
+  &--active   { border-top: 4px solid $green; }
+  &--pending  { border-top: 4px solid #ffb200; }
+  &--inactive { border-top: 4px solid $gray-text; }
+}
+
+/* Marca de agua eliminada de la vista: distraía más de lo que aportaba.
+   Se mantiene la clase para no romper el HTML pero sin estilos visibles. */
+.sph-carnet-watermark { display: none; }
+
+/* ─── Columna 1 · Foto del abonado (estilo carnet 3:4) ─── */
+.sph-carnet-photo {
+  grid-area: photo;
+  position: relative;
+  background: linear-gradient(160deg, $bg-light 0%, #e8eef1 100%);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  z-index: 1;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 12%;
+    bottom: 12%;
+    right: 0;
+    width: 1px;
+    background: rgba(0, 44, 64, 0.1);
+  }
+}
+
+.sph-carnet-photo-fb {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(160deg, $green-light 0%, $bg-light 100%);
+  position: relative;
+
+  span {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: clamp(64px, 12vw, 110px);
+    color: $navy;
+    letter-spacing: -2px;
+    line-height: 1;
+  }
+
+  /* Marca pequeña "FOTO" en esquina para indicar el placeholder. */
+  &::after {
+    content: 'FOTO';
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: rgba(0, 44, 64, 0.35);
+  }
+}
+
+/* ─── Columna 2 · Datos del abonado ─── */
+.sph-carnet-data {
+  grid-area: data;
+  position: relative;
+  z-index: 1;
+  padding: 18px 22px 16px;
+  display: flex;
+  flex-direction: column;
+  /* space-between distribuye el contenido por toda la altura disponible
+     en lugar de apelmazarlo arriba y dejar la mitad del bloque vacío. */
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sph-carnet-club-head {
+  display: flex;
+  // Antes era `center`; pasamos a `flex-start` para que cuando el
+  // nombre del club ocupe 2 líneas el logo se alinee con la primera
+  // línea (más natural) en vez de quedar centrado verticalmente con
+  // todo el bloque de texto.
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sph-carnet-club-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: $white;
+  box-shadow: 0 2px 6px rgba(0, 44, 64, 0.12);
+  display: grid;
+  place-items: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  // Fallback cuando el club no tiene logo o el fichero del servidor
+  // devuelve 404. En vez del icono genérico previo (`fa-shield-alt`),
+  // mostramos las iniciales del nombre del club con un degradado de
+  // marca Sphaira para que el carnet siga identificando claramente al
+  // club aunque le falte la imagen.
+  &--fb {
+    background: linear-gradient(135deg, $green 0%, $navy 100%);
+    box-shadow: 0 2px 6px rgba(0, 44, 64, 0.2);
+  }
+}
+
+.sph-carnet-club-logo__initials {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  color: $white;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.sph-carnet-club-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 11.5px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: $green;
+  // Permitimos hasta 2 líneas para que nombres largos como "Casino
+  // Mercantil e Industrial de Pontevedra" se vean enteros y no
+  // truncados con "…". Con `-webkit-line-clamp` mantenemos un máximo
+  // por si el nombre fuera absurdamente largo y rompiese el layout
+  // del carnet.
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  word-break: break-word;
+  line-height: 1.2;
+  min-width: 0;
+  flex: 1;
+}
+
+.sph-carnet-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  /* Tamaño reducido para que nombres largos tipo
+     "Alejandro Espinosa López" entren en 2 líneas sin truncar con
+     "…". El clamp() se adapta a anchos de pantalla intermedios. */
+  font-size: clamp(16px, 2.2vw, 22px);
+  color: $navy;
+  margin: 0;
+  line-height: 1.15;
+  letter-spacing: -0.3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+
+  &__last { font-weight: 700; }
+}
+
+.sph-carnet-meta {
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.sph-carnet-meta-row {
+  /* Layout vertical (etiqueta arriba en pequeño, valor abajo en grande)
+     en lugar de horizontal con flex. Evita que el Nº socio se trunque
+     cuando la columna 2 del carnet es estrecha, porque ya no compite
+     con el label por el ancho disponible. */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed rgba(0, 44, 64, 0.1);
+
+  &:last-child { border-bottom: 0; padding-bottom: 0; }
+
+  dt {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: $gray-text;
+  }
+
+  &__value {
+    margin: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: $navy;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &--mono {
+      font-family: 'JetBrains Mono', 'Consolas', monospace;
+      /* Reducido para que SOC-2026-001 (13 chars con letter-spacing)
+         entre en el ancho de la columna del carnet sin truncarse. */
+      font-size: 15px;
+      letter-spacing: 1px;
+    }
+  }
+}
+
+.sph-carnet-status-wrap {
+  padding-top: 2px;
+}
+
+.sph-carnet-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  background: $green-light;
+  color: color.adjust($green, $lightness: -8%);
+  box-shadow: 0 2px 6px rgba(49, 178, 112, 0.18);
+
+  i { font-size: 13px; }
+
+  &--pending {
+    background: rgba(255, 178, 0, 0.18);
+    color: #b27500;
+    box-shadow: 0 2px 6px rgba(255, 178, 0, 0.18);
+  }
+  &--inactive {
+    background: rgba(99, 99, 99, 0.18);
+    color: $gray-text;
+    box-shadow: none;
+  }
+}
+
+/* ─── Columna 3 · QR fijo ─── */
+.sph-carnet-qr {
+  grid-area: qr;
+  position: relative;
+  z-index: 1;
+  background: $bg-light;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  border-left: 1px solid rgba(0, 44, 64, 0.08);
+  margin: 0;
+}
+
+.sph-carnet-qr-frame {
+  position: relative;
+  /* Padding generoso para que el QR no toque las esquinas verdes
+     decorativas ni el borde del marco. Combinado con el quiet zone
+     interno del QR (margin=1) da un respiro visual sin sacrificar
+     legibilidad de escaneo. */
+  padding: 14px;
+  background: $white;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 44, 64, 0.12);
+  /* Sin width/aspect-ratio fijos: el marco crece en función del
+     padding + tamaño natural del QR (128px del atributo [width]).
+     Antes peleábamos con el SVG porque angularx-qrcode genera
+     `width="200"` HTML-attribute y los CSS `!important` no siempre
+     ganan ya que la librería envuelve el SVG en un wrapper extra.
+     Con tamaño natural el QR queda siempre CENTRADO y nunca rebosa. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+
+  qrcode {
+    display: block;
+    line-height: 0;
+  }
+  qrcode > * { display: block; }
+  qrcode svg,
+  qrcode img,
+  qrcode canvas {
+    display: block;
+    /* Tope defensivo para que ni siquiera con `width="200"` inline
+       del SVG el contenido pueda romper el marco. */
+    max-width: 128px;
+    max-height: 128px;
+  }
+
+  &__corner {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2.5px solid $green;
+
+    &--tl { top: -4px;    left: -4px;    border-right: 0; border-bottom: 0; }
+    &--tr { top: -4px;    right: -4px;   border-left: 0;  border-bottom: 0; }
+    &--bl { bottom: -4px; left: -4px;    border-right: 0; border-top: 0; }
+    &--br { bottom: -4px; right: -4px;   border-left: 0;  border-top: 0; }
+  }
+}
+
+/* ─── Banda inferior · Tag "Carnet de socio" ─── */
+.sph-carnet-footer {
+  grid-area: footer;
+  background: linear-gradient(90deg, $green 0%, $navy 100%);
+  color: $white;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.sph-carnet-brand-tag {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 1.6px;
+  opacity: 0.92;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 720px) {
+  .sph-carnet-card {
+    grid-template-columns: 100px 1fr 110px;
+
+    .sph-carnet-name { font-size: 17px; }
+    .sph-carnet-meta-row__value { font-size: 12px; }
+    .sph-carnet-meta-row__value--mono { font-size: 13px; }
+    .sph-carnet-meta-row dt { min-width: 50px; font-size: 9px; }
+    .sph-carnet-club-logo { width: 22px; height: 22px; }
+    .sph-carnet-club-name { font-size: 10px; }
+    .sph-carnet-qr-frame {
+      padding: 10px;
+      qrcode svg, qrcode img, qrcode canvas {
+        max-width: 96px;
+        max-height: 96px;
+      }
+    }
+  }
+  .sph-carnet-data { padding: 12px 12px 10px; gap: 6px; }
+  .sph-carnet-qr { padding: 10px 8px; }
+  .sph-carnet-footer {
+    padding: 5px 10px;
+    .sph-carnet-brand-tag { font-size: 9px; letter-spacing: 1.2px; }
+  }
+  .sph-carnet-watermark { font-size: 140px; right: 110px; bottom: 28px; }
+  .sph-carnet-photo-fb span { font-size: 38px; }
+}
+
+@media (max-width: 520px) {
+  .sph-carnet-card {
+    aspect-ratio: auto;
+    grid-template-columns: 86px 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "photo data"
+      "qr    qr"
+      "footer footer";
+  }
+  .sph-carnet-photo {
+    aspect-ratio: 3 / 4;
+    &::after { display: none; }
+  }
+  .sph-carnet-qr {
+    flex-direction: row;
+    justify-content: center;
+    gap: 14px;
+    padding: 12px;
+    border-left: 0;
+    border-top: 1px solid rgba(0, 44, 64, 0.08);
+
+    .sph-carnet-qr-frame {
+      padding: 10px;
+      qrcode svg, qrcode img, qrcode canvas {
+        max-width: 110px;
+        max-height: 110px;
+      }
+    }
+  }
+  .sph-carnet-watermark { display: none; }
+}
+
+/* Beneficios grid */
+.perks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+  padding: 14px 0 4px;
+}
+
+.perk-card {
+  display: flex;
+  flex-direction: column;
+  background: $white;
+  border: 1px solid rgba(0, 44, 64, 0.08);
+  border-radius: 16px;
+  padding: 18px;
+  gap: 10px;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(0, 44, 64, 0.08);
+  }
+
+  &--locked {
+    opacity: 0.6;
+
+    .perk-cta { background: $gray-text; cursor: not-allowed; }
+  }
+
+  .perk-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(49, 178, 112, 0.12), rgba(0, 44, 64, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    color: $green;
+  }
+
+  .perk-body { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+
+  .perk-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: $navy;
+  }
+
+  .perk-desc {
+    margin: 0;
+    color: $gray-text;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .perk-meta {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .perk-limit {
+    background: rgba(0, 44, 64, 0.05);
+    color: $navy;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.3px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    &--unlimited {
+      background: rgba(49, 178, 112, 0.12);
+      color: $green;
+    }
+  }
+
+  .perk-cta {
+    margin-top: 6px;
+    align-self: stretch;
+  }
+}
+
+/* Modal de canje: layout especial con resumen del perk */
+.perk-summary {
+  display: flex;
+  gap: 14px;
+  background: linear-gradient(135deg, rgba(0, 44, 64, 0.03) 0%, rgba(49, 178, 112, 0.05) 100%);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
+
+  .perk-icon {
+    width: 56px;
+    height: 56px;
+    flex: 0 0 56px;
+    border-radius: 12px;
+    background: $white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: $green;
+    box-shadow: 0 2px 8px rgba(0, 44, 64, 0.06);
+  }
+
+  h3 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 700;
+    color: $navy;
+  }
+
+  p {
+    margin: 0 0 8px;
+    color: $gray-text;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+}
+
+.perk-summary-meta {
+  font-size: 12px;
+  color: $navy;
+
+  strong { color: $green; }
+}
+
+/* Status pills extra para el carnet */
+.status-pill--success {
+  background: rgba(49, 178, 112, 0.18);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.status-pill--danger {
+  background: rgba(220, 53, 69, 0.22);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.status-pill--pending {
+  background: rgba(245, 158, 11, 0.25);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+
+/* =========================================================
+   HISTORICO DE ESTADOS � Bloque 6 (pesta�a Actividad)
+   ========================================================= */
+.bento--estado-hist {
+  margin-top: 1.25rem;
+}
+
+.aeh-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.aeh-item {
+  background: #fbfcfd;
+  border: 1px solid #e6ecf1;
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    border-color: #31b270;
+    background: #fff;
+  }
+}
+
+.aeh-transition {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.aeh-arrow {
+  color: #98a0a8;
+  font-size: 0.8rem;
+}
+
+.aeh-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+
+  &--ok {
+    background: rgba(49, 178, 112, 0.13);
+    color: #1d8f54;
+    border-color: rgba(49, 178, 112, 0.35);
+  }
+
+  &--pending {
+    background: rgba(240, 173, 78, 0.16);
+    color: #b07215;
+    border-color: rgba(240, 173, 78, 0.42);
+  }
+
+  &--inactive {
+    background: rgba(231, 76, 60, 0.12);
+    color: #a93226;
+    border-color: rgba(231, 76, 60, 0.38);
+  }
+}
+
+.aeh-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  font-size: 0.78rem;
+  color: #636363;
+  flex-wrap: wrap;
+}
+
+.aeh-by {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  i { color: #31b270; font-size: 0.78rem; }
+}
+
+.aeh-motivo {
+  margin: 0.15rem 0 0;
+  font-size: 0.88rem;
+  color: #002c40;
+  background: #fff;
+  border-left: 3px solid #31b270;
+  padding: 0.5rem 0.65rem;
+  border-radius: 0 8px 8px 0;
+  line-height: 1.45;
+  display: flex;
+  gap: 0.4rem;
+  i { color: #c4e8d6; font-size: 0.78rem; margin-top: 0.15rem; }
+
+  &--empty {
+    background: transparent;
+    border-left-color: #e6ecf1;
+    color: #98a0a8;
+    font-style: italic;
+    i { display: none; }
+  }
+}
+
+/* Dark mode */
+:host-context(.dark) {
+  .aeh-item {
+    background: var(--bg-surface, #1c2730);
+    border-color: var(--border-color, #2a3640);
+    &:hover { background: var(--bg-card, #243038); }
+  }
+  .aeh-meta { color: #aab2ba; }
+  .aeh-motivo {
+    background: var(--bg-card, #243038);
+    color: #e6eaee;
+  }
+  .aeh-motivo--empty { background: transparent; }
+}
+
+/* Aviso "Sin catálogo de pagos para abonados" en el bloque
+ * "Resumen de pagos" cuando el club aún no ha creado ningún concepto
+ * de pago para abonados desde new-cuotas. Sustituye al UX antiguo
+ * (botón habilitado que producía pagos huérfanos). */
+.pay-no-catalog-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba($warning, 0.08);
+  border: 1px solid rgba($warning, 0.32);
+  border-radius: $radius-md;
+  color: color.adjust($warning, $lightness: -22%);
+  font-size: 0.88rem;
+  line-height: 1.4;
+  flex-wrap: wrap;
+
+  i {
+    color: $warning;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  span {
+    flex: 1;
+    min-width: 200px;
+  }
+}
+
+.pay-no-catalog-link {
+  border: none;
+  background: $navy;
+  color: $white;
+  padding: 0.45rem 0.85rem;
+  border-radius: $radius-md;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.05s ease;
+  font-family: inherit;
+
+  &:hover { background: color.adjust($navy, $lightness: 6%); }
+  &:active { transform: translateY(1px); }
+}
+
+:host-context(.dark) {
+  .pay-no-catalog-hint {
+    background: rgba($warning, 0.12);
+    border-color: rgba($warning, 0.4);
+    color: color.adjust($warning, $lightness: 18%);
+  }
+  .pay-no-catalog-link {
+    background: $green;
+    color: $navy-deep;
+    &:hover { background: color.adjust($green, $lightness: 6%); }
+  }
+}
+
+/* Banner verde "Tiene todos los pagos al día". Se muestra cuando el
+   abonado ya está al corriente y queremos evitar registrar pagos
+   adicionales sobre cuotas inexistentes. */
+.pay-all-paid-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba($green, 0.10);
+  border: 1px solid rgba($green, 0.32);
+  border-radius: $radius-md;
+  color: color.adjust($green, $lightness: -22%);
+  font-size: 0.88rem;
+  line-height: 1.4;
+  flex-wrap: wrap;
+
+  i {
+    color: $green;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  span {
+    flex: 1;
+    min-width: 200px;
+    font-weight: 600;
+  }
+}
+
+:host-context(.dark) {
+  .pay-all-paid-hint {
+    background: rgba($green, 0.14);
+    border-color: rgba($green, 0.4);
+    color: color.adjust($green, $lightness: 18%);
+  }
+}
+
+/* El botón "Registrar pago" deshabilitado debe verse claramente apagado. */
+.btn-primary-sph[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.4);
+  &:hover { transform: none; }
+}

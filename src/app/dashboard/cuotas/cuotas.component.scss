@@ -3786,3 +3786,129 @@ $sphaira-navy: #002c40;
   }
 }
 
+// ── Selector de variantes de precio (lado pagador) ──────────────
+.cq-variantes {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: #f4f9f6;
+  border: 1px solid #c4e8d6;
+  border-radius: 12px;
+
+  .cq-variantes-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .cq-variantes-title {
+    font-weight: 700;
+    color: #002c40;
+    font-size: 0.9rem;
+    i { color: #31b270; margin-right: 0.25rem; }
+  }
+
+  .cq-variantes-pending {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #8a6d00;
+    background: #fff4d6;
+    border: 1px solid #ffe2a8;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+  }
+
+  .cq-variantes-hint {
+    margin: 0.35rem 0 0.65rem;
+    font-size: 0.78rem;
+    color: #636363;
+  }
+
+  .cq-variantes-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 0.55rem;
+  }
+
+  .cq-variante-opt {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.75rem;
+    background: #ffffff;
+    border: 1.5px solid #e3e8e6;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover { border-color: #31b270; }
+
+    input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
+
+    .cq-variante-opt-radio {
+      flex: 0 0 auto;
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 50%;
+      border: 2px solid #c2cbc7;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      i { font-size: 0.7rem; opacity: 0; }
+    }
+
+    .cq-variante-opt-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+      min-width: 0;
+    }
+
+    .cq-variante-opt-name {
+      font-weight: 600;
+      color: #002c40;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cq-variante-opt-pay {
+      display: flex;
+      align-items: baseline;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .cq-variante-opt-price {
+      font-weight: 800;
+      color: #31b270;
+      font-size: 0.95rem;
+    }
+
+    .cq-variante-opt-label {
+      font-size: 0.68rem;
+      color: #636363;
+    }
+
+    &.cq-variante-opt--active {
+      border-color: #31b270;
+      box-shadow: 0 0 0 2px rgba(49, 178, 112, 0.18);
+
+      .cq-variante-opt-radio {
+        border-color: #31b270;
+        background: #31b270;
+        i { opacity: 1; }
+      }
+    }
+  }
+}
+

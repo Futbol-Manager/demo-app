@@ -377,7 +377,44 @@ export class TrainingService {
       }
   }*/
 
+  /** Catálogo de tareas de la nube (tasks_shop) de ejemplo para modo demo. */
+  private demoTaskShop(): any[] {
+    return [
+      {
+        tasksShopId: 9001, title: 'Rondo 4v2 progresivo',
+        description: 'Circulación rápida del balón con dos comodines para trabajar la posesión.',
+        rules: 'Máximo dos toques.', variants: 'Un toque · Tercer defensor',
+        worktime: '15 min', space: '12x12 m', material: '6 conos, 2 balones',
+        work: 'Técnico-táctico', estrategia: 'Posesión', intencion: 'Circulación',
+      },
+      {
+        tasksShopId: 9002, title: 'Finalización tras centro',
+        description: 'Series de centros desde banda con remate en área.',
+        rules: 'Alternar bandas.', variants: 'Oposición pasiva',
+        worktime: '18 min', space: 'Zona de ataque', material: '12 balones, porterías',
+        work: 'Técnico', estrategia: 'Ataque', intencion: 'Finalización',
+      },
+      {
+        tasksShopId: 9003, title: 'Juego de posición 8v8',
+        description: 'Salida de balón bajo presión en medio campo.',
+        rules: 'Superar líneas con control.', variants: 'Comodines exteriores',
+        worktime: '25 min', space: 'Medio campo', material: 'Petos, balones',
+        work: 'Táctico', estrategia: 'Construcción', intencion: 'Superar presión',
+      },
+      {
+        tasksShopId: 9004, title: 'Transiciones defensa-ataque',
+        description: 'Recuperación y salida rápida al espacio.',
+        rules: 'Máximo 8 segundos para finalizar.', variants: 'Con inferioridad',
+        worktime: '20 min', space: 'Campo completo reducido', material: 'Petos, balones, porterías',
+        work: 'Táctico', estrategia: 'Transición', intencion: 'Contraataque',
+      },
+    ];
+  }
+
   getAllTaskShop(): Observable<Response> {
+    if (isDemoMode()) {
+      return of(new Response({ data: this.demoTaskShop(), status: 200 }));
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 

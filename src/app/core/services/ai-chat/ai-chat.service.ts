@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError, timeout } from 'rxjs/operators';
+import { catchError, delay, timeout } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { isDemoMode } from '../demo/demo-mode';
 
 export interface AiPendingAction {
   function: string;
@@ -144,6 +145,14 @@ export class AiChatService {
    * history: array opcional de {role, text} con los últimos mensajes de la conversación.
    */
   sendMessage(userId: number, clubId: number | null, screenContext: string, message: string, apiKeyType: string = 'users', teamId?: number | null, history?: {role: string, text: string}[]): Observable<AiChatResponse> {
+    if (isDemoMode()) {
+      return of<AiChatResponse>({
+        success: true,
+        response: 'Análisis de demostración: el equipo mantiene una racha sólida (últimos partidos mayoritariamente positivos). Está en zona media-alta de la tabla, con buena diferencia de goles. Recomendación: reforzar la solidez defensiva en las salidas y aprovechar las transiciones rápidas para escalar posiciones.',
+        creditsRemaining: 999,
+        tokensUsed: 0,
+      }).pipe(delay(600));
+    }
     const body: any = { userId, clubId, screenContext, message, apiKeyType };
     if (teamId) body.teamId = teamId;
     if (history && history.length > 0) body.history = history;

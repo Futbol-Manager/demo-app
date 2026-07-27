@@ -1,0 +1,245 @@
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+  <h2 class="table-title">{{ 'CLUB_EVAL.CONFIG.TITLE' | translate }}</h2>
+</div>
+
+<div class="config-container">
+
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p class="loading-text">{{ 'CLUB_EVAL.CONFIG.LOADING' | translate }}</p>
+  </div>
+
+  <!-- Error / config no inicializada -->
+  <div *ngIf="!loading && loadError" class="error-state">
+    <i class="bi bi-wifi-off"></i>
+    <h3>{{ 'CLUB_EVAL.CONFIG.LOAD_ERROR_TITLE' | translate }}</h3>
+    <p>{{ 'CLUB_EVAL.CONFIG.LOAD_ERROR_DESC' | translate }}</p>
+    <div class="error-actions">
+      <button class="btn-primary" (click)="loadConfig()">
+        <i class="bi bi-arrow-clockwise"></i>
+        {{ 'CLUB_EVAL.CONFIG.RETRY' | translate }}
+      </button>
+      <button class="btn-secondary" (click)="initConfig()">
+        <i class="bi bi-gear"></i>
+        {{ 'CLUB_EVAL.CONFIG.INIT' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!loading && !loadError && config">
+
+    <!-- Sub-tabs -->
+    <div class="config-tabs">
+      <button class="tab-btn" [class.active]="activeTab === 'general'" (click)="activeTab = 'general'">
+        <i class="bi bi-sliders"></i> {{ 'CLUB_EVAL.CONFIG.GENERAL' | translate }}
+      </button>
+      <button class="tab-btn" [class.active]="activeTab === 'fields'" (click)="activeTab = 'fields'">
+        <i class="bi bi-list-check"></i> {{ 'CLUB_EVAL.CONFIG.FIELDS' | translate }}
+        <span class="badge">{{ fields.length }}</span>
+      </button>
+      <button class="tab-btn" [class.active]="activeTab === 'stages'" (click)="activeTab = 'stages'">
+        <i class="bi bi-diagram-3"></i> {{ 'CLUB_EVAL.CONFIG.STAGES' | translate }}
+        <span class="badge">{{ stages.length }}</span>
+      </button>
+      <button class="tab-btn" [class.active]="activeTab === 'alerts'" (click)="activeTab = 'alerts'">
+        <i class="bi bi-bell"></i> {{ 'CLUB_EVAL.CONFIG.ALERTS.TAB' | translate }}
+        <span class="badge" *ngIf="config?.alertasEnabled === 1" style="background:#31b270">ON</span>
+      </button>
+    </div>
+
+    <!-- ====== GENERAL ====== -->
+    <div *ngIf="activeTab === 'general'" class="config-section">
+      <h3>{{ 'CLUB_EVAL.CONFIG.GENERAL' | translate }}</h3>
+
+      <div class="config-option">
+        <div class="option-info">
+          <strong>{{ 'CLUB_EVAL.CONFIG.PIPELINE_ENABLED' | translate }}</strong>
+          <p>{{ 'CLUB_EVAL.CONFIG.PIPELINE_DESC' | translate }}</p>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" [checked]="config.pipelineEnabled === 1"
+            (change)="config.pipelineEnabled = $any($event.target).checked ? 1 : 0">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="config-option">
+        <div class="option-info">
+          <strong>{{ 'CLUB_EVAL.CONFIG.AI_ENABLED' | translate }}</strong>
+          <p>{{ 'CLUB_EVAL.CONFIG.AI_DESC' | translate }}</p>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" [checked]="config.aiReportsEnabled === 1"
+            (change)="config.aiReportsEnabled = $any($event.target).checked ? 1 : 0">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="config-option">
+        <div class="option-info">
+          <strong>{{ 'CLUB_EVAL.CONFIG.PLAYER_SEE' | translate }}</strong>
+          <p>{{ 'CLUB_EVAL.CONFIG.PLAYER_SEE_DESC' | translate }}</p>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" [checked]="config.playerCanSeeEvaluations === 1"
+            (change)="config.playerCanSeeEvaluations = $any($event.target).checked ? 1 : 0">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <button class="btn-primary" (click)="saveGeneralConfig()" [disabled]="saving">
+        <i *ngIf="saving" class="bi bi-arrow-clockwise spin"></i>
+        <i *ngIf="!saving" class="bi bi-check-lg"></i>
+        {{ 'COMMON.SAVE' | translate }}
+      </button>
+    </div>
+
+    <!-- ====== FIELDS ====== -->
+    <div *ngIf="activeTab === 'fields'" class="config-section">
+      <h3>{{ 'CLUB_EVAL.CONFIG.FIELDS_TITLE' | translate }}</h3>
+      <p class="section-desc">{{ 'CLUB_EVAL.CONFIG.FIELDS_DESC' | translate }}</p>
+
+      <div class="item-list">
+        <div *ngFor="let field of fields" class="item-row">
+          <ng-container *ngIf="editingField?.id === field.id; else viewField">
+            <input type="text" [(ngModel)]="editingField!.fieldLabel" class="inline-input">
+            <div class="item-actions">
+              <button class="btn-icon-sm success" (click)="saveField()"
+                [disabled]="savingFieldId === field.id">
+                <span *ngIf="savingFieldId === field.id" class="spinner-border spinner-border-sm"></span>
+                <i *ngIf="savingFieldId !== field.id" class="bi bi-check-lg"></i>
+              </button>
+              <button class="btn-icon-sm" (click)="editingField = null"
+                [disabled]="savingFieldId === field.id"><i class="bi bi-x-lg"></i></button>
+            </div>
+          </ng-container>
+          <ng-template #viewField>
+            <i class="bi bi-grip-vertical drag-handle"></i>
+            <span class="item-label">{{ field.fieldLabel }}</span>
+            <div class="item-actions">
+              <button class="btn-icon-sm" (click)="startEditField(field)"
+                [disabled]="!!deletingFieldId"><i class="bi bi-pencil"></i></button>
+              <button class="btn-icon-sm danger" (click)="deleteField(field.id)"
+                [disabled]="deletingFieldId === field.id">
+                <span *ngIf="deletingFieldId === field.id" class="spinner-border spinner-border-sm"></span>
+                <i *ngIf="deletingFieldId !== field.id" class="bi bi-trash"></i>
+              </button>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+
+      <div class="add-item-row">
+        <input type="text" [(ngModel)]="newFieldLabel" class="form-input"
+          [placeholder]="'CLUB_EVAL.CONFIG.FIELD_PH' | translate"
+          (keyup.enter)="addField()">
+        <button class="btn-add" (click)="addField()" [disabled]="!newFieldLabel.trim() || addingField">
+          <span *ngIf="addingField" class="spinner-border spinner-border-sm me-1"></span>
+          <i *ngIf="!addingField" class="bi bi-plus-lg"></i>
+          {{ 'CLUB_EVAL.CONFIG.ADD_FIELD' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ====== STAGES ====== -->
+    <div *ngIf="activeTab === 'stages'" class="config-section">
+      <h3>{{ 'CLUB_EVAL.CONFIG.STAGES_TITLE' | translate }}</h3>
+      <p class="section-desc">{{ 'CLUB_EVAL.CONFIG.STAGES_DESC' | translate }}</p>
+
+      <div class="item-list">
+        <div *ngFor="let stage of stages" class="item-row">
+          <ng-container *ngIf="editingStage?.id === stage.id; else viewStage">
+            <input type="text" [(ngModel)]="editingStage!.stageLabel" class="inline-input">
+            <div class="item-actions">
+              <button class="btn-icon-sm success" (click)="saveStage()"
+                [disabled]="savingStageId === stage.id">
+                <span *ngIf="savingStageId === stage.id" class="spinner-border spinner-border-sm"></span>
+                <i *ngIf="savingStageId !== stage.id" class="bi bi-check-lg"></i>
+              </button>
+              <button class="btn-icon-sm" (click)="editingStage = null"
+                [disabled]="savingStageId === stage.id"><i class="bi bi-x-lg"></i></button>
+            </div>
+          </ng-container>
+          <ng-template #viewStage>
+            <i class="bi bi-grip-vertical drag-handle"></i>
+            <span class="item-label">{{ stage.stageLabel }}</span>
+            <div class="item-actions">
+              <button class="btn-icon-sm" (click)="startEditStage(stage)"
+                [disabled]="!!deletingStageId"><i class="bi bi-pencil"></i></button>
+              <button class="btn-icon-sm danger" (click)="deleteStage(stage.id)"
+                [disabled]="deletingStageId === stage.id">
+                <span *ngIf="deletingStageId === stage.id" class="spinner-border spinner-border-sm"></span>
+                <i *ngIf="deletingStageId !== stage.id" class="bi bi-trash"></i>
+              </button>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+
+      <div class="add-item-row">
+        <input type="text" [(ngModel)]="newStageLabel" class="form-input"
+          [placeholder]="'CLUB_EVAL.CONFIG.STAGE_PH' | translate"
+          (keyup.enter)="addStage()">
+        <button class="btn-add" (click)="addStage()" [disabled]="!newStageLabel.trim() || addingStage">
+          <span *ngIf="addingStage" class="spinner-border spinner-border-sm me-1"></span>
+          <i *ngIf="!addingStage" class="bi bi-plus-lg"></i>
+          {{ 'CLUB_EVAL.CONFIG.ADD_STAGE' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ====== ALERTS ====== -->
+    <div *ngIf="activeTab === 'alerts'" class="config-section">
+      <h3>{{ 'CLUB_EVAL.CONFIG.ALERTS.TITLE' | translate }}</h3>
+      <p class="section-desc">{{ 'CLUB_EVAL.CONFIG.ALERTS.DESC' | translate }}</p>
+
+      <div class="config-option">
+        <div class="option-info">
+          <strong>{{ 'CLUB_EVAL.CONFIG.ALERTS.ENABLED' | translate }}</strong>
+          <p>{{ 'CLUB_EVAL.CONFIG.ALERTS.ENABLED_DESC' | translate }}</p>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" [checked]="config!.alertasEnabled === 1"
+            (change)="config!.alertasEnabled = $any($event.target).checked ? 1 : 0">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="config-option" [class.disabled-option]="config!.alertasEnabled !== 1">
+        <div class="option-info">
+          <strong>{{ 'CLUB_EVAL.CONFIG.ALERTS.WEEKS' | translate }}</strong>
+          <p>{{ 'CLUB_EVAL.CONFIG.ALERTS.WEEKS_DESC' | translate }}</p>
+        </div>
+        <input type="number" min="1" max="52"
+               class="alert-number-input"
+               [disabled]="config!.alertasEnabled !== 1"
+               [(ngModel)]="config!.semanasSinEval">
+      </div>
+
+      <div class="config-option" [class.disabled-option]="config!.alertasEnabled !== 1">
+        <div class="option-info">
+          <strong>{{ 'CLUB_EVAL.CONFIG.ALERTS.DECLINING' | translate }}</strong>
+          <p>{{ 'CLUB_EVAL.CONFIG.ALERTS.DECLINING_DESC' | translate }}</p>
+        </div>
+        <input type="number" min="2" max="10"
+               class="alert-number-input"
+               [disabled]="config!.alertasEnabled !== 1"
+               [(ngModel)]="config!.bajasConsecutivas">
+      </div>
+
+      <button class="btn-primary" (click)="saveGeneralConfig()" [disabled]="saving">
+        <i *ngIf="saving" class="bi bi-arrow-clockwise spin"></i>
+        <i *ngIf="!saving" class="bi bi-check-lg"></i>
+        {{ 'COMMON.SAVE' | translate }}
+      </button>
+    </div>
+
+  </ng-container>
+
+</div>

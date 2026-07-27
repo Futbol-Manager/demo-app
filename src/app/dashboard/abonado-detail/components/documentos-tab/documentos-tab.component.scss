@@ -1,0 +1,767 @@
+// Paleta Sphaira (duplicada del padre abonado-detail.component.scss —
+// los estilos de las clases movidas se copian sin borrarlos del padre)
+$navy:        #002c40;
+$navy-deep:   #001e2e;
+$green:       #31b270;
+$green-light: #c4e8d6;
+$gray-text:   #636363;
+$bg-light:    #f4f4f4;
+$white:       #ffffff;
+
+$danger:      #dc3545;
+$warning:     #f59e0b;
+$info:        #3b82f6;
+
+$radius-md: 10px;
+$radius-lg: 14px;
+$radius-xl: 18px;
+
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 4px 14px rgba(0, 44, 64, 0.08);
+$shadow-lg: 0 8px 24px rgba(0, 44, 64, 0.14);
+
+:host {
+  display: block;
+}
+
+.status-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ????????????????????????????? BENTO ????????????????????????????? */
+.bento {
+  background: $white;
+  border-radius: $radius-lg;
+  margin-bottom: 16px;
+  padding: 20px 22px 22px;
+  box-shadow: $shadow-sm;
+
+  .bento-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(0, 44, 64, 0.06);
+    margin-bottom: 16px;
+
+    .bento-head-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: $radius-md;
+      background: linear-gradient(135deg, $green 0%, $navy 100%);
+      color: $white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .bento-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      color: $navy;
+    }
+
+    .bento-sub {
+      margin: 2px 0 0;
+      font-size: 13px;
+      color: $gray-text;
+    }
+
+    .bento-head-actions {
+      margin-left: auto;
+    }
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  &--full {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    font-size: 12px;
+    font-weight: 700;
+    color: $gray-text;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  input, select, textarea {
+    border: 1px solid rgba(0, 44, 64, 0.12);
+    border-radius: $radius-md;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: $navy;
+    background: $white;
+    font-family: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &:focus {
+      outline: none;
+      border-color: $green;
+      box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.15);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 28px 12px;
+  color: $gray-text;
+
+  i {
+    font-size: 36px;
+    opacity: 0.35;
+    margin-bottom: 8px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+/* ????????????????????????????? BUTTONS ????????????????????????????? */
+.btn-primary-sph,
+.btn-secondary-sph {
+  border: 0;
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  transition: transform 0.1s, box-shadow 0.15s;
+
+  &:hover:not(:disabled) { transform: translateY(-1px); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.btn-primary-sph {
+  background: linear-gradient(135deg, $green 0%, $navy 100%);
+  color: $white;
+  box-shadow: 0 2px 8px rgba(0, 44, 64, 0.25);
+}
+
+.btn-secondary-sph {
+  background: $bg-light;
+  color: $navy;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* =======================================================================
+   PR2 - Tab Documentos
+   ======================================================================= */
+
+.dropzone {
+  margin: 18px 0 0;
+  padding: 28px;
+  border: 2px dashed rgba(0, 44, 64, 0.18);
+  border-radius: 16px;
+  background: rgba(244, 244, 244, 0.55);
+  text-align: center;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+
+  &--over {
+    border-color: $green;
+    background: rgba(196, 232, 214, 0.35);
+    transform: scale(1.01);
+  }
+
+  &--has-file {
+    text-align: left;
+    padding: 18px 22px;
+    background: $white;
+    border-color: rgba(49, 178, 112, 0.35);
+    border-style: solid;
+  }
+
+  .dropzone-icon {
+    font-size: 36px;
+    color: rgba(0, 44, 64, 0.35);
+    margin-bottom: 10px;
+  }
+
+  .dropzone-text {
+    margin: 6px 0 14px;
+    color: $gray-text;
+    font-size: 14px;
+  }
+}
+
+.pending-file {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0, 44, 64, 0.08);
+  margin-bottom: 12px;
+
+  i.fas {
+    font-size: 28px;
+    color: $green;
+  }
+
+  .pending-file-meta {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .pending-file-name {
+    font-weight: 600;
+    color: $navy;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .pending-file-size {
+    font-size: 12px;
+    color: $gray-text;
+    margin-top: 2px;
+  }
+}
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 44, 64, 0.1);
+  background: $white;
+  color: $navy;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+  &:hover:not(:disabled) {
+    background: rgba(0, 44, 64, 0.05);
+    border-color: rgba(0, 44, 64, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  &--primary {
+    background: rgba(49, 178, 112, 0.1);
+    color: $green;
+    border-color: rgba(49, 178, 112, 0.25);
+    &:hover:not(:disabled) {
+      background: rgba(49, 178, 112, 0.18);
+    }
+  }
+
+  &--danger {
+    background: rgba(220, 53, 69, 0.08);
+    color: #dc3545;
+    border-color: rgba(220, 53, 69, 0.2);
+    &:hover:not(:disabled) {
+      background: rgba(220, 53, 69, 0.16);
+    }
+  }
+}
+
+.pending-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &--full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 12px;
+      font-weight: 600;
+      color: $gray-text;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    input, select, textarea {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 44, 64, 0.12);
+      background: $white;
+      color: $navy;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+
+      &:focus {
+        border-color: $green;
+        box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.15);
+      }
+    }
+  }
+
+  .pending-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 4px;
+  }
+}
+
+.docs-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 22px;
+  color: $gray-text;
+  font-size: 14px;
+
+  .loader--inline {
+    width: 18px;
+    height: 18px;
+    border-width: 3px;
+  }
+}
+
+/* Lista vertical de documentos (antes era grid de cards con preview
+   grande tipo galería). Decisión 2026-05-17: la mayoría de docs del
+   abonado son PDFs/imágenes administrativos donde la previsualización
+   grande aportaba poco y ocupaba mucho. Ahora cada documento ocupa
+   una fila densa con thumbnail/icono pequeño + metadatos + acciones,
+   facilitando ver muchos documentos de un vistazo. */
+.docs-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 0 4px;
+}
+
+.doc-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  background: $white;
+  border: 1px solid rgba(0, 44, 64, 0.08);
+  border-radius: 12px;
+  padding: 10px 14px;
+  transition: border-color 0.18s, box-shadow 0.18s, opacity 0.18s;
+
+  &:hover {
+    border-color: rgba(0, 44, 64, 0.16);
+    box-shadow: 0 2px 10px rgba(0, 44, 64, 0.06);
+  }
+
+  &.is-deleting {
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  /* Thumbnail compacto a la izquierda, 48×48 px. Reemplaza el preview
+     anterior de 130 px de alto. Para imágenes muestra una mini-vista;
+     para PDFs/otros muestra el icono emoji centrado. */
+  .doc-card-preview {
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(0, 44, 64, 0.06) 0%, rgba(49, 178, 112, 0.08) 100%);
+    border-radius: 10px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .doc-card-icon {
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  /* Cuerpo en línea: nombre arriba; debajo pill de tipo + metadatos. */
+  .doc-card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .doc-card-type {
+    order: 2;
+    .status-pill {
+      font-size: 10px;
+    }
+  }
+
+  .doc-card-name {
+    order: 1;
+    font-weight: 600;
+    color: $navy;
+    font-size: 14px;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Inline con la pill: ‹DNI›  ·  134 KB  ·  17/05/2026 */
+  .doc-card-meta {
+    order: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11.5px;
+    color: $gray-text;
+  }
+
+  /* Reagrupamos type + meta en una sola fila usando un wrapper
+     virtual: type tiene order 2 y meta también; ambos comparten línea
+     con flex-wrap. */
+  .doc-card-type,
+  .doc-card-meta {
+    display: inline-flex;
+  }
+  /* Para que tipo y meta queden lado a lado en una sola línea, los
+     metemos en un contenedor flexible. Como el HTML actual no permite
+     wrapper extra sin modificarlo, simulamos con un pseudo-row vía
+     gap + display flex en el body: */
+  .doc-card-body {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 10px;
+    row-gap: 2px;
+    .doc-card-name { flex: 1 1 100%; }
+  }
+
+  .doc-card-desc {
+    order: 3;
+    flex: 1 1 100%;
+    font-size: 12px;
+    color: $gray-text;
+    margin: 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Acciones siempre a la derecha de la fila. */
+  .doc-card-actions {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    padding: 0;
+    border-top: 0;
+  }
+}
+
+/* En anchos muy pequeños mantenemos la fila pero envolvemos acciones
+   debajo si el nombre es largo. */
+@media (max-width: 480px) {
+  .doc-card {
+    flex-wrap: wrap;
+    .doc-card-actions {
+      flex: 1 1 100%;
+      justify-content: flex-end;
+      padding-top: 6px;
+      border-top: 1px solid rgba(0, 44, 64, 0.06);
+    }
+  }
+}
+
+/* =======================================================================
+   Documentos del club (Bloque 8 / Fase 2)
+   Estilos para la sección que lista los docs requeridos por el club al
+   abonado. Reutilizan .doc-card pero con variantes para resaltar pendientes
+   y completados.
+   ======================================================================= */
+.doc-card--row {
+  .doc-card-icon-row {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(0, 44, 64, 0.06);
+    color: #002c40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex: 0 0 auto;
+  }
+
+  &.doc-card--pending .doc-card-icon-row {
+    background: rgba(245, 158, 11, 0.12);
+    color: #b45309;
+  }
+
+  &.doc-card--done .doc-card-icon-row {
+    background: rgba(49, 178, 112, 0.12);
+    color: #1f7a4d;
+  }
+
+  .doc-card-desc--small {
+    font-size: 12px;
+    color: rgba(0, 44, 64, 0.6);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.status-pill--warning {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #b45309 !important;
+}
+
+/* Status pill genérica (cuando no existe alguna variante) */
+.status-pill--neutral {
+  background: rgba(0, 44, 64, 0.05);
+  color: $gray-text;
+}
+
+/* =======================================================================
+   Modal "Subir respuesta del abonado"
+   ======================================================================= */
+.sph-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 44, 64, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+/* Primera definición de .sph-modal (copiada en el mismo orden que en el
+   padre): en el padre ambas definiciones coexisten y este modal recibía
+   también algunos estilos de esta primera (p.ej. animation: modalIn),
+   así que se replica el mismo cascade para mantener el render idéntico. */
+.sph-modal {
+  background: $white;
+  border-radius: $radius-xl;
+  width: min(580px, 92vw);
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: $shadow-lg;
+  animation: modalIn 0.18s ease-out;
+
+  .sph-modal-head {
+    background: linear-gradient(135deg, $green 0%, $navy 100%);
+    color: $white;
+    padding: 16px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    h2 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+
+  .sph-modal-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: 0;
+    color: $white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover { background: rgba(255, 255, 255, 0.35); }
+  }
+
+  .sph-modal-body {
+    padding: 18px 22px;
+    overflow-y: auto;
+  }
+
+  .sph-modal-foot {
+    padding: 14px 22px;
+    border-top: 1px solid rgba(0, 44, 64, 0.06);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+}
+
+@keyframes modalIn {
+  from { transform: translateY(-6px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.sph-modal {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 30px 80px rgba(0, 44, 64, 0.35);
+  overflow: hidden;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+
+  &--md { max-width: 520px; }
+
+  .sph-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(0, 44, 64, 0.08);
+
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #002c40;
+    }
+  }
+
+  .sph-modal-close {
+    background: transparent;
+    border: 0;
+    color: rgba(0, 44, 64, 0.55);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+
+    &:hover {
+      background: rgba(0, 44, 64, 0.06);
+      color: #002c40;
+    }
+  }
+
+  .sph-modal-body {
+    padding: 16px 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .sph-modal-doc-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: #002c40;
+    font-size: 14px;
+
+    strong { font-weight: 700; }
+
+    i { color: #31b270; }
+  }
+
+  .sph-modal-doc-desc {
+    margin: 0;
+    color: rgba(0, 44, 64, 0.65);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .sph-modal-label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(0, 44, 64, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+
+    input[type='file'],
+    textarea {
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: 0;
+      text-transform: none;
+      color: #002c40;
+      padding: 10px 12px;
+      border: 1px solid rgba(0, 44, 64, 0.12);
+      border-radius: 10px;
+      background: #f9fafb;
+      outline: none;
+      resize: vertical;
+
+      &:focus {
+        border-color: #31b270;
+        background: #ffffff;
+        box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.15);
+      }
+    }
+
+    input[type='file'] {
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+  }
+
+  .sph-modal-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #1f7a4d;
+    margin: 0;
+  }
+
+  .sph-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 20px 16px;
+    border-top: 1px solid rgba(0, 44, 64, 0.08);
+  }
+}

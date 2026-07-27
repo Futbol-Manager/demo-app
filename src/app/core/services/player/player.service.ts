@@ -104,6 +104,22 @@ export class PlayerService {
         return of({ data: null, status: 401, error: {} } as any);
     }
 
+    /** El jugador/padre elige una variante de precio para una cuota (pendiente de validar por el club). */
+    selectCuotaVariante(pagoClubId: number, playerId: number, varianteId: number): Observable<Response> {
+        if (isDemoMode()) {
+            return of(DemoDataService.response({ pagoClubId, playerId, varianteId, varianteEstado: 0 }) as Response);
+        }
+        const token: string | null = localStorage.getItem('token');
+        if (token) {
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+            const url: string = environment.apiUrl + `player/cuota/variante`;
+            return this.http.post<Response>(url, { pagoClubId, playerId, varianteId }, { headers });
+        }
+        return of({ data: null, status: 401, error: {} } as any);
+    }
+
     // Método para crear o actualizar un jugador
     createUpdatePlayer(teamId: string, player: Player): Observable<Response> {
         // Obtén el token almacenado en localStorage

@@ -1,0 +1,10 @@
+<div class="alerts-container" *ngIf="visibleAlerts.length">
+  <div *ngFor="let alert of visibleAlerts"
+    class="alert-banner"
+    [ngClass]="'severity-' + alert.severity">
+    <span class="alert-icon">{{ getSeverityIcon(alert.severity) }}</span>
+    <span class="alert-msg">{{ alert.messageKey | translate }}</span>
+    <span class="alert-value">({{ alert.value }})</span>
+    <button class="alert-dismiss" type="button" (click)="dismiss(alert.id)">✕</button>
+  </div>
+</div>

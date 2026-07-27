@@ -1,0 +1,96 @@
+/* CONTENEDOR */
+.back-container {
+  padding: 0.75rem 1.25rem;
+}
+
+/* BOTÓN VOLVER (mismo estilo que el menú de fisio) */
+.btn-back-clean {
+  margin-left: 26px;
+  margin-top: 15px;
+  padding: 0.35rem 0.6rem;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  background-color: rgba(var(--color-primary-rgb), 0.08);
+  border: none;
+  border-radius: 8px;
+
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-back-clean i {
+  font-size: 1.1rem;
+}
+
+.btn-back-clean:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.15);
+  transform: translateX(-2px);
+}
+
+.nutri-container {
+  margin-top: 0.5rem;
+}
+
+/* CABECERA */
+.nutri-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.5rem 0 1.5rem;
+}
+
+.nutri-header__icon {
+  font-size: 1.6rem;
+  color: #31b270;
+}
+
+.nutri-header__title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #002c40;
+}
+
+/* ESTADO VACÍO */
+.nutri-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: #636363;
+  background: #f4f4f4;
+  border-radius: 14px;
+}
+
+.nutri-empty__icon {
+  font-size: 2.5rem;
+  color: #31b270;
+  opacity: 0.85;
+}
+
+.nutri-empty__text {
+  margin: 0;
+  max-width: 420px;
+  font-size: 0.95rem;
+}
+
+/* DARK MODE */
+:host-context(body.dark) {
+  .nutri-header__title {
+    color: #c4e8d6;
+  }
+  .nutri-empty {
+    background: var(--bg-surface, #001e2e);
+    color: #94a3b8;
+  }
+}

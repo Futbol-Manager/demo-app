@@ -1,0 +1,496 @@
+// Bandeja de entrada del abonado — paleta Sphaira oficial.
+$navy: #002c40;
+$navy-deep: #001e2e;
+$green: #31b270;
+$green-soft: #c4e8d6;
+$gray-text: #636363;
+$gray-bg: #f4f4f4;
+$white: #ffffff;
+
+:host {
+  display: block;
+  width: 100%;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: $gray-text;
+}
+
+.abon-inbox {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+}
+
+// ===== Cabecera =====
+.abon-inbox__header {
+  position: relative;
+  background: linear-gradient(135deg, $green 0%, $navy 100%);
+  color: $white;
+  border-radius: 18px;
+  padding: 22px 24px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 12px 32px rgba(0, 44, 64, 0.18);
+
+  &__back {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: $white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: background 0.15s ease;
+    cursor: pointer;
+
+    &:hover { background: rgba(255, 255, 255, 0.26); }
+  }
+
+  &__title-wrap {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+
+  &__subtitle {
+    margin: 4px 0 0;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.18);
+    color: $white;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+
+    i { font-size: 0.9rem; }
+  }
+}
+
+// ===== Estados =====
+.abon-inbox__state {
+  text-align: center;
+  padding: 64px 20px;
+
+  i {
+    font-size: 2.4rem;
+    color: $navy;
+    margin-bottom: 12px;
+    display: inline-block;
+  }
+
+  p { margin: 12px 0 16px; }
+
+  &--error i { color: #d04848; }
+
+  .btn-retry {
+    background: $green;
+    border: none;
+    color: $white;
+    font-weight: 700;
+    padding: 10px 22px;
+    border-radius: 999px;
+    cursor: pointer;
+
+    &:hover { background: darken($green, 4%); }
+  }
+}
+
+// ===== Body grid =====
+.abon-inbox__body {
+  display: grid;
+  grid-template-columns: minmax(280px, 380px) 1fr;
+  gap: 20px;
+  align-items: stretch;
+  min-height: 480px;
+}
+
+@media (max-width: 900px) {
+  .abon-inbox__body {
+    grid-template-columns: 1fr;
+  }
+  .abon-inbox__list.is-collapsed { display: none; }
+  .abon-inbox__preview:not(.is-active) { display: none; }
+}
+
+// ===== Lista =====
+.abon-inbox__list {
+  background: $white;
+  border: 1px solid #e6ebef;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  max-height: 78vh;
+}
+
+.abon-inbox__toolbar {
+  padding: 14px 14px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-bottom: 1px solid #f0f3f5;
+}
+
+.abon-inbox__search {
+  position: relative;
+
+  i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $gray-text;
+    font-size: 0.95rem;
+  }
+
+  input {
+    width: 100%;
+    border: 1px solid #e6ebef;
+    background: $gray-bg;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    padding: 9px 14px 9px 36px;
+    color: $navy;
+
+    &::placeholder { color: lighten($gray-text, 15%); }
+
+    &:focus {
+      outline: none;
+      border-color: $green;
+      background: $white;
+      box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.15);
+    }
+  }
+}
+
+.abon-inbox__tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+
+  .tab {
+    flex: 1;
+    border: 1px solid #e6ebef;
+    background: $white;
+    border-radius: 999px;
+    padding: 7px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: $gray-text;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+
+    &:hover { color: $navy; border-color: $navy; }
+
+    &--active {
+      background: $navy;
+      color: $white;
+      border-color: $navy;
+    }
+
+    &__badge {
+      background: $green;
+      color: $white;
+      border-radius: 999px;
+      min-width: 20px;
+      height: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 6px;
+      font-size: 0.7rem;
+    }
+  }
+}
+
+.abon-inbox__items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 0;
+}
+
+.inbox-row {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f4f6f8;
+  padding: 12px 16px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s ease;
+
+  &:hover { background: rgba(49, 178, 112, 0.06); }
+
+  &--unread {
+    background: rgba(196, 232, 214, 0.25);
+
+    .inbox-row__subject { font-weight: 700; color: $navy; }
+    .inbox-row__from { font-weight: 700; color: $navy; }
+  }
+
+  &--selected {
+    background: rgba(0, 44, 64, 0.08);
+    border-left: 3px solid $green;
+  }
+
+  &__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: $green-soft;
+    color: $navy;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    overflow: hidden;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: $gray-text;
+  }
+
+  &__from {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__date {
+    flex-shrink: 0;
+    font-size: 0.72rem;
+    color: lighten($gray-text, 15%);
+  }
+
+  &__subject {
+    font-size: 0.9rem;
+    color: $navy;
+    margin: 2px 0 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__preview {
+    font-size: 0.8rem;
+    color: $gray-text;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__unread-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: $green;
+    flex-shrink: 0;
+    margin-top: 6px;
+  }
+}
+
+.abon-inbox__empty {
+  padding: 48px 24px;
+  text-align: center;
+  color: $gray-text;
+
+  &-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: $gray-bg;
+    color: $navy;
+    margin: 0 auto 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.7rem;
+  }
+
+  h3 {
+    color: $navy;
+    font-weight: 700;
+    font-size: 1rem;
+    margin: 0 0 6px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+  }
+}
+
+// ===== Preview =====
+.abon-inbox__preview {
+  background: $white;
+  border: 1px solid #e6ebef;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 78vh;
+}
+
+.preview-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #f0f3f5;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.preview-back {
+  display: none;
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: $green;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0;
+  cursor: pointer;
+
+  i { margin-right: 6px; }
+}
+
+@media (max-width: 900px) {
+  .preview-back { display: inline-flex; align-items: center; }
+}
+
+.preview-subject {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: $navy;
+  letter-spacing: -0.01em;
+}
+
+.preview-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.preview-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: $green-soft;
+  color: $navy;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.preview-sender {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  strong {
+    color: $navy;
+    font-size: 0.95rem;
+  }
+
+  small { color: lighten($gray-text, 10%); font-size: 0.75rem; }
+}
+
+.preview-body {
+  padding: 22px 24px;
+  overflow-y: auto;
+  line-height: 1.55;
+  color: $gray-text;
+  font-size: 0.92rem;
+
+  ::ng-deep {
+    a { color: $green; }
+    p { margin-bottom: 12px; }
+    img { max-width: 100%; height: auto; }
+    blockquote {
+      border-left: 3px solid $green-soft;
+      padding-left: 12px;
+      color: $gray-text;
+      margin: 12px 0;
+    }
+  }
+}
+
+.preview-placeholder {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 24px;
+  color: $gray-text;
+
+  i {
+    font-size: 2.4rem;
+    color: $navy;
+    margin-bottom: 12px;
+  }
+
+  h3 {
+    color: $navy;
+    font-weight: 700;
+    margin: 0 0 6px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+  }
+}

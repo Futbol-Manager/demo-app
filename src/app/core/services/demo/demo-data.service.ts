@@ -1,9 +1,26 @@
 import { Injectable } from '@angular/core';
+import {
+  demoDate,
+  demoDateFromToday,
+  demoMonthPeriod,
+  demoMonthStart,
+  demoSeasonLabel,
+  demoSeasonShort,
+  demoSeasonStart,
+  demoSeasonYear,
+  formatMatchDayLabel,
+  monthYearLabel,
+  nextSaturdayIso,
+} from 'src/app/core/utils/demo-dates';
 
 /**
  * Datos hardcodeados para el modo demo (rama demo-app).
  * Cada método devuelve la misma estructura que el endpoint real para que las pantallas
  * funcionen sin llamar a la API.
+ *
+ * Las fechas visibles se envuelven en los helpers de `demo-dates` para que se
+ * desplacen solas a la temporada en curso: los datos base son de 2024/2025 y sin
+ * ese desplazamiento la demo aparenta estar abandonada.
  */
 /** Nombres y apellidos para generar 144 deportistas (8 equipos x 18). */
 const DEMO_FIRST_NAMES = ['Carlos', 'Miguel', 'Antonio', 'David', 'Pablo', 'Javier', 'Sergio', '\u00c1lvaro', 'Diego', 'Daniel', 'Adri\u00e1n', 'Marcos', 'Ra\u00fal', 'Iv\u00e1n', 'Roberto', 'Fernando', 'Andr\u00e9s', 'Luis'];
@@ -41,6 +58,15 @@ function getDemoPositionsByTeam(teamIndex: number): string[] {
 
 const PLAYERS_PER_TEAM = 18;
 const TEAMS_COUNT = 8;
+
+/**
+ * Fechas de los 5 últimos partidos, calculadas hacia atrás desde hoy (jornada semanal).
+ * Se comparten entre galería, estadísticas y goles para que todas las pantallas
+ * muestren el mismo calendario y siempre reciente.
+ */
+function demoRecentMatchDates(): string[] {
+  return [5, 12, 19, 26, 33].map(days => demoDateFromToday(-days));
+}
 
 function demoPlayerId(teamIndex: number, playerIndex: number): number {
   return 8001 + teamIndex * PLAYERS_PER_TEAM + playerIndex;
@@ -160,9 +186,9 @@ export class DemoDataService {
       categoryType: { categoryTypeId: 1, year: 0, categoryName: meta.category },
       clubId: 9001,
       userId: 1,
-      temporada: '2024-2025',
-      dateCreate: '2024-09-01',
-      dateUpdate: '2025-01-15',
+      temporada: demoSeasonLabel(),
+      dateCreate: demoDate('2024-09-01'),
+      dateUpdate: demoDate('2025-01-15'),
       logoUrl: 'demo-club-logo.png',
       imgClub: 'demo-club-logo.png',
       jugadoresPorEquipo: PLAYERS_PER_TEAM,
@@ -232,14 +258,70 @@ export class DemoDataService {
 
   /** Próximo partido para inicio Player (getListProximosPartidos). response.data = array, se usa el primero. */
   static getDemoProximosPartidos(): any[] {
+    // El partido se coloca siempre en el próximo sábado para que la demo muestre
+    // un encuentro realmente futuro, sea cual sea el día de la visita.
+    const fecha = nextSaturdayIso();
     return [
-      { name: 'Equipo Demo Senior vs Club Norte — Sábado 15 Mar 2025, 18:00', fecha: '2025-03-15', hora: '18:00', rivalName: 'Club Norte' },
+      { name: `CD Sphaira Senior vs Club Norte — ${formatMatchDayLabel(fecha)}, 18:00`, fecha, hora: '18:00', rivalName: 'Club Norte' },
     ];
   }
 
   /** Respuesta estándar para listados (misma forma que la API) */
   static response(data: any, status = 200): any {
     return { data, status, error: null };
+  }
+
+  /** Tesorería demo: resumen financiero de la cuenta Stripe Connect del club. */
+  static getDemoTreasurySummary(): any {
+    return {
+      configured: true,
+      accountId: 'acct_demo_sphaira',
+      stripeDashboardUrl: '#',
+      payoutsEnabled: true,
+      chargesEnabled: true,
+      detailsSubmitted: true,
+      defaultCurrency: 'eur',
+      payoutSchedule: { interval: 'weekly', weeklyAnchor: 'monday', delayDays: 7 },
+      available: [{ amount: 1240.5, amountCents: 124050, currency: 'eur' }],
+      pending: [{ amount: 380.0, amountCents: 38000, currency: 'eur' }],
+    };
+  }
+
+  /** Tesorería demo: historial de transferencias (payouts) al banco. */
+  static getDemoTreasuryPayouts(): any {
+    const now = Math.floor(Date.now() / 1000);
+    const day = 86400;
+    return {
+      configured: true,
+      hasMore: false,
+      nextCursor: null,
+      payouts: [
+        { id: 'po_demo_1', amount: 980.0, amountCents: 98000, currency: 'eur', status: 'paid', arrivalDate: now - day * 3, created: now - day * 10, method: 'standard', type: 'bank_account', bankLast4: '4242', bankName: 'BBVA' },
+        { id: 'po_demo_2', amount: 1120.0, amountCents: 112000, currency: 'eur', status: 'paid', arrivalDate: now - day * 10, created: now - day * 17, method: 'standard', type: 'bank_account', bankLast4: '4242', bankName: 'BBVA' },
+        { id: 'po_demo_3', amount: 640.0, amountCents: 64000, currency: 'eur', status: 'in_transit', arrivalDate: now + day * 2, created: now - day * 1, method: 'standard', type: 'bank_account', bankLast4: '4242', bankName: 'BBVA' },
+      ],
+    };
+  }
+
+  /** Tesorería demo: desglose de una transferencia concreta. */
+  static getDemoTreasuryPayoutTransactions(payoutId: string): any {
+    const txs = [
+      { id: 'txn_1', type: 'charge', description: 'Cuota Marzo — Carlos G.', amount: 40.0, fee: 1.45, net: 38.55, currency: 'eur', created: Math.floor(Date.now() / 1000) - 86400 * 12 },
+      { id: 'txn_2', type: 'charge', description: 'Cuota Marzo — Miguel L.', amount: 40.0, fee: 1.45, net: 38.55, currency: 'eur', created: Math.floor(Date.now() / 1000) - 86400 * 12 },
+      { id: 'txn_3', type: 'charge', description: 'Inscripción — Pablo R.', amount: 120.0, fee: 3.65, net: 116.35, currency: 'eur', created: Math.floor(Date.now() / 1000) - 86400 * 11 },
+    ];
+    const grossAmount = txs.reduce((s, t) => s + t.amount, 0);
+    const totalFee = txs.reduce((s, t) => s + t.fee, 0);
+    return {
+      configured: true,
+      payoutId,
+      transactions: txs,
+      grossAmount,
+      totalFee,
+      netAmount: grossAmount - totalFee,
+      currency: 'eur',
+      hasMore: false,
+    };
   }
 
   /** Cuadro de mandos: 8 equipos (formato "Nombre de HH:MM a HH:MM"), \u00faltimos y pr\u00f3ximos partidos */
@@ -356,7 +438,7 @@ export class DemoDataService {
   static getDemoListTeamsStadistics(): any {
     const partido = (r: string, gf: number, gc: number, rival: string, local: string, tipo: string) => ({
       resultado: r, golesAFavor: gf, golesEnContra: gc,
-      matchPreparation: { rivalName: rival, terreno: local, tipoPartido: tipo, matchDate: '2025-03-01' },
+      matchPreparation: { rivalName: rival, terreno: local, tipoPartido: tipo, matchDate: demoRecentMatchDates()[0] },
     });
     const partidosBase = [
       partido('V', 2, 1, 'Rival A', 'local', 'Liga'),
@@ -415,7 +497,7 @@ export class DemoDataService {
       { playerId: 8019, playerName: 'David M.', teamId: 9002, teamName: teams[1].name, type: 'Sobrecarga', status: 'recuperacion', severity: 'leve', zone: 'gemelo', zoneLabel: 'Gemelo', description: 'Sobrecarga en trabajo de velocidad' },
       { playerId: 8037, playerName: 'Javier P.', teamId: 9003, teamName: teams[2].name, type: 'Contractura', status: 'alta', severity: 'leve', zone: 'isquio', zoneLabel: 'Isquiotibial', description: 'Contractura en entrenamiento' },
     ];
-    return injuries.map((inj, i) => ({ id: i + 1, injuryId: i + 1, ...inj, clubId: 9001, dateInjury: '2025-02-20', createdBy: 'Demo' }));
+    return injuries.map((inj, i) => ({ id: i + 1, injuryId: i + 1, ...inj, clubId: 9001, dateInjury: demoDateFromToday(-18), createdBy: 'Demo' }));
   }
 
   /** Entrenadores por club (response.data.teams con .trainers) — 8 equipos, entrenadores reales. */
@@ -632,8 +714,8 @@ export class DemoDataService {
     if (tipo === 'entrenadores') {
       const segundoCompletado = docClubesId === 10;
       return [
-        { nombre: 'Juan', apellido: 'Demo', completado: true, fechaSubida: '2025-01-15' },
-        { nombre: 'Ana', apellido: 'Ayudante', completado: segundoCompletado, fechaSubida: segundoCompletado ? '2025-01-18' : null },
+        { nombre: 'Juan', apellido: 'Demo', completado: true, fechaSubida: demoDateFromToday(-45) },
+        { nombre: 'Ana', apellido: 'Ayudante', completado: segundoCompletado, fechaSubida: segundoCompletado ? demoDateFromToday(-42) : null },
       ];
     }
     const meta = DEMO_TEAMS_META[0];
@@ -664,7 +746,7 @@ export class DemoDataService {
       cardLast4: tieneTarjeta ? String(1000 + (p.playerId % 9000)).slice(-4) : null,
       cardBrand: tieneTarjeta ? 'Visa' : null,
       cobrado,
-      ultimoPago: cobrado ? '2025-02-01 10:30:00' : null,
+      ultimoPago: cobrado ? `${demoDateFromToday(-6)} 10:30:00` : null,
       facturaId: cobrado ? 'in_demo' : null,
       receiptUrl: cobrado ? 'https://demo.example.com/receipt' : null,
       importe: cobrado ? '45,00' : null,
@@ -682,8 +764,8 @@ export class DemoDataService {
     return [
       {
         pagoClubId: 101,
-        titulo: 'Cuota marzo 2025',
-        descripcion: 'Cuota mensual temporada 2024-2025',
+        titulo: `Cuota ${monthYearLabel(demoMonthStart(0))}`,
+        descripcion: `Cuota mensual temporada ${demoSeasonLabel('/')}`,
         importe: '45,00',
         importeTotal: '45,00',
         comisionClub: 1.5,
@@ -715,10 +797,11 @@ export class DemoDataService {
 
   /** Post-partidos para galería (partidos-entrevistas). response.data = array con id, letra, name, resultado, totalFotos, totalVideos, etc. */
   static getDemoPostPartidosForGalery(): any[] {
+    const fechas = demoRecentMatchDates();
     return [
-      { id: 101, matchDate: '2025-03-02', rivalName: 'Club Norte', name: 'vs Club Norte', letra: 'V', resultado: '2-1', totalFotos: 12, totalVideos: 2 },
-      { id: 102, matchDate: '2025-02-28', rivalName: 'Escuela Sur', name: 'vs Escuela Sur', letra: 'E', resultado: '0-0', totalFotos: 8, totalVideos: 1 },
-      { id: 103, matchDate: '2025-02-20', rivalName: 'Atlético Este', name: 'vs Atlético Este', letra: 'D', resultado: '1-3', totalFotos: 5, totalVideos: 0 },
+      { id: 101, matchDate: fechas[0], rivalName: 'Club Norte', name: 'vs Club Norte', letra: 'V', resultado: '2-1', totalFotos: 12, totalVideos: 2 },
+      { id: 102, matchDate: fechas[1], rivalName: 'Escuela Sur', name: 'vs Escuela Sur', letra: 'E', resultado: '0-0', totalFotos: 8, totalVideos: 1 },
+      { id: 103, matchDate: fechas[2], rivalName: 'Atlético Este', name: 'vs Atlético Este', letra: 'D', resultado: '1-3', totalFotos: 5, totalVideos: 0 },
     ];
   }
 
@@ -729,18 +812,19 @@ export class DemoDataService {
       golesAFavor: 2,
       golesEnContra: 1,
       resultado: 'V',
-      matchPreparation: { rivalName: 'Club Norte', terreno: 'local', matchDate: '2025-03-02', tipoPartido: 'Liga', lugar: 'Campo Municipal' },
+      matchPreparation: { rivalName: 'Club Norte', terreno: 'local', matchDate: demoRecentMatchDates()[0], tipoPartido: 'Liga', lugar: 'Campo Municipal' },
     };
   }
 
   /** Post-partidos por equipo y tipo (estadisticas-equipo). response.data = array con postPartidoId, resultado, golesAFavor, matchPreparation y estadísticas para tabla y gráficas. */
   static getDemoListPostPartidoByTeam(_teamId?: number, _tipo?: string): any[] {
+    const fechas = demoRecentMatchDates();
     const base = [
-      { postPartidoId: 1, resultado: 'V', golesAFavor: 2, golesEnContra: 1, matchPreparation: { rivalName: 'Club Norte', terreno: 'Local', matchDate: '2025-03-02', tipoPartido: 'Liga' }, disparosAFavor: 14, disparosEnContra: 8, faltasRecibidas: 10, faltasCometidas: 12, cornersAFavor: 5, cornersEnContra: 3, recuperaciones: 22, perdidas: 15, tarjetasAmarillas: 2, tarjetasRojas: 0, llegadasPeligroAFavor: 6, llegadasPeligroEnContra: 3, penaltisAFavor: 1, penaltisEnContra: 0 },
-      { postPartidoId: 2, resultado: 'E', golesAFavor: 1, golesEnContra: 1, matchPreparation: { rivalName: 'Escuela Sur', terreno: 'Visitante', matchDate: '2025-02-28', tipoPartido: 'Liga' }, disparosAFavor: 9, disparosEnContra: 11, faltasRecibidas: 8, faltasCometidas: 9, cornersAFavor: 4, cornersEnContra: 5, recuperaciones: 18, perdidas: 20, tarjetasAmarillas: 1, tarjetasRojas: 0, llegadasPeligroAFavor: 4, llegadasPeligroEnContra: 5, penaltisAFavor: 0, penaltisEnContra: 0 },
-      { postPartidoId: 3, resultado: 'D', golesAFavor: 1, golesEnContra: 3, matchPreparation: { rivalName: 'Atlético Este', terreno: 'Visitante', matchDate: '2025-02-20', tipoPartido: 'Liga' }, disparosAFavor: 7, disparosEnContra: 16, faltasRecibidas: 14, faltasCometidas: 11, cornersAFavor: 2, cornersEnContra: 7, recuperaciones: 14, perdidas: 25, tarjetasAmarillas: 3, tarjetasRojas: 1, llegadasPeligroAFavor: 2, llegadasPeligroEnContra: 8, penaltisAFavor: 0, penaltisEnContra: 1 },
-      { postPartidoId: 4, resultado: 'V', golesAFavor: 3, golesEnContra: 0, matchPreparation: { rivalName: 'Deportivo Centro', terreno: 'Local', matchDate: '2025-02-15', tipoPartido: 'Liga' }, disparosAFavor: 18, disparosEnContra: 5, faltasRecibidas: 6, faltasCometidas: 8, cornersAFavor: 8, cornersEnContra: 2, recuperaciones: 28, perdidas: 10, tarjetasAmarillas: 0, tarjetasRojas: 0, llegadasPeligroAFavor: 9, llegadasPeligroEnContra: 1, penaltisAFavor: 0, penaltisEnContra: 0 },
-      { postPartidoId: 5, resultado: 'V', golesAFavor: 2, golesEnContra: 1, matchPreparation: { rivalName: 'Rival Oeste', terreno: 'Local', matchDate: '2025-02-08', tipoPartido: 'Liga' }, disparosAFavor: 12, disparosEnContra: 9, faltasRecibidas: 9, faltasCometidas: 7, cornersAFavor: 6, cornersEnContra: 4, recuperaciones: 20, perdidas: 16, tarjetasAmarillas: 1, tarjetasRojas: 0, llegadasPeligroAFavor: 5, llegadasPeligroEnContra: 4, penaltisAFavor: 1, penaltisEnContra: 0 },
+      { postPartidoId: 1, resultado: 'V', golesAFavor: 2, golesEnContra: 1, matchPreparation: { rivalName: 'Club Norte', terreno: 'Local', matchDate: fechas[0], tipoPartido: 'Liga' }, disparosAFavor: 14, disparosEnContra: 8, faltasRecibidas: 10, faltasCometidas: 12, cornersAFavor: 5, cornersEnContra: 3, recuperaciones: 22, perdidas: 15, tarjetasAmarillas: 2, tarjetasRojas: 0, llegadasPeligroAFavor: 6, llegadasPeligroEnContra: 3, penaltisAFavor: 1, penaltisEnContra: 0 },
+      { postPartidoId: 2, resultado: 'E', golesAFavor: 1, golesEnContra: 1, matchPreparation: { rivalName: 'Escuela Sur', terreno: 'Visitante', matchDate: fechas[1], tipoPartido: 'Liga' }, disparosAFavor: 9, disparosEnContra: 11, faltasRecibidas: 8, faltasCometidas: 9, cornersAFavor: 4, cornersEnContra: 5, recuperaciones: 18, perdidas: 20, tarjetasAmarillas: 1, tarjetasRojas: 0, llegadasPeligroAFavor: 4, llegadasPeligroEnContra: 5, penaltisAFavor: 0, penaltisEnContra: 0 },
+      { postPartidoId: 3, resultado: 'D', golesAFavor: 1, golesEnContra: 3, matchPreparation: { rivalName: 'Atlético Este', terreno: 'Visitante', matchDate: fechas[2], tipoPartido: 'Liga' }, disparosAFavor: 7, disparosEnContra: 16, faltasRecibidas: 14, faltasCometidas: 11, cornersAFavor: 2, cornersEnContra: 7, recuperaciones: 14, perdidas: 25, tarjetasAmarillas: 3, tarjetasRojas: 1, llegadasPeligroAFavor: 2, llegadasPeligroEnContra: 8, penaltisAFavor: 0, penaltisEnContra: 1 },
+      { postPartidoId: 4, resultado: 'V', golesAFavor: 3, golesEnContra: 0, matchPreparation: { rivalName: 'Deportivo Centro', terreno: 'Local', matchDate: fechas[3], tipoPartido: 'Liga' }, disparosAFavor: 18, disparosEnContra: 5, faltasRecibidas: 6, faltasCometidas: 8, cornersAFavor: 8, cornersEnContra: 2, recuperaciones: 28, perdidas: 10, tarjetasAmarillas: 0, tarjetasRojas: 0, llegadasPeligroAFavor: 9, llegadasPeligroEnContra: 1, penaltisAFavor: 0, penaltisEnContra: 0 },
+      { postPartidoId: 5, resultado: 'V', golesAFavor: 2, golesEnContra: 1, matchPreparation: { rivalName: 'Rival Oeste', terreno: 'Local', matchDate: fechas[4], tipoPartido: 'Liga' }, disparosAFavor: 12, disparosEnContra: 9, faltasRecibidas: 9, faltasCometidas: 7, cornersAFavor: 6, cornersEnContra: 4, recuperaciones: 20, perdidas: 16, tarjetasAmarillas: 1, tarjetasRojas: 0, llegadasPeligroAFavor: 5, llegadasPeligroEnContra: 4, penaltisAFavor: 1, penaltisEnContra: 0 },
     ];
     return base;
   }
@@ -751,7 +835,7 @@ export class DemoDataService {
     const teamIndex = teamId >= 9001 && teamId <= 9008 ? teamId - 9001 : 0;
     const baseId = 8001 + teamIndex * PLAYERS_PER_TEAM;
     const rivales = ['Club Norte', 'Escuela Sur', 'Atlético Este', 'Deportivo Centro', 'Rival Oeste'];
-    const fechas = ['2025-03-02', '2025-02-28', '2025-02-20', '2025-02-15', '2025-02-08'];
+    const fechas = demoRecentMatchDates();
     const golesAFavor = [
       { golPostPartidoId: 1, category: 'Jugada combinativa', subCategory: 'Dentro del área', option: 'Tiro a portería', minuto: 23, playerId: baseId + 9, asistencia: baseId + 2, teamId, postPartido: { matchPreparation: { rivalName: rivales[0], matchDate: fechas[0] } } },
       { golPostPartidoId: 2, category: 'Jugada combinativa', subCategory: 'Dentro del área', option: 'Remate de cabeza', minuto: 67, playerId: baseId + 10, asistencia: baseId + 5, teamId, postPartido: { matchPreparation: { rivalName: rivales[0], matchDate: fechas[0] } } },
@@ -802,7 +886,7 @@ export class DemoDataService {
     for (let i = 0; i < teams.length && i < rivals.length; i++) {
       const gl = (i % 3 === 0) ? 2 : (i % 3 === 1) ? 1 : 0;
       const gv = (i % 3 === 0) ? 0 : (i % 3 === 1) ? 1 : 1;
-      const jDate = new Date('2025-09-01');
+      const jDate = new Date(demoSeasonStart());
       jDate.setDate(jDate.getDate() + (j - 1) * 7 + i);
       partidos.push({
         jornada: j,
@@ -877,8 +961,8 @@ export class DemoDataService {
   /** Tareas del historial del entrenador (coach-task-history) */
   static getDemoCoachTaskHistory(): any[] {
     return [
-      { taskId: 501, slogans: 'Rondo 4+2', estrategia: 'Posesión', intencion: 'Conservar', fecCreate: '2025-02-28' },
-      { taskId: 502, slogans: 'Finalización en área', estrategia: 'Situaciones Reducidas', intencion: 'Finalizar', fecCreate: '2025-02-25' },
+      { taskId: 501, slogans: 'Rondo 4+2', estrategia: 'Posesión', intencion: 'Conservar', fecCreate: demoDateFromToday(-11) },
+      { taskId: 502, slogans: 'Finalización en área', estrategia: 'Situaciones Reducidas', intencion: 'Finalizar', fecCreate: demoDateFromToday(-14) },
     ];
   }
 
@@ -892,7 +976,7 @@ export class DemoDataService {
   /** Tareas propias del entrenador (mis tareas) */
   static getDemoCoachOwnTasks(): any[] {
     return [
-      { coachTaskId: 1, slogans: 'Calentamiento específico', description: 'Carrera continua y estiramientos', fecCreate: '2025-02-20' },
+      { coachTaskId: 1, slogans: 'Calentamiento específico', description: 'Carrera continua y estiramientos', fecCreate: demoDateFromToday(-19) },
     ];
   }
 
@@ -952,12 +1036,14 @@ export class DemoDataService {
 
   /** Historial de pagos del club (lista para HistorialPagosClubComponent) */
   static getDemoHistorialPagos(): any[] {
+    const cuotaMes = monthYearLabel(demoMonthStart(0));
+    const cuotaMesAnterior = monthYearLabel(demoMonthStart(-1));
     return [
-      { name: 'Carlos García', descripcionPago: 'Cuota mensual marzo', titulo: 'Cuota Marzo 2025', importe: 45.00, metodo: 'Tarjeta', tipo: 'Cuota', fecha: '2025-03-01' },
-      { name: 'Miguel López', descripcionPago: 'Cuota mensual marzo', titulo: 'Cuota Marzo 2025', importe: 45.00, metodo: 'Tarjeta', tipo: 'Cuota', fecha: '2025-03-02' },
-      { name: 'Antonio Ruiz', descripcionPago: 'Inscripción temporada', titulo: 'Inscripción 2024/25', importe: 120.00, metodo: 'Transferencia', tipo: 'Inscripción', fecha: '2025-02-15' },
-      { name: 'David Martín', descripcionPago: 'Cuota mensual febrero', titulo: 'Cuota Febrero 2025', importe: 45.00, metodo: 'Tarjeta', tipo: 'Cuota', fecha: '2025-02-10' },
-      { name: 'Pablo Sánchez', descripcionPago: 'Material deportivo', titulo: 'Equipación', importe: 65.00, metodo: 'Efectivo', tipo: 'Material', fecha: '2025-02-20' },
+      { name: 'Carlos García', descripcionPago: `Cuota mensual ${cuotaMes.toLowerCase()}`, titulo: `Cuota ${cuotaMes}`, importe: 45.00, metodo: 'Tarjeta', tipo: 'Cuota', fecha: demoDateFromToday(-2) },
+      { name: 'Miguel López', descripcionPago: `Cuota mensual ${cuotaMes.toLowerCase()}`, titulo: `Cuota ${cuotaMes}`, importe: 45.00, metodo: 'Tarjeta', tipo: 'Cuota', fecha: demoDateFromToday(-3) },
+      { name: 'Antonio Ruiz', descripcionPago: 'Inscripción temporada', titulo: `Inscripción ${demoSeasonShort()}`, importe: 120.00, metodo: 'Transferencia', tipo: 'Inscripción', fecha: demoDateFromToday(-9) },
+      { name: 'David Martín', descripcionPago: `Cuota mensual ${cuotaMesAnterior.toLowerCase()}`, titulo: `Cuota ${cuotaMesAnterior}`, importe: 45.00, metodo: 'Tarjeta', tipo: 'Cuota', fecha: demoDateFromToday(-21) },
+      { name: 'Pablo Sánchez', descripcionPago: 'Material deportivo', titulo: 'Equipación', importe: 65.00, metodo: 'Efectivo', tipo: 'Material', fecha: demoDateFromToday(-16) },
     ];
   }
 
@@ -984,25 +1070,84 @@ export class DemoDataService {
   /** Lista de cuotas/pagos del club (chips y filtros en NewCuotasComponent) */
   static getDemoListPagosClub(): any[] {
     return [
-      { pagoClubId: 1, titulo: 'Cuota Marzo 2025', importe: 45, tipo: 'Cuota' },
-      { pagoClubId: 2, titulo: 'Inscripción 2024/25', importe: 120, tipo: 'Inscripción' },
-      { pagoClubId: 3, titulo: 'Equipación', importe: 65, tipo: 'Material' },
+      { pagoClubId: 1, titulo: `Cuota ${monthYearLabel(demoMonthStart(0))}`, importe: 45, tipo: 'Cuota', obligatorio: 1, stripe: 1, tipoCobro: 0, comisionClub: 0, fechaLimite: demoMonthStart(0), variantesCount: 0 },
+      { pagoClubId: 2, titulo: `Inscripción ${demoSeasonShort()}`, importe: 120, tipo: 'Inscripción', obligatorio: 1, stripe: 1, tipoCobro: 0, comisionClub: 0, fechaLimite: demoMonthStart(-1), variantesCount: 0 },
+      { pagoClubId: 3, titulo: 'Equipación', importe: 65, tipo: 'Material', obligatorio: 0, stripe: 1, tipoCobro: 0, comisionClub: 0, fechaLimite: demoDateFromToday(21), variantesCount: 0 },
+      {
+        pagoClubId: 5,
+        titulo: `Inscripción temporada ${demoSeasonShort()}`,
+        importe: 120,
+        tipo: 'Inscripción',
+        obligatorio: 1,
+        stripe: 1,
+        tipoCobro: 0,
+        comisionClub: 0,
+        fechaLimite: demoDateFromToday(30),
+        fechaInicio: demoDateFromToday(-7),
+        pedirTarjetaRegistro: 1,
+        variantesCount: 3,
+        varianteMin: 120,
+        varianteMax: 215,
+      },
+    ];
+  }
+
+  /** Previsualización del cobro colectivo de vencidas (dunning). */
+  static getDemoChargeOverduePreview(playerId?: number): any {
+    if (playerId && playerId > 0) {
+      return { jugadores: 1, totalEuros: 45, sinTarjeta: 0, cuotasVariantesOmitidas: 0 };
+    }
+    return { jugadores: 3, totalEuros: 155, sinTarjeta: 1, cuotasVariantesOmitidas: 1 };
+  }
+
+  /** Resultado del cobro de vencidas (dunning). */
+  static getDemoChargeOverdueResult(playerId?: number): any {
+    if (playerId && playerId > 0) {
+      return { cobradas: 1, fallidas: 0, sinTarjeta: 0, enEspera: 0, detalle: [] };
+    }
+    return { cobradas: 2, fallidas: 0, sinTarjeta: 1, enEspera: 0, detalle: [] };
+  }
+
+  /** Variantes de precio + flags de registro de un pago (lado club). */
+  static getDemoPagoVariantes(pagoClubId: number): any {
+    if (Number(pagoClubId) !== 5) {
+      return { variantes: [], mostrarEnRegistro: 0, pedirTarjetaRegistro: 0 };
+    }
+    return {
+      mostrarEnRegistro: 1,
+      pedirTarjetaRegistro: 1,
+      variantes: [
+        { id: 1, nombre: 'Solo inscripción', importe: '120', orden: 1 },
+        { id: 2, nombre: 'Inscripción + equipación', importe: '175', orden: 2 },
+        { id: 3, nombre: 'Inscripción + equipación + chándal', importe: '215', orden: 3 },
+      ],
+    };
+  }
+
+  /** Asignaciones variante↔jugador de un pago (lado club). estado: 0=pendiente, 1=validado. */
+  static getDemoPagoVarianteAsignaciones(pagoClubId: number): any[] {
+    if (Number(pagoClubId) !== 5) return [];
+    return [
+      { playerId: 1, varianteId: 2, estado: 0, familiaId: 1 },
+      { playerId: 2, varianteId: 3, estado: 0, familiaId: 1 },
+      { playerId: 3, varianteId: 1, estado: 0, familiaId: 0 },
+      { playerId: 4, varianteId: 2, estado: 1, familiaId: 0 },
     ];
   }
 
   /** Pagos por jugador (detalle en NewCuotasComponent) */
   static getDemoListPagosClubForPlayer(_clubId: number, _temporada: string, _playerId: number): any[] {
     return [
-      { pagoClubId: 1, titulo: 'Cuota Marzo 2025', importe: 45, estado: 'pagado', fecha: '2025-03-01' },
-      { pagoClubId: 2, titulo: 'Inscripción 2024/25', importe: 120, estado: 'pagado', fecha: '2025-02-15' },
+      { pagoClubId: 1, titulo: `Cuota ${monthYearLabel(demoMonthStart(0))}`, importe: 45, estado: 'pagado', fecha: demoDateFromToday(-2) },
+      { pagoClubId: 2, titulo: `Inscripción ${demoSeasonShort()}`, importe: 120, estado: 'pagado', fecha: demoDateFromToday(-9) },
     ];
   }
 
   /** Historial de pagos por jugador */
   static getDemoListHistoryPagosByPlayer(_clubId: number, _temporada: string, _playerId: number): any[] {
     return [
-      { fecha: '2025-03-01', descripcion: 'Cuota Marzo 2025', importe: 45, metodo: 'Tarjeta' },
-      { fecha: '2025-02-15', descripcion: 'Inscripción temporada', importe: 120, metodo: 'Transferencia' },
+      { fecha: demoDateFromToday(-2), descripcion: `Cuota ${monthYearLabel(demoMonthStart(0))}`, importe: 45, metodo: 'Tarjeta' },
+      { fecha: demoDateFromToday(-9), descripcion: 'Inscripción temporada', importe: 120, metodo: 'Transferencia' },
     ];
   }
 
@@ -1012,7 +1157,7 @@ export class DemoDataService {
     return {
       ropaclubId: 1,
       clubId: 9001,
-      temporada: '2025',
+      temporada: demoSeasonYear(),
       camisetaJuego: 0,
       pantalonJuego: 0,
       medias: 0,
@@ -1047,7 +1192,7 @@ export class DemoDataService {
           player: { playerId: p.playerId, firstName: p.nombre, secondName: p.apellido, dorsal: p.dorsal },
           team: teamRef,
           clubId: 9001,
-          temporada: '2025',
+          temporada: demoSeasonYear(),
           camisetaJuego: tallas[p.dorsal % 3],
           pantalonJuego: 'M',
           medias: 'M',
@@ -1095,12 +1240,12 @@ export class DemoDataService {
     const sphairaLogo = '../Logo_SphairaTech1.png';
     const base = { clubId: 9001, descripcion: 'Plataforma de gestión deportiva', imagen: sphairaLogo, estado: 1, oculto: 1, web: 'https://sphairatech.com', beneficios: 'Gestión integral del club', telefono: '', mail: 'info@sphairatech.com', federacionId: 0 };
     return [
-      { patrocinadorId: 1, ...base, nombre: 'SphairaTech', fechaCreate: '2025-01-15' },
-      { patrocinadorId: 2, ...base, nombre: 'SphairaTech', fechaCreate: '2025-01-15' },
-      { patrocinadorId: 3, ...base, nombre: 'SphairaTech', fechaCreate: '2025-01-15' },
-      { patrocinadorId: 4, ...base, nombre: 'SphairaTech', fechaCreate: '2025-01-15' },
-      { patrocinadorId: 5, ...base, nombre: 'SphairaTech', fechaCreate: '2025-01-15' },
-      { patrocinadorId: 6, ...base, nombre: 'SphairaTech', fechaCreate: '2025-01-15' },
+      { patrocinadorId: 1, ...base, nombre: 'SphairaTech', fechaCreate: demoDate('2025-01-15') },
+      { patrocinadorId: 2, ...base, nombre: 'SphairaTech', fechaCreate: demoDate('2025-01-15') },
+      { patrocinadorId: 3, ...base, nombre: 'SphairaTech', fechaCreate: demoDate('2025-01-15') },
+      { patrocinadorId: 4, ...base, nombre: 'SphairaTech', fechaCreate: demoDate('2025-01-15') },
+      { patrocinadorId: 5, ...base, nombre: 'SphairaTech', fechaCreate: demoDate('2025-01-15') },
+      { patrocinadorId: 6, ...base, nombre: 'SphairaTech', fechaCreate: demoDate('2025-01-15') },
     ];
   }
 
@@ -1213,7 +1358,7 @@ export class DemoDataService {
         correoEnviadoId: 9004,
         asunto: 'Reunión de padres — fin de temporada',
         destinatario: 'Familias Equipo Infantil',
-        body: body('<p>Estimadas familias,</p><p>Os convocamos a la reunión de fin de temporada el <strong>próximo martes a las 19:30 h</strong> en el salón de actos del club.</p><p>Trataremos los temas de inscripciones para la temporada 2025/26 y la gala de entrega de trofeos.</p><p>Vuestra asistencia es muy importante.</p>'),
+        body: body(`<p>Estimadas familias,</p><p>Os convocamos a la reunión de fin de temporada el <strong>próximo martes a las 19:30 h</strong> en el salón de actos del club.</p><p>Trataremos los temas de inscripciones para la temporada ${demoSeasonShort()} y la gala de entrega de trofeos.</p><p>Vuestra asistencia es muy importante.</p>`),
         scheduledAt: future(7, 19, 30),
         leido: 0,
       },
@@ -1230,23 +1375,23 @@ export class DemoDataService {
   static getDemoScoutingWatchlist(): any[] {
     return [
       { watchlist: { id: 1, status: 'IDENTIFIED', externalPlayerName: 'Jugador Demo A', externalPlayerPosition: 'Delantero Centro', externalPlayerTeam: 'Club Rival', externalPlayerAge: 22 }, scoutingProfile: null, evaluations: [] },
-      { watchlist: { id: 2, status: 'OBSERVED', externalPlayerName: 'Jugador Demo B', externalPlayerPosition: 'Mediocentro', externalPlayerTeam: 'Otro Club', externalPlayerAge: 20 }, scoutingProfile: null, evaluations: [{ overallRating: 7, technicalScore: 7, tacticalScore: 7, physicalScore: 8, evaluationDate: '2025-02-20' }] },
+      { watchlist: { id: 2, status: 'OBSERVED', externalPlayerName: 'Jugador Demo B', externalPlayerPosition: 'Mediocentro', externalPlayerTeam: 'Otro Club', externalPlayerAge: 20 }, scoutingProfile: null, evaluations: [{ overallRating: 7, technicalScore: 7, tacticalScore: 7, physicalScore: 8, evaluationDate: demoDateFromToday(-18) }] },
     ];
   }
 
   /** Proyectos de análisis de vídeo (video-analysis). response.data = array */
   static getDemoVideoProjects(): any[] {
     return [
-      { id: 1, clubId: 9001, templateId: 1, title: 'Análisis Partido vs Club Norte', description: 'Análisis táctico del partido de liga', status: 'COMPLETED', createdBy: 1, createdAt: '2025-02-28T10:00:00', updatedAt: '2025-03-01T12:00:00', eventCount: 12, videoTitle: 'Partido Liga Jornada 22' },
-      { id: 2, clubId: 9001, templateId: 1, title: 'Entrenamiento Técnica', description: 'Sesión de posesión y transiciones', status: 'IN_PROGRESS', createdBy: 1, createdAt: '2025-03-02T09:00:00', updatedAt: '2025-03-02T09:00:00', eventCount: 5 },
+      { id: 1, clubId: 9001, templateId: 1, title: 'Análisis Partido vs Club Norte', description: 'Análisis táctico del partido de liga', status: 'COMPLETED', createdBy: 1, createdAt: `${demoDateFromToday(-5)}T10:00:00`, updatedAt: `${demoDateFromToday(-4)}T12:00:00`, eventCount: 12, videoTitle: 'Partido Liga Jornada 22' },
+      { id: 2, clubId: 9001, templateId: 1, title: 'Entrenamiento Técnica', description: 'Sesión de posesión y transiciones', status: 'IN_PROGRESS', createdBy: 1, createdAt: `${demoDateFromToday(-2)}T09:00:00`, updatedAt: `${demoDateFromToday(-2)}T09:00:00`, eventCount: 5 },
     ];
   }
 
   /** Plantillas de análisis de vídeo. response.data = array */
   static getDemoVideoTemplates(): any[] {
     return [
-      { id: 1, name: 'Análisis táctico partido', description: 'Plantilla estándar para partidos', isSystem: true, isDefault: true, createdAt: '2025-01-01' },
-      { id: 2, name: 'Análisis entrenamiento', description: 'Plantilla para sesiones de entrenamiento', isSystem: true, isDefault: false, createdAt: '2025-01-01' },
+      { id: 1, name: 'Análisis táctico partido', description: 'Plantilla estándar para partidos', isSystem: true, isDefault: true, createdAt: demoDate('2025-01-01') },
+      { id: 2, name: 'Análisis entrenamiento', description: 'Plantilla para sesiones de entrenamiento', isSystem: true, isDefault: false, createdAt: demoDate('2025-01-01') },
     ];
   }
 
@@ -1280,8 +1425,8 @@ export class DemoDataService {
   /** Lista de vídeos del club. response.data */
   static getDemoClubVideos(): any[] {
     return [
-      { id: 1, title: 'Resumen partido vs Norte', duration: 120, createdAt: '2025-02-28', folderId: null },
-      { id: 2, title: 'Entrenamiento táctico', duration: 90, createdAt: '2025-02-25', folderId: 1 },
+      { id: 1, title: 'Resumen partido vs Norte', duration: 120, createdAt: demoDateFromToday(-5), folderId: null },
+      { id: 2, title: 'Entrenamiento táctico', duration: 90, createdAt: demoDateFromToday(-8), folderId: 1 },
     ];
   }
 
@@ -1297,8 +1442,8 @@ export class DemoDataService {
   /** Prendas del catálogo por club. response.data (array) */
   static getDemoPrendasByClub(): any[] {
     return [
-      { prendaId: 1, clubId: 9001, teamId: null, nombre: 'Camiseta titular', descripcion: 'Camiseta oficial', categoria: 'Juego', temporada: '2025', imagenUrl: '', imagenNombre: 'demo-prenda-camiseta.png', activo: 1, createdAt: '2025-01-01', tallas: [{ tallaId: 1, prendaId: 1, nombreTalla: 'S', orden: 1 }, { tallaId: 2, prendaId: 1, nombreTalla: 'M', orden: 2 }, { tallaId: 3, prendaId: 1, nombreTalla: 'L', orden: 3 }] },
-      { prendaId: 2, clubId: 9001, teamId: null, nombre: 'Pantalón entreno', descripcion: 'Pantalón técnico', categoria: 'Entreno', temporada: '2025', imagenUrl: '', imagenNombre: 'demo-prenda-pantalon.png', activo: 1, createdAt: '2025-01-01', tallas: [{ tallaId: 4, prendaId: 2, nombreTalla: 'S', orden: 1 }, { tallaId: 5, prendaId: 2, nombreTalla: 'M', orden: 2 }] },
+      { prendaId: 1, clubId: 9001, teamId: null, nombre: 'Camiseta titular', descripcion: 'Camiseta oficial', categoria: 'Juego', temporada: demoSeasonYear(), imagenUrl: '', imagenNombre: 'demo-prenda-camiseta.png', activo: 1, createdAt: demoDate('2025-01-01'), tallas: [{ tallaId: 1, prendaId: 1, nombreTalla: 'S', orden: 1 }, { tallaId: 2, prendaId: 1, nombreTalla: 'M', orden: 2 }, { tallaId: 3, prendaId: 1, nombreTalla: 'L', orden: 3 }] },
+      { prendaId: 2, clubId: 9001, teamId: null, nombre: 'Pantalón entreno', descripcion: 'Pantalón técnico', categoria: 'Entreno', temporada: demoSeasonYear(), imagenUrl: '', imagenNombre: 'demo-prenda-pantalon.png', activo: 1, createdAt: demoDate('2025-01-01'), tallas: [{ tallaId: 4, prendaId: 2, nombreTalla: 'S', orden: 1 }, { tallaId: 5, prendaId: 2, nombreTalla: 'M', orden: 2 }] },
     ];
   }
 
@@ -1315,7 +1460,7 @@ export class DemoDataService {
   /** Documentos del catálogo. response.data (array) */
   static getDemoDocumentosRopaByClub(): any[] {
     return [
-      { documentoId: 1, clubId: 9001, teamId: null, nombre: 'Guía de tallas', descripcion: 'Guía oficial', temporada: '2025', archivoUrl: '', archivoNombre: '', tipoMime: 'application/pdf', activo: 1, createdAt: '2025-01-01' },
+      { documentoId: 1, clubId: 9001, teamId: null, nombre: 'Guía de tallas', descripcion: 'Guía oficial', temporada: demoSeasonYear(), archivoUrl: '', archivoNombre: '', tipoMime: 'application/pdf', activo: 1, createdAt: demoDate('2025-01-01') },
     ];
   }
 
@@ -1327,8 +1472,8 @@ export class DemoDataService {
   /** Selecciones por jugador. response.data (array) - para ropa-jugador */
   static getDemoSeleccionesPlayer(): any[] {
     return [
-      { seleccionId: 1, playerId: 8001, prendaId: 1, tallaId: 2, estado: 'CONFIRMADA', updatedAt: '2025-02-01', nombreTalla: 'M', nombrePrenda: 'Camiseta titular' },
-      { seleccionId: 2, playerId: 8001, prendaId: 2, tallaId: 5, estado: 'CONFIRMADA', updatedAt: '2025-02-01', nombreTalla: 'M', nombrePrenda: 'Pantalón entreno' },
+      { seleccionId: 1, playerId: 8001, prendaId: 1, tallaId: 2, estado: 'CONFIRMADA', updatedAt: demoDateFromToday(-25), nombreTalla: 'M', nombrePrenda: 'Camiseta titular' },
+      { seleccionId: 2, playerId: 8001, prendaId: 2, tallaId: 5, estado: 'CONFIRMADA', updatedAt: demoDateFromToday(-25), nombreTalla: 'M', nombrePrenda: 'Pantalón entreno' },
     ];
   }
 
@@ -1349,12 +1494,34 @@ export class DemoDataService {
       totalPagado: '90',
       pendiente: '75',
       obligatorios: [
-        { pagoClubId: 1, nombre: 'Cuota Marzo 2025', importe: '45', pagado: '45', plazo: '2025-03', fechaPago: '2025-03-01', stripe: 1, tipoCobro: 1, desistido: 0, stripePriceId: 'price_demo_1', comisionClub: 0 },
-        { pagoClubId: 2, nombre: 'Cuota Abril 2025', importe: '45', pagado: '45', plazo: '2025-04', fechaPago: '2025-04-02', stripe: 1, tipoCobro: 1, desistido: 0, stripePriceId: 'price_demo_2', comisionClub: 0 },
-        { pagoClubId: 3, nombre: 'Cuota Mayo 2025', importe: '45', pagado: '0', plazo: '2025-05', fechaPago: 'Pendiente', stripe: 1, tipoCobro: 1, desistido: 0, stripePriceId: 'price_demo_3', comisionClub: 0 },
+        { pagoClubId: 1, nombre: `Cuota ${monthYearLabel(demoMonthStart(-2))}`, importe: '45', pagado: '45', plazo: demoMonthPeriod(-2), fechaPago: demoMonthStart(-2), stripe: 1, tipoCobro: 1, desistido: 0, stripePriceId: 'price_demo_1', comisionClub: 0 },
+        { pagoClubId: 2, nombre: `Cuota ${monthYearLabel(demoMonthStart(-1))}`, importe: '45', pagado: '45', plazo: demoMonthPeriod(-1), fechaPago: demoMonthStart(-1), stripe: 1, tipoCobro: 1, desistido: 0, stripePriceId: 'price_demo_2', comisionClub: 0 },
+        { pagoClubId: 3, nombre: `Cuota ${monthYearLabel(demoMonthStart(0))}`, importe: '45', pagado: '0', plazo: demoMonthPeriod(0), fechaPago: 'Pendiente', stripe: 1, tipoCobro: 1, desistido: 0, stripePriceId: 'price_demo_3', comisionClub: 0 },
       ],
       noObligatorios: [
-        { pagoClubId: 4, nombre: 'Equipación temporada', importe: '65', pagado: '0', plazo: '2025-06', fechaPago: 'Pendiente', stripe: 2, tipoCobro: 0, desistido: 0, comisionClub: 0 },
+        { pagoClubId: 4, nombre: 'Equipación temporada', importe: '65', pagado: '0', plazo: demoMonthPeriod(1), fechaPago: 'Pendiente', stripe: 2, tipoCobro: 0, desistido: 0, comisionClub: 0 },
+        {
+          pagoClubId: 5,
+          nombre: `Inscripción temporada ${demoSeasonShort()}`,
+          titulo: `Inscripción temporada ${demoSeasonShort()}`,
+          importe: '120',
+          pagado: '0',
+          plazo: demoMonthPeriod(1),
+          fechaPago: 'Pendiente',
+          stripe: 0,
+          tipoCobro: 0,
+          desistido: 0,
+          comisionClub: 0,
+          tieneVariantes: true,
+          varianteEstado: -1,
+          varianteSeleccionadaId: null,
+          varianteValidadaNombre: null,
+          variantes: [
+            { id: 1, nombre: 'Solo inscripción', importe: '120' },
+            { id: 2, nombre: 'Inscripción + equipación', importe: '175' },
+            { id: 3, nombre: 'Inscripción + equipación + chándal', importe: '215' },
+          ],
+        },
       ],
       stripeId: 'acct_demo_123',
       banco: 'Demo Bank',
@@ -1370,9 +1537,9 @@ export class DemoDataService {
   /** Lista de cuotas para modal Stripe (getListPagosClubForStripe). response.data = array */
   static getDemoListPagosClubForStripe(): any[] {
     return [
-      { pagoClubId: 1, nombre: 'Cuota Marzo 2025', importe: '45', stripePriceId: 'price_demo_1', tipoCobro: 1, stripe: 1 },
-      { pagoClubId: 2, nombre: 'Cuota Abril 2025', importe: '45', stripePriceId: 'price_demo_2', tipoCobro: 1, stripe: 1 },
-      { pagoClubId: 3, nombre: 'Cuota Mayo 2025', importe: '45', stripePriceId: 'price_demo_3', tipoCobro: 1, stripe: 1 },
+      { pagoClubId: 1, nombre: `Cuota ${monthYearLabel(demoMonthStart(-2))}`, importe: '45', stripePriceId: 'price_demo_1', tipoCobro: 1, stripe: 1 },
+      { pagoClubId: 2, nombre: `Cuota ${monthYearLabel(demoMonthStart(-1))}`, importe: '45', stripePriceId: 'price_demo_2', tipoCobro: 1, stripe: 1 },
+      { pagoClubId: 3, nombre: `Cuota ${monthYearLabel(demoMonthStart(0))}`, importe: '45', stripePriceId: 'price_demo_3', tipoCobro: 1, stripe: 1 },
     ];
   }
 
@@ -1423,8 +1590,8 @@ export class DemoDataService {
       descripcion: `${posicion} con buen rendimiento.`,
       estadoEstudios: 'Bachillerato',
       esPublico: 1,
-      dateCreate: '2025-01-01',
-      dateEdit: '2025-02-01',
+      dateCreate: demoDate('2025-01-01'),
+      dateEdit: demoDate('2025-02-01'),
     };
   }
 
@@ -1450,9 +1617,9 @@ export class DemoDataService {
     const allPlayers = buildDemoPlayersForTeam(meta.teamId, idx, meta.name);
     const players = allPlayers.map(p => `${p.nombre} ${p.apellido}`);
 
-    // Generar 10 sesiones de entrenamiento en los \u00faltimos 5 semanas
+    // Generar sesiones de entrenamiento en las últimas 5 semanas (relativas a hoy)
     const sessions: any[] = [];
-    const base = new Date('2025-03-03');
+    const base = new Date(demoDateFromToday(-35));
     for (let week = 0; week < 5; week++) {
       const days = [1, 3, 5]; // L,X,V
       for (const d of days) {
@@ -1490,15 +1657,15 @@ export class DemoDataService {
   /** Asistencia por jugador (getListsAsistenciaByTeamYPlayer). response.data = array. Campos: fecha, asistencia (0/1), tipo. */
   static getDemoListAsistenciaByPlayer(): any[] {
     return [
-      { fecha: '2025-02-03', asistencia: 1, tipo: 'Entrenamiento' },
-      { fecha: '2025-02-05', asistencia: 1, tipo: 'Entrenamiento' },
-      { fecha: '2025-02-07', asistencia: 0, tipo: 'Partido' },
-      { fecha: '2025-02-10', asistencia: 1, tipo: 'Entrenamiento' },
-      { fecha: '2025-02-12', asistencia: 1, tipo: 'Entrenamiento' },
-      { fecha: '2025-02-14', asistencia: 1, tipo: 'Partido' },
-      { fecha: '2025-02-17', asistencia: 1, tipo: 'Entrenamiento' },
-      { fecha: '2025-02-19', asistencia: 1, tipo: 'Entrenamiento' },
-      { fecha: '2025-02-21', asistencia: 1, tipo: 'Partido' },
+      { fecha: demoDateFromToday(-31), asistencia: 1, tipo: 'Entrenamiento' },
+      { fecha: demoDateFromToday(-29), asistencia: 1, tipo: 'Entrenamiento' },
+      { fecha: demoDateFromToday(-27), asistencia: 0, tipo: 'Partido' },
+      { fecha: demoDateFromToday(-24), asistencia: 1, tipo: 'Entrenamiento' },
+      { fecha: demoDateFromToday(-22), asistencia: 1, tipo: 'Entrenamiento' },
+      { fecha: demoDateFromToday(-20), asistencia: 1, tipo: 'Partido' },
+      { fecha: demoDateFromToday(-17), asistencia: 1, tipo: 'Entrenamiento' },
+      { fecha: demoDateFromToday(-15), asistencia: 1, tipo: 'Entrenamiento' },
+      { fecha: demoDateFromToday(-13), asistencia: 1, tipo: 'Partido' },
     ];
   }
 
@@ -1550,5 +1717,74 @@ export class DemoDataService {
         enabled: false,
       },
     ];
+  }
+
+  // ─── Formulario de registro por club (ClubRegisterFormService) ──────────────
+  /**
+   * Plantilla activa del formulario de registro del club para el flujo demo.
+   * Incluye una sección extra del club (datos deportivos) y un consentimiento
+   * de imagen para que el registro dinámico muestre algo representativo.
+   */
+  static getDemoRegisterFormTemplate(variant: 'minor' | 'adult' = 'minor'): any {
+    const childSection = {
+      id: 'child',
+      title: variant === 'adult' ? 'Datos del jugador' : 'Datos del menor',
+      subtitle: 'Información deportiva que solicita el club',
+      fields: [
+        { id: 'talla_camiseta', type: 'select', label: 'Talla de camiseta', required: true, options: ['6', '8', '10', '12', 'S', 'M', 'L', 'XL'] },
+        { id: 'alergias', type: 'textarea', label: 'Alergias o notas médicas', required: false, placeholder: 'Indica alergias, medicación, etc.' },
+        { id: 'posicion', type: 'select', label: 'Posición preferida', required: false, options: ['Portero', 'Defensa', 'Centrocampista', 'Delantero'], binding: 'player_posicion' },
+      ],
+    };
+    const generalSection = {
+      id: 'general',
+      title: 'Información del club',
+      fields: [
+        { id: 'info_cuota', type: 'info', label: 'Cuota', text: 'La cuota de temporada se abona en la sección de Cuotas tras validar la inscripción.' },
+        { id: 'consent_imagen', type: 'consent', label: 'Cesión de derechos de imagen', required: true, text: 'Autorizo al club a captar y publicar imágenes con fines deportivos y de difusión, conforme a la política de privacidad.' },
+      ],
+    };
+    const sections: any[] = [childSection, generalSection];
+    if (variant === 'minor') {
+      sections.unshift({
+        id: 'tutor',
+        title: 'Datos del tutor',
+        fields: [
+          { id: 'tutor_dni', type: 'text', label: 'DNI del tutor', required: true, binding: 'tutor_dni_padre' },
+          { id: 'tutor_parentesco', type: 'select', label: 'Parentesco', required: false, options: ['Padre', 'Madre', 'Tutor legal'] },
+        ],
+      });
+    }
+    return {
+      templateId: 501,
+      clubId: 9001,
+      active: 1,
+      schema: { version: 1, sections },
+      updatedAt: demoDateFromToday(-20),
+    };
+  }
+
+  /** Pagos con variantes marcados para mostrarse en el registro (demo). */
+  static getDemoRegisterPaymentVariants(): any[] {
+    return [
+      {
+        pagoClubId: 3001,
+        titulo: 'Cuota de inscripción',
+        descripcion: 'Incluye equipación y seguro deportivo',
+        importe: '180.00',
+        fechaLimite: demoDateFromToday(45),
+        pedirTarjetaRegistro: 1,
+        variantes: [
+          { id: 1, nombre: 'Pago único', importe: '180.00' },
+          { id: 2, nombre: 'Fraccionado (3 plazos)', importe: '65.00' },
+          { id: 3, nombre: 'Hermanos (descuento)', importe: '150.00' },
+        ],
+      },
+    ];
+  }
+
+  /** Catálogo de slots enlazables (demo, vacío: el club no enlaza campos). */
+  static getDemoRegisterBindingCatalog(): any {
+    return { version: 1, slots: [] };
   }
 }

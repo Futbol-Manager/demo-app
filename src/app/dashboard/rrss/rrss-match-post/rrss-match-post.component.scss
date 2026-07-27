@@ -1,0 +1,589 @@
+// ── Design tokens ─────────────────────────────────────────────────────────────
+$border:   #e2e8f0;
+$bg:       #f8fafc;
+$text:     #0f172a;
+$muted:    #64748b;
+$surface:  #ffffff;
+$primary:  #31b270;
+
+// ── Shell ─────────────────────────────────────────────────────────────────────
+
+.match-post-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+// ── Header ─────────────────────────────────────────────────────────────────────
+
+.mp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.mp-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mp-icon-wrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, $primary, #1f8f8a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.mp-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: $text;
+  margin: 0 0 0.1rem;
+}
+
+.mp-subtitle {
+  font-size: 0.78rem;
+  color: $muted;
+  margin: 0;
+}
+
+.mp-type-toggle {
+  display: flex;
+  background: $bg;
+  border: 1px solid $border;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.type-btn {
+  padding: 0.45rem 1rem;
+  border: none;
+  background: transparent;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: $muted;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.15s;
+
+  &:hover { color: $primary; }
+
+  &.active {
+    background: $primary;
+    color: #fff;
+    font-weight: 600;
+  }
+}
+
+// ── Body layout ────────────────────────────────────────────────────────────────
+
+.mp-body {
+  display: flex;
+  gap: 1.5rem;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+
+  @media (max-width: 1100px) {
+    flex-direction: column;
+  }
+}
+
+// ── Form panel ─────────────────────────────────────────────────────────────────
+
+.mp-form-panel {
+  flex: 1;
+  min-width: 280px;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
+}
+
+.form-section {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.section-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $muted;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  i { color: $primary; }
+}
+
+.form-label-sm {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: $muted;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+// ── Teams row ──────────────────────────────────────────────────────────────────
+
+.teams-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.team-form-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.vs-badge {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  background: #f1f5f9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: $muted;
+  margin-top: 22px;
+}
+
+.logo-upload-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.logo-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  border: 1.5px dashed $border;
+  background: $bg;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.15s, background 0.15s;
+  flex-shrink: 0;
+
+  &:hover {
+    border-color: $primary;
+    background: #f0fdf4;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 3px;
+  }
+
+  i { font-size: 1.1rem; color: $muted; }
+
+  .upload-hint {
+    font-size: 0.6rem;
+    color: $muted;
+    text-align: center;
+    line-height: 1.1;
+    margin-top: 1px;
+  }
+}
+
+.btn-clear-logo {
+  border: none;
+  background: #fee2e2;
+  color: #dc2626;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+
+  &:hover { background: #fca5a5; }
+}
+
+// ── Score row ──────────────────────────────────────────────────────────────────
+
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+
+  .score-input {
+    width: 72px;
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: $text;
+    border-radius: 8px;
+    padding: 0.25rem 0.25rem;
+    height: auto;
+  }
+
+  .score-dash {
+    font-size: 1.2rem;
+    color: $muted;
+    font-weight: 300;
+  }
+}
+
+// ── Colors row ────────────────────────────────────────────────────────────────
+
+.colors-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.color-group {
+  flex: 1;
+}
+
+.color-picker-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: $bg;
+  border: 1px solid $border;
+  border-radius: 7px;
+  padding: 0.25rem 0.5rem;
+}
+
+.color-swatch {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.color-hex {
+  font-size: 0.75rem;
+  font-family: monospace;
+  color: $muted;
+}
+
+// ── Preview panel ─────────────────────────────────────────────────────────────
+
+.mp-preview-panel {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.preview-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $muted;
+  align-self: flex-start;
+}
+
+.preview-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  line-height: 0;
+}
+
+// ── Match Template (the exported visual) ──────────────────────────────────────
+
+.match-template {
+  width: 400px;
+  height: 400px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.tmpl-top-stripe {
+  height: 5px;
+  flex-shrink: 0;
+}
+
+.tmpl-match-label {
+  text-align: center;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 14px 0 0;
+  flex-shrink: 0;
+}
+
+// Teams area
+.tmpl-teams {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 0 16px;
+  min-height: 0;
+}
+
+.tmpl-team {
+  width: 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.tmpl-logo-wrap {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  i { font-size: 2rem; }
+}
+
+.tmpl-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 6px;
+}
+
+.tmpl-team-name {
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.3;
+  max-width: 110px;
+  word-break: break-word;
+}
+
+// Center VS / Score
+.tmpl-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tmpl-vs {
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.tmpl-score-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tmpl-score-num {
+  font-size: 52px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.tmpl-score-sep {
+  font-size: 36px;
+  font-weight: 200;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+// Scorers
+.tmpl-scorers {
+  text-align: center;
+  font-size: 9.5px;
+  font-weight: 500;
+  padding: 0 20px 6px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Info bar
+.tmpl-info-bar {
+  flex-shrink: 0;
+  padding: 0 16px 0;
+}
+
+.tmpl-info-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  margin-bottom: 8px;
+}
+
+.tmpl-info-item {
+  font-size: 9px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.tmpl-brand-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-top: 1px solid;
+  padding: 7px 0 10px;
+}
+
+.tmpl-brand-line {
+  height: 1px;
+  width: 50px;
+  flex-shrink: 0;
+}
+
+.tmpl-brand-name {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+// ── Export button ─────────────────────────────────────────────────────────────
+
+.btn-export {
+  width: 100%;
+  padding: 0.6rem 1.25rem;
+  background: $primary;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background 0.15s, transform 0.1s;
+  max-width: 400px;
+
+  &:hover:not(:disabled) { background: #28a060; }
+  &:active:not(:disabled) { transform: scale(0.98); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.export-hint {
+  font-size: 0.72rem;
+  color: $muted;
+  text-align: center;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  justify-content: center;
+  max-width: 400px;
+
+  i { color: $primary; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   DARK MODE
+   ═══════════════════════════════════════════════════════ */
+:host-context(body.dark) {
+  background: var(--bg-surface);
+
+  /* Toolbar / navigation */
+  .cal-toolbar, .rrss-toolbar, .toolbar { background: var(--bg-card); border-color: var(--border-color); }
+  .cal-nav-btn, .nav-btn { background: var(--bg-surface); border-color: var(--border-color); color: var(--text-primary); &:hover { background: var(--bg-hover); } }
+  .cal-month-label, .month-label { color: var(--text-primary); }
+  .cal-today-btn { border-color: var(--border-color); color: var(--text-muted); &:hover { background: var(--bg-hover); } }
+
+  /* Calendar cells */
+  .cal-cell, .calendar-cell { background: var(--bg-card); border-color: var(--border-color); &:hover { background: var(--bg-hover); } &.is-today { background: rgba(108,99,255,0.1); border-color: #6c63ff; } }
+  .cal-day-num { color: var(--text-primary); }
+  .cal-day-name, .weekday { color: var(--text-muted); }
+
+  /* Modal panel */
+  .modal-panel, .modal-card, .modal-box {
+    background: var(--bg-card) !important;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+  }
+  .modal-header, .panel-header { background: var(--bg-surface) !important; border-bottom-color: var(--border-color) !important; }
+  .modal-title, h2, h3 { color: var(--text-primary); }
+  .modal-close { color: var(--text-muted); &:hover { background: var(--bg-hover); } }
+  .modal-body { background: var(--bg-card); }
+  .modal-footer { background: var(--bg-surface); border-top-color: var(--border-color); }
+
+  /* Forms */
+  .form-control, .form-select, textarea, input {
+    background: var(--bg-surface) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+    &:focus { border-color: #6c63ff !important; }
+    &::placeholder { color: var(--text-muted) !important; }
+  }
+  label, .form-label { color: var(--text-muted); }
+
+  /* Cards y posts */
+  .post-card, .event-card, .item-card {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .post-title, .card-title { color: var(--text-primary); }
+  .post-meta, .card-meta, .text-muted { color: var(--text-muted) !important; }
+
+  /* Sections */
+  .section-card, .settings-card, .plan-card {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+  }
+  .section-title, h4 { color: var(--text-primary); }
+
+  /* Network pills */
+  .net-twitter { background: rgba(20,23,26,0.7); }
+}

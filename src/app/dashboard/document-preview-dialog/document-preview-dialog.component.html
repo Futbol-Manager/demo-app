@@ -1,0 +1,103 @@
+<div class="dp-modal">
+
+  <!-- HEADER -->
+  <div class="dp-header">
+    <h5 class="dp-title">
+      <i class="bi bi-file-earmark me-2"></i>
+      <span>{{ data.title || ('DOC_PREVIEW.TITLE_FALLBACK' | translate) }}</span>
+    </h5>
+    <button type="button" class="dp-btn-close" (click)="cerrar()"
+            [attr.aria-label]="'COMMON.CLOSE' | translate">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <!-- BODY -->
+  <div class="dp-body">
+
+    <!-- LOADING -->
+    <div *ngIf="loading" class="dp-loading">
+      <div class="spinner-border text-success" role="status">
+        <span class="visually-hidden">{{ 'COMMON.LOADING' | translate }}</span>
+      </div>
+    </div>
+
+    <!-- PDF -->
+    <ng-container *ngIf="!loading && kind === 'pdf' && safeUrl">
+      <object class="dp-iframe" [data]="safeUrl" type="application/pdf"
+              [attr.aria-label]="data.title || ('DOC_PREVIEW.TITLE_FALLBACK' | translate)">
+        <div class="dp-fallback">
+          <i class="bi bi-file-earmark-pdf dp-fallback-icon"></i>
+          <p class="dp-fallback-text">
+            {{ 'DOC_PREVIEW.PDF_BLOCKED' | translate }}
+          </p>
+          <button type="button" class="btn btn-success dp-fallback-btn" (click)="abrirEnNuevaPestana()">
+            <i class="bi bi-box-arrow-up-right me-1"></i>
+            {{ 'DOC_PREVIEW.BTN_OPEN_NEW_TAB' | translate }}
+          </button>
+        </div>
+      </object>
+    </ng-container>
+
+    <!-- IMAGEN -->
+    <ng-container *ngIf="!loading && kind === 'image'">
+      <div class="dp-image-wrap">
+        <img [src]="data.url" [alt]="data.title || 'documento'" class="dp-image" />
+      </div>
+    </ng-container>
+
+    <!-- VIDEO -->
+    <ng-container *ngIf="!loading && kind === 'video'">
+      <video class="dp-video" controls [src]="data.url">
+        {{ 'DOC_PREVIEW.VIDEO_UNSUPPORTED' | translate }}
+      </video>
+    </ng-container>
+
+    <!-- TEXTO -->
+    <ng-container *ngIf="!loading && kind === 'text'">
+      <div class="dp-text-wrap">
+        <pre class="dp-text">{{ data.textContent }}</pre>
+      </div>
+    </ng-container>
+
+    <!-- OFFICE / DESCONOCIDO -->
+    <ng-container *ngIf="!loading && (kind === 'office' || kind === 'unknown')">
+      <div class="dp-fallback">
+        <i class="bi bi-file-earmark-arrow-down dp-fallback-icon"></i>
+        <p class="dp-fallback-text">
+          {{ kind === 'office'
+            ? ('DOC_PREVIEW.OFFICE_NO_PREVIEW' | translate)
+            : ('DOC_PREVIEW.UNKNOWN_NO_PREVIEW' | translate) }}
+        </p>
+        <button type="button" class="btn btn-success dp-fallback-btn" (click)="descargar()" *ngIf="data.url">
+          <i class="bi bi-download me-1"></i>
+          {{ 'DOC_PREVIEW.BTN_DOWNLOAD' | translate }}
+        </button>
+      </div>
+    </ng-container>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="dp-footer">
+    <button *ngIf="data.allowDelete" type="button" class="dp-btn dp-btn-danger me-auto"
+            (click)="eliminar()">
+      <i class="bi bi-trash me-1"></i>
+      {{ 'DOC_PREVIEW.BTN_DELETE' | translate }}
+    </button>
+    <button *ngIf="data.url && kind !== 'text'"
+            type="button" class="dp-btn dp-btn-secondary" (click)="abrirEnNuevaPestana()">
+      <i class="bi bi-box-arrow-up-right me-1"></i>
+      {{ 'DOC_PREVIEW.BTN_OPEN_NEW_TAB' | translate }}
+    </button>
+    <button *ngIf="data.allowDownload && data.url && kind !== 'text'"
+            type="button" class="dp-btn dp-btn-primary" (click)="descargar()">
+      <i class="bi bi-download me-1"></i>
+      {{ 'DOC_PREVIEW.BTN_DOWNLOAD' | translate }}
+    </button>
+    <button type="button" class="dp-btn dp-btn-ghost" (click)="cerrar()">
+      {{ 'COMMON.CLOSE' | translate }}
+    </button>
+  </div>
+
+</div>

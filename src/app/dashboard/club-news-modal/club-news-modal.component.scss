@@ -1,0 +1,231 @@
+$navy: #002c40;
+$green: #31b270;
+$green-light: #c4e8d6;
+$gray-text: #636363;
+
+.cn-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 20, 30, 0.55);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1080;
+  padding: 16px;
+  animation: cn-fade 0.18s ease;
+}
+
+.cn-card {
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 20, 30, 0.35);
+  animation: cn-pop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cn-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  background: linear-gradient(120deg, $green 0%, $navy 100%);
+  color: #ffffff;
+
+  .cn-header-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 1.05rem;
+
+    i { font-size: 1.15rem; }
+  }
+
+  .cn-close {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: #ffffff;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s ease;
+
+    &:hover { background: rgba(255, 255, 255, 0.28); }
+  }
+}
+
+.cn-body {
+  padding: 22px 24px;
+  overflow-y: auto;
+
+  &.cn-body-history {
+    padding: 12px 16px;
+  }
+}
+
+.cn-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.cn-version {
+  display: inline-block;
+  background: $green-light;
+  color: $navy;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.cn-date {
+  color: $gray-text;
+  font-size: 0.78rem;
+}
+
+.cn-unread-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: $green;
+  flex: 0 0 auto;
+}
+
+.cn-news-title {
+  margin: 0 0 14px;
+  color: $navy;
+  font-weight: 800;
+  font-size: 1.15rem;
+  line-height: 1.3;
+}
+
+.cn-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: $gray-text;
+    font-size: 0.95rem;
+    line-height: 1.5;
+
+    i {
+      color: $green;
+      font-size: 1rem;
+      margin-top: 2px;
+      flex: 0 0 auto;
+    }
+  }
+}
+
+.cn-history-item {
+  padding: 14px 12px;
+  border-radius: 12px;
+  border: 1px solid #eef2f4;
+  margin-bottom: 10px;
+  background: #ffffff;
+
+  &.is-unread {
+    background: #f6fbf8;
+    border-color: $green-light;
+  }
+
+  .cn-news-title {
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+}
+
+.cn-loading,
+.cn-empty {
+  text-align: center;
+  color: $gray-text;
+  padding: 32px 12px;
+
+  i { font-size: 2rem; color: $green; display: block; margin-bottom: 10px; }
+  p { margin: 0; }
+}
+
+.cn-footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px 20px;
+  border-top: 1px solid #eef2f4;
+  background: #fafcfd;
+}
+
+.cn-spacer { flex: 1 1 auto; }
+
+.cn-pager {
+  color: $gray-text;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.cn-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 9px 18px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cn-btn-primary {
+  background: $navy;
+  color: #ffffff;
+
+  &:hover { background: #013a54; box-shadow: 0 6px 16px rgba(0, 44, 64, 0.28); }
+}
+
+.cn-btn-ghost {
+  background: transparent;
+  color: $navy;
+  border: 1.5px solid $navy;
+
+  &:hover { background: $navy; color: #ffffff; }
+}
+
+.cn-btn-suggest {
+  background: $green;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  i { font-size: 0.95rem; }
+
+  &:hover { background: #2aa063; box-shadow: 0 6px 16px rgba(49, 178, 112, 0.3); }
+}
+
+@keyframes cn-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes cn-pop {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}

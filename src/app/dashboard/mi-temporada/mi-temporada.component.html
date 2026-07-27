@@ -1,0 +1,410 @@
+<div class="mi-temporada">
+  <header class="page-header">
+    <div class="back-container">
+      <button type="button" class="btn-back-clean" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+        <span>{{ 'COMMON.BACK' | translate }}</span>
+      </button>
+    </div>
+
+    <div class="header-center">
+      <h2 class="table-title">{{ 'MI_TEMPORADA.TITLE' | translate }}</h2>
+      <p class="header-subtitle">{{ 'MI_TEMPORADA.SUBTITLE' | translate }}</p>
+    </div>
+
+    <div class="season-kpi-chip" *ngIf="!loading && seasons.length > 0">
+      <i class="bi bi-collection"></i>
+      <span>{{ seasons.length }} {{ 'MI_TEMPORADA.SEASONS_TITLE' | translate }}</span>
+    </div>
+  </header>
+
+  <!-- Contenido principal -->
+  <main class="content neo-season-lab">
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="state state-loading">
+      <i class="bi bi-arrow-repeat spin"></i>
+      <span>{{ 'COMMON.LOADING' | translate }}</span>
+    </div>
+
+    <!-- Estado: lista vacía (club sin temporadas inicializadas) -->
+    <div *ngIf="!loading && seasons.length === 0" class="state state-empty">
+      <i class="bi bi-calendar-x"></i>
+      <h2>{{ 'MI_TEMPORADA.EMPTY_TITLE' | translate }}</h2>
+      <p>{{ 'MI_TEMPORADA.EMPTY_DESC' | translate }}</p>
+    </div>
+
+    <!-- Listado de temporadas -->
+    <section *ngIf="!loading && seasons.length > 0" class="seasons-section neo-timeline-shell">
+      <div class="section-header">
+        <h2 class="section-title">{{ 'MI_TEMPORADA.SEASONS_TITLE' | translate }}</h2>
+        <button type="button" class="btn btn-primary" (click)="openCreate()" [disabled]="creatingSeason">
+          <i class="bi bi-plus-lg"></i>
+          {{ 'MI_TEMPORADA.CREATE_BUTTON' | translate }}
+        </button>
+      </div>
+
+      <div class="timeline-grid">
+        <div class="timeline-rail" aria-hidden="true">
+          <span class="timeline-rail__line"></span>
+        </div>
+
+        <ul class="seasons-list neo-season-nodes">
+          <li *ngFor="let s of seasons; trackBy: trackBySeasonId" class="season-card" [class.is-current]="s.current">
+            <span class="season-node-dot" aria-hidden="true"></span>
+
+            <div class="season-info">
+              <div class="season-label">
+                <i class="bi bi-calendar3"></i>
+                <span class="season-text">{{ s.label }}</span>
+                <span *ngIf="s.current" class="badge badge-current">
+                  <i class="bi bi-check-circle-fill"></i>
+                  {{ 'MI_TEMPORADA.BADGE_CURRENT' | translate }}
+                </span>
+              </div>
+              <div class="season-meta">
+                <span class="meta-chip">
+                  <i class="bi bi-flag"></i>
+                  {{ 'MI_TEMPORADA.STARTS_AT' | translate }}: {{ s.startDate }}
+                </span>
+                <span class="meta-chip" *ngIf="s.endDate">
+                  <i class="bi bi-flag-fill"></i>
+                  {{ 'MI_TEMPORADA.ENDS_AT' | translate }}: {{ s.endDate }}
+                </span>
+              </div>
+            </div>
+
+            <div class="season-actions">
+              <button
+                type="button"
+                class="btn btn-ghost btn-sm"
+                [disabled]="renamingSeasonId === s.seasonId"
+                (click)="openRenameSeason(s)"
+                [title]="'MI_TEMPORADA.EDIT_TITLE' | translate">
+                <i class="bi bi-pencil"></i>
+                {{ 'MI_TEMPORADA.EDIT' | translate }}
+              </button>
+              <button
+                *ngIf="!s.current"
+                type="button"
+                class="btn btn-secondary btn-sm"
+                [disabled]="markingCurrent"
+                (click)="markAsCurrent(s)">
+                <i class="bi bi-bookmark-star"></i>
+                {{ 'MI_TEMPORADA.MARK_CURRENT' | translate }}
+              </button>
+              <button
+                *ngIf="!s.current"
+                type="button"
+                class="btn btn-danger btn-sm"
+                (click)="openDeleteSeason(s)"
+                [title]="'MI_TEMPORADA.DELETE_TITLE' | translate">
+                <i class="bi bi-trash"></i>
+                {{ 'MI_TEMPORADA.DELETE' | translate }}
+              </button>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+    </section>
+
+    <!-- Sección "Mover jugadores a Sin equipo" -->
+    <section *ngIf="!loading && seasons.length >= 2" class="action-card rollover-card neo-action-card">
+      <h3 class="action-card-title">
+        <i class="bi bi-arrow-right-circle"></i>
+        {{ 'MI_TEMPORADA.ROLLOVER_TITLE' | translate }}
+      </h3>
+      <p class="action-card-desc">{{ 'MI_TEMPORADA.ROLLOVER_DESC' | translate }}</p>
+
+      <div *ngIf="rolloverFromSeasonId === null" class="action-card-buttons">
+        <button type="button" class="btn btn-secondary" (click)="prepareRollover()">
+          <i class="bi bi-people"></i>
+          {{ 'MI_TEMPORADA.ROLLOVER_PREPARE' | translate }}
+        </button>
+      </div>
+
+      <div *ngIf="rolloverFromSeasonId !== null" class="rollover-form">
+        <div class="form-row">
+          <label class="form-label">{{ 'MI_TEMPORADA.ROLLOVER_FROM' | translate }}</label>
+          <select class="form-input" [(ngModel)]="rolloverFromSeasonId">
+            <option *ngFor="let s of seasons; trackBy: trackBySeasonId" [ngValue]="s.seasonId">{{ s.label }}</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">{{ 'MI_TEMPORADA.ROLLOVER_TO' | translate }}</label>
+          <select class="form-input" [(ngModel)]="rolloverToSeasonId">
+            <option *ngFor="let s of seasons; trackBy: trackBySeasonId" [ngValue]="s.seasonId">{{ s.label }}</option>
+          </select>
+        </div>
+
+        <div class="action-card-buttons">
+          <button type="button" class="btn btn-ghost" (click)="cancelRollover()" [disabled]="rollingOver">
+            {{ 'COMMON.CANCEL' | translate }}
+          </button>
+          <button type="button" class="btn btn-primary" (click)="submitRollover()" [disabled]="rollingOver">
+            <i *ngIf="rollingOver" class="bi bi-arrow-repeat spin"></i>
+            <i *ngIf="!rollingOver" class="bi bi-check2-circle"></i>
+            {{ 'MI_TEMPORADA.ROLLOVER_CONFIRM' | translate }}
+          </button>
+        </div>
+
+        <div *ngIf="lastRolloverResult" class="rollover-result">
+          <i class="bi bi-info-circle-fill"></i>
+          <span>
+            {{ 'MI_TEMPORADA.ROLLOVER_RESULT' | translate:{
+              moved: lastRolloverResult.playersMoved,
+              skipped: lastRolloverResult.playersSkippedBaja,
+              from: lastRolloverResult.fromSeasonYear,
+              to: lastRolloverResult.toSeasonYear
+            } }}
+          </span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal "Crear temporada" -->
+  <div *ngIf="creatingSeason" class="create-modal-overlay" (click)="cancelCreate()">
+    <div class="create-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <header class="create-modal-header">
+        <div class="create-modal-title-wrap">
+          <span class="create-modal-icon" aria-hidden="true">
+            <i class="bi bi-stars"></i>
+          </span>
+          <div>
+            <h3>{{ 'MI_TEMPORADA.CREATE_TITLE' | translate }}</h3>
+            <p>{{ 'MI_TEMPORADA.CREATE_DESC' | translate }}</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close" (click)="cancelCreate()" aria-label="close">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </header>
+
+      <div class="create-modal-body">
+        <div class="form-row">
+          <label class="form-label" for="newYear">{{ 'MI_TEMPORADA.YEAR_LABEL' | translate }}</label>
+          <input
+            id="newYear"
+            type="text"
+            class="form-input"
+            maxlength="50"
+            [(ngModel)]="newYear"
+            [placeholder]="suggestedNextYear || ('MI_TEMPORADA.YEAR_PLACEHOLDER' | translate)" />
+          <small class="form-hint">{{ 'MI_TEMPORADA.YEAR_HINT' | translate }}</small>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="newStartDate">{{ 'MI_TEMPORADA.START_DATE_LABEL' | translate }}</label>
+          <input
+            id="newStartDate"
+            type="date"
+            class="form-input"
+            [(ngModel)]="newStartDate" />
+          <small class="form-hint">{{ 'MI_TEMPORADA.START_DATE_HINT' | translate }}</small>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="newEndDate">{{ 'MI_TEMPORADA.END_DATE_LABEL' | translate }}</label>
+          <input
+            id="newEndDate"
+            type="date"
+            class="form-input"
+            [(ngModel)]="newEndDate"
+            [min]="newStartDate || null" />
+          <small class="form-hint">{{ 'MI_TEMPORADA.END_DATE_HINT' | translate }}</small>
+        </div>
+
+        <label class="form-checkbox modal-checkbox">
+          <input type="checkbox" [(ngModel)]="newSetAsCurrent" />
+          <span>{{ 'MI_TEMPORADA.SET_AS_CURRENT_HINT' | translate }}</span>
+        </label>
+      </div>
+
+      <footer class="create-modal-footer">
+        <button type="button" class="btn btn-ghost" (click)="cancelCreate()">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button type="button" class="btn btn-primary" (click)="submitCreate()">
+          <i class="bi bi-check2"></i>
+          {{ 'MI_TEMPORADA.CREATE_CONFIRM' | translate }}
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Modal "Editar temporada" -->
+  <div *ngIf="renamingSeasonId !== null" class="rename-modal-overlay" (click)="cancelRename()">
+    <div class="rename-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <header class="rename-modal-header">
+        <div class="rename-modal-title-wrap">
+          <span class="rename-modal-icon" aria-hidden="true">
+            <i class="bi bi-pencil-square"></i>
+          </span>
+          <div>
+            <h3>{{ 'MI_TEMPORADA.EDIT_TITLE' | translate }}</h3>
+            <p>{{ 'MI_TEMPORADA.EDIT_DESC' | translate }}</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close" (click)="cancelRename()" aria-label="close">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </header>
+
+      <div class="rename-modal-body">
+        <div class="form-row">
+          <label class="form-label" for="renameYear">{{ 'MI_TEMPORADA.YEAR_LABEL' | translate }}</label>
+          <input
+            id="renameYear"
+            type="text"
+            class="form-input"
+            maxlength="50"
+            [(ngModel)]="renameYearValue" />
+          <small class="form-hint">{{ 'MI_TEMPORADA.YEAR_HINT' | translate }}</small>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="renameStartDate">{{ 'MI_TEMPORADA.START_DATE_LABEL' | translate }}</label>
+          <input
+            id="renameStartDate"
+            type="date"
+            class="form-input"
+            [(ngModel)]="renameStartDate" />
+          <small class="form-hint">{{ 'MI_TEMPORADA.START_DATE_HINT' | translate }}</small>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="renameEndDate">{{ 'MI_TEMPORADA.END_DATE_LABEL' | translate }}</label>
+          <input
+            id="renameEndDate"
+            type="date"
+            class="form-input"
+            [(ngModel)]="renameEndDate"
+            [min]="renameStartDate || null" />
+          <small class="form-hint">{{ 'MI_TEMPORADA.END_DATE_HINT' | translate }}</small>
+        </div>
+      </div>
+
+      <footer class="rename-modal-footer">
+        <button type="button" class="btn btn-ghost" (click)="cancelRename()" [disabled]="rename.saving">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button type="button" class="btn btn-primary" (click)="submitRename()" [disabled]="rename.saving">
+          <i *ngIf="rename.saving" class="bi bi-arrow-repeat spin"></i>
+          <i *ngIf="!rename.saving" class="bi bi-check2"></i>
+          {{ 'MI_TEMPORADA.EDIT_CONFIRM' | translate }}
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Modal "Eliminar temporada" (full-screen overlay) -->
+  <div *ngIf="deletingSeason" class="delete-modal-overlay" (click)="cancelDeleteSeason()">
+    <div class="delete-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <header class="delete-modal-header">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <h3>{{ 'MI_TEMPORADA.DELETE_TITLE' | translate }}</h3>
+        <button type="button" class="modal-close" (click)="cancelDeleteSeason()" aria-label="close">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </header>
+
+      <div class="delete-modal-body">
+
+        <p class="delete-modal-target">
+          <i class="bi bi-calendar3"></i>
+          <strong>{{ deletingSeason.label }}</strong>
+          <span class="muted">{{ 'MI_TEMPORADA.STARTS_AT' | translate }}: {{ deletingSeason.startDate }}</span>
+        </p>
+
+        <!-- Estado: cargando resumen -->
+        <div *ngIf="loadingDeleteUsage" class="delete-modal-state">
+          <i class="bi bi-arrow-repeat spin"></i>
+          <span>{{ 'MI_TEMPORADA.DELETE_LOADING_USAGE' | translate }}</span>
+        </div>
+
+        <!-- Estado: bloqueado por datos asociados (devuelto por el backend tras intentar borrar, o detectado al cargar usage) -->
+        <div
+          *ngIf="!loadingDeleteUsage && deleteUsage && !isUsageEmpty(deleteUsage)"
+          class="delete-modal-blocked">
+          <i class="bi bi-shield-exclamation"></i>
+          <p class="block-title">{{ 'MI_TEMPORADA.DELETE_BLOCKED_TITLE' | translate }}</p>
+          <p class="block-desc">{{ 'MI_TEMPORADA.DELETE_BLOCKED_DESC' | translate }}</p>
+          <ul class="usage-list">
+            <li *ngIf="deleteUsage.realTeams > 0">
+              <i class="bi bi-people-fill"></i>
+              {{ 'MI_TEMPORADA.USAGE_TEAMS' | translate:{ count: deleteUsage.realTeams } }}
+            </li>
+            <li *ngIf="deleteUsage.players > 0">
+              <i class="bi bi-person-fill"></i>
+              {{ 'MI_TEMPORADA.USAGE_PLAYERS' | translate:{ count: deleteUsage.players } }}
+            </li>
+          </ul>
+          <p class="block-hint">{{ 'MI_TEMPORADA.DELETE_BLOCKED_HINT' | translate }}</p>
+        </div>
+
+        <!-- Estado: vacía y archivable -->
+        <div
+          *ngIf="!loadingDeleteUsage && deleteUsage && isUsageEmpty(deleteUsage) && !deleteBlockedReason"
+          class="delete-modal-form">
+
+          <p class="delete-modal-warning">
+            <i class="bi bi-info-circle-fill"></i>
+            {{ 'MI_TEMPORADA.DELETE_EMPTY_INFO' | translate }}
+          </p>
+
+          <ul class="usage-list" *ngIf="deleteUsage.placeholderTeams > 0">
+            <li>
+              <i class="bi bi-tag"></i>
+              {{ 'MI_TEMPORADA.USAGE_PLACEHOLDERS' | translate:{ count: deleteUsage.placeholderTeams } }}
+            </li>
+          </ul>
+
+          <label class="form-checkbox-row">
+            <input type="checkbox" [(ngModel)]="deleteAcknowledged" [disabled]="deletingInFlight" />
+            <span>{{ 'MI_TEMPORADA.DELETE_ACKNOWLEDGE' | translate }}</span>
+          </label>
+
+          <div class="form-row">
+            <label class="form-label" for="deleteConfirmYear">
+              {{ 'MI_TEMPORADA.DELETE_CONFIRM_YEAR_LABEL' | translate:{ year: deletingSeason.year } }}
+            </label>
+            <input
+              id="deleteConfirmYear"
+              type="text"
+              class="form-input"
+              maxlength="50"
+              [(ngModel)]="deleteConfirmYear"
+              [disabled]="deletingInFlight"
+              [placeholder]="deletingSeason.year" />
+          </div>
+        </div>
+
+        <!-- Estado: backend devolvió 409 después del intento (bloqueado por datos detectados al borrar) -->
+        <div *ngIf="deleteBlockedReason === 'is_current'" class="delete-modal-blocked">
+          <i class="bi bi-shield-exclamation"></i>
+          <p class="block-title">{{ 'MI_TEMPORADA.DELETE_BLOCKED_CURRENT_TITLE' | translate }}</p>
+          <p class="block-desc">{{ 'MI_TEMPORADA.DELETE_BLOCKED_CURRENT_DESC' | translate }}</p>
+        </div>
+
+      </div>
+
+      <footer class="delete-modal-footer">
+        <button type="button" class="btn btn-ghost" (click)="cancelDeleteSeason()" [disabled]="deletingInFlight">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          [disabled]="!canConfirmDelete"
+          (click)="submitDeleteSeason()">
+          <i *ngIf="deletingInFlight" class="bi bi-arrow-repeat spin"></i>
+          <i *ngIf="!deletingInFlight" class="bi bi-trash"></i>
+          {{ 'MI_TEMPORADA.DELETE_CONFIRM' | translate }}
+        </button>
+      </footer>
+    </div>
+  </div>
+</div>

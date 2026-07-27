@@ -42,6 +42,15 @@
       <span>Notif.</span>
     </button>
     <div class="hab-sep"></div>
+    <!-- COBRAR VENCIDAS — cobro colectivo a tarjetas guardadas (Sphaira Pay) -->
+    <button class="header-action-btn header-action-btn--charge"
+            (click)="cobrarVencidasClub()"
+            [title]="'CUOTAS.CHARGE_OVERDUE.BTN_TITLE' | translate"
+            [disabled]="chargingOverdue || jugadoresConVencida.length === 0">
+      <i class="bi" [ngClass]="chargingOverdue ? 'bi-arrow-repeat spin' : 'bi-credit-card-2-front-fill'"></i>
+      <span>{{ 'CUOTAS.CHARGE_OVERDUE.BTN' | translate }}</span>
+      <span class="hab-badge" *ngIf="jugadoresConVencida.length > 0">{{ jugadoresConVencida.length }}</span>
+    </button>
     <!-- RECORDATORIO MASIVO — bloqueado en demo -->
     <button class="header-action-btn header-action-btn--reminder btn-locked-demo"
             (click)="showLockedToast()"
@@ -1135,6 +1144,12 @@
                     title="Configurar en Stripe (sin precio asociado)"
                     (click)="regenerarPlanStripe(cuota)">
                     <i class="bi bi-arrow-repeat"></i>
+                  </button>
+                  <button *ngIf="tieneVariantesPago(cuota)"
+                    class="gp-action-btn gp-action-btn--variants"
+                    [title]="'CUOTAS.DASH.NC_VAR_VALIDATE_TITLE' | translate"
+                    (click)="abrirValidarVariantes(cuota)">
+                    <i class="bi bi-diagram-3"></i>
                   </button>
                   <button class="gp-action-btn gp-action-btn--edit"
                     title="Editar"
@@ -2697,6 +2712,168 @@
         </button>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     MODAL VALIDAR VARIANTES DE PRECIO (lado club)
+     ════════════════════════════════════════════════════════════ -->
+<div class="modal d-block modal-overlay" *ngIf="showVarValidarModal" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable nc-var-modal-dialog">
+    <div class="modal-content modern-modal nc-var-modal" [class.modal-closing]="closingModals.has('varValidar')">
+      <div class="modal-header modern-header nc-var-header">
+        <h5 class="modal-title">
+          <i class="bi bi-diagram-3 me-2"></i>
+          {{ 'CUOTAS.DASH.NC_VAR_VALIDATE_TITLE' | translate }}
+          <small class="d-block nc-var-subtitle" *ngIf="varValidarPago?.titulo">{{ varValidarPago.titulo }}</small>
+        </h5>
+        <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="cerrarValidarVariantes()"></button>
+      </div>
+
+      <div class="modal-body modern-body">
+        <div *ngIf="varValidarLoading" class="text-center py-4">
+          <span class="spinner-border" role="status"></span>
+        </div>
+
+        <ng-container *ngIf="!varValidarLoading">
+          <p class="nc-input-hint mb-2">{{ 'CUOTAS.DASH.NC_VAR_VALIDATE_HINT' | translate }}</p>
+
+          <div *ngIf="puedeCobrarAtrasadas && varValidarTab === 'pendientes'" class="alert alert-warning d-flex align-items-start gap-2 py-2 px-3 mb-3">
+            <i class="bi bi-exclamation-triangle-fill mt-1"></i>
+            <div>{{ 'CUOTAS.DASH.NC_VAR_OVERDUE_HINT' | translate: { fecha: varValidarFecha } }}</div>
+          </div>
+
+          <ul class="nav nav-tabs nc-var-tabs mb-3">
+            <li class="nav-item">
+              <button type="button" class="nav-link" [class.active]="varValidarTab === 'pendientes'"
+                      (click)="varValidarTab = 'pendientes'">
+                <i class="bi bi-hourglass-split me-1"></i>
+                {{ 'CUOTAS.DASH.NC_VAR_TAB_PENDING' | translate }}
+                <span class="badge bg-warning text-dark ms-1">{{ varRowsPendientes.length }}</span>
+              </button>
+            </li>
+            <li class="nav-item">
+              <button type="button" class="nav-link" [class.active]="varValidarTab === 'validados'"
+                      (click)="varValidarTab = 'validados'">
+                <i class="bi bi-check2-circle me-1"></i>
+                {{ 'CUOTAS.DASH.NC_VAR_TAB_VALIDATED' | translate }}
+                <span class="badge bg-success ms-1">{{ varRowsValidados.length }}</span>
+              </button>
+            </li>
+          </ul>
+
+          <div *ngIf="hayHermanos" class="nc-var-fam-legend d-flex align-items-center gap-2 mb-2">
+            <i class="bi bi-people-fill"></i>
+            <small>{{ 'CUOTAS.DASH.NC_VAR_FAMILY_LEGEND' | translate }}</small>
+          </div>
+
+          <div *ngIf="varRowsVisible.length === 0" class="text-muted text-center py-3">
+            {{ (varValidarTab === 'validados' ? 'CUOTAS.DASH.NC_VAR_NO_VALIDATED' : 'CUOTAS.DASH.NC_VAR_VALIDATE_EMPTY') | translate }}
+          </div>
+
+          <table class="table table-sm align-middle" *ngIf="varRowsVisible.length > 0">
+            <thead>
+              <tr>
+                <th *ngIf="varValidarTab === 'pendientes'" class="text-center" style="width:42px;">
+                  <input type="checkbox" class="form-check-input"
+                         [checked]="allVarSelected"
+                         (change)="toggleAllVarSel($any($event.target).checked)"
+                         [title]="'CUOTAS.DASH.NC_VAR_SELECT_ALL' | translate" />
+                </th>
+                <th>{{ 'CUOTAS.DASH.NC_VAR_COL_PLAYER' | translate }}</th>
+                <th>{{ 'CUOTAS.DASH.NC_VAR_COL_VARIANT' | translate }}</th>
+                <th>{{ 'CUOTAS.DASH.NC_VAR_COL_STATE' | translate }}</th>
+                <th *ngIf="puedeCobrarAtrasadas && varValidarTab === 'pendientes'" class="text-center">{{ 'CUOTAS.DASH.NC_VAR_COL_CHARGE_NOW' | translate }}</th>
+                <th *ngIf="varValidarTab === 'pendientes'" class="text-center">{{ 'CUOTAS.DASH.NC_VAR_COL_ACTIONS' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let r of varRowsVisible"
+                  [class.table-active]="r.seleccionado && varValidarTab === 'pendientes'"
+                  (click)="varValidarTab === 'pendientes' && esFilaValidable(r) ? (r.seleccionado = !r.seleccionado) : null"
+                  [style.cursor]="varValidarTab === 'pendientes' && esFilaValidable(r) ? 'pointer' : 'default'">
+                <td *ngIf="varValidarTab === 'pendientes'" class="text-center" (click)="$event.stopPropagation()">
+                  <input type="checkbox" class="form-check-input"
+                         [(ngModel)]="r.seleccionado"
+                         [disabled]="!esFilaValidable(r)" />
+                </td>
+                <td>
+                  <span class="nc-var-fam-bar" *ngIf="r.familiaId > 0"
+                        [style.background]="familiaColor(r.familiaId)"></span>
+                  {{ r.nombre }}
+                  <span class="badge nc-var-fam-chip ms-1" *ngIf="r.familiaId > 0"
+                        [style.background]="familiaColor(r.familiaId)"
+                        [title]="'CUOTAS.DASH.NC_VAR_FAMILY_BADGE' | translate">
+                    <i class="bi bi-people-fill"></i>
+                  </span>
+                </td>
+                <td (click)="$event.stopPropagation()">
+                  <span *ngIf="varValidarSinVariantes" class="badge bg-light text-dark border">
+                    <i class="bi bi-cash-coin me-1"></i>{{ 'CUOTAS.DASH.NC_VAR_FIXED_PRICE' | translate }}
+                    <span *ngIf="varValidarPago?.importe"> · {{ varValidarPago.importe }}{{ currencySymbol }}</span>
+                  </span>
+                  <select *ngIf="!varValidarSinVariantes"
+                          class="form-select form-select-sm" [(ngModel)]="r.varianteId"
+                          [disabled]="varValidarTab === 'validados'"
+                          (ngModelChange)="onVarianteRowChange(r)">
+                    <option [ngValue]="0">
+                      {{ varValidarBaseSelectable
+                          ? (varValidarPago?.titulo + ' · ' + varValidarPago?.importe + currencySymbol)
+                          : '—' }}
+                    </option>
+                    <option *ngFor="let v of varValidarVariantes" [ngValue]="v.id">
+                      {{ v.nombre }} ({{ v.importe }}{{ currencySymbol }})
+                    </option>
+                  </select>
+                </td>
+                <td>
+                  <span class="badge" [class.bg-success]="r.estado === 1"
+                        [class.bg-warning]="r.estado !== 1"
+                        [class.text-dark]="r.estado !== 1">
+                    {{ (r.estado === 1 ? 'CUOTAS.DASH.NC_VAR_STATE_VALIDATED' : 'CUOTAS.DASH.NC_VAR_STATE_PENDING') | translate }}
+                  </span>
+                </td>
+                <td *ngIf="puedeCobrarAtrasadas && varValidarTab === 'pendientes'" class="text-center">
+                  <input type="checkbox" class="form-check-input" [(ngModel)]="r.cobrar"
+                         [disabled]="!esFilaValidable(r)" />
+                </td>
+                <td *ngIf="varValidarTab === 'pendientes'" class="text-center">
+                  <button type="button" class="btn btn-sm btn-outline-danger"
+                          *ngIf="r.estado !== 1 && esFilaValidable(r)"
+                          (click)="rechazarVariante(r)"
+                          [disabled]="varValidarSaving"
+                          [title]="'CUOTAS.DASH.NC_VAR_REJECT_BTN' | translate">
+                    <i class="bi bi-x-circle"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </ng-container>
+      </div>
+
+      <div class="modal-footer modern-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarValidarVariantes()" [disabled]="varValidarSaving">
+          {{ 'PAYMENTS.BTN_CANCEL' | translate }}
+        </button>
+        <button type="button" class="btn btn-success"
+          *ngIf="varValidarTab === 'pendientes'"
+          (click)="validarVariantes()"
+          [disabled]="varValidarSaving || varSelectedCount === 0">
+          <span *ngIf="varValidarSaving" class="spinner-border spinner-border-sm me-1"></span>
+          <i *ngIf="!varValidarSaving" class="bi bi-check2-all me-1"></i>
+          {{ 'CUOTAS.DASH.NC_VAR_VALIDATE_BTN' | translate }}<span *ngIf="varSelectedCount > 0"> ({{ varSelectedCount }})</span>
+        </button>
+        <button type="button" class="btn btn-primary"
+          *ngIf="puedeCobrarAtrasadas && varValidarTab === 'pendientes'"
+          (click)="validarYCobrarVariantes()"
+          [disabled]="varValidarSaving || varSelectedCount === 0">
+          <span *ngIf="varValidarSaving" class="spinner-border spinner-border-sm me-1"></span>
+          <i *ngIf="!varValidarSaving" class="bi bi-credit-card me-1"></i>
+          {{ 'CUOTAS.DASH.NC_VAR_VALIDATE_CHARGE_BTN' | translate }}
+        </button>
+      </div>
     </div>
   </div>
 </div>

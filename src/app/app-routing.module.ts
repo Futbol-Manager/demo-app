@@ -9,6 +9,8 @@ import { DemoGuard } from './demo.guard';
 import { ChangePasswordComponent } from './pages/change-password/change-password.component';
 import { ValidationUserComponent } from './pages/validation-user/validation-user.component';
 import { ParentChildrenComponent } from './pages/register/parent-children/parent-children.component';
+import { RegisterSuccessComponent } from './pages/register/register-success/register-success.component';
+import { RegisterAbonadoComponent } from './pages/register-abonado/register-abonado.component';
 import { DemoRoleSelectionComponent } from './pages/demo-role/demo-role.component';
 
 const appRoutes: Routes = [
@@ -19,7 +21,9 @@ const appRoutes: Routes = [
   { path: 'demo-role', component: DemoRoleSelectionComponent },
   { path: 'registro', component: RegisterComponent },
   { path: 'registro/:playerId/:email/:isMenor', component: ParentChildrenComponent },
+  { path: 'registro-padres/exito', component: RegisterSuccessComponent },
   { path: 'registro-padres/:clubId', component: ParentChildrenComponent },
+  { path: 'registro-abonado', component: RegisterAbonadoComponent },
   { path: 'change-password', component: ChangePasswordComponent },
   { path: 'validationUser', component: ValidationUserComponent },
   {

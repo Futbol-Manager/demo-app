@@ -43,10 +43,45 @@
             <span class="fifa-header-count">{{ resumentotales.length }} {{ resumentotales.length === 1 ? 'equipo' : 'equipos' }}</span>
           </div>
         </div>
-        <div class="fifa-header-legend">
-          <span class="legend-item win"><span class="legend-dot"></span>Victoria</span>
-          <span class="legend-item draw"><span class="legend-dot"></span>Empate</span>
-          <span class="legend-item loss"><span class="legend-dot"></span>Derrota</span>
+        <div class="fifa-header-right">
+          <div class="fifa-header-legend">
+            <span class="legend-item win"><span class="legend-dot"></span>Victoria</span>
+            <span class="legend-item draw"><span class="legend-dot"></span>Empate</span>
+            <span class="legend-item loss"><span class="legend-dot"></span>Derrota</span>
+          </div>
+          <div class="export-actions print-hide">
+            <button class="btn-export" (click)="exportTableToExcel()" title="Exportar a Excel">
+              <i class="bi bi-file-earmark-excel-fill"></i>
+              <span>Excel</span>
+            </button>
+            <button class="btn-export btn-export--pdf" (click)="exportToPdf()" title="Exportar a PDF">
+              <i class="bi bi-file-earmark-pdf-fill"></i>
+              <span>PDF</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PILLS DE DEPORTE + BUSCADOR -->
+      <div class="toolbar-row print-hide">
+        <div class="sport-pills-row" *ngIf="availableSports.length > 1">
+          <button
+            *ngFor="let s of availableSports"
+            class="sport-pill-btn"
+            [class.sport-pill-btn--active]="activeSport === s.sport"
+            (click)="setSportFilter(s.sport)">
+            <span class="sport-pill-btn__icon">{{ s.emoji }}</span>
+            <span class="sport-pill-btn__count">{{ s.count }}</span>
+          </button>
+        </div>
+        <div class="search-box">
+          <i class="bi bi-search search-icon"></i>
+          <input
+            type="text"
+            class="search-input"
+            [(ngModel)]="searchQuery"
+            placeholder="Buscar equipo o división…" />
+          <button *ngIf="searchQuery" class="search-clear" (click)="searchQuery=''">✕</button>
         </div>
       </div>
 
@@ -55,107 +90,186 @@
       <table class="table modern-table">
         <thead>
           <tr>
-            <th class="col-rank">#</th>
-            <th class="col-team">{{ 'ESTADIS_EQUIPO.TABLE.TEAM' | translate }}</th>
-            <th class="col-num">{{ 'ESTADIS_EQUIPO.TABLE.PJ' | translate }}</th>
-            <th class="col-pts">{{ 'ESTADIS_EQUIPO.TABLE.PTS' | translate }}</th>
-            <th class="col-num col-win">{{ 'ESTADIS_EQUIPO.TABLE.W' | translate }}</th>
+            <th class="col-zone"></th>
+            <th class="col-team sortable" (click)="sortBy('categoria')" [class.sort-active]="sortCol==='categoria'">
+              {{ 'ESTADIS_EQUIPO.TABLE.TEAM' | translate }}
+              <span class="sort-arrow">{{ sortCol==='categoria' ? (sortDir==='asc' ? '↑' : '↓') : '⇅' }}</span>
+            </th>
+            <th class="col-num sortable" (click)="sortBy('partidos')" [class.sort-active]="sortCol==='partidos'">
+              {{ 'ESTADIS_EQUIPO.TABLE.PJ' | translate }}
+              <span class="sort-arrow">{{ sortCol==='partidos' ? (sortDir==='asc' ? '↑' : '↓') : '⇅' }}</span>
+            </th>
+            <th class="col-pts sortable" (click)="sortBy('puntos')" [class.sort-active]="sortCol==='puntos'">
+              {{ 'ESTADIS_EQUIPO.TABLE.PTS' | translate }}
+              <span class="sort-arrow">{{ sortCol==='puntos' ? (sortDir==='asc' ? '↑' : '↓') : '⇅' }}</span>
+            </th>
+            <th class="col-num col-win sortable" (click)="sortBy('victorias')" [class.sort-active]="sortCol==='victorias'">
+              {{ 'ESTADIS_EQUIPO.TABLE.W' | translate }}
+              <span class="sort-arrow">{{ sortCol==='victorias' ? (sortDir==='asc' ? '↑' : '↓') : '⇅' }}</span>
+            </th>
             <th class="col-num col-draw">{{ 'ESTADIS_EQUIPO.TABLE.D' | translate }}</th>
             <th class="col-num col-loss">{{ 'ESTADIS_EQUIPO.TABLE.L' | translate }}</th>
-            <th class="col-num">{{ labelScoringFor }}</th>
-            <th class="col-num">{{ labelScoringAgainst }}</th>
-            <th class="col-num">{{ labelDiffScoring }}</th>
+            <th class="col-num sortable" (click)="sortBy('gf')" [class.sort-active]="sortCol==='gf'">
+              {{ labelScoringFor }}
+              <span class="sort-arrow">{{ sortCol==='gf' ? (sortDir==='asc' ? '↑' : '↓') : '⇅' }}</span>
+            </th>
+            <th class="col-num sortable" (click)="sortBy('gc')" [class.sort-active]="sortCol==='gc'">
+              {{ labelScoringAgainst }}
+            </th>
+            <th class="col-num sortable" (click)="sortBy('dg')" [class.sort-active]="sortCol==='dg'">
+              {{ labelDiffScoring }}
+              <span class="sort-arrow">{{ sortCol==='dg' ? (sortDir==='asc' ? '↑' : '↓') : '⇅' }}</span>
+            </th>
+            <th class="col-winbar col-hide-sm">%V</th>
+            <th class="col-sparkline col-hide-sm">Tendencia</th>
             <th class="col-form">{{ 'ESTADIS_EQUIPO.TABLE.LAST' | translate }}</th>
           </tr>
         </thead>
 
         <tbody>
-          <tr *ngFor="let resumen of resumentotales; let i = index"
-              [class.row-top1]="i === 0"
-              [class.row-top2]="i === 1"
-              [class.row-top3]="i === 2">
+          <ng-container *ngFor="let resumen of filteredResumenes; let i = index">
+            <!-- FILA PRINCIPAL -->
+            <tr class="team-row"
+                [class.row-top1]="i === 0"
+                [class.row-top2]="i === 1"
+                [class.row-top3]="i === 2"
+                [class.row-expanded]="expandedTeamId === resumen.teamId"
+                [ngClass]="zoneClass(i, filteredResumenes.length)"
+                (click)="toggleExpand(resumen.teamId)">
 
-            <!-- POSICIÓN -->
-            <td class="col-rank">
-              <span class="rank-badge"
-                [class.rank-gold]="i === 0"
-                [class.rank-silver]="i === 1"
-                [class.rank-bronze]="i === 2">
-                {{ i + 1 }}
-              </span>
-            </td>
+              <!-- BORDE DE ZONA -->
+              <td class="col-zone"><span class="zone-bar"></span></td>
 
-            <!-- EQUIPO -->
-            <td class="col-team">
-              <div class="team-cell">
-                <div class="team-avatar" [attr.data-initial]="(resumen.equipo || resumen.categoria)?.charAt(0)">
-                  <img *ngIf="isDemo"
-                       src="assets/images/user/demo-club-logo.svg"
-                       alt="Escudo"
-                       class="avatar-logo avatar-logo--demo" />
+              <!-- EQUIPO -->
+              <td class="col-team">
+                <div class="team-cell">
+                  <div class="team-avatar" [attr.data-initial]="(resumen.equipo || resumen.categoria)?.charAt(0)">
+                    <img *ngIf="isDemo"
+                         src="assets/images/user/demo-club-logo.svg"
+                         alt="Escudo"
+                         class="avatar-logo avatar-logo--demo" />
+                  </div>
+                  <div class="team-info">
+                    <a class="team-name">{{ resumen.equipo || resumen.categoria }}</a>
+                    <div class="team-meta">
+                      <span class="division-badge" *ngIf="resumen.division">{{ resumen.division }}</span>
+                      <span class="sport-mini-badge" *ngIf="availableSports.length > 1">
+                        {{ getSportConfigFor(resumen.sport).emoji }}
+                      </span>
+                    </div>
+                  </div>
+                  <i class="bi expand-chevron"
+                    [ngClass]="expandedTeamId === resumen.teamId ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
                 </div>
-                <div class="team-info">
-                  <a class="team-name" (click)="verTablaequipo(i)">{{ resumen.equipo || resumen.categoria }}</a>
-                  <span class="division-badge" *ngIf="resumen.division">{{ resumen.division }}</span>
+              </td>
+
+              <!-- STATS NUMÉRICAS -->
+              <td class="col-num">{{ resumen.partidos }}</td>
+
+              <!-- PUNTOS (círculo FIFA) -->
+              <td class="col-pts">
+                <span class="pts-pill"
+                  [class.pts-high]="resumen.puntos >= 9"
+                  [class.pts-mid]="resumen.puntos >= 4 && resumen.puntos < 9"
+                  [class.pts-low]="resumen.puntos < 4">
+                  {{ resumen.puntos }}
+                </span>
+              </td>
+
+              <td class="col-num stat-win">{{ resumen.victorias }}</td>
+              <td class="col-num stat-draw">{{ resumen.empates }}</td>
+              <td class="col-num stat-loss">{{ resumen.derrotas }}</td>
+              <td class="col-num">{{ resumen.gf }}</td>
+              <td class="col-num">{{ resumen.gc }}</td>
+
+              <!-- DIFERENCIA GOLES -->
+              <td class="col-num col-dg"
+                  [class.dg-positive]="resumen.dg > 0"
+                  [class.dg-negative]="resumen.dg < 0">
+                <span class="dg-pill">{{ resumen.dg > 0 ? '+' : '' }}{{ resumen.dg }}</span>
+              </td>
+
+              <!-- % VICTORIAS mini barra -->
+              <td class="col-winbar col-hide-sm">
+                <div class="win-bar-wrap">
+                  <div class="win-bar-fill" [style.width.%]="winPct(resumen)"></div>
+                  <span class="win-bar-label">{{ winPct(resumen) }}%</span>
                 </div>
-              </div>
-            </td>
+              </td>
 
-            <!-- STATS NUMÉRICAS -->
-            <td class="col-num">{{ resumen.partidos }}</td>
+              <!-- SPARKLINE tendencia de puntos -->
+              <td class="col-sparkline col-hide-sm">
+                <svg *ngIf="resumen.sparkData?.length >= 2" width="60" height="28" class="sparkline-svg">
+                  <polyline
+                    [attr.points]="sparklinePoints(resumen.sparkData)"
+                    fill="none"
+                    stroke="#31b270"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"/>
+                </svg>
+                <span *ngIf="!resumen.sparkData || resumen.sparkData.length < 2" class="no-results-text">—</span>
+              </td>
 
-            <!-- PUNTOS (círculo FIFA) -->
-            <td class="col-pts">
-              <span class="pts-pill"
-                [class.pts-high]="resumen.puntos >= 9"
-                [class.pts-mid]="resumen.puntos >= 4 && resumen.puntos < 9"
-                [class.pts-low]="resumen.puntos < 4">
-                {{ resumen.puntos }}
-              </span>
-            </td>
+              <!-- ÚLTIMOS RESULTADOS -->
+              <td class="col-form" (click)="$event.stopPropagation()">
+                <div class="last-results">
+                  <ng-container *ngIf="resumen.ultimos?.length > 0; else sinResultados">
+                    <span *ngFor="let r of resumen.ultimos"
+                          class="result-badge"
+                          [class.win]="r.resultado === 'V'"
+                          [class.draw]="r.resultado === 'E'"
+                          [class.loss]="r.resultado === 'D'"
+                          [attr.title]="r.rival + ' ' + r.gf + '-' + r.gc">
+                      {{ r.resultado === 'V'
+                        ? ('ESTADIS_EQUIPO.RESULT.WIN' | translate)
+                        : r.resultado === 'E'
+                        ? ('ESTADIS_EQUIPO.RESULT.DRAW' | translate)
+                        : ('ESTADIS_EQUIPO.RESULT.LOSS' | translate) }}
+                    </span>
+                  </ng-container>
+                  <ng-template #sinResultados>
+                    <span class="no-results-text">—</span>
+                  </ng-template>
+                </div>
+              </td>
+            </tr>
 
-            <td class="col-num stat-win">{{ resumen.victorias }}</td>
-            <td class="col-num stat-draw">{{ resumen.empates }}</td>
-            <td class="col-num stat-loss">{{ resumen.derrotas }}</td>
-            <td class="col-num">{{ resumen.gf }}</td>
-            <td class="col-num">{{ resumen.gc }}</td>
-
-            <!-- DIFERENCIA GOLES -->
-            <td class="col-num col-dg"
-                [class.dg-positive]="resumen.dg > 0"
-                [class.dg-negative]="resumen.dg < 0">
-              <span class="dg-pill">{{ resumen.dg > 0 ? '+' : '' }}{{ resumen.dg }}</span>
-            </td>
-
-            <!-- ÚLTIMOS RESULTADOS -->
-            <td class="col-form">
-              <div class="last-results">
-                <ng-container *ngIf="resumen.ultimos.length > 0; else sinResultados">
-                  <span *ngFor="let r of resumen.ultimos"
-                        class="result-badge"
-                        [class.win]="r === 'V'"
-                        [class.draw]="r === 'E'"
-                        [class.loss]="r === 'D'"
-                        [title]="r === 'V' ? 'Victoria' : r === 'E' ? 'Empate' : 'Derrota'">
-                    {{ r === 'V'
-                      ? ('ESTADIS_EQUIPO.RESULT.WIN' | translate)
-                      : r === 'E'
-                      ? ('ESTADIS_EQUIPO.RESULT.DRAW' | translate)
-                      : ('ESTADIS_EQUIPO.RESULT.LOSS' | translate) }}
-                  </span>
-                </ng-container>
-                <ng-template #sinResultados>
-                  <span class="no-results-text">—</span>
-                </ng-template>
-              </div>
-            </td>
-          </tr>
+            <!-- FILA EXPANDIDA: mini partidos inline -->
+            <tr *ngIf="expandedTeamId === resumen.teamId" class="expand-row">
+              <td colspan="13">
+                <div class="expand-panel">
+                  <div class="expand-panel__header">
+                    <span>Últimos partidos — {{ resumen.equipo || resumen.categoria }}</span>
+                    <button class="btn-expand-full" (click)="verTablaequipo(i); $event.stopPropagation()">
+                      <i class="bi bi-arrows-fullscreen"></i>
+                      Ver todos
+                    </button>
+                  </div>
+                  <div class="expand-panel__matches">
+                    <div *ngFor="let p of getExpandedMatches(resumen.teamId)"
+                         class="match-chip"
+                         [class.match-win]="p.resultado === 'V'"
+                         [class.match-draw]="p.resultado === 'E'"
+                         [class.match-loss]="p.resultado === 'D'">
+                      <span class="match-chip__result">{{ p.resultado }}</span>
+                      <span class="match-chip__score">{{ p.golesAFavor }}-{{ p.golesEnContra }}</span>
+                      <span class="match-chip__rival">vs {{ p.matchPreparation?.rivalName ?? '—' }}</span>
+                    </div>
+                    <div *ngIf="getExpandedMatches(resumen.teamId).length === 0" class="no-results-text">
+                      {{ 'STATS.NO_TEAM_DATA' | translate }}
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
         </tbody>
 
         <!-- Empty state -->
-        <tbody *ngIf="datosCargados && resumentotales.length === 0">
+        <tbody *ngIf="datosCargados && filteredResumenes.length === 0">
           <tr>
-            <td colspan="11" class="text-center py-5">
+            <td colspan="13" class="text-center py-5">
               <div class="empty-state">
                 <i class="bi bi-trophy fs-1 text-muted"></i>
                 <p class="mt-2 text-muted">{{ 'STATS.NO_TEAM_DATA' | translate }}</p>

@@ -1,0 +1,83 @@
+<div class="cropper-overlay" role="dialog" aria-modal="true" (click)="cancel()">
+  <div class="cropper-modal" (click)="$event.stopPropagation()">
+    <header class="cropper-modal__header">
+      <h2>{{ title || ('AVATAR_CROPPER.TITLE' | translate) }}</h2>
+      <button type="button" class="close-btn" (click)="cancel()" aria-label="close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </header>
+
+    <div class="cropper-modal__body">
+      <!-- Estado inicial: sin imagen -->
+      <ng-container *ngIf="!hasImage; else cropperBody">
+        <div class="empty-state">
+          <div class="empty-state__circle">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <p>{{ 'AVATAR_CROPPER.HINT_PICK' | translate }}</p>
+          <button type="button" class="primary-btn" (click)="pickFile()">
+            <i class="bi bi-upload"></i>
+            <span>{{ 'AVATAR_CROPPER.PICK_BUTTON' | translate }}</span>
+          </button>
+        </div>
+      </ng-container>
+
+      <!-- Estado cropper activo -->
+      <ng-template #cropperBody>
+        <div
+          class="crop-area"
+          [style.width.px]="viewSize"
+          [style.height.px]="viewSize"
+          (pointerdown)="onPointerDown($event)"
+        >
+          <canvas #canvas></canvas>
+          <div class="crop-mask"></div>
+        </div>
+        <div class="zoom-control">
+          <i class="bi bi-zoom-out"></i>
+          <input
+            type="range"
+            [min]="minZoom"
+            [max]="maxZoom"
+            step="0.01"
+            [(ngModel)]="zoom"
+            (input)="onZoomChange()"
+            [attr.aria-label]="'AVATAR_CROPPER.ZOOM' | translate"
+          />
+          <i class="bi bi-zoom-in"></i>
+        </div>
+        <button type="button" class="link-btn" (click)="pickFile()">
+          <i class="bi bi-arrow-repeat"></i>
+          <span>{{ 'AVATAR_CROPPER.CHANGE_IMAGE' | translate }}</span>
+        </button>
+      </ng-template>
+
+      <!-- Errores -->
+      <p class="error-msg" *ngIf="errorKey">{{ errorKey | translate }}</p>
+    </div>
+
+    <footer class="cropper-modal__footer">
+      <button type="button" class="secondary-btn" (click)="cancel()">
+        {{ 'AVATAR_CROPPER.CANCEL' | translate }}
+      </button>
+      <button
+        type="button"
+        class="primary-btn"
+        [disabled]="!hasImage || loading"
+        (click)="apply()"
+      >
+        <i class="bi bi-check-lg"></i>
+        <span>{{ 'AVATAR_CROPPER.APPLY' | translate }}</span>
+      </button>
+    </footer>
+
+    <!-- Input file oculto -->
+    <input
+      #fileInput
+      type="file"
+      accept="image/jpeg,image/png,image/webp"
+      class="hidden-file"
+      (change)="onFileChange($event)"
+    />
+  </div>
+</div>

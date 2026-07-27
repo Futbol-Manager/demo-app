@@ -1,0 +1,269 @@
+<div class="match-post-shell">
+
+  <!-- Header -->
+  <div class="mp-header">
+    <div class="mp-header-left">
+      <div class="mp-icon-wrap">
+        <i class="bi bi-image"></i>
+      </div>
+      <div>
+        <h3 class="mp-title">Post de partido</h3>
+        <p class="mp-subtitle">Genera una imagen lista para Instagram, Twitter y Facebook</p>
+      </div>
+    </div>
+    <div class="mp-type-toggle">
+      <button class="type-btn" [class.active]="templateType === 'pre'" (click)="switchType('pre')">
+        <i class="bi bi-clock"></i> Pre-partido
+      </button>
+      <button class="type-btn" [class.active]="templateType === 'post'" (click)="switchType('post')">
+        <i class="bi bi-flag-fill"></i> Resultado
+      </button>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="mp-body">
+
+    <!-- Form panel -->
+    <div class="mp-form-panel">
+
+      <!-- Teams section -->
+      <div class="form-section">
+        <div class="section-label"><i class="bi bi-shield-fill"></i> Equipos</div>
+
+        <div class="teams-row">
+          <!-- Home team -->
+          <div class="team-form-group">
+            <label class="form-label-sm">Equipo local</label>
+            <input type="text" class="form-control form-control-sm" placeholder="Nombre del equipo"
+              [(ngModel)]="data.homeTeamName">
+            <div class="logo-upload-row">
+              <div class="logo-thumb" (click)="homeInput.click()">
+                <img *ngIf="data.homeLogoUrl" [src]="data.homeLogoUrl" alt="Logo local">
+                <i *ngIf="!data.homeLogoUrl" class="bi bi-plus-circle"></i>
+                <span *ngIf="!data.homeLogoUrl" class="upload-hint">Escudo</span>
+              </div>
+              <input #homeInput type="file" accept="image/*" (change)="onHomeLogo($event)" hidden>
+              <button *ngIf="data.homeLogoUrl" class="btn-clear-logo" (click)="clearHomeLogo()" title="Quitar logo">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="vs-badge">VS</div>
+
+          <!-- Away team -->
+          <div class="team-form-group">
+            <label class="form-label-sm">Equipo visitante</label>
+            <input type="text" class="form-control form-control-sm" placeholder="Nombre del rival"
+              [(ngModel)]="data.awayTeamName">
+            <div class="logo-upload-row">
+              <div class="logo-thumb" (click)="awayInput.click()">
+                <img *ngIf="data.awayLogoUrl" [src]="data.awayLogoUrl" alt="Logo visitante">
+                <i *ngIf="!data.awayLogoUrl" class="bi bi-plus-circle"></i>
+                <span *ngIf="!data.awayLogoUrl" class="upload-hint">Escudo</span>
+              </div>
+              <input #awayInput type="file" accept="image/*" (change)="onAwayLogo($event)" hidden>
+              <button *ngIf="data.awayLogoUrl" class="btn-clear-logo" (click)="clearAwayLogo()" title="Quitar logo">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Score — only for post-match -->
+      <div class="form-section" *ngIf="templateType === 'post'">
+        <div class="section-label"><i class="bi bi-trophy-fill"></i> Resultado</div>
+        <div class="score-row">
+          <input type="number" class="form-control score-input" min="0" [(ngModel)]="data.homeScore"
+            placeholder="0">
+          <span class="score-dash">—</span>
+          <input type="number" class="form-control score-input" min="0" [(ngModel)]="data.awayScore"
+            placeholder="0">
+        </div>
+        <div class="mt-2">
+          <label class="form-label-sm">{{ 'SOCIAL_POST.SCORERS_LABEL' | translate }}</label>
+          <input type="text" class="form-control form-control-sm"
+            placeholder="Ej: Juan (23'), Pedro (67')"
+            [(ngModel)]="data.scorers">
+        </div>
+      </div>
+
+      <!-- Match details -->
+      <div class="form-section">
+        <div class="section-label"><i class="bi bi-calendar3"></i> Datos del partido</div>
+        <div class="row g-2">
+          <div class="col-7">
+            <label class="form-label-sm">Fecha</label>
+            <input type="text" class="form-control form-control-sm"
+              placeholder="Ej: Sábado 5 de Abril"
+              [(ngModel)]="data.matchDate">
+          </div>
+          <div class="col-5">
+            <label class="form-label-sm">Hora</label>
+            <input type="time" class="form-control form-control-sm"
+              [(ngModel)]="data.matchTime">
+          </div>
+          <div class="col-8">
+            <label class="form-label-sm">Competición</label>
+            <input type="text" class="form-control form-control-sm"
+              placeholder="Ej: Liga Regional"
+              [(ngModel)]="data.competition">
+          </div>
+          <div class="col-4">
+            <label class="form-label-sm">Jornada</label>
+            <input type="text" class="form-control form-control-sm"
+              placeholder="Ej: J15"
+              [(ngModel)]="data.matchday">
+          </div>
+          <div class="col-12">
+            <label class="form-label-sm">Campo (opcional)</label>
+            <input type="text" class="form-control form-control-sm"
+              placeholder="Ej: Estadio Municipal"
+              [(ngModel)]="data.venue">
+          </div>
+        </div>
+      </div>
+
+      <!-- Brand colors -->
+      <div class="form-section">
+        <div class="section-label"><i class="bi bi-palette-fill"></i> Colores del club</div>
+        <div class="colors-row">
+          <div class="color-group">
+            <label class="form-label-sm">Principal</label>
+            <div class="color-picker-wrap">
+              <input type="color" class="color-swatch" [(ngModel)]="data.primaryColor" title="Color principal">
+              <span class="color-hex">{{ data.primaryColor }}</span>
+            </div>
+          </div>
+          <div class="color-group">
+            <label class="form-label-sm">Fondo</label>
+            <div class="color-picker-wrap">
+              <input type="color" class="color-swatch" [(ngModel)]="data.secondaryColor" title="Color de fondo">
+              <span class="color-hex">{{ data.secondaryColor }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Preview panel -->
+    <div class="mp-preview-panel">
+      <div class="preview-label">Vista previa</div>
+
+      <!-- The actual template that gets exported -->
+      <div class="preview-wrapper">
+        <div #templateEl class="match-template"
+          [style.background]="data.secondaryColor"
+          [style.font-family]="'Archivo, system-ui, sans-serif'">
+
+          <!-- Top gradient stripe -->
+          <div class="tmpl-top-stripe"
+            [style.background]="'linear-gradient(90deg,' + data.primaryColor + ',' + darkerSecondary + ')'">
+          </div>
+
+          <!-- Match label -->
+          <div class="tmpl-match-label" [style.color]="data.primaryColor">
+            {{ templateType === 'pre' ? ('SOCIAL_POST.LABEL_PRE' | translate) : ('SOCIAL_POST.LABEL_POST' | translate) }}
+          </div>
+
+          <!-- Teams area -->
+          <div class="tmpl-teams">
+
+            <!-- Home team -->
+            <div class="tmpl-team">
+              <div class="tmpl-logo-wrap"
+                [style.border-color]="primaryRgba20"
+                [style.background]="primaryRgba10">
+                <img *ngIf="data.homeLogoUrl" [src]="data.homeLogoUrl" class="tmpl-logo" alt="">
+                <i *ngIf="!data.homeLogoUrl" class="bi bi-shield" [style.color]="data.primaryColor"></i>
+              </div>
+              <div class="tmpl-team-name" style="color:#ffffff">
+                {{ data.homeTeamName || 'Equipo local' }}
+              </div>
+            </div>
+
+            <!-- Center: VS or Score -->
+            <div class="tmpl-center">
+              <ng-container *ngIf="templateType === 'pre'">
+                <div class="tmpl-vs" style="color:rgba(255,255,255,0.35)">VS</div>
+              </ng-container>
+              <ng-container *ngIf="templateType === 'post'">
+                <div class="tmpl-score-row">
+                  <span class="tmpl-score-num" style="color:#ffffff">{{ data.homeScore ?? 0 }}</span>
+                  <span class="tmpl-score-sep" style="color:rgba(255,255,255,0.3)">:</span>
+                  <span class="tmpl-score-num" style="color:#ffffff">{{ data.awayScore ?? 0 }}</span>
+                </div>
+              </ng-container>
+            </div>
+
+            <!-- Away team -->
+            <div class="tmpl-team">
+              <div class="tmpl-logo-wrap"
+                [style.border-color]="primaryRgba20"
+                [style.background]="primaryRgba10">
+                <img *ngIf="data.awayLogoUrl" [src]="data.awayLogoUrl" class="tmpl-logo" alt="">
+                <i *ngIf="!data.awayLogoUrl" class="bi bi-shield" [style.color]="data.primaryColor"></i>
+              </div>
+              <div class="tmpl-team-name" style="color:#ffffff">
+                {{ data.awayTeamName || 'Equipo visitante' }}
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Scorers line (post only) -->
+          <div class="tmpl-scorers" *ngIf="templateType === 'post' && data.scorers"
+            style="color:rgba(255,255,255,0.65)">
+            <span [style.color]="data.primaryColor">{{ sportConfig?.emoji ?? '⚽' }}</span>
+            {{ data.scorers }}
+          </div>
+
+          <!-- Info bar -->
+          <div class="tmpl-info-bar">
+            <div class="tmpl-info-row">
+              <span *ngIf="data.matchDate" class="tmpl-info-item" style="color:rgba(255,255,255,0.55)">
+                <span [style.color]="data.primaryColor">●</span>
+                {{ data.matchDate }}
+                <ng-container *ngIf="data.matchTime"> · {{ data.matchTime }}h</ng-container>
+              </span>
+              <span *ngIf="data.competition" class="tmpl-info-item" style="color:rgba(255,255,255,0.55)">
+                <span [style.color]="data.primaryColor">●</span>
+                {{ data.competition }}
+                <ng-container *ngIf="data.matchday"> · {{ data.matchday }}</ng-container>
+              </span>
+              <span *ngIf="data.venue" class="tmpl-info-item" style="color:rgba(255,255,255,0.45)">
+                <span [style.color]="data.primaryColor">●</span>
+                {{ data.venue }}
+              </span>
+            </div>
+
+            <!-- Club branding bottom bar -->
+            <div class="tmpl-brand-bar" [style.border-top-color]="primaryRgba20">
+              <div class="tmpl-brand-line" [style.background]="'linear-gradient(90deg, transparent, ' + data.primaryColor + ')'"></div>
+              <span class="tmpl-brand-name" style="color:rgba(255,255,255,0.35)">
+                {{ clubName || 'Sphaira Tech' }}
+              </span>
+              <div class="tmpl-brand-line reverse" [style.background]="'linear-gradient(270deg, transparent, ' + data.primaryColor + ')'"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Export button -->
+      <button class="btn-export" (click)="exportPng()" [disabled]="exporting">
+        <i class="bi" [class.bi-download]="!exporting" [class.bi-hourglass-split]="exporting"></i>
+        {{ exporting ? 'Exportando...' : 'Descargar imagen (PNG)' }}
+      </button>
+
+      <p class="export-hint">
+        <i class="bi bi-info-circle"></i>
+        La imagen se exporta en 1080×1080 px, lista para Instagram, Twitter y Facebook.
+      </p>
+
+    </div>
+  </div>
+</div>

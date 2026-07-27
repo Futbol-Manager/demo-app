@@ -105,6 +105,21 @@ export class NewCuotasComponent implements OnInit {
   columnaActual: string = '';
   ordenAscendente: boolean = true;
 
+  // ── Validación de variantes de precio por pago (lado club) ──────────
+  showVarValidarModal = false;
+  varValidarPago: any = null;
+  varValidarPagoId = 0;
+  varValidarLoading = false;
+  varValidarSaving = false;
+  varValidarVariantes: Array<{ id: number; nombre: string; importe: any }> = [];
+  varValidarRows: Array<{ playerId: number; nombre: string; varianteId: number; estado: number; cobrar: boolean; seleccionado: boolean; familiaId: number }> = [];
+  varValidarTab: 'pendientes' | 'validados' = 'pendientes';
+  varValidarVencida = false;
+  varValidarFecha = '';
+  varValidarPedirTarjeta = false;
+  varValidarSinVariantes = false;
+  currencySymbol = '€';
+
   listTeams: any[] = [];
   /*{ value: number; name: string }[] = [
     { value: 1, name: 'Alevín A' },
@@ -577,6 +592,354 @@ export class NewCuotasComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error al cargar los pagos del club', err);
+        },
+      });
+  }
+
+  // ── Validación de variantes de precio (lado club) ─────────────────────────
+
+  /** ¿El pago tiene variantes de precio activas? (muestra el botón de validar). */
+  tieneVariantesPago(pago: any): boolean {
+    return Number(pago?.variantesCount) > 0;
+  }
+
+  /** Nombre legible de un jugador a partir de la lista cargada. */
+  private nombrePlayer(playerId: number): string {
+    const p: any = (this.listaPlayers || []).find((x: any) => Number(x.playerId) === Number(playerId));
+    if (!p) return `#${playerId}`;
+    return p.nombreCompleto || `${p.nombre ?? ''} ${p.apellidos ?? ''}`.trim() || `#${playerId}`;
+  }
+
+  abrirValidarVariantes(cuota: any): void {
+    const pagoId = Number(cuota?.pagoClubId ?? cuota?.PagoClubId);
+    if (!pagoId) return;
+    this.varValidarPago = cuota;
+    this.varValidarPagoId = pagoId;
+    this.varValidarVariantes = [];
+    this.varValidarRows = [];
+    this.varValidarTab = 'pendientes';
+    this.varValidarLoading = true;
+    this.showVarValidarModal = true;
+
+    const fecha: string = cuota?.fechaInicio ?? cuota?.FechaInicio ?? '';
+    this.varValidarFecha = fecha;
+    const hoy = new Date().toISOString().slice(0, 10);
+    this.varValidarVencida = !!fecha && fecha < hoy;
+    const pt = cuota?.pedirTarjetaRegistro ?? cuota?.PedirTarjetaRegistro ?? 0;
+    this.varValidarPedirTarjeta = pt === 1 || pt === true || pt === '1';
+
+    forkJoin({
+      variantes: this.clubService.getPagoVariantes(pagoId),
+      asignaciones: this.clubService.getPagoVarianteAsignaciones(pagoId, this.temporadaStoredValue),
+    }).subscribe({
+      next: ({ variantes, asignaciones }: any) => {
+        const vData: any = variantes?.data ?? {};
+        this.varValidarVariantes = Array.isArray(vData.variantes)
+          ? vData.variantes.map((v: any) => ({ id: Number(v.id), nombre: v.nombre, importe: v.importe }))
+          : [];
+        this.varValidarSinVariantes = this.varValidarVariantes.length === 0;
+        if (!this.varValidarPedirTarjeta) {
+          const pt2 = vData.pedirTarjetaRegistro ?? 0;
+          this.varValidarPedirTarjeta = pt2 === 1 || pt2 === true || pt2 === '1';
+        }
+        const rows: any[] = Array.isArray(asignaciones?.data) ? asignaciones.data : [];
+        const mapped = rows.map((r: any) => {
+          const varianteId = Number(r.varianteId) || 0;
+          const estado = Number(r.estado) || 0;
+          return {
+            playerId: Number(r.playerId),
+            nombre: this.nombrePlayer(Number(r.playerId)),
+            varianteId,
+            estado,
+            familiaId: Number(r.familiaId) || 0,
+            seleccionado: estado !== 1 && (varianteId > 0 || this.varValidarSinVariantes
+              || (this.varValidarBaseSelectable && varianteId === 0)),
+            cobrar: this.varValidarVencida && this.varValidarPedirTarjeta,
+          };
+        });
+        this.varValidarRows = mapped.sort((a, b) => {
+          const fa = a.familiaId || Number.MAX_SAFE_INTEGER;
+          const fb = b.familiaId || Number.MAX_SAFE_INTEGER;
+          if (fa !== fb) return fa - fb;
+          return (a.nombre || '').localeCompare(b.nombre || '');
+        });
+        this.varValidarLoading = false;
+      },
+      error: () => {
+        this.varValidarLoading = false;
+        this.toastr.error(this.translate.instant('CUOTAS.TOAST.SAVE_CUOTA_ERROR'));
+      },
+    });
+  }
+
+  cerrarValidarVariantes(): void {
+    this.closeModal('varValidar', () => {
+      this.showVarValidarModal = false;
+      this.varValidarPago = null;
+      this.varValidarPagoId = 0;
+      this.varValidarRows = [];
+      this.varValidarVariantes = [];
+      this.varValidarVencida = false;
+      this.varValidarFecha = '';
+      this.varValidarPedirTarjeta = false;
+      this.varValidarSinVariantes = false;
+    });
+  }
+
+  /** ¿El pago ofrece el PRECIO BASE (importe >0) como opción validable (id=0)? */
+  get varValidarBaseSelectable(): boolean {
+    if (this.varValidarSinVariantes) return false;
+    const imp = parseFloat(String(this.varValidarPago?.importe ?? '').replace(',', '.'));
+    return Number.isFinite(imp) && imp > 0;
+  }
+
+  /** ¿Una fila del modal es validable? */
+  esFilaValidable(row: { varianteId: number }): boolean {
+    const vid = row?.varianteId ?? 0;
+    return this.varValidarSinVariantes || vid > 0 || (this.varValidarBaseSelectable && vid === 0);
+  }
+
+  /** ¿Mostrar la acción de cobro inmediato de atrasadas? */
+  get puedeCobrarAtrasadas(): boolean {
+    return this.varValidarVencida && this.varValidarPedirTarjeta;
+  }
+
+  get varRowsPendientes(): any[] {
+    return (this.varValidarRows || []).filter((r) => r.estado !== 1);
+  }
+
+  get varRowsValidados(): any[] {
+    return (this.varValidarRows || []).filter((r) => r.estado === 1);
+  }
+
+  get varRowsVisible(): any[] {
+    return this.varValidarTab === 'validados' ? this.varRowsValidados : this.varRowsPendientes;
+  }
+
+  get hayHermanos(): boolean {
+    return (this.varValidarRows || []).some((r) => r.familiaId > 0);
+  }
+
+  familiaColor(familiaId: number): string {
+    if (!familiaId || familiaId <= 0) return 'transparent';
+    const palette = ['#31b270', '#0d6efd', '#fd7e14', '#6f42c1', '#d63384', '#20c997', '#ffc107', '#198754'];
+    return palette[(familiaId - 1) % palette.length];
+  }
+
+  get varSelectedCount(): number {
+    return this.varRowsPendientes.filter((r) => r.seleccionado && this.esFilaValidable(r)).length;
+  }
+
+  get allVarSelected(): boolean {
+    const elegibles = this.varRowsPendientes.filter((r) => this.esFilaValidable(r));
+    return elegibles.length > 0 && elegibles.every((r) => r.seleccionado);
+  }
+
+  toggleAllVarSel(checked: boolean): void {
+    this.varRowsPendientes.forEach((r) => {
+      if (this.esFilaValidable(r)) r.seleccionado = checked;
+    });
+  }
+
+  onVarianteRowChange(row: { varianteId: number; seleccionado: boolean }): void {
+    row.seleccionado = this.esFilaValidable(row);
+  }
+
+  validarVariantes(): void {
+    const asignaciones = (this.varValidarRows || [])
+      .filter((r) => r.seleccionado && this.esFilaValidable(r))
+      .map((r) => ({ playerId: r.playerId, varianteId: r.varianteId || 0, estado: 1 }));
+    if (asignaciones.length === 0) {
+      this.toastr.warning(this.translate.instant('CUOTAS.DASH.NC_VAR_VALIDATE_EMPTY'));
+      return;
+    }
+    this.varValidarSaving = true;
+    this.clubService
+      .asignarPagoVariante({ pagoClubId: this.varValidarPagoId, temporada: this.temporadaStoredValue, asignaciones, validar: true })
+      .subscribe({
+        next: () => {
+          this.varValidarSaving = false;
+          this.toastr.success(this.translate.instant('CUOTAS.TOAST.DATA_SAVED'));
+          this.loadPagosClub();
+          this.reloadTabla();
+          this.cerrarValidarVariantes();
+        },
+        error: () => {
+          this.varValidarSaving = false;
+          this.toastr.error(this.translate.instant('CUOTAS.TOAST.SAVE_CUOTA_ERROR'));
+        },
+      });
+  }
+
+  validarYCobrarVariantes(): void {
+    const rowsValidos = (this.varValidarRows || []).filter((r) => r.seleccionado && this.esFilaValidable(r));
+    const asignaciones = rowsValidos.map((r) => ({ playerId: r.playerId, varianteId: r.varianteId || 0 }));
+    if (asignaciones.length === 0) {
+      this.toastr.warning(this.translate.instant('CUOTAS.DASH.NC_VAR_VALIDATE_EMPTY'));
+      return;
+    }
+    const cobrarPlayerIds = rowsValidos.filter((r) => r.cobrar).map((r) => r.playerId);
+    this.varValidarSaving = true;
+    this.clubService
+      .validarYCobrarVariantes({ pagoClubId: this.varValidarPagoId, temporada: this.temporadaStoredValue, asignaciones, cobrarPlayerIds })
+      .subscribe({
+        next: () => {
+          this.varValidarSaving = false;
+          this.toastr.success(this.translate.instant('CUOTAS.TOAST.DATA_SAVED'));
+          this.loadPagosClub();
+          this.reloadTabla();
+          this.cerrarValidarVariantes();
+        },
+        error: () => {
+          this.varValidarSaving = false;
+          this.toastr.error(this.translate.instant('CUOTAS.TOAST.SAVE_CUOTA_ERROR'));
+        },
+      });
+  }
+
+  rechazarVariante(row: { playerId: number; estado: number }): void {
+    if (!row || !row.playerId) return;
+    if (row.estado === 1) {
+      this.toastr.warning(this.translate.instant('CUOTAS.DASH.NC_VAR_REJECT_VALIDATED'));
+      return;
+    }
+    this.varValidarSaving = true;
+    this.clubService
+      .rechazarVariantePlayer({ pagoClubId: this.varValidarPagoId, playerId: row.playerId })
+      .subscribe({
+        next: () => {
+          this.varValidarSaving = false;
+          this.toastr.success(this.translate.instant('CUOTAS.DASH.NC_VAR_REJECT_OK'));
+          const cuota = this.varValidarPago;
+          this.loadPagosClub();
+          this.reloadTabla();
+          if (cuota) this.abrirValidarVariantes(cuota);
+        },
+        error: () => {
+          this.varValidarSaving = false;
+          this.toastr.error(this.translate.instant('CUOTAS.TOAST.SAVE_CUOTA_ERROR'));
+        },
+      });
+  }
+
+  // ── Dunning: cobro manual de cuotas vencidas impagadas (Sphaira Pay) ──────
+  /** Flag de bloqueo mientras se ejecuta un cobro (individual o colectivo). */
+  chargingOverdue = false;
+
+  /**
+   * Cobro COLECTIVO: previsualiza cuántos jugadores/importe se cobrarían y, tras
+   * confirmar, cobra todas las cuotas Sphaira Pay vencidas e impagadas del club.
+   */
+  cobrarVencidasClub(): void {
+    if (this.chargingOverdue) return;
+    if (!this.clubId || !this.temporadaStoredValue) return;
+    this.chargingOverdue = true;
+    this.clubService.chargeOverduePreview({ clubId: this.clubId, temporada: this.temporadaStoredValue })
+      .subscribe({
+        next: (resp: any) => {
+          this.chargingOverdue = false;
+          const d = resp?.data || {};
+          const jugadores = d.jugadores || 0;
+          const total = d.totalEuros || 0;
+          const sinTarjeta = d.sinTarjeta || 0;
+          const variantes = d.cuotasVariantesOmitidas || 0;
+          if (jugadores === 0) {
+            this.toastr.info(this.translate.instant('CUOTAS.CHARGE_OVERDUE.NONE'));
+            return;
+          }
+          let msg = this.translate.instant('CUOTAS.CHARGE_OVERDUE.CONFIRM', {
+            jugadores, total: Number(total).toFixed(2), simbolo: this.currencySymbol,
+          });
+          if (sinTarjeta > 0) {
+            msg += '\n\n' + this.translate.instant('CUOTAS.CHARGE_OVERDUE.WARN_NO_CARD', { n: sinTarjeta });
+          }
+          if (variantes > 0) {
+            msg += '\n' + this.translate.instant('CUOTAS.CHARGE_OVERDUE.WARN_VARIANTS', { n: variantes });
+          }
+          this.openConfirm({
+            title: this.translate.instant('CUOTAS.CHARGE_OVERDUE.BTN'),
+            message: msg,
+            confirmText: this.translate.instant('CUOTAS.CHARGE_OVERDUE.BTN'),
+            type: 'warning',
+            icon: 'bi-credit-card-2-front-fill',
+            callback: () => { this.chargingOverdue = true; this.ejecutarCobroVencidas(0); },
+          });
+        },
+        error: () => {
+          this.chargingOverdue = false;
+          this.toastr.error(this.translate.instant('CUOTAS.CHARGE_OVERDUE.ERROR'));
+        },
+      });
+  }
+
+  /**
+   * Cobro INDIVIDUAL de 1 clic: cobra las cuotas vencidas impagadas de un jugador
+   * a su tarjeta guardada (si la fecha ya pasó y tiene tarjeta).
+   */
+  cobrarVencidasJugador(player: any): void {
+    if (this.chargingOverdue) return;
+    if (player?.jugadorBaja === 1) {
+      this.toastr.warning(this.translate.instant('CUOTAS.CHARGE_OVERDUE.PLAYER_LEFT'));
+      return;
+    }
+    if (!player?.playerId || !this.clubId || !this.temporadaStoredValue) return;
+    const fullName = `${player?.nombre || ''} ${player?.apellido || ''}`.trim();
+    this.openConfirm({
+      title: this.translate.instant('CUOTAS.CHARGE_OVERDUE.BTN'),
+      message: this.translate.instant('CUOTAS.CHARGE_OVERDUE.CONFIRM_PLAYER', { name: fullName }),
+      confirmText: this.translate.instant('CUOTAS.CHARGE_OVERDUE.BTN'),
+      type: 'warning',
+      icon: 'bi-credit-card-2-front-fill',
+      callback: () => { this.chargingOverdue = true; this.ejecutarCobroVencidas(player.playerId); },
+    });
+  }
+
+  /**
+   * Horas de cooldown a mostrar: el máximo `cooldownHours` de los detalles en
+   * espera; si no viaja, cae a 24h (el valor por defecto del backend).
+   */
+  private cooldownHorasDeDetalle(d: any): number {
+    const detalle: any[] = Array.isArray(d?.detalle) ? d.detalle : [];
+    const horas = detalle
+      .filter((r: any) => r?.status === 'COOLDOWN')
+      .map((r: any) => Number(r?.cooldownHours) || 0);
+    const max = horas.length ? Math.max(...horas) : 0;
+    return max > 0 ? max : 24;
+  }
+
+  private ejecutarCobroVencidas(playerId: number): void {
+    this.clubService.chargeOverdue({ clubId: this.clubId, temporada: this.temporadaStoredValue, playerId })
+      .subscribe({
+        next: (resp: any) => {
+          this.chargingOverdue = false;
+          const d = resp?.data || {};
+          const cobradas = d.cobradas || 0;
+          const fallidas = d.fallidas || 0;
+          const enEspera = d.enEspera || 0;
+          if (cobradas > 0 && fallidas === 0) {
+            this.toastr.success(this.translate.instant('CUOTAS.CHARGE_OVERDUE.DONE_OK', { n: cobradas }));
+          } else if (cobradas > 0) {
+            this.toastr.warning(this.translate.instant('CUOTAS.CHARGE_OVERDUE.DONE_PARTIAL', { ok: cobradas, fail: fallidas }));
+          } else if (fallidas > 0) {
+            this.toastr.error(this.translate.instant('CUOTAS.CHARGE_OVERDUE.DONE_FAIL', { fail: fallidas }));
+          } else if (enEspera > 0) {
+            const horas = this.cooldownHorasDeDetalle(d);
+            this.toastr.warning(
+              this.translate.instant('CUOTAS.CHARGE_OVERDUE.COOLDOWN_MANY', { n: enEspera, horas }),
+              '',
+              { timeOut: 9000 },
+            );
+          } else {
+            this.toastr.info(this.translate.instant('CUOTAS.CHARGE_OVERDUE.NONE'));
+          }
+          if (!(enEspera > 0 && cobradas === 0 && fallidas === 0)) {
+            this.loadPagosClub();
+            this.reloadTabla();
+          }
+        },
+        error: () => {
+          this.chargingOverdue = false;
+          this.toastr.error(this.translate.instant('CUOTAS.CHARGE_OVERDUE.ERROR'));
         },
       });
   }

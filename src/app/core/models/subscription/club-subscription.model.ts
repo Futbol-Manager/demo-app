@@ -46,6 +46,16 @@ export interface ClubPlan {
   recommended?: boolean;
 }
 
+// ─── Estado de pago del club (período de gracia / bloqueo) ───
+export type ClubPaymentStatusType = 'active' | 'grace_period' | 'payment_required';
+
+export interface ClubPaymentStatus {
+  status: ClubPaymentStatusType;
+  renewDate?: string;
+  daysOverdue: number;
+  messageKey: string;
+}
+
 // ─── Club Subscription (Active) ──────────────────────────────
 export interface ClubSubscription {
   subscriptionId: string;
@@ -69,6 +79,8 @@ export interface ClubSubscription {
   clubCommissionPercent?: number;
   // Plan Familia specific
   parentRegistrationUrl?: string;
+  // Tarjeta guardada para renovación automática
+  savedCard?: { last4: string; brand: string; expMonth: number; expYear: number };
 }
 
 // ─── Plan 1: Familia — Parent Registration ───────────────────
@@ -123,6 +135,8 @@ export interface ClubEntityRegistration {
   responsibleId: string; // DNI / Passport / National ID
   email: string;
   phone: string;
+  language?: string;
+  password?: string;
 }
 
 export interface ClubPlanCalculation {
@@ -156,6 +170,8 @@ export interface ContractData {
   currencySymbol: string;
   date: string;
   signatureUrl: string;
+  contractAccepted?: boolean;
+  legalDocsAccepted?: boolean;
 }
 
 // ─── Plan 3: Gratuito — Stripe Connect ───────────────────────

@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, QueryList, ViewChildren } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -12,6 +12,15 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { LoginModel } from 'src/app/core/models/users/login.model';
 import { TranslateService } from '@ngx-translate/core';
+import { environment } from 'src/environments/environment';
+import { ClubRegisterFormService } from 'src/app/core/services/club-register-form/club-register-form.service';
+import {
+  ClubRegisterFormAnswers,
+  RegisterFormSchema,
+  RegisterFormSectionId,
+  RegisterPaymentVariantGroup,
+} from 'src/app/core/services/club-register-form/club-register-form.model';
+import { DynamicRegisterFieldsComponent } from '../dynamic-register-fields/dynamic-register-fields.component';
 
 type Step = 'padre' | 'hijos';
 
@@ -24,6 +33,28 @@ export class ParentChildrenComponent implements OnInit {
   activeTab: 'padre' | 'hijos' = 'padre';
   modo: 'club' | 'email' = 'club';
   clubId = 0;
+  clubName = '';
+  clubPicture = '';
+
+  /** Equipos elegibles del club (registro por club). El padre asigna un equipo por hijo. */
+  clubTeams: { teamId: number; name: string; category?: string }[] = [];
+  clubTeamsLoaded = false;
+
+  /** Formulario extendido del club (secciones tutor/general/child). Null si no hay. */
+  registerSchema: RegisterFormSchema | null = null;
+  hasGeneralExtras = false;
+  hasTutorExtras = false;
+  hasChildExtras = false;
+
+  /** Pagos con variantes del registro, cacheados por equipo. */
+  teamPaymentGroups: { [teamId: number]: RegisterPaymentVariantGroup[] } = {};
+  private loadingTeamIds = new Set<number>();
+  /** Selección del padre: variantSelections[hijoIndex][pagoClubId] = varianteId (-1 = precio fijo aceptado). */
+  variantSelections: { [hijoIndex: number]: { [pagoClubId: number]: number } } = {};
+  showMissingBanner = false;
+
+  @ViewChildren(DynamicRegisterFieldsComponent)
+  dynamicSections!: QueryList<DynamicRegisterFieldsComponent>;
 
   playerId!: number;
   emailFromUrl!: string;
@@ -53,6 +84,7 @@ export class ParentChildrenComponent implements OnInit {
     private snackBar: MatSnackBar,
     private loginService: LoginService,
     private translate: TranslateService,
+    private clubRegisterFormApi: ClubRegisterFormService,
   ) {}
 
   // ======================================================
@@ -92,8 +124,80 @@ export class ParentChildrenComponent implements OnInit {
         this.modo = 'club';
         this.clubId = +params.get('clubId')!;
         this.activeTab = 'padre';
+        this.loadClubInfo(this.clubId);
+        this.loadClubTeams(this.clubId);
+        this.loadRegisterSchema(this.clubId);
       }
     });
+  }
+
+  /** Carga nombre + escudo del club para la cabecera del wizard. */
+  private loadClubInfo(clubId: number): void {
+    this.registerService.getClubPublicInfo(clubId).subscribe({
+      next: (res: any) => {
+        const data = res?.data;
+        if (data) {
+          this.clubName = data.name ?? '';
+          const pic = data.picture ?? data.pictureClub;
+          this.clubPicture = pic ? environment.images + 'user/' + pic : '';
+        }
+      },
+      error: () => { /* la pantalla funciona sin escudo */ },
+    });
+  }
+
+  /** Carga los equipos públicos del club para asignar cada hijo. */
+  private loadClubTeams(clubId: number): void {
+    this.clubTeamsLoaded = false;
+    this.registerService.getPublicTeamsForRegistration(clubId).subscribe({
+      next: (res: any) => {
+        const list = Array.isArray(res?.data) ? res.data : [];
+        this.clubTeams = list
+          .filter((t: any) => t && t.teamId > 0 && typeof t.name === 'string' && t.name.trim() !== '')
+          .map((t: any) => ({
+            teamId: Number(t.teamId),
+            name: String(t.name).trim(),
+            category: t.category ? String(t.category) : '',
+          }));
+        this.clubTeamsLoaded = true;
+      },
+      error: () => {
+        this.clubTeams = [];
+        this.clubTeamsLoaded = true;
+      },
+    });
+  }
+
+  /** Carga la plantilla del formulario extendido del club (o null si no hay). */
+  private loadRegisterSchema(clubId: number, variant: 'minor' | 'adult' = 'minor'): void {
+    this.clubRegisterFormApi.getPublicTemplate(clubId, variant).subscribe({
+      next: (res) => {
+        const tpl = res?.data;
+        if (tpl && tpl.schema && Array.isArray(tpl.schema.sections)) {
+          this.registerSchema = tpl.schema;
+          this.hasGeneralExtras = this.schemaHasFields('general');
+          this.hasTutorExtras = variant === 'adult' ? false : this.schemaHasFields('tutor');
+          this.hasChildExtras = this.schemaHasFields('child');
+        } else {
+          this.registerSchema = null;
+          this.hasGeneralExtras = false;
+          this.hasTutorExtras = false;
+          this.hasChildExtras = false;
+        }
+      },
+      error: () => {
+        this.registerSchema = null;
+        this.hasGeneralExtras = false;
+        this.hasTutorExtras = false;
+        this.hasChildExtras = false;
+      },
+    });
+  }
+
+  /** ¿La sección del schema tiene al menos un campo? */
+  private schemaHasFields(sectionId: RegisterFormSectionId): boolean {
+    const s = this.registerSchema?.sections?.find((x) => x.id === sectionId);
+    return !!s && Array.isArray(s.fields) && s.fields.length > 0;
   }
 
   private initForms(): void {
@@ -204,7 +308,7 @@ export class ParentChildrenComponent implements OnInit {
     this.removeExtraChildControls(total);
   }
   private removeExtraChildControls(total: number): void {
-    const controls = ['hijo', 'ape', 'fech', 'dni'];
+    const controls = ['hijo', 'ape', 'fech', 'dni', 'team'];
 
     let index = total + 1;
     while (this.childrenForm.contains(`hijo${index}`)) {
@@ -240,6 +344,148 @@ export class ParentChildrenComponent implements OnInit {
 
       this.childrenForm.addControl(dniControlName, dniControl);
     }
+
+    // Equipo del hijo (solo registro por club). Al elegirlo cargamos sus pagos.
+    const teamControlName = `team${index}`;
+    if (!this.childrenForm.contains(teamControlName)) {
+      const validators = this.modo === 'club' ? Validators.required : [];
+      const teamControl = this.fb.control('', validators);
+      teamControl.valueChanges.subscribe((val) => {
+        const teamId = Number(val) || 0;
+        if (teamId > 0) this.loadPaymentVariantsForTeam(teamId);
+      });
+      this.childrenForm.addControl(teamControlName, teamControl);
+    }
+  }
+
+  // ======================================================
+  // FORMULARIO EXTENDIDO DEL CLUB + VARIANTES DE PAGO
+  // ======================================================
+
+  /** Carga (perezosa y cacheada) los pagos con variantes de un equipo. */
+  private loadPaymentVariantsForTeam(teamId: number): void {
+    if (!teamId || teamId <= 0) return;
+    if (this.teamPaymentGroups[teamId] || this.loadingTeamIds.has(teamId)) return;
+    this.loadingTeamIds.add(teamId);
+    this.clubRegisterFormApi.getPagosVariantesRegistroByTeam(this.clubId, teamId).subscribe({
+      next: (res) => {
+        const list = Array.isArray(res?.data) ? res.data : [];
+        this.teamPaymentGroups[teamId] = list.filter(
+          (g) => g && g.pagoClubId > 0 && Array.isArray(g.variantes),
+        );
+        this.loadingTeamIds.delete(teamId);
+      },
+      error: () => {
+        this.teamPaymentGroups[teamId] = [];
+        this.loadingTeamIds.delete(teamId);
+      },
+    });
+  }
+
+  /** Pagos con variantes a mostrar para un hijo según su equipo. */
+  getPaymentGroupsForChild(hijoIndex: number): RegisterPaymentVariantGroup[] {
+    const teamId = Number(this.childrenForm?.get('team' + (hijoIndex + 1))?.value) || 0;
+    if (teamId <= 0) return [];
+    return this.teamPaymentGroups[teamId] || [];
+  }
+
+  /** ¿Algún hijo tiene pagos con variantes que mostrar? */
+  get hasPaymentVariants(): boolean {
+    return this.hijosVisibles.some((i) => this.getPaymentGroupsForChild(i).length > 0);
+  }
+
+  /** ¿Hay que pedir tarjeta tras el registro? Sí cuando algún hijo tiene pagos. */
+  get requiereTarjetaRegistro(): boolean {
+    return this.hasPaymentVariants;
+  }
+
+  /** ¿El pago es de precio fijo (sin variantes que elegir)? */
+  isFixedPayment(group: RegisterPaymentVariantGroup): boolean {
+    return !group?.variantes || group.variantes.length === 0;
+  }
+
+  /** ¿El pago tiene un precio base real (>0)? */
+  hasBasePrice(group: RegisterPaymentVariantGroup): boolean {
+    return this.parseImporte(group?.importe) > 0;
+  }
+
+  /** Variante seleccionada por el padre (o null). -1 = precio fijo aceptado. */
+  getVariantSelection(hijoIndex: number, pagoClubId: number): number | null {
+    const porHijo = this.variantSelections[hijoIndex];
+    return porHijo && porHijo[pagoClubId] ? porHijo[pagoClubId] : null;
+  }
+
+  /** ¿El padre ha aceptado un pago de precio fijo para este hijo? */
+  isFixedAccepted(hijoIndex: number, pagoClubId: number): boolean {
+    return this.getVariantSelection(hijoIndex, pagoClubId) === -1;
+  }
+
+  /** Registra la elección del padre (un select por pago y por hijo). */
+  setVariantSelection(hijoIndex: number, pagoClubId: number, varianteId: any): void {
+    this.assignSelection(hijoIndex, pagoClubId, Number(varianteId));
+  }
+
+  /** Marca/desmarca la aceptación de un pago de precio fijo. */
+  toggleFixedAccept(hijoIndex: number, pagoClubId: number, checked: boolean): void {
+    this.assignSelection(hijoIndex, pagoClubId, checked ? -1 : 0);
+  }
+
+  private assignSelection(hijoIndex: number, pagoClubId: number, id: number): void {
+    if (!this.variantSelections[hijoIndex]) {
+      this.variantSelections[hijoIndex] = {};
+    }
+    this.variantSelections[hijoIndex][pagoClubId] = id;
+  }
+
+  /** ¿Falta elegir alguna variante de pago obligatoria en este hijo? */
+  isChildVariantMissing(hijoIndex: number): boolean {
+    const groups = this.getPaymentGroupsForChild(hijoIndex);
+    if (groups.length === 0) return false;
+    return groups.some((g) => !this.getVariantSelection(hijoIndex, g.pagoClubId));
+  }
+
+  /** ¿Falta la variante de un pago concreto? (aviso bajo el select). */
+  isVariantMissing(hijoIndex: number, pagoClubId: number): boolean {
+    if (!this.showMissingBanner) return false;
+    return this.getPaymentGroupsForChild(hijoIndex).some((g) => g.pagoClubId === pagoClubId)
+      && !this.getVariantSelection(hijoIndex, pagoClubId);
+  }
+
+  private parseImporte(value: string | null | undefined): number {
+    if (value == null) return 0;
+    const n = parseFloat(String(value).replace(',', '.'));
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  /** Valida todas las secciones dinámicas del formulario del club. */
+  private validateAllDynamicSections(): boolean {
+    if (!this.dynamicSections) return true;
+    let allValid = true;
+    for (const cmp of this.dynamicSections.toArray()) {
+      if (!cmp.validate()) allValid = false;
+    }
+    return allValid;
+  }
+
+  /** Construye el bloque `answers` del formulario del club para un hijo. */
+  private buildDynamicAnswersFor(hijoIndex: number): ClubRegisterFormAnswers | null {
+    if (!this.dynamicSections || this.dynamicSections.length === 0) return null;
+    const generalCmp = this.dynamicSections.find((c) => c.sectionId === 'general');
+    const tutorCmp = this.dynamicSections.find((c) => c.sectionId === 'tutor');
+    const childCmp = this.dynamicSections.find(
+      (c) => c.sectionId === 'child' && (c.instanceId === hijoIndex || c.instanceId == null),
+    );
+    const consents = [
+      ...(generalCmp ? generalCmp.getConsents() : []),
+      ...(tutorCmp ? tutorCmp.getConsents() : []),
+      ...(childCmp ? childCmp.getConsents() : []),
+    ];
+    const answers: ClubRegisterFormAnswers = {};
+    if (generalCmp) answers.general = generalCmp.getValues();
+    if (tutorCmp) answers.tutor = tutorCmp.getValues();
+    if (childCmp) answers.child = childCmp.getValues();
+    if (consents.length > 0) answers.consents = consents;
+    return answers;
   }
 
   // 🔹 NUEVA FUNCIÓN: valida TODOS los DNIs
@@ -302,6 +548,16 @@ export class ParentChildrenComponent implements OnInit {
       this.childrenForm.markAllAsTouched();
       return;
     }
+
+    // Formulario extendido del club (secciones tutor/general/child por hijo).
+    const dynamicOk = this.validateAllDynamicSections();
+    // Variantes de pago obligatorias cuando el equipo del hijo tiene pagos.
+    const variantsOk = !this.hijosVisibles.some((i) => this.isChildVariantMissing(i));
+    if (!dynamicOk || !variantsOk) {
+      this.showMissingBanner = true;
+      return;
+    }
+    this.showMissingBanner = false;
 
     this.isLoading = true;
 
@@ -387,15 +643,100 @@ export class ParentChildrenComponent implements OnInit {
       .registerPadreHijos({ padre: padreData, hijos: hijosData })
       .subscribe({
         next: () => {
+          this.persistClubFormAndVariants();
           this.isLoading = false;
           this.snackBar.open('Registro exitoso.', 'Cerrar', { duration: 5000 });
-          this.autoLogin();
+          this.autoLoginThenSuccess();
         },
         error: () => {
           this.isLoading = false;
           this.snackBar.open('Error al registrar.', 'Cerrar', { duration: 5000 });
         },
       });
+  }
+
+  /**
+   * Guarda (en demo, simulado) las respuestas del formulario extendido del
+   * club y las variantes de pago elegidas por hijo. Fire-and-forget.
+   */
+  private persistClubFormAndVariants(): void {
+    if (this.modo !== 'club' || this.clubId <= 0) return;
+
+    // Respuestas del formulario dinámico (una por hijo).
+    for (const index of this.hijosVisibles) {
+      const answers = this.buildDynamicAnswersFor(index);
+      if (answers) {
+        this.clubRegisterFormApi
+          .saveResponse({ clubId: this.clubId, userId: 0, answers, variant: 'minor' })
+          .subscribe({ next: () => {}, error: () => {} });
+      }
+    }
+
+    // Selección de variantes de pago por hijo.
+    const selecciones = this.hijosVisibles.flatMap((index) => {
+      const porHijo = this.variantSelections[index] || {};
+      return Object.keys(porHijo)
+        .map((k) => Number(k))
+        .filter((pagoClubId) => porHijo[pagoClubId] > 0)
+        .map((pagoClubId) => ({
+          pagoClubId,
+          playerId: 8001 + index,
+          varianteId: porHijo[pagoClubId],
+        }));
+    });
+    if (selecciones.length > 0) {
+      this.clubRegisterFormApi
+        .saveSeleccionVariantesRegistro({ clubId: this.clubId, selecciones })
+        .subscribe({ next: () => {}, error: () => {} });
+    }
+  }
+
+  /**
+   * Auto-login (para dejar sesión iniciada) y luego navega a la pantalla de
+   * éxito `/registro-padres/exito` (paridad con producción).
+   */
+  private autoLoginThenSuccess(): void {
+    const email = this.parentForm.get('email')?.value;
+    const password = this.parentForm.get('password')?.value;
+    if (!email || !password) {
+      this.goSuccessScreen(false);
+      return;
+    }
+    const login = new LoginModel(email.trim(), password.trim());
+    this.loginService.login(login).subscribe({
+      next: (res) => this.goSuccessScreen(!!res?.data),
+      error: () => this.goSuccessScreen(false),
+    });
+  }
+
+  /** Navega a la pantalla de éxito con las listas de hijos y flags de pago. */
+  private goSuccessScreen(autoLoginOk: boolean): void {
+    const pideTarjeta = this.requiereTarjetaRegistro;
+    const children = this.hijosVisibles
+      .map((index) => ({
+        playerId: 8001 + index,
+        teamId: Number(this.childrenForm.get('team' + (index + 1))?.value) || 0,
+        nombre: `${this.childrenForm.get('hijo' + (index + 1))?.value ?? ''} `
+          + `${this.childrenForm.get('ape' + (index + 1))?.value ?? ''}`.trim(),
+      }))
+      .filter((c) => c.teamId > 0);
+
+    const playerIds = children.map((c) => c.playerId).join(',');
+    const teamIds = children.map((c) => c.teamId).join(',');
+    const childNames = children.map((c) => encodeURIComponent(c.nombre || '')).join(',');
+
+    this.router.navigate(['/registro-padres/exito'], {
+      queryParams: {
+        clubId: this.clubId || undefined,
+        autoLoginOk: autoLoginOk ? '1' : '0',
+        pedirTarjeta: pideTarjeta && children.length > 0 ? '1' : undefined,
+        teamId: pideTarjeta && children.length > 0 ? children[0].teamId : undefined,
+        playerId: pideTarjeta && children.length > 0 ? children[0].playerId : undefined,
+        playerIds: pideTarjeta && children.length > 0 ? playerIds : undefined,
+        teamIds: pideTarjeta && children.length > 0 ? teamIds : undefined,
+        childNames: pideTarjeta && children.length > 0 ? childNames : undefined,
+      },
+    });
   }
 
   private doRegistrarEmail(consentimientoIA: 0 | 1 = 1): void {

@@ -1,0 +1,71 @@
+<div class="mid-page">
+
+  <!-- ─────────────── HEADER ─────────────── -->
+  <header class="mid-header">
+    <button class="mid-back" type="button" (click)="back()" [title]="'COMMON.BACK' | translate">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <div class="mid-header__title">
+      <div class="mid-header__icon"><i class="bi bi-folder2-open"></i></div>
+      <div class="mid-header__text">
+        <h1>{{ 'CLUB_DOCS.ABONADO.PAGE_TITLE' | translate }}</h1>
+        <p>{{ 'CLUB_DOCS.ABONADO.PAGE_SUBTITLE' | translate }}</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─────────────── LOADING ─────────────── -->
+  <div class="mid-loading" *ngIf="loading">
+    <div class="mid-loading__spinner"></div>
+    <p>{{ 'CLUB_DOCS.LOADING' | translate }}</p>
+  </div>
+
+  <!-- ─────────────── EMPTY ─────────────── -->
+  <div class="mid-empty" *ngIf="!loading && docs.length === 0">
+    <div class="mid-empty__icon"><i class="bi bi-folder-x"></i></div>
+    <h2>{{ 'CLUB_DOCS.ABONADO.EMPTY_TITLE' | translate }}</h2>
+    <p>{{ 'CLUB_DOCS.ABONADO.EMPTY_SUBTITLE' | translate }}</p>
+  </div>
+
+  <!-- ─────────────── LISTA ─────────────── -->
+  <section class="mid-list" *ngIf="!loading && docs.length">
+    <article *ngFor="let d of docs"
+             class="mid-card"
+             [class.mid-card--pinned]="d.pinned"
+             [class.mid-card--busy]="busyDocId === d.id">
+
+      <div class="mid-card__icon">
+        <i class="bi" [ngClass]="iconForCategoria(d.categoria)"></i>
+      </div>
+
+      <div class="mid-card__body">
+        <div class="mid-card__head">
+          <span class="mid-card__cat">
+            {{ ('CLUB_DOCS.CATEGORY.' + d.categoria.toUpperCase()) | translate }}
+          </span>
+          <span *ngIf="d.pinned" class="mid-card__pin" [title]="'CLUB_DOCS.PINNED' | translate">
+            <i class="bi bi-pin-angle-fill"></i>
+          </span>
+        </div>
+        <h3 class="mid-card__title">{{ d.titulo }}</h3>
+        <p *ngIf="d.descripcion" class="mid-card__desc">{{ d.descripcion }}</p>
+        <ul class="mid-card__meta">
+          <li><i class="bi bi-file-earmark"></i><span>{{ d.nombreOriginal }}</span></li>
+          <li><i class="bi bi-hdd"></i><span>{{ prettySize(d.sizeBytes) }}</span></li>
+          <li><i class="bi bi-calendar3"></i><span>{{ d.createdAt | date:'dd MMM y' }}</span></li>
+        </ul>
+      </div>
+
+      <div class="mid-card__action">
+        <button type="button"
+                class="mid-action"
+                [disabled]="busyDocId === d.id"
+                (click)="download(d)">
+          <i *ngIf="busyDocId !== d.id" class="bi bi-download"></i>
+          <i *ngIf="busyDocId === d.id" class="bi bi-arrow-repeat spin"></i>
+          <span>{{ 'CLUB_DOCS.ACTIONS.DOWNLOAD' | translate }}</span>
+        </button>
+      </div>
+    </article>
+  </section>
+</div>

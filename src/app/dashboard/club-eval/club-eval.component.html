@@ -1,0 +1,183 @@
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+  <h2 class="table-title">{{ 'CLUB_EVAL.TITLE' | translate }}</h2>
+  <div class="header-actions-right">
+    <button class="btn-config-header" (click)="openConfig()">
+      <i class="bi bi-gear"></i>
+      <span>{{ 'CLUB_EVAL.CONFIG.TITLE' | translate }}</span>
+    </button>
+  </div>
+</div>
+
+<div class="club-eval-container">
+
+  <!-- TABS -->
+  <div class="eval-tabs">
+    <button class="tab-btn" [class.active]="activeTab === 'players'" (click)="onTabChange('players')">
+      <i class="bi bi-people"></i>
+      <span>{{ 'CLUB_EVAL.TABS.PLAYERS' | translate }}</span>
+    </button>
+    <button *ngIf="pipelineEnabled" class="tab-btn" [class.active]="activeTab === 'pipeline'" (click)="onTabChange('pipeline')">
+      <i class="bi bi-kanban"></i>
+      <span>{{ 'CLUB_EVAL.TABS.PIPELINE' | translate }}</span>
+    </button>
+  </div>
+
+  <!-- ===================== TAB: JUGADORES ===================== -->
+  <div *ngIf="activeTab === 'players'" class="tab-content">
+
+    <div class="players-header">
+      <div class="team-select-wrap" *ngIf="teams.length > 0">
+        <i class="bi bi-shield"></i>
+        <select class="team-select" [ngModel]="selectedTeamId" (ngModelChange)="onTeamChange($event)">
+          <option *ngFor="let t of teams" [value]="t.value">{{ t.name }}</option>
+        </select>
+      </div>
+      <div class="search-wrap">
+        <i class="bi bi-search"></i>
+        <input type="text" [(ngModel)]="playersSearch"
+          [placeholder]="'CLUB_EVAL.PLAYERS.SEARCH_PH' | translate">
+      </div>
+      <div class="players-actions" *ngIf="selectedTeamId && players.length > 0">
+        <button class="btn-action-sm btn-new-session" (click)="openSession()" title="{{ 'CLUB_EVAL.SESSION.BTN' | translate }}">
+          <i class="bi bi-plus-lg"></i>
+          {{ 'CLUB_EVAL.SESSION.BTN' | translate }}
+        </button>
+
+        <!-- Dropdown: sesiones anteriores -->
+        <div class="past-sessions-wrap" *ngIf="pastSessionDates.length > 0">
+          <button class="btn-action-sm btn-past-sessions" (click)="showPastSessions = !showPastSessions">
+            <i class="bi bi-clock-history"></i>
+            {{ 'CLUB_EVAL.SESSION.PAST_SESSIONS' | translate }}
+            <i class="bi" [class.bi-chevron-down]="!showPastSessions" [class.bi-chevron-up]="showPastSessions"></i>
+          </button>
+          <div class="past-sessions-dropdown" *ngIf="showPastSessions">
+            <button *ngFor="let d of pastSessionDates" class="past-session-item" (click)="openPastSession(d); showPastSessions = false">
+              <i class="bi bi-calendar3"></i>
+              {{ formatSessionDate(d) }}
+              <i class="bi bi-pencil-fill edit-icon"></i>
+            </button>
+          </div>
+        </div>
+
+        <button class="btn-action-sm" (click)="openCompare()" title="{{ 'CLUB_EVAL.COMPARE.BTN_SHORT' | translate }}">
+          <i class="bi bi-bar-chart-line"></i>
+          {{ 'CLUB_EVAL.COMPARE.BTN_SHORT' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="playersLoading" class="loading-state">
+      <div class="spinner"></div>
+    </div>
+
+    <div *ngIf="!playersLoading && !selectedTeamId" class="empty-state">
+      <i class="bi bi-shield"></i>
+      <p>{{ 'CLUB_EVAL.PLAYERS.EMPTY_HINT' | translate }}</p>
+    </div>
+
+    <div *ngIf="!playersLoading && selectedTeamId && filteredPlayers.length === 0" class="empty-state">
+      <i class="bi bi-people"></i>
+      <p>{{ 'CLUB_EVAL.PLAYERS.EMPTY' | translate }}</p>
+    </div>
+
+    <div *ngIf="!playersLoading && selectedTeamId && filteredPlayers.length > 0" class="players-grid">
+      <div *ngFor="let player of filteredPlayers" class="player-card" (click)="openPlayer(player.playerId)">
+
+        <!-- Foto del jugador -->
+        <div class="card-photo-wrap">
+          <img [src]="imageBaseUrl + player.foto"
+               [alt]="player.nombre"
+               class="card-photo"
+               [class.hidden]="!player.foto || brokenPhotos[player.playerId]"
+               (error)="onPhotoError(player.playerId)">
+          <div class="card-photo-placeholder" [class.hidden]="player.foto && !brokenPhotos[player.playerId]">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <span *ngIf="player.numero" class="card-dorsal">{{ player.numero }}</span>
+          <span *ngIf="pipelineEnabled && player.pipelineStage" class="card-pipeline-badge">{{ player.pipelineStage }}</span>
+        </div>
+
+        <!-- Cuerpo de la tarjeta -->
+        <div class="card-body">
+          <div class="card-name">{{ player.nombre }} {{ player.apellido }}</div>
+
+          <div class="card-positions">
+            <span class="pos-badge primary">{{ player.posicion }}</span>
+            <span *ngIf="player.posicionDos" class="pos-badge secondary">{{ player.posicionDos }}</span>
+          </div>
+
+          <div class="card-stats-row">
+            <div class="card-stat" title="{{ 'CLUB_EVAL.PLAYERS.TOTAL_EVALS' | translate }}">
+              <i class="bi bi-clipboard2-check"></i>
+              <span>{{ player.evalCount || 0 }} {{ 'CLUB_EVAL.PLAYERS.TOTAL_EVALS' | translate }}</span>
+            </div>
+            <div *ngIf="player.lastEvalDate" class="card-stat" title="{{ 'CLUB_EVAL.PLAYERS.LAST_EVAL' | translate }}">
+              <i class="bi bi-calendar3"></i>
+              <span>{{ player.lastEvalDate | date:'dd/MM/yy' }}</span>
+            </div>
+            <div *ngIf="!player.lastEvalDate" class="card-stat no-eval">
+              <i class="bi bi-dash-circle"></i>
+              <span>{{ 'CLUB_EVAL.PLAYERS.NO_EVALS' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== TAB: PIPELINE ===================== -->
+  <div *ngIf="activeTab === 'pipeline'" class="tab-content">
+
+    <div *ngIf="pipelineLoading" class="loading-state">
+      <div class="spinner"></div>
+    </div>
+
+    <div *ngIf="!pipelineLoading" class="pipeline-board">
+      <div *ngFor="let stage of pipelineData" class="pipeline-column">
+        <div class="pipeline-col-header">
+          <span class="stage-label">{{ stage.stageLabel }}</span>
+          <span class="stage-count">{{ stage.players.length }}</span>
+        </div>
+
+        <div class="pipeline-col-body">
+          <div *ngFor="let p of stage.players" class="pipeline-player-card" (click)="openPipelinePlayer(p.playerId)">
+            <div class="pp-avatar">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <div class="pp-info">
+              <span class="pp-name">{{ p.playerName }}</span>
+              <span class="pp-pos">{{ p.playerPosition }}</span>
+            </div>
+            <div class="pp-actions" (click)="$event.stopPropagation()">
+              <select class="stage-select" [value]="p.stageKey" (change)="onMovePlayer(p.playerId, $any($event.target).value)">
+                <option *ngFor="let s of pipelineData" [value]="s.stageKey">{{ s.stageLabel }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div *ngIf="stage.players.length === 0" class="pipeline-empty">
+            <span>{{ 'CLUB_EVAL.PIPELINE.EMPTY_STAGE' | translate }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="pipelineData.length === 0" class="empty-state">
+        <i class="bi bi-kanban"></i>
+        <p>{{ 'CLUB_EVAL.PIPELINE.NO_STAGES' | translate }}</p>
+        <button class="btn-primary" (click)="openConfig()">
+          <i class="bi bi-gear"></i>
+          {{ 'CLUB_EVAL.CONFIG.TITLE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

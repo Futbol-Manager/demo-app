@@ -1,0 +1,56 @@
+<div class="onboarding-overlay">
+  <div class="onboarding-card">
+    <div class="onboarding-header">
+      <div class="step-indicator">
+        <span *ngFor="let s of [1, 2, 3]" class="step-dot" [class.active]="step >= s">●</span>
+      </div>
+      <button class="btn-close-onboarding" (click)="cancelled.emit()">✕</button>
+    </div>
+
+    <!-- Paso 1: Deporte -->
+    <div *ngIf="step === 1" class="onboarding-step">
+      <h2>{{ 'ONBOARDING.STEP1_TITLE' | translate }}</h2>
+      <p>{{ 'ONBOARDING.STEP1_SUBTITLE' | translate }}</p>
+      <div class="sport-grid">
+        <button
+          *ngFor="let s of sports"
+          class="sport-option"
+          [class.unavailable]="!s.available"
+          (click)="s.available && selectSport(s.key)">
+          <span class="sport-emoji">{{ s.emoji }}</span>
+          <span class="sport-label">{{ s.labelKey | translate }}</span>
+          <span *ngIf="!s.available" class="sport-soon">{{ 'INICIO_DEPORTES.COMING_SOON' | translate }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Paso 2: Categoría -->
+    <div *ngIf="step === 2" class="onboarding-step">
+      <h2>{{ 'ONBOARDING.STEP2_TITLE' | translate }}</h2>
+      <div class="option-list">
+        <button
+          *ngFor="let cat of categories"
+          class="option-btn"
+          (click)="selectCategory(cat.value)">
+          {{ cat.label }}
+        </button>
+      </div>
+      <button class="btn-back" (click)="goBack()">← {{ 'ONBOARDING.BACK' | translate }}</button>
+    </div>
+
+    <!-- Paso 3: Tipo de equipo -->
+    <div *ngIf="step === 3" class="onboarding-step">
+      <h2>{{ 'ONBOARDING.STEP3_TITLE' | translate }}</h2>
+      <div class="type-list">
+        <button
+          *ngFor="let t of teamTypes"
+          class="type-btn"
+          (click)="selectType(t.value)">
+          <span class="type-label">{{ t.label }}</span>
+          <span class="type-desc">{{ t.desc }}</span>
+        </button>
+      </div>
+      <button class="btn-back" (click)="goBack()">← {{ 'ONBOARDING.BACK' | translate }}</button>
+    </div>
+  </div>
+</div>

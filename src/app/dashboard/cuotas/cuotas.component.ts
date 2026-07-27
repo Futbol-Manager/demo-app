@@ -111,6 +111,10 @@ export class CuotasComponent implements OnInit, OnDestroy {
   paymentMessage = '';
   paymentMessageType: 'success' | 'error' | 'info' = 'info';
 
+  // ── Variantes de precio (el jugador/padre elige una opción) ──
+  varianteLoadingId: number | null = null;
+  currencySymbol = '€';
+
   // ── Multi-selección & pago múltiple ────────────────────────
   selectedCuotas: any[] = [];
   showMultiPayModal = false;
@@ -259,7 +263,91 @@ export class CuotasComponent implements OnInit, OnDestroy {
     if (!cuota || cuota.desistido) return false;
     if (this.isSphaira(cuota)) return false;
     if (this.isManual(cuota)) return false; // Otros medios de pago: no seleccionable para pagar
+    // Pago con variantes: el padre debe elegir opción y el club validarla antes
+    // de poder cobrarse. Mientras tanto el pago base no es directamente pagable.
+    if (cuota.tieneVariantes) return false;
     return (parseFloat(cuota.pagado) || 0) < (parseFloat(cuota.importe) || 0);
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  //  VARIANTES DE PRECIO (selección por el propio jugador/padre)
+  //  El pago base con variantes muestra un selector. La opción elegida
+  //  queda PENDIENTE de validación del club; hasta entonces no se cobra.
+  // ══════════════════════════════════════════════════════════════════
+
+  /** True si el pago tiene variantes y el jugador aún no tiene una validada. */
+  necesitaElegirVariante(cuota: any): boolean {
+    return !!cuota?.tieneVariantes && cuota?.varianteEstado !== 1;
+  }
+
+  /** Variante seleccionada por el jugador (pendiente de validar), o null. */
+  varianteSeleccionada(cuota: any): any | null {
+    if (!cuota?.tieneVariantes || !cuota?.variantes || !cuota.varianteSeleccionadaId) return null;
+    return cuota.variantes.find((v: any) => v.id === cuota.varianteSeleccionadaId) || null;
+  }
+
+  /** Importe que pagaría el padre por una variante concreta (base + comisiones). */
+  getVarianteDisplayAmount(cuota: any, variante: any): number {
+    if (!variante) return 0;
+    if (cuota?.stripe === 2) return parseFloat(variante.importe) || 0;
+    return this.calcGrossAmount(variante.importe, cuota?.comisionClub ?? 0);
+  }
+
+  /** Regla actual: cuando un pago tiene variantes, el padre elige solo entre ellas. */
+  hasBasePriceOption(_cuota: any): boolean {
+    return false;
+  }
+
+  /** ¿El jugador tiene elegido el PRECIO BASE (varianteId=0) para esta cuota? */
+  isBaseVarianteSelected(cuota: any): boolean {
+    return cuota?.varianteEstado != null && cuota.varianteEstado !== -1
+      && (!cuota.varianteSeleccionadaId || cuota.varianteSeleccionadaId === 0);
+  }
+
+  /** Importe que pagaría el padre por el PRECIO BASE (base + comisiones). */
+  getBaseDisplayAmount(cuota: any): number {
+    return this.getDisplayAmount(cuota);
+  }
+
+  /**
+   * El jugador elige/cambia una opción. Queda pendiente de validación del club.
+   * `varianteId=0` = PRECIO BASE; `varianteId>0` = variante concreta.
+   * Actualización optimista con reversión si el guardado falla.
+   */
+  seleccionarVariante(cuota: any, varianteId: any): void {
+    const vid = parseInt(varianteId, 10);
+    if (!cuota || Number.isNaN(vid) || vid < 0 || cuota.varianteEstado === 1) return;
+    const yaElegida = cuota.varianteSeleccionadaId === vid
+      && cuota.varianteEstado != null && cuota.varianteEstado !== -1;
+    if (yaElegida) return;
+
+    const prevId = cuota.varianteSeleccionadaId;
+    const prevEstado = cuota.varianteEstado;
+    cuota.varianteSeleccionadaId = vid;
+    cuota.varianteEstado = 0;
+    this.varianteLoadingId = cuota.pagoClubId;
+
+    const revert = () => {
+      cuota.varianteSeleccionadaId = prevId;
+      cuota.varianteEstado = prevEstado;
+    };
+
+    this.playerService.selectCuotaVariante(cuota.pagoClubId, this.playerIdUserActual, vid).subscribe({
+      next: (resp: any) => {
+        this.varianteLoadingId = null;
+        if (resp && (resp.status === 200 || resp.status === undefined)) {
+          this.showPaymentFeedback('Opción registrada. Pendiente de validación del club.', 'success');
+        } else {
+          revert();
+          this.showPaymentFeedback('No se pudo registrar la opción. Inténtalo de nuevo.', 'error');
+        }
+      },
+      error: () => {
+        this.varianteLoadingId = null;
+        revert();
+        this.showPaymentFeedback('No se pudo registrar la opción. Inténtalo de nuevo.', 'error');
+      }
+    });
   }
 
   isCuotaSelected(cuota: any): boolean {

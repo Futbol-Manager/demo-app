@@ -1,0 +1,112 @@
+<!-- ─────────────── TAB COMUNICACIONES ─────────────── -->
+
+<section class="bento">
+  <header class="bento-head">
+    <div class="bento-head-icon"><i class="fas fa-paper-plane"></i></div>
+    <div>
+      <h2 class="bento-title">{{ 'SUBS.DETAIL.COM.TITLE' | translate }}</h2>
+      <p class="bento-sub">{{ 'SUBS.DETAIL.COM.SUB' | translate }}</p>
+    </div>
+    <div class="bento-head-actions">
+      <button type="button" class="btn-primary-sph" (click)="openSendModal()">
+        <i class="fas fa-paper-plane"></i>
+        {{ 'SUBS.DETAIL.COM.SEND_NEW' | translate }}
+      </button>
+    </div>
+  </header>
+
+  <div class="docs-loading" *ngIf="comunicacionesLoading">
+    <div class="loader loader--inline"></div>
+    <span>{{ 'SUBS.DETAIL.LOADING' | translate }}</span>
+  </div>
+
+  <div class="empty-state" *ngIf="!comunicacionesLoading && !comunicaciones.length">
+    <i class="fas fa-comment-slash"></i>
+    <p>{{ 'SUBS.DETAIL.COM.EMPTY' | translate }}</p>
+  </div>
+
+  <ol class="timeline" *ngIf="!comunicacionesLoading && comunicaciones.length">
+    <li class="timeline-item" *ngFor="let c of comunicaciones">
+      <div class="tl-marker" [ngClass]="getCanalCss(c.canal)">
+        <span>{{ getCanalIcon(c.canal) }}</span>
+      </div>
+      <div class="tl-card">
+        <div class="tl-head">
+          <span class="tl-channel-label">{{ c.canal }}</span>
+          <span class="state-pill" [ngClass]="getEstadoComCss(c.estado)">
+            {{ getEstadoCom(c.estado) | translate }}
+          </span>
+          <span class="tl-date">{{ formatDate(c.fechaEnvio) }}</span>
+        </div>
+        <h3 class="tl-subject">{{ c.asunto || ('SUBS.DETAIL.COM.NO_SUBJECT' | translate) }}</h3>
+        <p class="tl-body">{{ c.cuerpo }}</p>
+        <p class="tl-error" *ngIf="c.errorMsg">
+          <i class="fas fa-exclamation-circle"></i>
+          {{ c.errorMsg }}
+        </p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<!-- ─────────────── MODAL ENVIAR COMUNICACIÓN ─────────────── -->
+<div class="sph-modal-overlay" *ngIf="showSendModal" (click)="closeSendModal()">
+  <div class="sph-modal sph-modal--wide" (click)="$event.stopPropagation()">
+    <div class="sph-modal-head">
+      <h2><i class="fas fa-paper-plane"></i> {{ 'SUBS.DETAIL.COM.SEND_TITLE' | translate }}</h2>
+      <button type="button" class="sph-modal-close" (click)="closeSendModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="sph-modal-body">
+      <!-- Plantillas rápidas -->
+      <div class="templates-row">
+        <span class="templates-label">{{ 'SUBS.DETAIL.COM.TEMPLATES_LABEL' | translate }}</span>
+        <button type="button" class="chip" *ngFor="let t of templates" (click)="applyTemplate(t.key)">
+          {{ ('SUBS.DETAIL.COM.TEMPLATES.' + t.key + '_NAME') | translate }}
+        </button>
+      </div>
+
+      <div class="bento-grid">
+        <div class="field">
+          <label>{{ 'SUBS.DETAIL.COM.CHANNEL' | translate }}</label>
+          <select [(ngModel)]="sendCanal">
+            <option value="EMAIL">{{ 'SUBS.DETAIL.COM.CHANNELS.EMAIL' | translate }}</option>
+            <!-- PUSH solo es útil si el abonado ya reclamó cuenta (tiene
+                 userId) y tiene la app instalada. Si no, se desactiva con
+                 un hint explicativo. -->
+            <option value="PUSH" [disabled]="!abonado?.userId">
+              {{ 'SUBS.DETAIL.COM.CHANNELS.PUSH' | translate }}<ng-container *ngIf="!abonado?.userId"> ({{ 'SUBS.DETAIL.COM.PUSH_NEEDS_ACCOUNT' | translate }})</ng-container>
+            </option>
+            <option value="EMAIL_PUSH" [disabled]="!abonado?.userId">
+              {{ 'SUBS.DETAIL.COM.CHANNELS.EMAIL_PUSH' | translate }}
+            </option>
+          </select>
+        </div>
+        <div class="field field--full">
+          <label>{{ 'SUBS.DETAIL.COM.RECIPIENT' | translate }}</label>
+          <input type="text" disabled [value]="abonado?.mail || ('SUBS.DETAIL.COM.NO_EMAIL_TXT' | translate)" />
+        </div>
+        <div class="field field--full">
+          <label>{{ 'SUBS.DETAIL.COM.SUBJECT' | translate }}</label>
+          <input type="text" [(ngModel)]="sendAsunto"
+                 [placeholder]="'SUBS.DETAIL.COM.SUBJECT_PLACEHOLDER' | translate" />
+        </div>
+        <div class="field field--full">
+          <label>{{ 'SUBS.DETAIL.COM.BODY' | translate }}</label>
+          <textarea rows="8" [(ngModel)]="sendCuerpo"
+                    [placeholder]="'SUBS.DETAIL.COM.BODY_PLACEHOLDER' | translate"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="sph-modal-foot">
+      <button type="button" class="btn-secondary-sph" (click)="closeSendModal()" [disabled]="sending">
+        {{ 'APP.BUTTONS.CLOSE' | translate }}
+      </button>
+      <button type="button" class="btn-primary-sph" (click)="send()" [disabled]="sending">
+        <i class="fas" [ngClass]="sending ? 'fa-spinner fa-spin' : 'fa-paper-plane'"></i>
+        {{ (sending ? 'SUBS.DETAIL.COM.SENDING' : 'SUBS.DETAIL.COM.SEND_NOW') | translate }}
+      </button>
+    </div>
+  </div>
+</div>

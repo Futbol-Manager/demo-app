@@ -325,6 +325,33 @@
                 </button>
               </ng-container>
             </div>
+
+            <!-- Selector de variante de precio (el padre elige una opción) -->
+            <div class="cq-variantes" *ngIf="necesitaElegirVariante(cuota)" (click)="$event.stopPropagation()">
+              <div class="cq-variantes-head">
+                <span class="cq-variantes-title"><i class="bi bi-ui-radios"></i> {{ 'CQ.VARIANTE.TITLE' | translate }}</span>
+                <span class="cq-variantes-pending" *ngIf="cuota.varianteEstado === 0">{{ 'CQ.VARIANTE.PENDING' | translate }}</span>
+              </div>
+              <p class="cq-variantes-hint">{{ 'CQ.VARIANTE.HINT' | translate }}</p>
+              <div class="cq-variantes-options">
+                <label class="cq-variante-opt"
+                       *ngFor="let v of cuota.variantes"
+                       [class.cq-variante-opt--active]="cuota.varianteSeleccionadaId === v.id">
+                  <input type="radio" [name]="'variante-' + cuota.pagoClubId"
+                         [checked]="cuota.varianteSeleccionadaId === v.id"
+                         [disabled]="varianteLoadingId === cuota.pagoClubId"
+                         (change)="seleccionarVariante(cuota, v.id)">
+                  <span class="cq-variante-opt-radio"><i class="bi bi-check-lg"></i></span>
+                  <span class="cq-variante-opt-body">
+                    <span class="cq-variante-opt-name">{{ v.nombre }}</span>
+                    <span class="cq-variante-opt-pay">
+                      <span class="cq-variante-opt-price">{{ getVarianteDisplayAmount(cuota, v).toFixed(2) }} {{ currencySymbol }}</span>
+                      <span class="cq-variante-opt-label" *ngIf="!isManual(cuota)">{{ 'CQ.VARIANTE.PARENT_PAYS' | translate }}</span>
+                    </span>
+                  </span>
+                </label>
+              </div>
+            </div>
           </div>
 
           <div class="cq-empty" *ngIf="!cuotasObligatoriasFiltered.length">
@@ -413,6 +440,33 @@
               <div class="cq-mc-cell">
                 <span class="cq-mc-label">F. pago</span>
                 <span class="cq-mc-val">{{ cuota.fechaPago || '-' }}</span>
+              </div>
+            </div>
+
+            <!-- Selector de variante de precio (el padre elige una opción) -->
+            <div class="cq-variantes" *ngIf="necesitaElegirVariante(cuota)" (click)="$event.stopPropagation()">
+              <div class="cq-variantes-head">
+                <span class="cq-variantes-title"><i class="bi bi-ui-radios"></i> {{ 'CQ.VARIANTE.TITLE' | translate }}</span>
+                <span class="cq-variantes-pending" *ngIf="cuota.varianteEstado === 0">{{ 'CQ.VARIANTE.PENDING' | translate }}</span>
+              </div>
+              <p class="cq-variantes-hint">{{ 'CQ.VARIANTE.HINT' | translate }}</p>
+              <div class="cq-variantes-options">
+                <label class="cq-variante-opt"
+                       *ngFor="let v of cuota.variantes"
+                       [class.cq-variante-opt--active]="cuota.varianteSeleccionadaId === v.id">
+                  <input type="radio" [name]="'variante-m-' + cuota.pagoClubId"
+                         [checked]="cuota.varianteSeleccionadaId === v.id"
+                         [disabled]="varianteLoadingId === cuota.pagoClubId"
+                         (change)="seleccionarVariante(cuota, v.id)">
+                  <span class="cq-variante-opt-radio"><i class="bi bi-check-lg"></i></span>
+                  <span class="cq-variante-opt-body">
+                    <span class="cq-variante-opt-name">{{ v.nombre }}</span>
+                    <span class="cq-variante-opt-pay">
+                      <span class="cq-variante-opt-price">{{ getVarianteDisplayAmount(cuota, v).toFixed(2) }} {{ currencySymbol }}</span>
+                      <span class="cq-variante-opt-label" *ngIf="!isManual(cuota)">{{ 'CQ.VARIANTE.PARENT_PAYS' | translate }}</span>
+                    </span>
+                  </span>
+                </label>
               </div>
             </div>
           </div>
@@ -592,6 +646,33 @@
                 </button>
               </ng-container>
             </div>
+
+            <!-- Selector de variante de precio (el padre elige una opción) -->
+            <div class="cq-variantes" *ngIf="necesitaElegirVariante(cuota)" (click)="$event.stopPropagation()">
+              <div class="cq-variantes-head">
+                <span class="cq-variantes-title"><i class="bi bi-ui-radios"></i> {{ 'CQ.VARIANTE.TITLE' | translate }}</span>
+                <span class="cq-variantes-pending" *ngIf="cuota.varianteEstado === 0">{{ 'CQ.VARIANTE.PENDING' | translate }}</span>
+              </div>
+              <p class="cq-variantes-hint">{{ 'CQ.VARIANTE.HINT' | translate }}</p>
+              <div class="cq-variantes-options">
+                <label class="cq-variante-opt"
+                       *ngFor="let v of cuota.variantes"
+                       [class.cq-variante-opt--active]="cuota.varianteSeleccionadaId === v.id">
+                  <input type="radio" [name]="'variante-' + cuota.pagoClubId"
+                         [checked]="cuota.varianteSeleccionadaId === v.id"
+                         [disabled]="varianteLoadingId === cuota.pagoClubId"
+                         (change)="seleccionarVariante(cuota, v.id)">
+                  <span class="cq-variante-opt-radio"><i class="bi bi-check-lg"></i></span>
+                  <span class="cq-variante-opt-body">
+                    <span class="cq-variante-opt-name">{{ v.nombre }}</span>
+                    <span class="cq-variante-opt-pay">
+                      <span class="cq-variante-opt-price">{{ getVarianteDisplayAmount(cuota, v).toFixed(2) }} {{ currencySymbol }}</span>
+                      <span class="cq-variante-opt-label" *ngIf="!isManual(cuota)">{{ 'CQ.VARIANTE.PARENT_PAYS' | translate }}</span>
+                    </span>
+                  </span>
+                </label>
+              </div>
+            </div>
           </div>
 
           <div class="cq-empty" *ngIf="!cuotasNoObligatoriasFiltered.length">
@@ -680,6 +761,33 @@
               <div class="cq-mc-cell">
                 <span class="cq-mc-label">F. pago</span>
                 <span class="cq-mc-val">{{ cuota.fechaPago || '-' }}</span>
+              </div>
+            </div>
+
+            <!-- Selector de variante de precio (el padre elige una opción) -->
+            <div class="cq-variantes" *ngIf="necesitaElegirVariante(cuota)" (click)="$event.stopPropagation()">
+              <div class="cq-variantes-head">
+                <span class="cq-variantes-title"><i class="bi bi-ui-radios"></i> {{ 'CQ.VARIANTE.TITLE' | translate }}</span>
+                <span class="cq-variantes-pending" *ngIf="cuota.varianteEstado === 0">{{ 'CQ.VARIANTE.PENDING' | translate }}</span>
+              </div>
+              <p class="cq-variantes-hint">{{ 'CQ.VARIANTE.HINT' | translate }}</p>
+              <div class="cq-variantes-options">
+                <label class="cq-variante-opt"
+                       *ngFor="let v of cuota.variantes"
+                       [class.cq-variante-opt--active]="cuota.varianteSeleccionadaId === v.id">
+                  <input type="radio" [name]="'variante-m-' + cuota.pagoClubId"
+                         [checked]="cuota.varianteSeleccionadaId === v.id"
+                         [disabled]="varianteLoadingId === cuota.pagoClubId"
+                         (change)="seleccionarVariante(cuota, v.id)">
+                  <span class="cq-variante-opt-radio"><i class="bi bi-check-lg"></i></span>
+                  <span class="cq-variante-opt-body">
+                    <span class="cq-variante-opt-name">{{ v.nombre }}</span>
+                    <span class="cq-variante-opt-pay">
+                      <span class="cq-variante-opt-price">{{ getVarianteDisplayAmount(cuota, v).toFixed(2) }} {{ currencySymbol }}</span>
+                      <span class="cq-variante-opt-label" *ngIf="!isManual(cuota)">{{ 'CQ.VARIANTE.PARENT_PAYS' | translate }}</span>
+                    </span>
+                  </span>
+                </label>
               </div>
             </div>
           </div>

@@ -1,0 +1,87 @@
+<div class="mle-backdrop" (click)="cancel()" role="presentation"></div>
+
+<div class="mle-dialog" role="dialog" aria-modal="true" [attr.aria-busy]="saving"
+     (click)="$event.stopPropagation()">
+
+  <header class="mle-header">
+    <div class="mle-header-icon"><i class="bi bi-list-ul"></i></div>
+    <div class="mle-header-text">
+      <h2 class="mle-title">{{ 'SIDEBAR.LAYOUT.EDITOR_TITLE' | translate }}</h2>
+      <p class="mle-subtitle">{{ 'SIDEBAR.LAYOUT.EDITOR_SUBTITLE' | translate }}</p>
+    </div>
+    <button type="button"
+            class="mle-close-btn"
+            [attr.aria-label]="'COMMON.CLOSE' | translate"
+            [disabled]="saving"
+            (click)="cancel()">
+      <i class="bi bi-x-lg" aria-hidden="true"></i>
+    </button>
+  </header>
+
+  <p class="mle-hint">
+    <i class="bi bi-info-circle" aria-hidden="true"></i>
+    <span>{{ 'SIDEBAR.LAYOUT.EDITOR_HINT' | translate }}</span>
+  </p>
+
+  <div class="mle-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
+    <div *ngFor="let item of items; let i = index; trackBy: trackByCode"
+         class="mle-item"
+         cdkDrag>
+      <div class="mle-item-drag-handle" cdkDragHandle aria-hidden="true">
+        <i class="bi bi-grip-vertical"></i>
+      </div>
+      <div class="mle-item-icon">
+        <i class="bi {{ item.icon }}"></i>
+      </div>
+      <span class="mle-item-label">{{ item.labelKey | translate }}</span>
+      <div class="mle-item-arrows">
+        <button type="button"
+                class="mle-arrow-btn"
+                [disabled]="i === 0 || saving"
+                [attr.aria-label]="'SIDEBAR.LAYOUT.MOVE_UP' | translate"
+                [title]="'SIDEBAR.LAYOUT.MOVE_UP' | translate"
+                (click)="moveUp(i, $event)">
+          <i class="bi bi-chevron-up" aria-hidden="true"></i>
+        </button>
+        <button type="button"
+                class="mle-arrow-btn"
+                [disabled]="i === items.length - 1 || saving"
+                [attr.aria-label]="'SIDEBAR.LAYOUT.MOVE_DOWN' | translate"
+                [title]="'SIDEBAR.LAYOUT.MOVE_DOWN' | translate"
+                (click)="moveDown(i, $event)">
+          <i class="bi bi-chevron-down" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <!-- Placeholder visible mientras se arrastra el item original -->
+      <div class="mle-item-placeholder" *cdkDragPlaceholder></div>
+    </div>
+
+    <div class="mle-empty" *ngIf="items.length === 0">
+      <i class="bi bi-info-circle" aria-hidden="true"></i>
+      <span>{{ 'SIDEBAR.LAYOUT.EDITOR_EMPTY' | translate }}</span>
+    </div>
+  </div>
+
+  <p class="mle-error" *ngIf="errorKey">
+    <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+    <span>{{ errorKey | translate }}</span>
+  </p>
+
+  <footer class="mle-footer">
+    <button type="button"
+            class="mle-btn mle-btn--secondary"
+            [disabled]="saving"
+            (click)="cancel()">
+      <i class="bi bi-x-lg" aria-hidden="true"></i>
+      <span>{{ 'COMMON.CANCEL' | translate }}</span>
+    </button>
+    <button type="button"
+            class="mle-btn mle-btn--primary"
+            [disabled]="saving || items.length === 0"
+            (click)="save()">
+      <i class="bi" [ngClass]="saving ? 'bi-arrow-clockwise mle-spin' : 'bi-check2'" aria-hidden="true"></i>
+      <span>{{ (saving ? 'COMMON.SAVING' : 'COMMON.SAVE') | translate }}</span>
+    </button>
+  </footer>
+</div>

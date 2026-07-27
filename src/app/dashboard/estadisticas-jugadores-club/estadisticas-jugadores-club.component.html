@@ -30,6 +30,48 @@
 <section class="main-section" *ngIf="datosCargados">
   <div class="table-card" data-tutorial="ej-tabla">
 
+    <!-- TOOLBAR: pills de deporte + filtros -->
+    <div class="players-toolbar">
+      <div class="sport-pills-row" *ngIf="availableSports.length > 1">
+        <button
+          *ngFor="let s of availableSports"
+          class="sport-pill-btn"
+          [class.sport-pill-btn--active]="filterSport === s.sport"
+          (click)="setSportFilter(s.sport)">
+          <span class="sport-pill-btn__icon">{{ s.emoji }}</span>
+          <span class="sport-pill-btn__count">{{ s.count }}</span>
+        </button>
+      </div>
+
+      <div class="players-filters">
+        <div class="search-box">
+          <i class="bi bi-search search-icon"></i>
+          <input
+            type="text"
+            class="search-input"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onFilterChange()"
+            placeholder="Buscar jugador…" />
+          <button *ngIf="searchTerm" class="search-clear" (click)="searchTerm=''; onFilterChange()">✕</button>
+        </div>
+
+        <select class="filter-select" [(ngModel)]="filterTeam" (ngModelChange)="onFilterChange()">
+          <option value="">{{ 'PLAYERS.TABLE.TEAM' | translate }}</option>
+          <option *ngFor="let t of uniqueTeams" [value]="t">{{ t }}</option>
+        </select>
+
+        <select class="filter-select" [(ngModel)]="filterPosition" (ngModelChange)="onFilterChange()">
+          <option value="">{{ 'PLAYERS.TABLE.POSITION' | translate }}</option>
+          <option *ngFor="let p of uniquePositions" [value]="p">{{ p }}</option>
+        </select>
+
+        <button *ngIf="activeFiltersCount > 1" class="filter-clear-btn" (click)="clearFilters()">
+          <i class="bi bi-x-circle"></i>
+          Limpiar
+        </button>
+      </div>
+    </div>
+
     <div class="table-scroll">
       <table class="stats-table">
 

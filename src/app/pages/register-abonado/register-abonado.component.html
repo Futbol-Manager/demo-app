@@ -1,0 +1,386 @@
+<div class="reg-page">
+  <!-- Selector de idioma flotante (top-right) -->
+  <div class="reg-lang">
+    <button type="button" class="reg-lang__btn" (click)="langMenuOpen = !langMenuOpen"
+      [attr.aria-expanded]="langMenuOpen" [attr.aria-label]="'REGISTER.LANGUAGE_LABEL' | translate">
+      <i class="bi bi-translate"></i>
+      <span>{{ currentLangLabel }}</span>
+      <i class="bi bi-chevron-down" [class.open]="langMenuOpen"></i>
+    </button>
+    <div class="reg-lang__menu" *ngIf="langMenuOpen">
+      <button type="button" *ngFor="let opt of languageOptions"
+        class="reg-lang__menu-item" [class.active]="translate.currentLang === opt.code"
+        (click)="changeLanguage(opt.code)">
+        <span>{{ opt.label }}</span>
+        <i class="bi bi-check-lg" *ngIf="translate.currentLang === opt.code"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="reg-shell">
+    <!-- Header con logo + claim -->
+    <header class="reg-header">
+      <img src="assets/images/logo_sphaira_green.svg" alt="Sphaira Tech" class="reg-logo" />
+      <h1 class="reg-title">{{ 'REGISTER_ABONADO.TITLE' | translate }}</h1>
+      <p class="reg-subtitle">{{ 'REGISTER_ABONADO.SUBTITLE' | translate }}</p>
+    </header>
+
+    <!-- Indicador de pasos -->
+    <ol class="reg-steps" aria-label="Pasos del registro">
+      <li class="reg-step" [class.active]="step === 1" [class.done]="step > 1">
+        <span class="reg-step__num">1</span>
+        <span class="reg-step__label">{{ 'REGISTER_ABONADO.STEPS.CLUB' | translate }}</span>
+      </li>
+      <li class="reg-step__sep" aria-hidden="true"></li>
+      <li class="reg-step" [class.active]="step === 2" [class.done]="step > 2">
+        <span class="reg-step__num">2</span>
+        <span class="reg-step__label">{{ 'REGISTER_ABONADO.STEPS.DATA' | translate }}</span>
+      </li>
+      <li class="reg-step__sep" aria-hidden="true"></li>
+      <li class="reg-step" [class.active]="step === 3">
+        <span class="reg-step__num">3</span>
+        <span class="reg-step__label">{{ 'REGISTER_ABONADO.STEPS.DONE' | translate }}</span>
+      </li>
+    </ol>
+
+    <!-- ───────── PASO 1: Buscar club ───────── -->
+    <section class="reg-card" *ngIf="step === 1">
+      <h2 class="reg-card__title">{{ 'REGISTER_ABONADO.STEP1.TITLE' | translate }}</h2>
+      <p class="reg-card__hint">{{ 'REGISTER_ABONADO.STEP1.HINT' | translate }}</p>
+
+      <div class="reg-search">
+        <i class="bi bi-search reg-search__icon"></i>
+        <input type="text" class="reg-search__input"
+          [(ngModel)]="clubSearchTerm"
+          (input)="onClubSearchChange()"
+          [attr.placeholder]="'REGISTER_ABONADO.STEP1.PLACEHOLDER' | translate"
+          autocomplete="off" />
+        <span class="reg-search__spinner" *ngIf="searching">
+          <i class="bi bi-arrow-clockwise spin"></i>
+        </span>
+      </div>
+
+      <div class="reg-results" *ngIf="clubResults.length > 0">
+        <button type="button" class="reg-club" *ngFor="let club of clubResults"
+          (click)="selectClub(club)">
+          <div class="reg-club__avatar">
+            <img *ngIf="club.imgPerfil" [src]="imageBaseUrl + club.imgPerfil" [alt]="club.name"
+              (error)="onClubImageError($event, club)" />
+            <i *ngIf="!club.imgPerfil" class="bi bi-shield-fill"></i>
+          </div>
+          <div class="reg-club__info">
+            <span class="reg-club__name">{{ club.name }}</span>
+            <span class="reg-club__cta">{{ 'REGISTER_ABONADO.STEP1.SELECT' | translate }}
+              <i class="bi bi-arrow-right"></i>
+            </span>
+          </div>
+        </button>
+      </div>
+
+      <div class="reg-empty" *ngIf="searchedAtLeastOnce && !searching && clubResults.length === 0">
+        <i class="bi bi-emoji-frown"></i>
+        <p>{{ 'REGISTER_ABONADO.STEP1.NO_RESULTS' | translate }}</p>
+      </div>
+
+      <div class="reg-helper" *ngIf="!searchedAtLeastOnce && !searching">
+        <i class="bi bi-info-circle"></i>
+        <p>{{ 'REGISTER_ABONADO.STEP1.HELP' | translate }}</p>
+      </div>
+
+      <div class="reg-actions reg-actions--center">
+        <a class="reg-link" routerLink="/home">
+          <i class="bi bi-arrow-left"></i>
+          {{ 'REGISTER_ABONADO.BACK_HOME' | translate }}
+        </a>
+      </div>
+    </section>
+
+    <!-- ───────── PASO 2: Formulario de datos ───────── -->
+    <section class="reg-card" *ngIf="step === 2">
+      <div class="reg-selected-club">
+        <div class="reg-club__avatar reg-club__avatar--small">
+          <img *ngIf="selectedClub?.imgPerfil" [src]="imageBaseUrl + selectedClub?.imgPerfil" [alt]="selectedClub?.name"
+            (error)="onClubImageError($event, selectedClub)" />
+          <i *ngIf="!selectedClub?.imgPerfil" class="bi bi-shield-fill"></i>
+        </div>
+        <div>
+          <span class="reg-selected-club__label">{{ 'REGISTER_ABONADO.STEP2.CLUB_LABEL' | translate }}</span>
+          <span class="reg-selected-club__name">{{ selectedClub?.name }}</span>
+        </div>
+        <button type="button" class="reg-link reg-link--inline" (click)="backToSearch()">
+          <i class="bi bi-pencil"></i>
+          {{ 'REGISTER_ABONADO.STEP2.CHANGE_CLUB' | translate }}
+        </button>
+      </div>
+
+      <h2 class="reg-card__title">{{ 'REGISTER_ABONADO.STEP2.TITLE' | translate }}</h2>
+      <p class="reg-card__hint">{{ 'REGISTER_ABONADO.STEP2.HINT' | translate }}</p>
+
+      <div class="reg-loading" *ngIf="loadingSchema">
+        <i class="bi bi-arrow-clockwise spin"></i>
+        <span>{{ 'REGISTER_ABONADO.LOADING_FORM' | translate }}</span>
+      </div>
+
+      <form *ngIf="!loadingSchema" [formGroup]="form" (ngSubmit)="submit()" class="reg-form" novalidate>
+        <!-- ───── Cabecera fija: datos de cuenta (siempre visibles) ───── -->
+        <div class="reg-form__row">
+          <label class="reg-field">
+            <span class="reg-field__label">{{ 'REGISTER_ABONADO.FIELDS.NAME' | translate }} *</span>
+            <input type="text" formControlName="nombre" autocomplete="given-name" />
+            <span class="reg-field__error" *ngIf="isInvalid('nombre')">
+              {{ 'REGISTER_ABONADO.ERRORS.REQUIRED' | translate }}
+            </span>
+          </label>
+          <label class="reg-field">
+            <span class="reg-field__label">{{ 'REGISTER_ABONADO.FIELDS.SURNAMES' | translate }} *</span>
+            <input type="text" formControlName="apellidos" autocomplete="family-name" />
+            <span class="reg-field__error" *ngIf="isInvalid('apellidos')">
+              {{ 'REGISTER_ABONADO.ERRORS.REQUIRED' | translate }}
+            </span>
+          </label>
+        </div>
+
+        <label class="reg-field">
+          <span class="reg-field__label">{{ 'REGISTER_ABONADO.FIELDS.EMAIL' | translate }} *</span>
+          <input type="email" formControlName="email" autocomplete="email" />
+          <span class="reg-field__error" *ngIf="isInvalid('email')">
+            {{ 'REGISTER_ABONADO.ERRORS.EMAIL' | translate }}
+          </span>
+        </label>
+
+        <label class="reg-field">
+          <span class="reg-field__label">{{ 'REGISTER_ABONADO.FIELDS.PASSWORD' | translate }} *</span>
+          <div class="reg-password">
+            <input [type]="showPassword ? 'text' : 'password'" formControlName="password" autocomplete="new-password" />
+            <button type="button" class="reg-password__toggle"
+              (click)="showPassword = !showPassword"
+              [attr.aria-label]="(showPassword ? 'REGISTER_ABONADO.PASSWORD_HIDE' : 'REGISTER_ABONADO.PASSWORD_SHOW') | translate">
+              <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+            </button>
+          </div>
+          <span class="reg-field__hint">{{ 'REGISTER_ABONADO.FIELDS.PASSWORD_HINT' | translate }}</span>
+          <span class="reg-field__error" *ngIf="isInvalid('password')">
+            {{ 'REGISTER_ABONADO.ERRORS.PASSWORD' | translate }}
+          </span>
+        </label>
+
+        <!-- ───── Formulario dinámico del club (si hay schema activo) ───── -->
+        <ng-container *ngIf="hasDynamicSchema && dynamicForm">
+          <ng-container [formGroup]="dynamicForm">
+            <div class="reg-dyn-section" *ngFor="let sec of schemaSections" [class.is-empty]="sec.fields.length === 0">
+              <h3 class="reg-dyn-section__title" *ngIf="sec.fields.length > 0">{{ sec.title }}</h3>
+              <div class="reg-dyn-fields">
+                <ng-container *ngFor="let f of sec.fields">
+
+                  <!-- info: solo bloque de texto, no input -->
+                  <div class="reg-dyn-info" *ngIf="f.type === 'info'">
+                    <i class="bi bi-info-circle"></i>
+                    <div>
+                      <strong *ngIf="f.label">{{ f.label }}</strong>
+                      <p *ngIf="f.text">{{ f.text }}</p>
+                    </div>
+                  </div>
+
+                  <!-- document: descarga del fichero del club -->
+                  <div class="reg-dyn-doc" *ngIf="f.type === 'document'">
+                    <i class="bi bi-file-earmark-arrow-down"></i>
+                    <div class="reg-dyn-doc__info">
+                      <strong>{{ f.label }}</strong>
+                      <span *ngIf="f.text" class="reg-dyn-doc__hint">{{ f.text }}</span>
+                    </div>
+                    <a *ngIf="f.fileUrl" [href]="f.fileUrl" target="_blank" rel="noopener" class="reg-link">
+                      <i class="bi bi-download"></i>
+                      {{ f.fileName || ('REGISTER_ABONADO.DOWNLOAD' | translate) }}
+                    </a>
+                  </div>
+
+                  <!-- text / textarea / number / date -->
+                  <label class="reg-field" *ngIf="f.type === 'text' || f.type === 'textarea' || f.type === 'number' || f.type === 'date'">
+                    <span class="reg-field__label">{{ f.label }}<ng-container *ngIf="f.required"> *</ng-container></span>
+                    <input *ngIf="f.type === 'text'"   type="text"   [formControlName]="f.controlKey" />
+                    <input *ngIf="f.type === 'number'" type="number" [formControlName]="f.controlKey" />
+                    <input *ngIf="f.type === 'date'"   type="date"   [formControlName]="f.controlKey" />
+                    <textarea *ngIf="f.type === 'textarea'" rows="3" [formControlName]="f.controlKey"></textarea>
+                    <span class="reg-field__hint" *ngIf="f.text">{{ f.text }}</span>
+                    <span class="reg-field__error" *ngIf="isDynamicInvalid(f.controlKey)">
+                      {{ 'REGISTER_ABONADO.ERRORS.REQUIRED' | translate }}
+                    </span>
+                  </label>
+
+                  <!-- select -->
+                  <label class="reg-field" *ngIf="f.type === 'select'">
+                    <span class="reg-field__label">{{ f.label }}<ng-container *ngIf="f.required"> *</ng-container></span>
+                    <select [formControlName]="f.controlKey">
+                      <option value="">{{ 'REGISTER_ABONADO.SELECT_PLACEHOLDER' | translate }}</option>
+                      <option *ngFor="let opt of f.options" [value]="opt">{{ opt }}</option>
+                    </select>
+                    <span class="reg-field__error" *ngIf="isDynamicInvalid(f.controlKey)">
+                      {{ 'REGISTER_ABONADO.ERRORS.REQUIRED' | translate }}
+                    </span>
+                  </label>
+
+                  <!-- checkbox -->
+                  <label class="reg-checkbox" *ngIf="f.type === 'checkbox'">
+                    <input type="checkbox" [formControlName]="f.controlKey" />
+                    <span>{{ f.label }}<ng-container *ngIf="f.required"> *</ng-container></span>
+                  </label>
+
+                  <!-- consent (texto largo legal) -->
+                  <div class="reg-dyn-consent" *ngIf="f.type === 'consent'" [class.is-invalid]="isDynamicInvalid(f.controlKey)">
+                    <p class="reg-dyn-consent__text" *ngIf="f.text">{{ f.text }}</p>
+                    <label class="reg-checkbox">
+                      <input type="checkbox" [formControlName]="f.controlKey" />
+                      <span>{{ f.label }}<ng-container *ngIf="f.required"> *</ng-container></span>
+                    </label>
+                  </div>
+
+                  <!-- multi_check -->
+                  <fieldset class="reg-dyn-multi" *ngIf="f.type === 'multi_check'">
+                    <legend class="reg-field__label">{{ f.label }}<ng-container *ngIf="f.required"> *</ng-container></legend>
+                    <label class="reg-checkbox" *ngFor="let opt of f.options">
+                      <input type="checkbox"
+                        [checked]="isMultiCheckSelected(f.controlKey, opt)"
+                        (change)="toggleMultiCheck(f.controlKey, opt, $any($event.target).checked)" />
+                      <span>{{ opt }}</span>
+                    </label>
+                    <span class="reg-field__error" *ngIf="isDynamicInvalid(f.controlKey)">
+                      {{ 'REGISTER_ABONADO.ERRORS.REQUIRED' | translate }}
+                    </span>
+                  </fieldset>
+
+                  <!-- file_upload: en la demo mostramos un placeholder (la subida
+                       real de ficheros se gestiona en la app de producción). -->
+                  <label class="reg-field reg-dyn-file" *ngIf="f.type === 'file_upload'">
+                    <span class="reg-field__label">
+                      {{ f.label }}<ng-container *ngIf="f.required"> *</ng-container>
+                    </span>
+                    <span class="reg-dyn-file__placeholder">
+                      <i class="bi bi-cloud-arrow-up"></i>
+                      {{ 'REGISTER_ABONADO.FILE_LATER' | translate }}
+                    </span>
+                  </label>
+
+                </ng-container>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+
+        <!-- ───── Form legacy si el club NO tiene schema activo ───── -->
+        <ng-container *ngIf="!hasDynamicSchema">
+          <div class="reg-form__row">
+            <label class="reg-field">
+              <span class="reg-field__label">{{ 'REGISTER_ABONADO.FIELDS.DNI' | translate }}</span>
+              <input type="text" formControlName="dni" autocomplete="off" />
+            </label>
+            <label class="reg-field">
+              <span class="reg-field__label">{{ 'REGISTER_ABONADO.FIELDS.PHONE' | translate }}</span>
+              <input type="tel" formControlName="telefono" autocomplete="tel" />
+            </label>
+          </div>
+
+          <div class="reg-form__row">
+            <label class="reg-field">
+              <span class="reg-field__label">{{ 'REGISTER_ABONADO.FIELDS.BIRTHDATE' | translate }}</span>
+              <input type="date" formControlName="fechaNacimiento" />
+            </label>
+            <label class="reg-field">
+              <span class="reg-field__label">{{ 'REGISTER_ABONADO.FIELDS.GENDER' | translate }}</span>
+              <select formControlName="genero">
+                <option value="">{{ 'REGISTER_ABONADO.FIELDS.GENDER_PLACEHOLDER' | translate }}</option>
+                <option value="M">{{ 'REGISTER_ABONADO.FIELDS.GENDER_M' | translate }}</option>
+                <option value="F">{{ 'REGISTER_ABONADO.FIELDS.GENDER_F' | translate }}</option>
+                <option value="O">{{ 'REGISTER_ABONADO.FIELDS.GENDER_O' | translate }}</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="reg-field">
+            <span class="reg-field__label">{{ 'REGISTER_ABONADO.FIELDS.ADDRESS' | translate }}</span>
+            <input type="text" formControlName="direccion" autocomplete="street-address" />
+          </label>
+        </ng-container>
+
+        <label class="reg-checkbox reg-terms-check" [class.is-invalid]="isInvalid('acceptTerms')">
+          <input type="checkbox" formControlName="acceptTerms" />
+          <span>{{ 'REGISTER_ABONADO.FIELDS.TERMS' | translate }} *</span>
+        </label>
+        <p class="reg-terms-error" *ngIf="isInvalid('acceptTerms')">
+          <i class="bi bi-exclamation-circle"></i>
+          {{ 'REGISTER_ABONADO.ERRORS.TERMS_REQUIRED' | translate }}
+        </p>
+
+        <div class="reg-server-error" *ngIf="serverError">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <span>{{ serverError }}</span>
+        </div>
+
+        <div class="reg-actions">
+          <button type="button" class="reg-btn reg-btn--ghost" (click)="backToSearch()" [disabled]="submitting">
+            <i class="bi bi-arrow-left"></i>
+            {{ 'REGISTER_ABONADO.BACK' | translate }}
+          </button>
+          <button type="submit" class="reg-btn reg-btn--primary" [disabled]="submitting">
+            <i class="bi bi-arrow-clockwise spin" *ngIf="submitting"></i>
+            <i class="bi bi-check-circle" *ngIf="!submitting"></i>
+            {{ (submitting ? 'REGISTER_ABONADO.SUBMITTING' : 'REGISTER_ABONADO.SUBMIT') | translate }}
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ───────── PASO 3: Éxito ───────── -->
+    <section class="reg-card reg-success" *ngIf="step === 3">
+      <div class="reg-success__icon">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+      <h2 class="reg-success__title">{{ 'REGISTER_ABONADO.STEP3.TITLE' | translate }}</h2>
+      <p class="reg-success__msg">
+        {{ 'REGISTER_ABONADO.STEP3.MESSAGE' | translate:{ club: selectedClub?.name } }}
+      </p>
+      <p class="reg-success__hint">
+        <i class="bi bi-envelope-check"></i>
+        {{ 'REGISTER_ABONADO.STEP3.EMAIL_SENT' | translate }}
+      </p>
+
+      <!-- Descargar la app móvil (Sphaira Player). -->
+      <div class="reg-success__app">
+        <p class="reg-success__app-title">
+          <i class="bi bi-phone"></i>
+          {{ 'REGISTER_ABONADO.STEP3.APP_PROMPT' | translate }}
+        </p>
+        <div class="reg-store-buttons" [class.reg-store-buttons--single]="os !== 'desktop'">
+          <button
+            *ngIf="os === 'ios' || os === 'desktop'"
+            type="button"
+            class="reg-store-btn reg-store-btn--ios"
+            (click)="openStore('ios')">
+            <i class="bi bi-apple"></i>
+            <span class="reg-store-btn__text">
+              <small>{{ 'REGISTER_ABONADO.STEP3.STORE_DOWNLOAD_ON' | translate }}</small>
+              <strong>App Store</strong>
+            </span>
+          </button>
+          <button
+            *ngIf="os === 'android' || os === 'desktop'"
+            type="button"
+            class="reg-store-btn reg-store-btn--android"
+            (click)="openStore('android')">
+            <i class="bi bi-google-play"></i>
+            <span class="reg-store-btn__text">
+              <small>{{ 'REGISTER_ABONADO.STEP3.STORE_GET_IT_ON' | translate }}</small>
+              <strong>Google Play</strong>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div class="reg-actions reg-actions--center">
+        <button type="button" class="reg-btn reg-btn--primary" (click)="goToDashboard()">
+          <i class="bi bi-arrow-right-circle"></i>
+          {{ 'REGISTER_ABONADO.STEP3.CONTINUE' | translate }}
+        </button>
+      </div>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,578 @@
+// Paleta Sphaira (duplicada del padre abonado-detail.component.scss —
+// los estilos de las clases movidas se copian sin borrarlos del padre)
+$navy:        #002c40;
+$navy-deep:   #001e2e;
+$green:       #31b270;
+$green-light: #c4e8d6;
+$gray-text:   #636363;
+$bg-light:    #f4f4f4;
+$white:       #ffffff;
+
+$danger:      #dc3545;
+$warning:     #f59e0b;
+$info:        #3b82f6;
+
+$radius-md: 10px;
+$radius-lg: 14px;
+$radius-xl: 18px;
+
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 4px 14px rgba(0, 44, 64, 0.08);
+$shadow-lg: 0 8px 24px rgba(0, 44, 64, 0.14);
+
+:host {
+  display: block;
+}
+
+.status-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ????????????????????????????? BENTO ????????????????????????????? */
+.bento {
+  background: $white;
+  border-radius: $radius-lg;
+  margin-bottom: 16px;
+  padding: 20px 22px 22px;
+  box-shadow: $shadow-sm;
+
+  .bento-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(0, 44, 64, 0.06);
+    margin-bottom: 16px;
+
+    .bento-head-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: $radius-md;
+      background: linear-gradient(135deg, $green 0%, $navy 100%);
+      color: $white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .bento-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      color: $navy;
+    }
+
+    .bento-sub {
+      margin: 2px 0 0;
+      font-size: 13px;
+      color: $gray-text;
+    }
+
+    .bento-head-actions {
+      margin-left: auto;
+    }
+  }
+}
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  &--full {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    font-size: 12px;
+    font-weight: 700;
+    color: $gray-text;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  input, select, textarea {
+    border: 1px solid rgba(0, 44, 64, 0.12);
+    border-radius: $radius-md;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: $navy;
+    background: $white;
+    font-family: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &:focus {
+      outline: none;
+      border-color: $green;
+      box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.15);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 28px 12px;
+  color: $gray-text;
+
+  i {
+    font-size: 36px;
+    opacity: 0.35;
+    margin-bottom: 8px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+/* ????????????????????????????? BUTTONS ????????????????????????????? */
+.btn-primary-sph,
+.btn-secondary-sph {
+  border: 0;
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  transition: transform 0.1s, box-shadow 0.15s;
+
+  &:hover:not(:disabled) { transform: translateY(-1px); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.btn-primary-sph {
+  background: linear-gradient(135deg, $green 0%, $navy 100%);
+  color: $white;
+  box-shadow: 0 2px 8px rgba(0, 44, 64, 0.25);
+}
+
+.btn-secondary-sph {
+  background: $bg-light;
+  color: $navy;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.sph-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 44, 64, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9000;
+  backdrop-filter: blur(6px);
+}
+
+.sph-modal {
+  background: $white;
+  border-radius: $radius-xl;
+  width: min(580px, 92vw);
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: $shadow-lg;
+  animation: modalIn 0.18s ease-out;
+
+  .sph-modal-head {
+    background: linear-gradient(135deg, $green 0%, $navy 100%);
+    color: $white;
+    padding: 16px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    h2 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+
+  .sph-modal-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: 0;
+    color: $white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover { background: rgba(255, 255, 255, 0.35); }
+  }
+
+  .sph-modal-body {
+    padding: 18px 22px;
+    overflow-y: auto;
+  }
+
+  .sph-modal-foot {
+    padding: 14px 22px;
+    border-top: 1px solid rgba(0, 44, 64, 0.06);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+}
+
+@keyframes modalIn {
+  from { transform: translateY(-6px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 44, 64, 0.1);
+  background: $white;
+  color: $navy;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+  &:hover:not(:disabled) {
+    background: rgba(0, 44, 64, 0.05);
+    border-color: rgba(0, 44, 64, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  &--primary {
+    background: rgba(49, 178, 112, 0.1);
+    color: $green;
+    border-color: rgba(49, 178, 112, 0.25);
+    &:hover:not(:disabled) {
+      background: rgba(49, 178, 112, 0.18);
+    }
+  }
+
+  &--danger {
+    background: rgba(220, 53, 69, 0.08);
+    color: #dc3545;
+    border-color: rgba(220, 53, 69, 0.2);
+    &:hover:not(:disabled) {
+      background: rgba(220, 53, 69, 0.16);
+    }
+  }
+}
+
+.docs-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 22px;
+  color: $gray-text;
+  font-size: 14px;
+
+  .loader--inline {
+    width: 18px;
+    height: 18px;
+    border-width: 3px;
+  }
+}
+
+/* Status pill genérica (cuando no existe alguna variante) */
+.status-pill--neutral {
+  background: rgba(0, 44, 64, 0.05);
+  color: $gray-text;
+}
+
+/* Modal ancho (vincular socio / familiar externo) */
+.sph-modal--wide {
+  max-width: 720px;
+}
+
+/* =======================================================================
+   PR3 - Tab Familiares
+   ======================================================================= */
+
+.fam-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 14px;
+  padding: 14px 0 4px;
+}
+
+.fam-card {
+  background: $white;
+  border: 1px solid rgba(0, 44, 64, 0.08);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 44, 64, 0.08);
+  }
+
+  &.is-deleting {
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  .fam-card-head {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid rgba(0, 44, 64, 0.05);
+    background: linear-gradient(135deg, rgba(0, 44, 64, 0.03) 0%, rgba(49, 178, 112, 0.05) 100%);
+  }
+
+  .fam-avatar {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, $green, $navy);
+    color: $white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .fam-head-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .fam-relation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 4px;
+
+    .status-pill {
+      font-size: 10px;
+    }
+  }
+
+  .fam-name {
+    margin: 2px 0 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: $navy;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .fam-meta {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: $gray-text;
+  }
+
+  .fam-card-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .fam-card-body {
+    padding: 12px 16px 16px;
+  }
+
+  .fam-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      &--full { grid-column: 1 / -1; }
+
+      label {
+        font-size: 11px;
+        font-weight: 600;
+        color: $gray-text;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+
+      input, select, textarea {
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 44, 64, 0.12);
+        background: $white;
+        color: $navy;
+        font-size: 13px;
+        outline: none;
+        transition: border-color 0.15s, box-shadow 0.15s;
+
+        &:focus {
+          border-color: $green;
+          box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.15);
+        }
+      }
+    }
+  }
+
+  .fam-readonly {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(49, 178, 112, 0.06);
+    color: $green;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12px;
+
+    i { font-size: 14px; }
+  }
+}
+
+/* Pills exclusivas de familiares (socio / externo). */
+.status-pill--member {
+  background: rgba(49, 178, 112, 0.12);
+  color: $green;
+}
+
+.status-pill--external {
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+}
+
+/* Modal de búsqueda de socios para vincular */
+.search-results {
+  margin-top: 12px;
+  max-height: 340px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 4px;
+}
+
+.search-result-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 44, 64, 0.08);
+  background: $white;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+  color: $navy;
+
+  &:hover {
+    background: rgba(49, 178, 112, 0.05);
+    border-color: rgba(49, 178, 112, 0.25);
+  }
+
+  &--selected {
+    background: rgba(49, 178, 112, 0.12);
+    border-color: $green;
+
+    .result-avatar { background: linear-gradient(135deg, $green, $navy); }
+  }
+
+  .result-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(0, 44, 64, 0.7);
+    color: $white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 12px;
+    flex: 0 0 36px;
+  }
+
+  .result-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .result-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: $navy;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .result-meta {
+    display: flex;
+    gap: 10px;
+    font-size: 11px;
+    color: $gray-text;
+    margin-top: 2px;
+  }
+
+  i.fa-check-circle {
+    color: $green;
+    font-size: 18px;
+  }
+}
+
+/* El botón primario deshabilitado debe verse claramente apagado. */
+.btn-primary-sph[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.4);
+  &:hover { transform: none; }
+}

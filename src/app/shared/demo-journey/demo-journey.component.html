@@ -1,0 +1,109 @@
+<!-- ══════════ RECORRIDO GUIADO (widget flotante) ══════════ -->
+<div class="dj" *ngIf="visible && inDashboard && total > 0" [class.dj--collapsed]="collapsed">
+
+  <button type="button" class="dj__handle" (click)="toggleCollapsed()"
+          [attr.aria-expanded]="!collapsed">
+    <span class="dj__handle-ring">
+      <svg viewBox="0 0 36 36" aria-hidden="true">
+        <circle class="dj__ring-bg" cx="18" cy="18" r="15.5"></circle>
+        <circle class="dj__ring-fg" cx="18" cy="18" r="15.5"
+                [style.stroke-dasharray]="progressPercent + ', 100'"></circle>
+      </svg>
+      <span class="dj__handle-count">{{ completed }}/{{ total }}</span>
+    </span>
+    <span class="dj__handle-text">
+      <strong>{{ 'DEMO_JOURNEY.TITLE' | translate }}</strong>
+      <small>{{ (allDone ? 'DEMO_JOURNEY.SUBTITLE_DONE' : 'DEMO_JOURNEY.SUBTITLE') | translate }}</small>
+    </span>
+    <i class="bi" [class.bi-chevron-up]="collapsed" [class.bi-chevron-down]="!collapsed" aria-hidden="true"></i>
+  </button>
+
+  <div class="dj__body" *ngIf="!collapsed">
+    <div class="dj__bar" role="progressbar" [attr.aria-valuenow]="progressPercent"
+         aria-valuemin="0" aria-valuemax="100">
+      <span class="dj__bar-fill" [style.width.%]="progressPercent"></span>
+    </div>
+
+    <ul class="dj__list">
+      <li *ngFor="let m of milestones" class="dj__item" [class.is-done]="m.done"
+          [class.is-next]="m === nextMilestone" (click)="goTo(m)">
+        <span class="dj__item-icon">
+          <i class="bi" [ngClass]="m.done ? 'bi-check-lg' : m.icon" aria-hidden="true"></i>
+        </span>
+        <span class="dj__item-text">
+          <strong>{{ 'DEMO_JOURNEY.' + m.key + '_TITLE' | translate }}</strong>
+          <small>{{ 'DEMO_JOURNEY.' + m.key + '_HINT' | translate }}</small>
+        </span>
+        <i class="bi bi-arrow-right dj__item-arrow" *ngIf="!m.done" aria-hidden="true"></i>
+      </li>
+    </ul>
+
+    <button type="button" class="dj__cta" *ngIf="!allDone" (click)="goToNext()">
+      <i class="bi bi-compass" aria-hidden="true"></i>
+      {{ 'DEMO_JOURNEY.CTA_NEXT' | translate }}
+    </button>
+
+    <button type="button" class="dj__cta dj__cta--offer" *ngIf="allDone" (click)="openOffer()">
+      <i class="bi bi-gift" aria-hidden="true"></i>
+      {{ 'DEMO_JOURNEY.CTA_OFFER' | translate }}
+    </button>
+
+    <button type="button" class="dj__dismiss" (click)="dismiss($event)">
+      {{ 'DEMO_JOURNEY.DISMISS' | translate }}
+    </button>
+  </div>
+</div>
+
+<!-- ══════════ OFERTA CLUB FUNDADOR ══════════ -->
+<div class="dj-offer" *ngIf="offerOpen" (click)="closeOffer()">
+  <div class="dj-offer__card" (click)="$event.stopPropagation()">
+    <button type="button" class="dj-offer__close" (click)="closeOffer()"
+            [attr.aria-label]="'DEMO_JOURNEY.OFFER_CLOSE' | translate">
+      <i class="bi bi-x-lg" aria-hidden="true"></i>
+    </button>
+
+    <span class="dj-offer__badge">
+      <i class="bi bi-award-fill" aria-hidden="true"></i>
+      {{ 'DEMO_JOURNEY.OFFER_BADGE' | translate }}
+    </span>
+
+    <h3 class="dj-offer__title">{{ 'DEMO_JOURNEY.OFFER_TITLE' | translate }}</h3>
+    <p class="dj-offer__lead">{{ 'DEMO_JOURNEY.OFFER_LEAD' | translate }}</p>
+
+    <div class="dj-offer__deal">
+      <div class="dj-offer__deal-row">
+        <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+        <span>{{ 'DEMO_JOURNEY.OFFER_POINT_1' | translate }}</span>
+      </div>
+      <div class="dj-offer__deal-row">
+        <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+        <span>{{ 'DEMO_JOURNEY.OFFER_POINT_2' | translate }}</span>
+      </div>
+      <div class="dj-offer__deal-row">
+        <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+        <span>{{ 'DEMO_JOURNEY.OFFER_POINT_3' | translate }}</span>
+      </div>
+    </div>
+
+    <div class="dj-offer__price">
+      <span class="dj-offer__price-amount">5€</span>
+      <span class="dj-offer__price-unit">{{ 'DEMO_JOURNEY.OFFER_UNIT' | translate }}</span>
+    </div>
+    <p class="dj-offer__fine">{{ 'DEMO_JOURNEY.OFFER_FINE' | translate }}</p>
+
+    <div class="dj-offer__slots">
+      <i class="bi bi-people-fill" aria-hidden="true"></i>
+      {{ 'DEMO_JOURNEY.OFFER_SLOTS' | translate: { left: slotsLeft, total: slotsTotal } }}
+    </div>
+
+    <button type="button" class="dj-offer__cta" (click)="claimOffer()">
+      {{ 'DEMO_JOURNEY.OFFER_CTA' | translate }}
+      <i class="bi bi-arrow-right" aria-hidden="true"></i>
+    </button>
+
+    <button type="button" class="dj-offer__wa" (click)="askByWhatsApp()">
+      <i class="bi bi-whatsapp" aria-hidden="true"></i>
+      {{ 'DEMO_JOURNEY.OFFER_WA' | translate }}
+    </button>
+  </div>
+</div>

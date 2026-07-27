@@ -1,0 +1,191 @@
+<div class="builder-page">
+  <!-- Header -->
+  <header class="page-header">
+    <div class="page-header__top">
+      <button type="button" class="back-btn" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+        <span>{{ 'ABONADO_FORM_BUILDER.BACK' | translate }}</span>
+      </button>
+      <div class="page-header__actions">
+        <button type="button" class="switch" [class.is-on]="active === 1" (click)="active = active ? 0 : 1">
+          <span class="switch__track"><span class="switch__thumb"></span></span>
+          <span class="switch__label">
+            {{ active ? ('ABONADO_FORM_BUILDER.ACTIVE_ON' | translate) : ('ABONADO_FORM_BUILDER.ACTIVE_OFF' | translate) }}
+          </span>
+        </button>
+        <button type="button" class="primary-btn" [disabled]="saving || loading" (click)="save()">
+          <i class="bi" [ngClass]="saving ? 'bi-arrow-clockwise spin' : 'bi-check-lg'"></i>
+          <span>{{ saving ? ('ABONADO_FORM_BUILDER.SAVING' | translate) : ('ABONADO_FORM_BUILDER.SAVE' | translate) }}</span>
+        </button>
+      </div>
+    </div>
+    <div class="page-header__title">
+      <div class="title-icon">
+        <i class="bi bi-person-vcard"></i>
+      </div>
+      <div class="title-text">
+        <h1>{{ 'ABONADO_FORM_BUILDER.TITLE' | translate }}</h1>
+        <p>{{ 'ABONADO_FORM_BUILDER.SUBTITLE' | translate }}</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Loading skeleton -->
+  <ng-container *ngIf="loading; else loaded">
+    <div class="skeleton-card" *ngFor="let s of [1,2,3]"></div>
+  </ng-container>
+
+  <ng-template #loaded>
+    <!-- Aviso "estás viendo el formulario predeterminado" — solo cuando
+         el club aún no ha persistido ninguna plantilla y el backend nos
+         ha devuelto el seed de Sphaira. Tras el primer save desaparece. -->
+    <div class="default-banner" *ngIf="isUsingDefault">
+      <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
+      <div class="default-banner__text">
+        <strong>{{ 'ABONADO_FORM_BUILDER.DEFAULT_BANNER_TITLE' | translate }}</strong>
+        <span>{{ 'ABONADO_FORM_BUILDER.DEFAULT_BANNER_BODY' | translate }}</span>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <section *ngFor="let meta of sections" class="accordion__item" [class.is-open]="openSection === meta.id">
+        <!-- Acordeón header -->
+        <header class="accordion__header" (click)="toggleSection(meta.id)">
+          <div class="accordion__header-left">
+            <span class="chip">{{ meta.chipKey | translate }}</span>
+            <h2>{{ meta.titleKey | translate }}</h2>
+            <p>{{ meta.subtitleKey | translate }}</p>
+          </div>
+          <div class="accordion__header-right">
+            <span class="count-badge">{{ fieldsOf(meta.id).length }}</span>
+            <i class="bi" [ngClass]="openSection === meta.id ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+          </div>
+        </header>
+
+        <!-- Acordeón content -->
+        <div class="accordion__content" *ngIf="openSection === meta.id">
+          <!-- Lista de campos del schema -->
+          <div *ngIf="fieldsOf(meta.id).length === 0" class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <p>{{ 'ABONADO_FORM_BUILDER.NO_FIELDS' | translate }}</p>
+          </div>
+
+          <ul class="field-list">
+            <li *ngFor="let f of fieldsOf(meta.id); trackBy: trackByFieldId" class="field-card">
+              <div class="field-card__top">
+                <div class="field-card__main">
+                  <span class="type-pill"><i class="bi" [ngClass]="iconForType(f.type)"></i> {{ typeLabelKey(f.type) | translate }}</span>
+                  <span class="field-label">{{ f.label }}</span>
+                  <span *ngIf="f.binding" class="canonical-pill" [title]="('ABONADO_FORM_BUILDER.CANONICAL_TOOLTIP' | translate) + ': ' + f.binding">
+                    <i class="bi bi-link-45deg"></i>
+                    <span>{{ 'ABONADO_FORM_BUILDER.CATALOG_BADGE' | translate }}</span>
+                  </span>
+                  <span *ngIf="!f.binding" class="free-pill">{{ 'ABONADO_FORM_BUILDER.FREE_FIELD' | translate }}</span>
+                </div>
+                <div class="field-card__actions">
+                  <label class="required-toggle">
+                    <input type="checkbox" [(ngModel)]="f.required">
+                    <span>{{ 'ABONADO_FORM_BUILDER.REQUIRED' | translate }}</span>
+                  </label>
+                  <button type="button" class="icon-btn" (click)="moveField(meta.id, f.id, -1)" [attr.aria-label]="'ABONADO_FORM_BUILDER.MOVE_UP' | translate">
+                    <i class="bi bi-arrow-up"></i>
+                  </button>
+                  <button type="button" class="icon-btn" (click)="moveField(meta.id, f.id, 1)" [attr.aria-label]="'ABONADO_FORM_BUILDER.MOVE_DOWN' | translate">
+                    <i class="bi bi-arrow-down"></i>
+                  </button>
+                  <button type="button" class="icon-btn danger" (click)="removeField(meta.id, f.id)" [attr.aria-label]="'ABONADO_FORM_BUILDER.REMOVE' | translate">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="field-card__meta" *ngIf="f.type === 'info' || f.type === 'consent'">
+                <small>{{ f.text }}</small>
+              </div>
+              <div class="field-card__meta" *ngIf="(f.type === 'select' || f.type === 'multi_check') && f.options?.length">
+                <small><strong>{{ 'ABONADO_FORM_BUILDER.OPTIONS' | translate }}:</strong> {{ f.options?.join(', ') }}</small>
+              </div>
+            </li>
+          </ul>
+
+          <!-- Slots disponibles del catálogo -->
+          <div class="add-section" *ngIf="availableSlotsFor(meta.id).length > 0">
+            <h3>{{ 'ABONADO_FORM_BUILDER.AVAILABLE_SLOTS' | translate }}</h3>
+            <div class="slot-grid">
+              <button *ngFor="let slot of availableSlotsFor(meta.id)" type="button" class="slot-chip" (click)="addCanonicalSlot(meta.id, slot)">
+                <i class="bi bi-plus-lg"></i>
+                <span>{{ slot.labelKey | translate }}</span>
+                <small>{{ typeLabelKey($any(slot.type)) | translate }}</small>
+              </button>
+            </div>
+          </div>
+
+          <!-- Añadir campo libre -->
+          <div class="add-section">
+            <h3>{{ 'ABONADO_FORM_BUILDER.ADD_FREE_FIELD' | translate }}</h3>
+            <button *ngIf="!hasFreeDraft(meta.id)" type="button" class="ghost-btn" (click)="startFreeFieldDraft(meta.id)">
+              <i class="bi bi-plus-lg"></i>
+              <span>{{ 'ABONADO_FORM_BUILDER.NEW_FREE_FIELD' | translate }}</span>
+            </button>
+
+            <div *ngIf="hasFreeDraft(meta.id) && newFieldDraft[meta.id] as draft" class="free-draft">
+              <div class="row">
+                <label>
+                  <span>{{ 'ABONADO_FORM_BUILDER.TYPE' | translate }}</span>
+                  <select [(ngModel)]="draft.type">
+                    <option *ngFor="let t of freeFieldTypes" [value]="t">{{ typeLabelKey(t) | translate }}</option>
+                  </select>
+                </label>
+                <label *ngIf="draft.type !== 'info'">
+                  <span>{{ 'ABONADO_FORM_BUILDER.LABEL' | translate }}</span>
+                  <input type="text" [(ngModel)]="draft.label" [placeholder]="'ABONADO_FORM_BUILDER.LABEL_PLACEHOLDER' | translate">
+                </label>
+                <label class="checkbox-label" *ngIf="draft.type !== 'info'">
+                  <input type="checkbox" [(ngModel)]="draft.required">
+                  <span>{{ 'ABONADO_FORM_BUILDER.REQUIRED' | translate }}</span>
+                </label>
+              </div>
+
+              <div class="row" *ngIf="draft.type === 'info' || draft.type === 'consent'">
+                <label class="full">
+                  <span>
+                    {{ draft.type === 'info' ? ('ABONADO_FORM_BUILDER.INFO_TEXT' | translate) : ('ABONADO_FORM_BUILDER.CONSENT_TEXT' | translate) }}
+                  </span>
+                  <textarea rows="3" [(ngModel)]="draft.text" [placeholder]="'ABONADO_FORM_BUILDER.TEXT_PLACEHOLDER' | translate"></textarea>
+                </label>
+              </div>
+
+              <div class="row" *ngIf="draft.type === 'select' || draft.type === 'multi_check'">
+                <label class="full">
+                  <span>{{ 'ABONADO_FORM_BUILDER.OPTIONS' | translate }}</span>
+                  <div class="options-list">
+                    <div *ngFor="let opt of draft.options; let i = index; trackBy: trackOption" class="option-row">
+                      <input type="text" [(ngModel)]="draft.options![i]" [placeholder]="'ABONADO_FORM_BUILDER.OPTION_PLACEHOLDER' | translate">
+                      <button type="button" class="icon-btn danger" (click)="removeOptionFromDraft(meta.id, i)" *ngIf="(draft.options?.length || 0) > 1">
+                        <i class="bi bi-x-lg"></i>
+                      </button>
+                    </div>
+                    <button type="button" class="ghost-btn small" (click)="addOptionToDraft(meta.id)">
+                      <i class="bi bi-plus-lg"></i>
+                      <span>{{ 'ABONADO_FORM_BUILDER.ADD_OPTION' | translate }}</span>
+                    </button>
+                  </div>
+                </label>
+              </div>
+
+              <div class="draft-actions">
+                <button type="button" class="ghost-btn" (click)="cancelFreeFieldDraft(meta.id)">
+                  <i class="bi bi-x-lg"></i>
+                  <span>{{ 'ABONADO_FORM_BUILDER.CANCEL' | translate }}</span>
+                </button>
+                <button type="button" class="primary-btn" (click)="confirmFreeFieldDraft(meta.id)">
+                  <i class="bi bi-check-lg"></i>
+                  <span>{{ 'ABONADO_FORM_BUILDER.ADD' | translate }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </ng-template>
+</div>

@@ -1,0 +1,478 @@
+<!-- PAGE HEADER (solo cuando no está embebido en otra pantalla) -->
+<div class="page-header" *ngIf="!embedded">
+  <div class="back-container">
+    <button type="button" class="btn-back-clean" (click)="view !== 'list' ? (view = 'list') : goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+  <div class="header-center">
+    <h2 class="page-title">{{ 'ENCUESTAS.PAGE_TITLE' | translate }}</h2>
+    <p class="header-subtitle">{{ 'ENCUESTAS.PAGE_SUBTITLE' | translate }}</p>
+  </div>
+  <div class="header-spacer"></div>
+</div>
+
+<!-- Cabecera interna cuando está embebido como pestaña -->
+<div class="enc-embedded-header" *ngIf="embedded && view !== 'list'">
+  <button type="button" class="btn-back-clean" (click)="backToList()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
+</div>
+
+<div class="enc-shell">
+
+  <!-- ═══════════════════════════ LISTA ═══════════════════════════ -->
+  <ng-container *ngIf="view === 'list'">
+
+    <div class="enc-toolbar">
+      <h3 class="section-title">{{ 'ENCUESTAS.LIST_TITLE' | translate }}</h3>
+      <button type="button" class="btn-primary-enc" (click)="openCreate()" *ngIf="profileId === 1 || profileId === 2">
+        <i class="bi bi-plus-circle"></i>
+        {{ 'ENCUESTAS.NEW_BTN' | translate }}
+      </button>
+    </div>
+
+    <!-- Skeleton -->
+    <div class="skeleton-list" *ngIf="loadingList">
+      <div class="skeleton-card" *ngFor="let _ of [1,2,3]"></div>
+    </div>
+
+    <!-- Vacío -->
+    <div class="empty-state" *ngIf="!loadingList && encuestas.length === 0">
+      <i class="bi bi-clipboard2-x"></i>
+      <p>{{ 'ENCUESTAS.EMPTY' | translate }}</p>
+    </div>
+
+    <!-- Lista de encuestas -->
+    <div class="enc-list" *ngIf="!loadingList && encuestas.length > 0">
+      <div class="enc-card" *ngFor="let enc of encuestas" [class.closed]="enc.activa === 0">
+
+        <div class="enc-card-header">
+          <div class="enc-card-title">
+            <span class="badge-estado" [class.abierta]="enc.activa === 1" [class.cerrada]="enc.activa === 0">
+              {{ enc.activa === 1 ? ('ENCUESTAS.OPEN' | translate) : ('ENCUESTAS.CLOSED' | translate) }}
+            </span>
+            <h4>{{ enc.titulo }}</h4>
+          </div>
+          <div class="enc-card-meta">
+            <span *ngIf="enc.fechaCreate">{{ enc.fechaCreate }}</span>
+            <span *ngIf="enc.fechaCierre" class="cierre-badge">
+              <i class="bi bi-calendar-x"></i> {{ formatFechaCierre(enc.fechaCierre) }}
+            </span>
+          </div>
+        </div>
+
+        <p class="enc-card-desc" *ngIf="enc.descripcion">{{ enc.descripcion }}</p>
+
+        <!-- Progreso (solo Club ve el ratio) -->
+        <div class="enc-progress" *ngIf="profileId === 1">
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" [style.width]="porcentajeBar(respondidosPct(enc))"></div>
+          </div>
+          <span class="progress-label">
+            {{ enc.totalRespondieron }}/{{ enc.totalDestinatarios }}
+            ({{ respondidosPct(enc) }}%)
+          </span>
+        </div>
+
+        <!-- Badge "ya respondiste" para Coach/Player -->
+        <div class="ya-respondio-badge" *ngIf="profileId !== 1 && enc.yaRespondio">
+          <i class="bi bi-check-circle-fill"></i>
+          {{ 'ENCUESTAS.YA_RESPONDIO' | translate }}
+        </div>
+
+        <!-- Acciones -->
+        <div class="enc-card-actions">
+          <!-- Club admin o Coach creador: ver resultados + toggle + cancelar -->
+          <ng-container *ngIf="puedeGestionar(enc)">
+            <button type="button" class="btn-action btn-results" (click)="openResultados(enc)">
+              <i class="bi bi-bar-chart-fill"></i>
+              {{ 'ENCUESTAS.RESULTS_BTN' | translate }}
+            </button>
+            <button type="button" class="btn-action btn-toggle"
+              [class.btn-close-enc]="enc.activa === 1"
+              [class.btn-open-enc]="enc.activa === 0"
+              [disabled]="togglingActiva === enc.encuestaId"
+              (click)="toggleActiva(enc)">
+              <span *ngIf="togglingActiva === enc.encuestaId" class="spinner-border spinner-border-sm me-1"></span>
+              <i *ngIf="togglingActiva !== enc.encuestaId" class="bi" [class.bi-lock]="enc.activa === 1" [class.bi-unlock]="enc.activa === 0"></i>
+              {{ enc.activa === 1 ? ('ENCUESTAS.CLOSE_BTN' | translate) : ('ENCUESTAS.OPEN_BTN' | translate) }}
+            </button>
+            <button type="button" class="btn-action btn-delete" (click)="deleteEncuesta(enc)"
+              [disabled]="deletingEncuesta"
+              title="{{ 'ENCUESTAS.CONFIRM_DELETE_TITLE' | translate }}">
+              <span *ngIf="deletingEncuesta" class="spinner-border spinner-border-sm me-1" role="status"></span>
+              <i *ngIf="!deletingEncuesta" class="bi bi-trash3"></i>
+            </button>
+          </ng-container>
+
+          <!-- Coach/Player: responder (solo si no es su propia encuesta) -->
+          <ng-container *ngIf="profileId !== 1 && !puedeGestionar(enc)">
+            <button type="button" class="btn-action btn-respond"
+              [disabled]="enc.activa === 0"
+              (click)="openResponder(enc)">
+              <i class="bi" [class.bi-pencil-square]="!enc.yaRespondio" [class.bi-arrow-clockwise]="enc.yaRespondio"></i>
+              {{ enc.yaRespondio ? ('ENCUESTAS.EDIT_BTN' | translate) : ('ENCUESTAS.RESPOND_BTN' | translate) }}
+            </button>
+          </ng-container>
+        </div>
+
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ═══════════════════════════ CREAR ═══════════════════════════ -->
+  <ng-container *ngIf="view === 'create'">
+    <div class="create-wrap">
+      <h3 class="section-title">{{ 'ENCUESTAS.CREATE_TITLE' | translate }}</h3>
+
+      <!-- Título -->
+      <div class="field-group">
+        <label>{{ 'ENCUESTAS.FIELD_TITULO' | translate }} <span class="req">*</span></label>
+        <input type="text" class="field-input" [(ngModel)]="nuevaTitulo"
+          [placeholder]="'ENCUESTAS.FIELD_TITULO_PH' | translate" />
+      </div>
+
+      <!-- Descripción -->
+      <div class="field-group">
+        <label>{{ 'ENCUESTAS.FIELD_DESC' | translate }}</label>
+        <textarea class="field-textarea" [(ngModel)]="nuevaDescripcion" rows="2"
+          [placeholder]="'ENCUESTAS.FIELD_DESC_PH' | translate"></textarea>
+      </div>
+
+      <!-- Fecha y hora de cierre -->
+      <div class="field-group">
+        <label>{{ 'ENCUESTAS.FIELD_CIERRE' | translate }}</label>
+        <input type="datetime-local" class="field-input" [(ngModel)]="nuevaFechaCierre" />
+      </div>
+
+      <!-- Preguntas -->
+      <div class="preguntas-section">
+        <div class="preguntas-header">
+          <h4>{{ 'ENCUESTAS.QUESTIONS_TITLE' | translate }}</h4>
+          <button type="button" class="btn-add-preg" (click)="addPregunta()">
+            <i class="bi bi-plus"></i> {{ 'ENCUESTAS.ADD_QUESTION' | translate }}
+          </button>
+        </div>
+
+        <div class="pregunta-card" *ngFor="let p of preguntas; let pi = index; trackBy: trackByIndex">
+          <div class="pregunta-header-row">
+            <span class="pregunta-num">{{ pi + 1 }}</span>
+            <button type="button" class="btn-remove-preg" *ngIf="preguntas.length > 1" (click)="removePregunta(pi)">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+
+          <div class="field-group">
+            <input type="text" class="field-input" [(ngModel)]="p.texto"
+              [placeholder]="'ENCUESTAS.QUESTION_PH' | translate" />
+          </div>
+
+          <div class="tipo-row">
+            <label class="tipo-opt" [class.active]="p.tipo === 'OPCION_MULTIPLE'">
+              <input type="radio" [name]="'tipo_' + pi" value="OPCION_MULTIPLE" [(ngModel)]="p.tipo" />
+              <i class="bi bi-list-ul"></i> {{ 'ENCUESTAS.TIPO_MULTIPLE' | translate }}
+            </label>
+            <label class="tipo-opt" [class.active]="p.tipo === 'TEXTO_LIBRE'">
+              <input type="radio" [name]="'tipo_' + pi" value="TEXTO_LIBRE" [(ngModel)]="p.tipo" />
+              <i class="bi bi-fonts"></i> {{ 'ENCUESTAS.TIPO_TEXTO' | translate }}
+            </label>
+          </div>
+
+          <!-- Opciones -->
+          <div class="opciones-list" *ngIf="p.tipo === 'OPCION_MULTIPLE'">
+            <div class="opcion-row" *ngFor="let o of p.opciones; let oi = index; trackBy: trackByIndex">
+              <span class="opcion-bullet">{{ oi + 1 }}.</span>
+              <input type="text" class="field-input-sm" [(ngModel)]="p.opciones[oi]"
+                [placeholder]="'ENCUESTAS.OPTION_PH' | translate" />
+              <button type="button" class="btn-remove-opcion" *ngIf="p.opciones.length > 2" (click)="removeOpcion(pi, oi)">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+            <button type="button" class="btn-add-opcion" (click)="addOpcion(pi)">
+              <i class="bi bi-plus-circle"></i> {{ 'ENCUESTAS.ADD_OPTION' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Destinatarios -->
+      <div class="field-group">
+        <label>{{ 'ENCUESTAS.FIELD_DESTINATARIOS' | translate }} <span class="req">*</span></label>
+
+        <!-- Chips -->
+        <div class="recipients-chips" *ngIf="selectedRecipients.length > 0">
+          <div class="chip" *ngFor="let r of selectedRecipients; let i = index">
+            <span>{{ r.label }}</span>
+            <button type="button" (click)="removeRecipient(i)"><i class="bi bi-x"></i></button>
+          </div>
+        </div>
+
+        <div class="recipient-input-wrap">
+          <input type="text" class="field-input" [ngModel]="recipientInput"
+            (ngModelChange)="onRecipientInput($event)"
+            [placeholder]="'ENCUESTAS.RECIPIENT_PH' | translate" />
+          <div class="suggestions-dropdown" *ngIf="recipientSuggestions.length > 0">
+            <div class="suggestion-item"
+                 *ngFor="let s of recipientSuggestions"
+                 [class.suggestion-item--disabled]="s.hasAccount === false"
+                 (mousedown)="s.hasAccount !== false ? addRecipient(s) : $event.preventDefault()">
+              <div class="suggestion-icon"
+                   [class.suggestion-icon--team]="s.type === 'team'"
+                   [class.suggestion-icon--has-photo]="s.photoUrl">
+                <img *ngIf="s.photoUrl"
+                     [src]="imageBaseUrl + s.photoUrl"
+                     alt=""
+                     class="suggestion-avatar-img"
+                     (error)="s.photoUrl = null" />
+                <span *ngIf="!s.photoUrl && s.type !== 'team'"
+                      class="suggestion-initials"
+                      [style.background-color]="getInitialsBg(s.label)">
+                  {{ getInitials(s.label) }}
+                </span>
+                <i *ngIf="s.type === 'team'" class="bi bi-people-fill"></i>
+              </div>
+              <div class="suggestion-text">
+                <span class="suggestion-name">{{ s.label }}</span>
+                <span class="suggestion-sub" *ngIf="s.sublabel">{{ s.sublabel }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="searching-indicator" *ngIf="isSearchingRecipients">
+            <i class="bi bi-arrow-repeat spin"></i>
+          </div>
+        </div>
+
+        <!-- Equipos completos -->
+        <div class="teams-quick" *ngIf="equipos.length > 0">
+          <span class="teams-label">{{ 'ENCUESTAS.OR_SELECT_TEAM' | translate }}</span>
+          <button type="button" class="btn-team-chip" *ngFor="let t of equipos" (click)="addTeamRecipients(t)">
+            <i class="bi bi-people"></i> {{ t.name }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Error -->
+      <div class="form-error" *ngIf="createError">
+        <i class="bi bi-exclamation-circle"></i> {{ createError }}
+      </div>
+
+      <!-- Acciones -->
+      <div class="create-actions">
+        <button type="button" class="btn-cancel-enc" (click)="backToList()" [disabled]="sendingCreate">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button type="button" class="btn-primary-enc" (click)="submitCreate()" [disabled]="sendingCreate">
+          <span *ngIf="sendingCreate" class="spinner-border spinner-border-sm me-1" role="status"></span>
+          <i *ngIf="!sendingCreate" class="bi bi-send"></i>
+          {{ sendingCreate ? ('COMMON.SAVING' | translate) : ('ENCUESTAS.SEND_BTN' | translate) }}
+        </button>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ═══════════════════════════ RESULTADOS ═══════════════════════════ -->
+  <ng-container *ngIf="view === 'results'">
+    <div class="results-wrap">
+
+      <!-- Cargando -->
+      <div class="skeleton-results" *ngIf="loadingResultados">
+        <div class="skeleton-card" *ngFor="let _ of [1,2,3]"></div>
+      </div>
+
+      <!-- Error / sin datos -->
+      <div class="results-empty-state" *ngIf="!loadingResultados && !resultados">
+        <i class="bi bi-exclamation-circle"></i>
+        <p>{{ 'ENCUESTAS.RESULTS_LOAD_ERROR' | translate }}</p>
+      </div>
+
+      <!-- Resultados cargados -->
+      <ng-container *ngIf="!loadingResultados && resultados">
+
+        <!-- Cabecera -->
+        <div class="results-header">
+          <h3 class="section-title">{{ resultados.titulo }}</h3>
+          <p class="results-meta" *ngIf="resultados.descripcion">{{ resultados.descripcion }}</p>
+          <div class="results-stats">
+            <div class="stat-pill">
+              <i class="bi bi-people"></i>
+              {{ resultados.totalRespondieron }}/{{ resultados.totalDestinatarios }}
+              {{ 'ENCUESTAS.RESPONDED' | translate }}
+            </div>
+            <div class="stat-pill" [class.abierta]="resultados.activa === 1" [class.cerrada]="resultados.activa === 0">
+              <i class="bi" [class.bi-unlock]="resultados.activa === 1" [class.bi-lock]="resultados.activa === 0"></i>
+              {{ resultados.activa === 1 ? ('ENCUESTAS.OPEN' | translate) : ('ENCUESTAS.CLOSED' | translate) }}
+            </div>
+          </div>
+          <div class="results-actions">
+            <button type="button" class="btn-action btn-refresh-results" (click)="refreshResultados()" [disabled]="refreshingResultados"
+              title="{{ 'ENCUESTAS.REFRESH_BTN' | translate }}">
+              <i class="bi bi-arrow-clockwise" [class.spin]="refreshingResultados"></i>
+              {{ 'ENCUESTAS.REFRESH_BTN' | translate }}
+            </button>
+            <button type="button" class="btn-action btn-toggle"
+              *ngIf="resultadosEncuesta && puedeGestionar(resultadosEncuesta)"
+              [class.btn-close-enc]="resultados.activa === 1"
+              [class.btn-open-enc]="resultados.activa === 0"
+              [disabled]="togglingActiva === resultados.encuestaId"
+              (click)="resultados && toggleActiva(resultados)">
+              <span *ngIf="togglingActiva === resultados.encuestaId" class="spinner-border spinner-border-sm me-1"></span>
+              <i *ngIf="togglingActiva !== resultados.encuestaId" class="bi" [class.bi-lock]="resultados.activa === 1" [class.bi-unlock]="resultados.activa === 0"></i>
+              {{ resultados.activa === 1 ? ('ENCUESTAS.CLOSE_BTN' | translate) : ('ENCUESTAS.OPEN_BTN' | translate) }}
+            </button>
+            <button type="button" class="btn-action btn-export-csv" (click)="exportarCSV()" title="{{ 'ENCUESTAS.EXPORT_CSV' | translate }}">
+              <i class="bi bi-download"></i> {{ 'ENCUESTAS.EXPORT_CSV' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Sin ninguna respuesta todavía: banner global -->
+        <div class="no-responses-banner" *ngIf="resultados.totalRespondieron === 0">
+          <i class="bi bi-bar-chart"></i>
+          <span>{{ 'ENCUESTAS.NO_RESPONSES_YET' | translate }}</span>
+        </div>
+
+        <!-- Preguntas con resultados -->
+        <div class="pregunta-result" *ngFor="let p of resultados.preguntas">
+          <h4 class="preg-titulo"><span class="preg-num">{{ p.orden }}</span> {{ p.texto }}</h4>
+
+          <!-- Opción múltiple: barras -->
+          <ng-container *ngIf="p.tipo === 'OPCION_MULTIPLE'">
+            <!-- Sin respuestas aún -->
+            <div class="no-resp-preg" *ngIf="resultados.totalRespondieron === 0">
+              <i class="bi bi-bar-chart"></i>
+              <span>{{ 'ENCUESTAS.NO_RESPONSES_YET' | translate }}</span>
+            </div>
+            <!-- Con respuestas -->
+            <ng-container *ngIf="resultados.totalRespondieron > 0">
+              <div class="opcion-result-row" *ngFor="let op of p.opciones">
+                <div class="opcion-label">{{ op.texto }}</div>
+                <div class="opcion-bar-wrap">
+                  <div class="opcion-bar-fill" [style.width]="porcentajeBar(op.porcentaje)"></div>
+                </div>
+                <div class="opcion-pct">{{ op.porcentaje }}% ({{ op.count }})</div>
+                <div class="opcion-names" *ngIf="op.nombresRespondentes && op.nombresRespondentes.length > 0">
+                  <span class="name-chip" *ngFor="let n of op.nombresRespondentes">{{ n }}</span>
+                </div>
+              </div>
+            </ng-container>
+          </ng-container>
+
+          <!-- Texto libre: lista de respuestas -->
+          <ng-container *ngIf="p.tipo === 'TEXTO_LIBRE'">
+            <div class="texto-resp-list">
+              <div class="texto-resp-row" *ngFor="let rt of p.respuestasTexto">
+                <span class="resp-nombre">{{ rt.nombreDisplay }}</span>
+                <span class="resp-fecha">{{ rt.fecha }}</span>
+                <p class="resp-texto">{{ rt.respuesta }}</p>
+              </div>
+              <div class="no-resp-preg" *ngIf="!p.respuestasTexto || p.respuestasTexto.length === 0">
+                <i class="bi bi-chat-left-text"></i>
+                <span>{{ 'ENCUESTAS.NO_RESPONSES_YET' | translate }}</span>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Pendientes de responder -->
+        <div class="pendientes-section" *ngIf="resultados.pendientes && resultados.pendientes.length > 0">
+          <h4>{{ 'ENCUESTAS.PENDING_TITLE' | translate }} ({{ resultados.pendientes.length }})</h4>
+          <div class="pendientes-chips">
+            <span class="pendiente-chip" *ngFor="let pd of resultados.pendientes">{{ pd.nombreDisplay }}</span>
+          </div>
+        </div>
+
+      </ng-container>
+    </div>
+  </ng-container>
+
+  <!-- ═══════════════════════════ RESPONDER ═══════════════════════════ -->
+  <ng-container *ngIf="view === 'respond'">
+    <div class="respond-wrap">
+
+      <div class="skeleton-list" *ngIf="loadingDetalle">
+        <div class="skeleton-card" *ngFor="let _ of [1,2]"></div>
+      </div>
+
+      <!-- Éxito -->
+      <div class="success-state" *ngIf="respuestaOk">
+        <i class="bi bi-check-circle-fill"></i>
+        <p>{{ 'ENCUESTAS.RESPOND_OK' | translate }}</p>
+      </div>
+
+      <!-- Error: la encuesta no se pudo cargar -->
+      <div class="results-empty-state" *ngIf="!loadingDetalle && !encuestaDetalle && !respuestaOk">
+        <i class="bi bi-exclamation-circle"></i>
+        <p>{{ 'ENCUESTAS.RESULTS_LOAD_ERROR' | translate }}</p>
+        <button type="button" class="btn-cancel-enc" (click)="backToList()">
+          {{ 'COMMON.BACK' | translate }}
+        </button>
+      </div>
+
+      <ng-container *ngIf="!loadingDetalle && encuestaDetalle && !respuestaOk">
+        <h3 class="section-title">{{ encuestaDetalle.titulo }}</h3>
+        <p class="enc-desc" *ngIf="encuestaDetalle.descripcion">{{ encuestaDetalle.descripcion }}</p>
+        <div class="cierre-info" *ngIf="encuestaDetalle.fechaCierre">
+          <i class="bi bi-calendar-x"></i>
+          {{ 'ENCUESTAS.CLOSES_ON' | translate }} {{ formatFechaCierre(encuestaDetalle.fechaCierre) }}
+        </div>
+        <div class="ya-respondio-info" *ngIf="encuestaDetalle.yaRespondio">
+          <i class="bi bi-info-circle"></i>
+          {{ 'ENCUESTAS.EDITING_PREVIOUS' | translate }}
+        </div>
+
+        <!-- Preguntas -->
+        <div class="pregunta-form" *ngFor="let p of encuestaDetalle.preguntas; let pi = index">
+          <h4 class="preg-titulo">
+            <span class="preg-num">{{ p.orden }}</span>
+            {{ p.texto }}
+            <span class="req-mark" *ngIf="p.requerida">*</span>
+          </h4>
+
+          <!-- Opción múltiple -->
+          <div class="opciones-form" *ngIf="p.tipo === 'OPCION_MULTIPLE'">
+            <label class="opcion-opt" *ngFor="let op of p.opciones"
+              [class.selected]="getRespuesta(p.preguntaId)?.opcionId === op.opcionId"
+              (click)="selectOpcion(p.preguntaId, op.opcionId)">
+              <i class="bi" [class.bi-check-circle-fill]="getRespuesta(p.preguntaId)?.opcionId === op.opcionId"
+                            [class.bi-circle]="getRespuesta(p.preguntaId)?.opcionId !== op.opcionId"></i>
+              {{ op.texto }}
+            </label>
+          </div>
+
+          <!-- Texto libre -->
+          <div class="texto-form" *ngIf="p.tipo === 'TEXTO_LIBRE'">
+            <textarea class="field-textarea" rows="3"
+              [placeholder]="'ENCUESTAS.TEXTO_PH' | translate"
+              [value]="getRespuesta(p.preguntaId)?.respuestaTexto || ''"
+              (input)="setTexto(p.preguntaId, $any($event.target).value)"></textarea>
+          </div>
+        </div>
+
+        <!-- Error -->
+        <div class="form-error" *ngIf="respuestaError">
+          <i class="bi bi-exclamation-circle"></i> {{ respuestaError }}
+        </div>
+
+        <!-- Acciones -->
+        <div class="create-actions">
+          <button type="button" class="btn-cancel-enc" (click)="backToList()" [disabled]="sendingRespuesta">
+            {{ 'COMMON.CANCEL' | translate }}
+          </button>
+          <button type="button" class="btn-primary-enc" (click)="submitRespuesta()" [disabled]="sendingRespuesta">
+            <span *ngIf="sendingRespuesta" class="spinner-border spinner-border-sm me-1" role="status"></span>
+            <i *ngIf="!sendingRespuesta" class="bi bi-send"></i>
+            <ng-container *ngIf="!sendingRespuesta">
+              {{ encuestaDetalle.yaRespondio ? ('ENCUESTAS.UPDATE_BTN' | translate) : ('ENCUESTAS.SUBMIT_BTN' | translate) }}
+            </ng-container>
+            <ng-container *ngIf="sendingRespuesta">{{ 'COMMON.SAVING' | translate }}</ng-container>
+          </button>
+        </div>
+      </ng-container>
+
+    </div>
+  </ng-container>
+
+</div>

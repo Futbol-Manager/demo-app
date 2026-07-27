@@ -1,0 +1,329 @@
+<!-- HEADER -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+  <h2 class="table-title">{{ 'CLUB_EVAL.PLAYER.TITLE' | translate }}</h2>
+  <div class="header-actions-right">
+    <button class="btn-pdf" (click)="exportPdf()" [disabled]="pdfLoading" title="{{ 'CLUB_EVAL.PLAYER.EXPORT_PDF' | translate }}">
+      <span *ngIf="pdfLoading" class="spinner-border spinner-border-sm me-1"></span>
+      <i *ngIf="!pdfLoading" class="bi bi-file-earmark-pdf"></i>
+      {{ 'CLUB_EVAL.PLAYER.EXPORT_PDF' | translate }}
+    </button>
+    <button *ngIf="config?.aiReportsEnabled === 1" class="btn-ai-report" (click)="generateAiReport()"
+      [disabled]="aiReportLoading || evaluations.length === 0">
+      <span *ngIf="aiReportLoading" class="spinner-border spinner-border-sm me-1"></span>
+      <i *ngIf="!aiReportLoading" class="bi bi-stars me-1"></i>
+      {{ aiReportLoading ? ('COMMON.PROCESSING' | translate) : ('CLUB_EVAL.PLAYER.AI_REPORT' | translate) }}
+    </button>
+    <button class="btn-new-eval" (click)="openNewEval()">
+      <i class="bi bi-plus-lg"></i>
+      {{ 'CLUB_EVAL.PLAYER.NEW_EVAL' | translate }}
+    </button>
+  </div>
+</div>
+
+<div class="player-eval-container" id="player-eval-content">
+
+  <!-- LOADING -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- SIN EVALUACIONES -->
+  <div *ngIf="!loading && evaluations.length === 0" class="empty-state">
+    <i class="bi bi-clipboard-x"></i>
+    <p>{{ 'CLUB_EVAL.PLAYER.NO_EVALS' | translate }}</p>
+    <button class="btn-primary" (click)="openNewEval()">
+      <i class="bi bi-plus-lg"></i>
+      {{ 'CLUB_EVAL.PLAYER.NEW_EVAL' | translate }}
+    </button>
+  </div>
+
+  <!-- ESTADÍSTICAS DE PARTIDO (siempre visible, independiente de las evaluaciones) -->
+  <section class="stats-section">
+    <div class="section-header">
+      <h3>{{ 'CLUB_EVAL.STATS.TITLE' | translate }}</h3>
+      <div class="stats-type-pills" *ngIf="!statsLoading && playerStats && availableStatTypes.length > 0">
+        <button class="pill" [class.active]="selectedStatsType === 'totals'" (click)="selectedStatsType = 'totals'">
+          {{ 'CLUB_EVAL.STATS.ALL' | translate }}
+        </button>
+        <button *ngFor="let tipo of availableStatTypes" class="pill"
+          [class.active]="selectedStatsType === tipo"
+          (click)="selectedStatsType = tipo">
+          {{ tipo }}
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="statsLoading" class="stats-loading">
+      <div class="spinner-sm"></div>
+    </div>
+
+    <ng-container *ngIf="!statsLoading && currentStats as s">
+      <ng-container *ngIf="s.partidosJugados > 0; else noStatsData">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-value">{{ s.partidosJugados }}</span>
+            <span class="stat-label">{{ 'CLUB_EVAL.STATS.MATCHES' | translate }}</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value">{{ s.minTotales }}'</span>
+            <span class="stat-label">{{ 'CLUB_EVAL.STATS.MINUTES' | translate }}</span>
+          </div>
+          <div class="stat-card highlight-green">
+            <span class="stat-value">{{ s.goles }}</span>
+            <span class="stat-label">{{ 'CLUB_EVAL.STATS.GOALS' | translate }}</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value">{{ s.asistencias }}</span>
+            <span class="stat-label">{{ 'CLUB_EVAL.STATS.ASSISTS' | translate }}</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value">{{ s.golesAsistencias }}</span>
+            <span class="stat-label">{{ 'CLUB_EVAL.STATS.GA' | translate }}</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value">{{ s.mediaGolesPorPartido }}</span>
+            <span class="stat-label">{{ 'CLUB_EVAL.STATS.GOALS_PER_MATCH' | translate }}</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value">{{ s.mediaMinPorPartido }}'</span>
+            <span class="stat-label">{{ 'CLUB_EVAL.STATS.MIN_PER_MATCH' | translate }}</span>
+          </div>
+          <div class="stat-card warn" *ngIf="s.tarjetasAmarillas > 0">
+            <span class="stat-value">{{ s.tarjetasAmarillas }}</span>
+            <span class="stat-label">{{ 'CLUB_EVAL.STATS.YELLOWS' | translate }}</span>
+          </div>
+          <div class="stat-card danger" *ngIf="s.tarjetasRojas > 0">
+            <span class="stat-value">{{ s.tarjetasRojas }}</span>
+            <span class="stat-label">{{ 'CLUB_EVAL.STATS.REDS' | translate }}</span>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #noStatsData>
+        <div class="stats-no-data">
+          <i class="bi bi-bar-chart"></i>
+          <p>{{ 'CLUB_EVAL.STATS.NO_DATA' | translate }}</p>
+        </div>
+      </ng-template>
+    </ng-container>
+
+    <div class="stats-no-data" *ngIf="!statsLoading && !currentStats">
+      <i class="bi bi-bar-chart"></i>
+      <p>{{ 'CLUB_EVAL.STATS.NO_DATA' | translate }}</p>
+    </div>
+  </section>
+
+  <!-- OBJETIVOS POR CAMPO — siempre visible, independiente de evaluaciones -->
+  <section class="goals-section" *ngIf="!loading && activeFields.length > 0">
+    <div class="section-header">
+      <h3><i class="bi bi-bullseye"></i> {{ 'CLUB_EVAL.GOALS.TITLE' | translate }}</h3>
+      <p class="section-subtitle">{{ 'CLUB_EVAL.GOALS.SUBTITLE' | translate }}</p>
+    </div>
+    <div class="goals-grid">
+      <div *ngFor="let field of activeFields" class="goal-row">
+        <div class="goal-field-label">{{ field.fieldLabel }}</div>
+        <div class="goal-slider-wrap">
+          <input type="range" min="0" max="10" step="1"
+                 class="goal-slider"
+                 [value]="goals[field.fieldKey] ?? 0"
+                 (input)="goals[field.fieldKey] = +$any($event.target).value">
+          <div class="goal-scale">
+            <span *ngFor="let n of [0,1,2,3,4,5,6,7,8,9,10]">{{ n }}</span>
+          </div>
+        </div>
+        <span class="goal-value" [class.has-goal]="(goals[field.fieldKey] ?? 0) > 0">
+          {{ goals[field.fieldKey] ?? 0 }}/10
+        </span>
+      </div>
+    </div>
+    <div class="goals-actions">
+      <p class="goals-hint"><i class="bi bi-info-circle"></i> {{ 'CLUB_EVAL.GOALS.HINT' | translate }}</p>
+      <button class="btn-save-goals" (click)="saveGoals()" [disabled]="goalsSaving">
+        <i *ngIf="goalsSaving" class="bi bi-arrow-clockwise spin"></i>
+        <i *ngIf="!goalsSaving" class="bi bi-check-lg"></i>
+        {{ 'CLUB_EVAL.GOALS.SAVE' | translate }}
+      </button>
+    </div>
+  </section>
+
+  <ng-container *ngIf="!loading && evaluations.length > 0">
+
+    <!-- SECCIÓN: EVOLUCIÓN TEMPORAL (gráfico de líneas) -->
+    <section class="chart-section" *ngIf="evaluations.length >= 2">
+      <div class="section-header">
+        <h3>{{ 'CLUB_EVAL.PLAYER.EVOLUTION_CHART' | translate }}</h3>
+        <span class="eval-count">{{ evaluations.length }} {{ 'CLUB_EVAL.PLAYER.EVALUATIONS' | translate }}</span>
+      </div>
+      <div class="evolution-chart-wrap">
+        <canvas #evolutionChart></canvas>
+      </div>
+    </section>
+
+    <!-- SECCIÓN: COMPARATIVA PRIMERA VS ÚLTIMA -->
+    <section class="radar-section" *ngIf="evaluations.length >= 2">
+      <div class="section-header">
+        <h3>{{ 'CLUB_EVAL.PLAYER.FIRST_VS_LAST' | translate }}</h3>
+        <div class="radar-legend">
+          <span class="legend-dot navy"></span> {{ 'CLUB_EVAL.PLAYER.FIRST_EVAL' | translate }} ({{ evaluations[0].evaluationDate }})
+          <span class="legend-dot green"></span> {{ 'CLUB_EVAL.PLAYER.LAST_EVAL' | translate }} ({{ evaluations[evaluations.length-1].evaluationDate }})
+        </div>
+      </div>
+      <div class="radars-row">
+        <div class="radar-wrap">
+          <p class="radar-label navy-text">{{ 'CLUB_EVAL.PLAYER.FIRST_EVAL' | translate }}</p>
+          <canvas #radarFirst></canvas>
+        </div>
+        <div class="delta-table">
+          <table>
+            <thead>
+              <tr>
+                <th>{{ 'CLUB_EVAL.PLAYER.FIELD' | translate }}</th>
+                <th>{{ 'CLUB_EVAL.PLAYER.FIRST' | translate }}</th>
+                <th>{{ 'CLUB_EVAL.PLAYER.LAST' | translate }}</th>
+                <th>{{ 'CLUB_EVAL.PLAYER.DELTA' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let d of deltas">
+                <td>{{ d.fieldLabel }}</td>
+                <td>{{ d.first }}/10</td>
+                <td>{{ d.last }}/10</td>
+                <td>
+                  <span class="delta-badge" [class.positive]="d.delta > 0" [class.negative]="d.delta < 0" [class.neutral]="d.delta === 0">
+                    {{ d.delta > 0 ? '+' : '' }}{{ d.delta }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="radar-wrap">
+          <p class="radar-label green-text">{{ 'CLUB_EVAL.PLAYER.LAST_EVAL' | translate }}</p>
+          <canvas #radarLast></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- INFORME IA -->
+    <section class="ai-report-section" *ngIf="showAiReport">
+      <div class="section-header">
+        <h3><i class="bi bi-stars"></i> {{ 'CLUB_EVAL.PLAYER.AI_REPORT' | translate }}</h3>
+        <button class="btn-icon" (click)="showAiReport = false"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="ai-loading" *ngIf="aiReportLoading">
+        <div class="ai-dots"><span></span><span></span><span></span></div>
+        <p>{{ 'CLUB_EVAL.PLAYER.AI_LOADING' | translate }}</p>
+      </div>
+      <div *ngIf="!aiReportLoading && aiReport" class="ai-report-content">
+        <p [innerHTML]="aiReport"></p>
+      </div>
+    </section>
+
+    <!-- HISTORIAL DE EVALUACIONES -->
+    <section class="evaluations-section">
+      <div class="section-header">
+        <h3>{{ 'CLUB_EVAL.PLAYER.EVAL_HISTORY' | translate }}</h3>
+      </div>
+
+      <div class="eval-list">
+        <div *ngFor="let eval_ of evaluations; let i = index" class="eval-card" [class.first-eval]="i === 0" [class.last-eval]="i === evaluations.length - 1">
+          <div class="eval-card-header">
+            <div class="eval-date-rating">
+              <span class="eval-date">{{ eval_.evaluationDate }}</span>
+              <span class="stars">
+                <i *ngFor="let s of getStars(eval_.overallRating)" class="bi" [class.bi-star-fill]="s <= eval_.overallRating" [class.bi-star]="s > eval_.overallRating"></i>
+              </span>
+            </div>
+            <div class="eval-badges">
+              <span *ngIf="i === 0" class="badge-tag navy">{{ 'CLUB_EVAL.PLAYER.FIRST_BADGE' | translate }}</span>
+              <span *ngIf="i === evaluations.length - 1 && evaluations.length > 1" class="badge-tag green">{{ 'CLUB_EVAL.PLAYER.LAST_BADGE' | translate }}</span>
+              <span *ngIf="eval_.teamId" class="badge-tag session-badge">
+                <i class="bi bi-people-fill"></i> {{ 'CLUB_EVAL.PLAYER.SESSION_BADGE' | translate }}
+              </span>
+              <span *ngIf="eval_.observationContext" class="context-tag">
+                <i class="bi bi-geo-alt"></i> {{ eval_.observationContext }}
+              </span>
+            </div>
+            <div class="eval-actions">
+              <button class="btn-icon" (click)="openEditEval(eval_)" title="{{ 'COMMON.EDIT' | translate }}">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn-icon danger" (click)="deleteEval(eval_.id!)" title="{{ 'COMMON.DELETE' | translate }}">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="eval_.notes" class="eval-notes">
+            <i class="bi bi-chat-left-text"></i> {{ eval_.notes }}
+          </div>
+
+          <div class="eval-scores-grid">
+            <div *ngFor="let field of activeFields" class="score-row">
+              <div class="score-label-row">
+                <span class="score-label">{{ field.fieldLabel }}</span>
+                <span class="score-badge"
+                  [class.high]="getScoreForField(eval_, field.fieldKey) >= 7"
+                  [class.mid]="getScoreForField(eval_, field.fieldKey) >= 4 && getScoreForField(eval_, field.fieldKey) < 7"
+                  [class.low]="getScoreForField(eval_, field.fieldKey) > 0 && getScoreForField(eval_, field.fieldKey) < 4"
+                  [class.zero]="getScoreForField(eval_, field.fieldKey) === 0">
+                  {{ getScoreForField(eval_, field.fieldKey) }}
+                </span>
+              </div>
+              <div class="score-bar-track">
+                <div class="score-bar-fill"
+                  [style.width.%]="getScoreForField(eval_, field.fieldKey) * 10"
+                  [class.high]="getScoreForField(eval_, field.fieldKey) >= 7"
+                  [class.mid]="getScoreForField(eval_, field.fieldKey) >= 4 && getScoreForField(eval_, field.fieldKey) < 7"
+                  [class.low]="getScoreForField(eval_, field.fieldKey) > 0 && getScoreForField(eval_, field.fieldKey) < 4"
+                  [class.zero]="getScoreForField(eval_, field.fieldKey) === 0">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HISTORIAL PIPELINE -->
+    <section class="pipeline-history-section" *ngIf="pipelineHistory.length > 0">
+      <div class="section-header clickable" (click)="showPipelineHistory = !showPipelineHistory">
+        <h3><i class="bi bi-diagram-3"></i> {{ 'CLUB_EVAL.PLAYER.PIPELINE_HISTORY' | translate }}</h3>
+        <span class="pipeline-count">{{ pipelineHistory.length }}</span>
+        <i class="bi" [class.bi-chevron-down]="!showPipelineHistory" [class.bi-chevron-up]="showPipelineHistory"></i>
+      </div>
+      <div *ngIf="showPipelineHistory" class="pipeline-timeline-v2">
+        <div *ngFor="let move of pipelineHistory; let last = last" class="timeline-item-v2">
+          <div class="timeline-line-v2" [class.last]="last"></div>
+          <div class="timeline-dot-v2" [class.latest]="move.isLatest">
+            <i class="bi" [class.bi-flag-fill]="move.isLatest" [class.bi-circle-fill]="!move.isLatest"></i>
+          </div>
+          <div class="timeline-body-v2">
+            <span class="stage-pill-v2" [class.latest-pill]="move.isLatest">{{ move.stageKey }}</span>
+            <span class="timeline-date-v2">{{ move.movedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+            <span *ngIf="move.notes" class="timeline-notes-v2">{{ move.notes }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </ng-container>
+
+</div>
+
+<!-- MODAL FORMULARIO DE EVALUACIÓN -->
+<app-club-eval-form
+  *ngIf="showEvalForm"
+  [clubId]="clubId"
+  [playerId]="playerId"
+  [teamId]="teamId"
+  [config]="config"
+  [editingEval]="editingEval"
+  (saved)="onEvalSaved()"
+  (cancelled)="showEvalForm = false">
+</app-club-eval-form>

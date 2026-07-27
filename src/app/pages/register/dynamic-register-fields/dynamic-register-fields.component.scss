@@ -1,0 +1,410 @@
+// Renderer del formulario extendido del club. Estilos discretos
+// alineados con la guia de marca Sphaira (#002c40 navy, #31b270 green).
+
+:host {
+  display: block;
+}
+
+.dyn-section {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 0;
+}
+
+.dyn-section__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: linear-gradient(
+    90deg,
+    rgba(49, 178, 112, 0.10) 0%,
+    rgba(49, 178, 112, 0.02) 60%,
+    rgba(49, 178, 112, 0) 100%
+  );
+  border-left: 4px solid #31b270;
+  border-radius: 12px;
+  margin-bottom: 6px;
+}
+
+.dyn-section__icon {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #31b270 0%, #1f7d4d 100%);
+  color: #ffffff;
+  font-size: 18px;
+  box-shadow: 0 4px 14px rgba(49, 178, 112, 0.25);
+
+  i {
+    line-height: 1;
+  }
+}
+
+.dyn-section__header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.dyn-section__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #002c40;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  line-height: 1.25;
+  letter-spacing: 0.005em;
+}
+
+.dyn-section__subtitle {
+  margin: 0;
+  color: #4f5b6f;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.dyn-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dyn-field__label {
+  font-weight: 400;
+  font-size: 14px;
+  color: #002c40;
+}
+
+.dyn-field__req {
+  color: #e53e3e;
+  margin-left: 2px;
+}
+
+.dyn-field__input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  background: #ffffff;
+  color: #002c40;
+  font-family: inherit;
+  transition: border-color 0.15s ease;
+}
+
+.dyn-field__input:focus {
+  outline: none;
+  border-color: #31b270;
+  box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.15);
+}
+
+.dyn-field--error .dyn-field__input,
+.dyn-field--error .dyn-field__fieldset {
+  border-color: #e53e3e;
+}
+
+.dyn-field__check {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px 6px 6px;
+  cursor: pointer;
+  color: #002c40;
+  font-size: 14px;
+  user-select: none;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  transition: border-color 0.15s ease, background-color 0.15s ease,
+              box-shadow 0.15s ease;
+  width: fit-content;
+  min-height: 36px;
+
+  &:hover {
+    border-color: #c4e8d6;
+    background: #f9fcfa;
+  }
+
+  &:has(input[type='checkbox']:checked) {
+    border-color: #31b270;
+    background: #eaf6ef;
+    color: #1f6b46;
+    box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.12);
+  }
+
+  &:focus-within {
+    border-color: #31b270;
+    box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.18);
+  }
+}
+
+.dyn-field__check input[type='checkbox'] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #002c40;
+  border-radius: 6px;
+  background: #ffffff;
+  cursor: pointer;
+  flex: 0 0 auto;
+  position: relative;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  margin: 0;
+
+  &:checked {
+    background: #31b270;
+    border-color: #31b270;
+  }
+
+  &:checked::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='3.5 8.5 6.5 11.5 12.5 5.5'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 70% 70%;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.dyn-field__fieldset {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+
+.dyn-field__fieldset legend {
+  padding: 0 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #002c40;
+}
+
+.dyn-field__consent-text {
+  background: #f4f4f4;
+  border-left: 3px solid #002c40;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #4a4a4a;
+  line-height: 1.45;
+  white-space: pre-line;
+  border-radius: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.dyn-field__help {
+  margin: 0;
+  font-size: 12px;
+  color: #636363;
+}
+
+.dyn-field__error {
+  margin: 0;
+  font-size: 12px;
+  color: #e53e3e;
+  font-weight: 500;
+}
+
+.dyn-field__info {
+  background: #f9fcfa;
+  border: 1px solid #c4e8d6;
+  border-left: 3px solid #31b270;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #2c3e50;
+  line-height: 1.55;
+  white-space: pre-line;
+  border-radius: 8px;
+}
+
+.dyn-field__document {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: linear-gradient(180deg, #ffffff 0%, #f9fcfa 100%);
+  border: 1px solid #c4e8d6;
+  border-left: 4px solid #31b270;
+  border-radius: 10px;
+  flex-wrap: wrap;
+}
+
+.dyn-field__document-icon {
+  font-size: 34px;
+  color: #002c40;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.dyn-field__document-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1 1 200px;
+  gap: 2px;
+}
+
+.dyn-field__document-title {
+  color: #002c40;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.dyn-field__document-desc {
+  color: #4a4a4a;
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 2px 0 0;
+}
+
+.dyn-field__document-meta {
+  color: #636363;
+  font-size: 11.5px;
+  margin-top: 2px;
+}
+
+.dyn-field__document-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: #31b270;
+  color: #ffffff;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: #002c40;
+    color: #ffffff;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #002c40;
+    outline-offset: 2px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dyn-field__document {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .dyn-field__document-download {
+    align-self: stretch;
+    justify-content: center;
+  }
+}
+
+.dyn-field__textarea {
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .dyn-section {
+    gap: 14px;
+  }
+
+  .dyn-section__header {
+    border-left-width: 3px;
+    padding: 10px 12px;
+    gap: 10px;
+    border-radius: 10px;
+  }
+
+  .dyn-section__icon {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+
+  .dyn-section__title {
+    font-size: 15px;
+  }
+
+  .dyn-section__subtitle {
+    font-size: 12px;
+  }
+
+  .dyn-field {
+    gap: 5px;
+  }
+
+  .dyn-field__label {
+    font-size: 13px;
+  }
+
+  .dyn-field__input {
+    padding: 11px 12px;
+    font-size: 16px;
+    border-radius: 12px;
+    min-height: 44px;
+  }
+
+  .dyn-field__fieldset {
+    padding: 10px 12px;
+    border-radius: 12px;
+  }
+
+  .dyn-field__check {
+    font-size: 14px;
+  }
+
+  .dyn-field__check input[type='checkbox'] {
+    width: 22px;
+    height: 22px;
+  }
+
+  .dyn-field__consent-text {
+    font-size: 12px;
+    padding: 9px 11px;
+    max-height: 220px;
+  }
+
+  .dyn-field__info {
+    font-size: 12.5px;
+    padding: 10px 12px;
+  }
+
+  .dyn-field__textarea {
+    min-height: 96px;
+    font-size: 16px;
+  }
+
+  .dyn-field__error,
+  .dyn-field__help {
+    font-size: 11.5px;
+  }
+}

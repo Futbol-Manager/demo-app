@@ -1,0 +1,146 @@
+<!--
+  "Pregunta al manual" — FAB inferior derecho.
+  Solo visible para profileId in {1, 9, 99}. El padre (dashboard.component.html)
+  ya hace un *ngIf adicional, esto es defensa en profundidad.
+
+  Se coloca por debajo del AI FAB principal cuando ambos coexisten
+  (10px de margen vertical). En clubes Adhoc sin el item `ai-assistant`
+  activo, el AI FAB se oculta y este botón queda solo en la esquina.
+-->
+<ng-container *ngIf="isVisibleForRole">
+
+  <!-- ───── Botón flotante (arrastrable por la pantalla) ───── -->
+  <button
+    class="help-fab-btn"
+    type="button"
+    [class.help-fab-btn--open]="isOpen"
+    [class.help-fab-btn--positioned]="!!fabPosition"
+    [class.help-fab-btn--dragging]="!!dragStart && didDrag"
+    [ngStyle]="fabStyle"
+    [attr.aria-label]="'HELP_FAB.OPEN_TITLE' | translate"
+    [attr.title]="'HELP_FAB.OPEN_TITLE' | translate"
+    (pointerdown)="onFabPointerDown($event)"
+    (pointermove)="onFabPointerMove($event)"
+    (pointerup)="onFabPointerUp($event)"
+    (pointercancel)="onFabPointerUp($event)"
+    (click)="toggle()">
+    <i class="bi" [ngClass]="isOpen ? 'bi-x-lg' : 'bi-book-half'"></i>
+    <span class="help-fab-btn__label">{{ 'HELP_FAB.OPEN_TITLE' | translate }}</span>
+  </button>
+
+  <!-- ───── Panel desplegable ───── -->
+  <div class="help-fab-panel"
+       *ngIf="isOpen"
+       [class.help-fab-panel--positioned]="!!fabPosition"
+       [ngStyle]="panelStyle"
+       role="dialog"
+       aria-modal="false">
+
+    <!-- Cabecera -->
+    <div class="help-fab-panel__header">
+      <div class="help-fab-panel__header-info">
+        <div class="help-fab-panel__avatar">
+          <i class="bi bi-book-half"></i>
+        </div>
+        <div class="help-fab-panel__title-wrap">
+          <h3 class="help-fab-panel__title">{{ 'HELP_FAB.TITLE' | translate }}</h3>
+          <span class="help-fab-panel__subtitle">{{ 'HELP_FAB.FREE' | translate }}</span>
+        </div>
+      </div>
+
+      <div class="help-fab-panel__actions">
+        <button
+          *ngIf="messages.length > 0"
+          class="help-fab-panel__action-btn"
+          type="button"
+          [attr.title]="'HELP_FAB.NEW_CONVERSATION' | translate"
+          (click)="clearConversation()">
+          <i class="bi bi-arrow-clockwise"></i>
+        </button>
+        <button
+          class="help-fab-panel__action-btn help-fab-panel__action-btn--close"
+          type="button"
+          [attr.title]="'HELP_FAB.CLOSE' | translate"
+          (click)="close()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Cuerpo: mensajes y/o sugerencias iniciales -->
+    <div class="help-fab-panel__body" #helpChatBody>
+
+      <!-- Pantalla de bienvenida (sin mensajes todavía) -->
+      <div class="help-fab-welcome" *ngIf="messages.length === 0">
+        <div class="help-fab-welcome__hero">
+          <i class="bi bi-book-half help-fab-welcome__icon"></i>
+        </div>
+        <h4 class="help-fab-welcome__title">{{ 'HELP_FAB.WELCOME_TITLE' | translate }}</h4>
+        <p class="help-fab-welcome__subtitle">{{ 'HELP_FAB.WELCOME_SUBTITLE' | translate }}</p>
+
+        <p class="help-fab-welcome__suggestions-label">{{ 'HELP_FAB.SUGGESTIONS_LABEL' | translate }}</p>
+        <div class="help-fab-welcome__suggestions">
+          <button
+            *ngFor="let s of suggestions"
+            class="help-fab-suggestion"
+            type="button"
+            (click)="askSuggestion(s)">
+            <i class="bi bi-arrow-right-short"></i>
+            <span>{{ s.labelKey | translate }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Lista de mensajes -->
+      <div class="help-fab-messages" *ngIf="messages.length > 0">
+        <ng-container *ngFor="let m of messages; trackBy: trackMsg">
+          <!-- Mensaje del usuario -->
+          <div class="help-fab-msg help-fab-msg--user" *ngIf="m.role === 'user'">
+            <div class="help-fab-msg__bubble">{{ m.text }}</div>
+          </div>
+
+          <!-- Mensaje del asistente -->
+          <div class="help-fab-msg help-fab-msg--assistant" *ngIf="m.role === 'assistant'">
+            <div class="help-fab-msg__avatar">
+              <i class="bi bi-book-half"></i>
+            </div>
+            <div class="help-fab-msg__bubble" (click)="onBubbleClick($event)">
+              <!-- Indicador "escribiendo" mientras el primer token aún no llegó -->
+              <div class="help-fab-typing" *ngIf="m.isStreaming && (!m.text || m.text.length === 0)">
+                <span></span><span></span><span></span>
+              </div>
+              <div
+                class="help-fab-msg__content"
+                *ngIf="m.html"
+                [innerHTML]="m.html"></div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Pie: input -->
+    <div class="help-fab-panel__footer">
+      <div class="help-fab-input-wrap">
+        <textarea
+          #helpInput
+          class="help-fab-input"
+          rows="1"
+          maxlength="500"
+          [placeholder]="'HELP_FAB.PLACEHOLDER' | translate"
+          [(ngModel)]="userInput"
+          [disabled]="isResponding"
+          (keydown)="onInputKeyDown($event)"></textarea>
+        <button
+          class="help-fab-send"
+          type="button"
+          [disabled]="!userInput.trim() || isResponding"
+          [attr.title]="'HELP_FAB.SEND' | translate"
+          (click)="sendMessage()">
+          <i class="bi" [ngClass]="isResponding ? 'bi-three-dots' : 'bi-send-fill'"></i>
+        </button>
+      </div>
+      <p class="help-fab-disclaimer">{{ 'HELP_FAB.DISCLAIMER' | translate }}</p>
+    </div>
+  </div>
+</ng-container>

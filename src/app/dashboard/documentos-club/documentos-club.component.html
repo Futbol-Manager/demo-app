@@ -855,6 +855,7 @@
               <th>Nombre</th>
               <th>Estado</th>
               <th>Fecha de subida</th>
+              <th class="text-center">{{ 'DOCS_EQUIPO.DOCS.OPEN' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -865,6 +866,12 @@
                 <i *ngIf="!item.completado" class="bi bi-x-circle-fill text-danger" style="font-size: 1.2em;"></i>
               </td>
               <td>{{ item.completado ? (item.fechaSubida | date:'dd/MM/yyyy') : '-' }}</td>
+              <td class="text-center">
+                <button *ngIf="puedePreviewItem(item)" type="button" class="btn btn-sm btn-outline-primary"
+                  (click)="abrirPreviewDocItem(item)" title="{{ 'DOCS_EQUIPO.DOCS.OPEN' | translate }}">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>

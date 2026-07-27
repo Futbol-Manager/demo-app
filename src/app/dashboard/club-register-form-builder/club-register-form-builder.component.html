@@ -1,0 +1,604 @@
+<div class="builder">
+
+  <header class="builder__header">
+    <div class="builder__header-title">
+      <button type="button" class="builder__back-btn" (click)="goBack()"
+              [attr.aria-label]="'COMMON.BACK' | translate">
+        <i class="bi bi-arrow-left"></i>
+        <span>{{ 'COMMON.BACK' | translate }}</span>
+      </button>
+      <div>
+        <h1 class="builder__title">{{ 'CLUB_REGISTER_FORM.BUILDER.TITLE' | translate }}</h1>
+        <p class="builder__lead">{{ 'CLUB_REGISTER_FORM.BUILDER.PICK_SUBTITLE' | translate }}</p>
+      </div>
+    </div>
+    <div class="builder__header-actions">
+      <label class="builder__toggle">
+        <input type="checkbox" [checked]="active === 1" (change)="toggleActive()" />
+        <span>{{ (active === 1 ? 'CLUB_REGISTER_FORM.BUILDER.ACTIVE' : 'CLUB_REGISTER_FORM.BUILDER.INACTIVE') | translate }}</span>
+      </label>
+      <button type="button" class="builder__btn builder__btn--ghost" (click)="togglePreview()">
+        <i class="bi" [class.bi-eye]="!showPreview" [class.bi-pencil]="showPreview"></i>
+        {{ (showPreview ? 'CLUB_REGISTER_FORM.BUILDER.EDIT' : 'CLUB_REGISTER_FORM.BUILDER.PREVIEW') | translate }}
+      </button>
+      <div class="builder__export">
+        <button type="button" class="builder__btn builder__btn--ghost"
+                [disabled]="exporting || loading" (click)="toggleExportMenu()">
+          <i class="bi" [class.bi-file-earmark-pdf]="!exporting" [class.bi-arrow-clockwise]="exporting"></i>
+          {{ 'CLUB_REGISTER_FORM.BUILDER.EXPORT_PDF' | translate }}
+          <i class="bi bi-chevron-down builder__export-caret" *ngIf="!exporting"></i>
+        </button>
+        <div class="builder__export-menu" *ngIf="exportMenuOpen">
+          <button type="button" class="builder__export-item" (click)="exportPdf('club')">
+            <i class="bi bi-sliders"></i>
+            {{ 'CLUB_REGISTER_FORM.BUILDER.EXPORT_PDF_CLUB' | translate }}
+          </button>
+          <button type="button" class="builder__export-item" (click)="exportPdf('parents')">
+            <i class="bi bi-people"></i>
+            {{ 'CLUB_REGISTER_FORM.BUILDER.EXPORT_PDF_PARENTS' | translate }}
+          </button>
+        </div>
+      </div>
+      <button type="button" class="builder__btn builder__btn--primary" [disabled]="saving" (click)="save()">
+        <i class="bi" [class.bi-cloud-arrow-up]="!saving" [class.bi-arrow-clockwise]="saving"></i>
+        {{ 'CLUB_REGISTER_FORM.BUILDER.SAVE' | translate }}
+      </button>
+    </div>
+  </header>
+
+  <!-- Selector de variante: formulario de menores/padres vs. mayores de edad -->
+  <div class="builder__variant-tabs" role="tablist" *ngIf="!loading">
+    <button type="button"
+            class="builder__variant-tab"
+            role="tab"
+            [class.builder__variant-tab--active]="formVariant === 'minor'"
+            [attr.aria-selected]="formVariant === 'minor'"
+            (click)="switchVariant('minor')">
+      <i class="bi bi-people-fill"></i>
+      {{ 'CLUB_REGISTER_FORM.BUILDER.VARIANT_MINOR_TAB' | translate }}
+    </button>
+    <button type="button"
+            class="builder__variant-tab"
+            role="tab"
+            [class.builder__variant-tab--active]="formVariant === 'adult'"
+            [attr.aria-selected]="formVariant === 'adult'"
+            (click)="switchVariant('adult')">
+      <i class="bi bi-person-badge-fill"></i>
+      {{ 'CLUB_REGISTER_FORM.BUILDER.VARIANT_ADULT_TAB' | translate }}
+    </button>
+  </div>
+
+  <div class="builder__loading" *ngIf="loading">
+    <i class="bi bi-arrow-clockwise"></i>
+    {{ 'CLUB_REGISTER_FORM.BUILDER.LOADING' | translate }}
+  </div>
+
+  <!-- Aviso si no hay nada seleccionado -->
+  <div class="builder__empty-state"
+       *ngIf="!loading && !showPreview && totalSelected === 0">
+    <i class="bi bi-info-circle"></i>
+    {{ 'CLUB_REGISTER_FORM.BUILDER.PICK_NONE_SELECTED' | translate }}
+  </div>
+
+  <!-- VISTA EDIT (checkboxes por sección) -->
+  <div class="builder__sections" *ngIf="!loading && !showPreview">
+
+    <article class="section-card"
+             *ngFor="let meta of visibleSectionMeta; trackBy: trackBySection">
+
+      <header class="section-card__header">
+        <div class="section-card__heading">
+          <span class="section-card__chip"
+                [class.section-card__chip--general]="meta.id === 'general'"
+                [class.section-card__chip--tutor]="meta.id === 'tutor'"
+                [class.section-card__chip--child]="meta.id === 'child'">
+            {{ meta.chipKey | translate }}
+          </span>
+          <h2 class="section-card__title">{{ sectionTitleKey(meta) | translate }}</h2>
+        </div>
+        <p class="section-card__hint">{{ meta.hintKey | translate }}</p>
+      </header>
+
+      <!-- Datos base fijos del jugador: siempre se piden en el registro y son
+           obligatorios. Bloqueados (no se pueden desmarcar ni reordenar). -->
+      <div class="base-fields" *ngIf="meta.id === 'child'">
+        <p class="base-fields__note">
+          <i class="bi bi-lock-fill"></i>
+          {{ 'CLUB_REGISTER_FORM.BUILDER.BASE_CHILD_NOTE' | translate }}
+        </p>
+        <ul class="base-fields__list">
+          <li class="base-fields__item"
+              *ngFor="let key of baseChildFields; trackBy: trackByIndex">
+            <span class="base-fields__name">
+              <i class="bi bi-check-circle-fill"></i>
+              {{ key | translate }}
+            </span>
+            <span class="base-fields__badge"
+                  [title]="'CLUB_REGISTER_FORM.BUILDER.BASE_CHILD_ALWAYS' | translate">
+              <i class="bi bi-lock-fill"></i>
+              {{ 'CLUB_REGISTER_FORM.BUILDER.BASE_CHILD_ALWAYS' | translate }}
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- ── Lista UNIFICADA: items en uso (con flechas y check marcado)
+           seguidos de los slots disponibles del catálogo (check sin marcar
+           y flechas deshabilitadas, pendientes de seleccionarse). -->
+      <ul class="slot-list slot-list--ordered"
+          *ngIf="slotsBySection(meta.id).length > 0 || itemsBySection(meta.id).length > 0">
+
+        <!-- Items EN USO (slots seleccionados + free fields), reordenables -->
+        <li class="slot-row slot-row--selected"
+            *ngFor="let item of itemsBySection(meta.id); let i = index; let isFirst = first; let isLast = last; trackBy: trackByItemId">
+
+          <div class="slot-row__order">
+            <button type="button"
+                    class="slot-row__order-btn"
+                    [disabled]="isFirst"
+                    (click)="moveItemUp(meta.id, i)"
+                    [attr.aria-label]="'CLUB_REGISTER_FORM.BUILDER.MOVE_UP' | translate">
+              <i class="bi bi-chevron-up"></i>
+            </button>
+            <button type="button"
+                    class="slot-row__order-btn"
+                    [disabled]="isLast"
+                    (click)="moveItemDown(meta.id, i)"
+                    [attr.aria-label]="'CLUB_REGISTER_FORM.BUILDER.MOVE_DOWN' | translate">
+              <i class="bi bi-chevron-down"></i>
+            </button>
+          </div>
+
+          <!-- ITEM TIPO SLOT CANÓNICO -->
+          <ng-container *ngIf="asSlot(item) as slot">
+            <div class="slot-row__body">
+              <div class="slot-row__head">
+                <label class="slot-row__main">
+                  <input type="checkbox"
+                         class="slot-row__check"
+                         [checked]="true"
+                         (change)="toggleSelected(slot)" />
+                  <span class="slot-row__name">
+                    {{ slotLabelKey(slot) | translate }}
+                    <small class="slot-row__type" *ngIf="slot.type === 'select'">
+                      {{ 'CLUB_REGISTER_FORM.BUILDER.TYPE_SELECT' | translate }}
+                    </small>
+                    <small class="slot-row__type" *ngIf="slot.type === 'consent'">
+                      {{ 'CLUB_REGISTER_FORM.BUILDER.TYPE_CONSENT' | translate }}
+                    </small>
+                    <small class="slot-row__type" *ngIf="slot.type === 'textarea'">
+                      {{ 'CLUB_REGISTER_FORM.BUILDER.TYPE_TEXT' | translate }}
+                    </small>
+                    <small class="slot-row__type slot-row__type--legacy" *ngIf="isLegacy(slot)"
+                           [title]="'CLUB_REGISTER_FORM.BUILDER.LEGACY_HINT' | translate">
+                      <i class="bi bi-exclamation-triangle"></i>
+                      {{ 'CLUB_REGISTER_FORM.BUILDER.LEGACY_BADGE' | translate }}
+                    </small>
+                  </span>
+                </label>
+
+                <label class="slot-row__required">
+                  <input type="checkbox"
+                         [checked]="isRequired(slot)"
+                         (change)="toggleRequired(slot)" />
+                  <span>{{ 'CLUB_REGISTER_FORM.BUILDER.PICK_REQUIRED_TOGGLE' | translate }}</span>
+                </label>
+              </div>
+
+              <p class="slot-row__legacy-hint" *ngIf="isLegacy(slot)">
+                <i class="bi bi-info-circle"></i>
+                {{ 'CLUB_REGISTER_FORM.BUILDER.LEGACY_HINT' | translate }}
+              </p>
+
+              <!-- Editor de opciones para slots canónicos tipo SELECT -->
+              <div class="slot-row__editor" *ngIf="slot.type === 'select'">
+                <span class="slot-row__editor-label">
+                  {{ 'CLUB_REGISTER_FORM.BUILDER.FREE_OPTIONS' | translate }}
+                </span>
+                <div class="free-field__options">
+                  <div class="free-field__option"
+                       *ngFor="let _opt of getSlotOptions(slot); let oi = index; trackBy: trackByIndex">
+                    <input class="free-field__input"
+                           type="text"
+                           [ngModel]="getSlotOptions(slot)[oi]"
+                           (ngModelChange)="setSlotOption(slot, oi, $event)"
+                           [name]="'slot_opt_' + slot.key + '_' + oi" />
+                    <button type="button"
+                            class="free-field__option-remove"
+                            (click)="removeSlotOption(slot, oi)">
+                      <i class="bi bi-x"></i>
+                    </button>
+                  </div>
+                  <button type="button"
+                          class="free-field__add-option"
+                          (click)="addSlotOption(slot)">
+                    <i class="bi bi-plus"></i>
+                    {{ 'CLUB_REGISTER_FORM.BUILDER.FREE_ADD_OPTION' | translate }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Editor de texto legal para slots canónicos tipo CONSENT -->
+              <div class="slot-row__editor" *ngIf="slot.type === 'consent'">
+                <span class="slot-row__editor-label">
+                  {{ 'CLUB_REGISTER_FORM.BUILDER.FREE_CONSENT_TEXT' | translate }}
+                </span>
+                <textarea class="free-field__textarea"
+                          rows="4"
+                          [ngModel]="getSlotConsentText(slot)"
+                          (ngModelChange)="setSlotConsentText(slot, $event)"
+                          [placeholder]="'CLUB_REGISTER_FORM.BUILDER.FREE_CONSENT_PLACEHOLDER' | translate"
+                          [name]="'slot_text_' + slot.key"></textarea>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- ITEM TIPO FREE FIELD (info / select / consent) -->
+          <ng-container *ngIf="asFree(item) as f">
+            <div class="free-field free-field--inline">
+              <header class="free-field__head">
+                <span class="free-field__badge free-field__badge--{{f.type}}">
+                  {{ ('CLUB_REGISTER_FORM.BUILDER.FREE_TYPE_' + (f.type | uppercase)) | translate }}
+                </span>
+                <button type="button"
+                        class="free-field__remove"
+                        (click)="removeFreeField(f)"
+                        [attr.aria-label]="'CLUB_REGISTER_FORM.BUILDER.FREE_REMOVE' | translate">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </header>
+
+              <!-- INFO: bloque de texto estático -->
+              <ng-container *ngIf="f.type === 'info'">
+                <label class="free-field__label">
+                  {{ 'CLUB_REGISTER_FORM.BUILDER.FREE_INFO_TEXT' | translate }}
+                  <textarea class="free-field__textarea"
+                            rows="4"
+                            [(ngModel)]="f.text"
+                            [placeholder]="'CLUB_REGISTER_FORM.BUILDER.FREE_INFO_PLACEHOLDER' | translate"
+                            [name]="'free_info_' + f.id"></textarea>
+                </label>
+              </ng-container>
+
+              <!-- SELECT: desplegable con opciones libres -->
+              <ng-container *ngIf="f.type === 'select'">
+                <label class="free-field__label">
+                  {{ 'CLUB_REGISTER_FORM.BUILDER.FREE_LABEL' | translate }}
+                  <input class="free-field__input"
+                         type="text"
+                         [(ngModel)]="f.label"
+                         [name]="'free_label_' + f.id" />
+                </label>
+
+                <label class="free-field__label">
+                  {{ 'CLUB_REGISTER_FORM.BUILDER.FREE_OPTIONS' | translate }}
+                </label>
+                <div class="free-field__options">
+                  <div class="free-field__option"
+                       *ngFor="let _opt of f.options; let oi = index; trackBy: trackByIndex">
+                    <input class="free-field__input"
+                           type="text"
+                           [(ngModel)]="f.options[oi]"
+                           [name]="'free_opt_' + f.id + '_' + oi" />
+                    <button type="button"
+                            class="free-field__option-remove"
+                            (click)="removeFreeOption(f, oi)">
+                      <i class="bi bi-x"></i>
+                    </button>
+                  </div>
+                  <button type="button"
+                          class="free-field__add-option"
+                          (click)="addFreeOption(f)">
+                    <i class="bi bi-plus"></i>
+                    {{ 'CLUB_REGISTER_FORM.BUILDER.FREE_ADD_OPTION' | translate }}
+                  </button>
+                </div>
+
+                <label class="free-field__required">
+                  <input type="checkbox"
+                         [(ngModel)]="f.required"
+                         [name]="'free_required_' + f.id" />
+                  <span>{{ 'CLUB_REGISTER_FORM.BUILDER.PICK_REQUIRED_TOGGLE' | translate }}</span>
+                </label>
+              </ng-container>
+
+              <!-- CONSENT: consentimiento con texto legal del club -->
+              <ng-container *ngIf="f.type === 'consent'">
+                <label class="free-field__label">
+                  {{ 'CLUB_REGISTER_FORM.BUILDER.FREE_LABEL' | translate }}
+                  <input class="free-field__input"
+                         type="text"
+                         [(ngModel)]="f.label"
+                         [name]="'free_clabel_' + f.id"
+                         [placeholder]="'CLUB_REGISTER_FORM.BUILDER.FREE_CONSENT_LABEL_PLACEHOLDER' | translate" />
+                </label>
+
+                <label class="free-field__label">
+                  {{ 'CLUB_REGISTER_FORM.BUILDER.FREE_CONSENT_TEXT' | translate }}
+                  <textarea class="free-field__textarea"
+                            rows="5"
+                            [(ngModel)]="f.text"
+                            [placeholder]="'CLUB_REGISTER_FORM.BUILDER.FREE_CONSENT_PLACEHOLDER' | translate"
+                            [name]="'free_ctext_' + f.id"></textarea>
+                </label>
+
+                <label class="free-field__required">
+                  <input type="checkbox"
+                         [(ngModel)]="f.required"
+                         [name]="'free_creq_' + f.id" />
+                  <span>{{ 'CLUB_REGISTER_FORM.BUILDER.PICK_REQUIRED_TOGGLE' | translate }}</span>
+                </label>
+              </ng-container>
+
+              <!-- DOCUMENT: archivo descargable subido por el club (PDF/Word/imagen) -->
+              <ng-container *ngIf="f.type === 'document'">
+                <label class="free-field__label">
+                  {{ 'CLUB_REGISTER_FORM.BUILDER.FREE_LABEL' | translate }}
+                  <input class="free-field__input"
+                         type="text"
+                         [(ngModel)]="f.label"
+                         [name]="'free_doclabel_' + f.id"
+                         [placeholder]="'CLUB_REGISTER_FORM.BUILDER.FREE_DOCUMENT_LABEL_PLACEHOLDER' | translate" />
+                </label>
+
+                <label class="free-field__label">
+                  {{ 'CLUB_REGISTER_FORM.BUILDER.FREE_DOCUMENT_DESCRIPTION' | translate }}
+                  <textarea class="free-field__textarea"
+                            rows="2"
+                            [(ngModel)]="f.text"
+                            [placeholder]="'CLUB_REGISTER_FORM.BUILDER.FREE_DOCUMENT_DESCRIPTION_PLACEHOLDER' | translate"
+                            [name]="'free_doctext_' + f.id"></textarea>
+                </label>
+
+                <!-- Estado: sin archivo subido todavía -->
+                <div class="free-field__document-empty" *ngIf="!f.fileUrl && !f.uploading">
+                  <label class="free-field__document-pick">
+                    <input type="file"
+                           class="free-field__document-input"
+                           [accept]="documentAcceptAttr"
+                           (change)="onDocumentFileSelected(f, $event)" />
+                    <i class="bi bi-cloud-arrow-up"></i>
+                    <span>{{ 'CLUB_REGISTER_FORM.BUILDER.FREE_DOCUMENT_PICK' | translate }}</span>
+                  </label>
+                  <small class="free-field__document-hint">
+                    {{ 'CLUB_REGISTER_FORM.BUILDER.FREE_DOCUMENT_HINT' | translate:{ max: formatFileSize(documentMaxSizeBytes) } }}
+                  </small>
+                </div>
+
+                <!-- Estado: subida en curso -->
+                <div class="free-field__document-uploading" *ngIf="f.uploading">
+                  <i class="bi bi-arrow-clockwise"></i>
+                  {{ 'CLUB_REGISTER_FORM.BUILDER.FREE_DOCUMENT_UPLOADING' | translate }}
+                </div>
+
+                <!-- Estado: archivo ya subido -->
+                <div class="free-field__document-preview" *ngIf="f.fileUrl && !f.uploading">
+                  <i class="bi" [ngClass]="documentIconFor(f)"></i>
+                  <div class="free-field__document-info">
+                    <strong>{{ f.fileName }}</strong>
+                    <small>{{ formatFileSize(f.fileSize) }}</small>
+                  </div>
+                  <a class="free-field__document-link"
+                     [href]="f.fileUrl"
+                     target="_blank"
+                     rel="noopener">
+                    <i class="bi bi-box-arrow-up-right"></i>
+                    {{ 'CLUB_REGISTER_FORM.BUILDER.FREE_DOCUMENT_OPEN' | translate }}
+                  </a>
+                  <label class="free-field__document-replace">
+                    <input type="file"
+                           class="free-field__document-input"
+                           [accept]="documentAcceptAttr"
+                           (change)="onDocumentFileSelected(f, $event)" />
+                    <i class="bi bi-arrow-repeat"></i>
+                    {{ 'CLUB_REGISTER_FORM.BUILDER.FREE_DOCUMENT_REPLACE' | translate }}
+                  </label>
+                  <button type="button"
+                          class="free-field__document-clear"
+                          (click)="clearDocument(f)">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                </div>
+
+                <p class="free-field__document-error" *ngIf="f.uploadError">
+                  <i class="bi bi-exclamation-triangle-fill"></i>
+                  {{ f.uploadError }}
+                </p>
+              </ng-container>
+            </div>
+          </ng-container>
+        </li>
+
+        <!-- Slots disponibles (no seleccionados aún) en orden de catálogo.
+             Visualmente apagados, sin flechas (no participan en el orden
+             persistido hasta que el club los marque). -->
+        <li class="slot-row slot-row--available"
+            *ngFor="let slot of availableSlotsBySection(meta.id); trackBy: trackBySlot">
+
+          <!-- Hueco para mantener la alineación con los items en uso. -->
+          <div class="slot-row__order slot-row__order--placeholder" aria-hidden="true">
+            <span class="slot-row__order-spacer"></span>
+            <span class="slot-row__order-spacer"></span>
+          </div>
+
+          <label class="slot-row__main">
+            <input type="checkbox"
+                   class="slot-row__check"
+                   [checked]="false"
+                   (change)="toggleSelected(slot)" />
+            <span class="slot-row__name">
+              {{ slotLabelKey(slot) | translate }}
+              <small class="slot-row__type" *ngIf="slot.type === 'select'">
+                {{ 'CLUB_REGISTER_FORM.BUILDER.TYPE_SELECT' | translate }}
+              </small>
+              <small class="slot-row__type" *ngIf="slot.type === 'consent'">
+                {{ 'CLUB_REGISTER_FORM.BUILDER.TYPE_CONSENT' | translate }}
+              </small>
+              <small class="slot-row__type" *ngIf="slot.type === 'textarea'">
+                {{ 'CLUB_REGISTER_FORM.BUILDER.TYPE_TEXT' | translate }}
+              </small>
+            </span>
+          </label>
+        </li>
+      </ul>
+
+      <p class="section-card__empty" *ngIf="slotsBySection(meta.id).length === 0">
+        {{ 'CLUB_REGISTER_FORM.BUILDER.SECTION_EMPTY' | translate }}
+      </p>
+
+      <!-- Botones para añadir campos libres (info / select / consent).
+           Quedan al pie de cada sección como acción secundaria; al pulsarlos
+           el campo se inserta al final del bloque "items en uso". -->
+      <div class="free-actions">
+        <span class="free-actions__hint">
+          {{ 'CLUB_REGISTER_FORM.BUILDER.FREE_ADD_HINT' | translate }}
+        </span>
+        <div class="free-actions__buttons">
+          <button type="button"
+                  class="free-actions__btn"
+                  (click)="addFreeField(meta.id, 'info')">
+            <i class="bi bi-card-text"></i>
+            {{ 'CLUB_REGISTER_FORM.BUILDER.FREE_ADD_INFO' | translate }}
+          </button>
+          <button type="button"
+                  class="free-actions__btn"
+                  (click)="addFreeField(meta.id, 'select')">
+            <i class="bi bi-list-ul"></i>
+            {{ 'CLUB_REGISTER_FORM.BUILDER.FREE_ADD_SELECT' | translate }}
+          </button>
+          <button type="button"
+                  class="free-actions__btn"
+                  (click)="addFreeField(meta.id, 'consent')">
+            <i class="bi bi-shield-check"></i>
+            {{ 'CLUB_REGISTER_FORM.BUILDER.FREE_ADD_CONSENT' | translate }}
+          </button>
+          <button type="button"
+                  *ngIf="canAddDocumentTo(meta.id)"
+                  class="free-actions__btn"
+                  (click)="addFreeField(meta.id, 'document')">
+            <i class="bi bi-paperclip"></i>
+            {{ 'CLUB_REGISTER_FORM.BUILDER.FREE_ADD_DOCUMENT' | translate }}
+          </button>
+        </div>
+      </div>
+
+    </article>
+
+  </div>
+
+  <!-- VISTA PREVIEW -->
+  <div class="builder__preview" *ngIf="!loading && showPreview">
+    <h2 class="builder__preview-title">
+      <i class="bi bi-eye-fill"></i>
+      {{ 'CLUB_REGISTER_FORM.BUILDER.PREVIEW_TITLE' | translate }}
+    </h2>
+    <p class="builder__preview-lead">
+      {{ 'CLUB_REGISTER_FORM.BUILDER.PREVIEW_LEAD' | translate }}
+    </p>
+
+    <div class="builder__preview-section"
+         *ngFor="let s of previewSchema.sections">
+      <app-dynamic-register-fields
+        [schema]="previewSchema"
+        [sectionId]="s.id">
+      </app-dynamic-register-fields>
+    </div>
+  </div>
+
+  <p class="builder__error" *ngIf="validationError">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    {{ validationError }}
+  </p>
+
+  <!-- ÁREA DE RENDER PARA EXPORTAR A PDF (fuera de pantalla; se captura con html2canvas) -->
+  <div class="pdf-stage-wrap" *ngIf="exportRenderMode" aria-hidden="true">
+    <div class="pdf-stage" #pdfStage>
+
+      <!-- VERSIÓN PADRES: el formulario tal y como lo ven los padres -->
+      <ng-container *ngIf="exportRenderMode === 'parents'">
+        <p class="pdf-lead">{{ 'CLUB_REGISTER_FORM.BUILDER.PREVIEW_LEAD' | translate }}</p>
+
+        <!-- Datos base del jugador: SIEMPRE se piden y son obligatorios -->
+        <section class="pdf-parents-base">
+          <h3 class="pdf-parents-base__title">
+            {{ (formVariant === 'adult'
+                ? 'CLUB_REGISTER_FORM.BUILDER.CHILD_ADULT_DEFAULT_TITLE'
+                : 'CLUB_REGISTER_FORM.BUILDER.CHILD_DEFAULT_TITLE') | translate }}
+          </h3>
+          <div class="pdf-parents-base__grid">
+            <div class="pdf-parents-base__field"
+                 *ngFor="let key of baseChildFields; trackBy: trackByIndex">
+              <label class="pdf-parents-base__label">
+                {{ key | translate }} <span class="pdf-parents-base__req">*</span>
+              </label>
+              <span class="pdf-parents-base__input"></span>
+            </div>
+          </div>
+        </section>
+
+        <div class="pdf-preview-section" *ngFor="let s of previewSchema.sections">
+          <app-dynamic-register-fields
+            [schema]="previewSchema"
+            [sectionId]="s.id">
+          </app-dynamic-register-fields>
+        </div>
+      </ng-container>
+
+      <!-- VERSIÓN CLUB: resumen de la configuración (campos + obligatoriedad) -->
+      <ng-container *ngIf="exportRenderMode === 'club'">
+        <p class="pdf-lead">{{ 'CLUB_REGISTER_FORM.BUILDER.EXPORT_CLUB_LEAD' | translate }}</p>
+
+        <section class="pdf-section" *ngFor="let meta of visibleSectionMeta; trackBy: trackBySection">
+          <h3 class="pdf-section__title">{{ sectionTitleKey(meta) | translate }}</h3>
+
+          <!-- Datos base del jugador (siempre obligatorios) -->
+          <ul class="pdf-fields" *ngIf="meta.id === 'child'">
+            <li class="pdf-field" *ngFor="let key of baseChildFields; trackBy: trackByIndex">
+              <span class="pdf-field__name">{{ key | translate }}</span>
+              <span class="pdf-badge pdf-badge--locked">
+                {{ 'CLUB_REGISTER_FORM.BUILDER.BASE_CHILD_ALWAYS' | translate }}
+              </span>
+            </li>
+          </ul>
+
+          <ul class="pdf-fields">
+            <li class="pdf-field" *ngFor="let item of itemsBySection(meta.id); trackBy: trackByItemId">
+              <!-- Slot canónico -->
+              <ng-container *ngIf="asSlot(item) as slot">
+                <span class="pdf-field__name">{{ slotLabelKey(slot) | translate }}</span>
+                <span class="pdf-badge"
+                      [class.pdf-badge--req]="isRequired(slot)"
+                      [class.pdf-badge--opt]="!isRequired(slot)">
+                  {{ (isRequired(slot)
+                      ? 'CLUB_REGISTER_FORM.BUILDER.PICK_REQUIRED_TOGGLE'
+                      : 'CLUB_REGISTER_FORM.BUILDER.EXPORT_OPTIONAL') | translate }}
+                </span>
+              </ng-container>
+              <!-- Campo libre -->
+              <ng-container *ngIf="asFree(item) as f">
+                <span class="pdf-field__name">
+                  <ng-container *ngIf="f.type === 'info'">{{ f.text }}</ng-container>
+                  <ng-container *ngIf="f.type !== 'info'">{{ f.label }}</ng-container>
+                </span>
+                <span class="pdf-badges">
+                  <span class="pdf-badge pdf-badge--free">
+                    {{ ('CLUB_REGISTER_FORM.BUILDER.FREE_TYPE_' + (f.type | uppercase)) | translate }}
+                  </span>
+                  <span class="pdf-badge pdf-badge--req" *ngIf="f.type !== 'info' && f.required">
+                    {{ 'CLUB_REGISTER_FORM.BUILDER.PICK_REQUIRED_TOGGLE' | translate }}
+                  </span>
+                </span>
+              </ng-container>
+            </li>
+            <li class="pdf-empty"
+                *ngIf="itemsBySection(meta.id).length === 0 && meta.id !== 'child'">
+              {{ 'CLUB_REGISTER_FORM.BUILDER.EXPORT_SECTION_EMPTY' | translate }}
+            </li>
+          </ul>
+        </section>
+      </ng-container>
+
+    </div>
+  </div>
+
+</div>

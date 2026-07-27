@@ -15,6 +15,7 @@ export class ChargeSavedCardModalComponent implements OnChanges {
   @Input() accountId!: string;
   @Input() pagosClub: any[] = [];
   @Input() visible = false;
+  @Input() currencySymbol = '€';
 
   @Output() onClose = new EventEmitter<void>();
   @Output() onCharged = new EventEmitter<any>();
@@ -101,9 +102,23 @@ export class ChargeSavedCardModalComponent implements OnChanges {
 
     this.teamService.chargeSavedCard(body).subscribe({
       next: (resp: any) => {
-        this.toastr.success(this.translate.instant('PAYMENTS.CHARGE_MODAL.SUCCESS'));
         this.charging = false;
-        this.onCharged.emit(resp);
+        // Validamos explícitamente data + status antes de cantar éxito: si Stripe
+        // rechaza (tarjeta caducada, fondos insuficientes, 3DS fallido…) el backend
+        // puede responder 200 con data null o status >= 400.
+        const ok = resp
+          && (resp.status === 200 || resp.status == null)
+          && resp.error == null
+          && resp.data != null
+          && resp.data !== false;
+        if (ok) {
+          this.toastr.success(this.translate.instant('PAYMENTS.CHARGE_MODAL.SUCCESS'));
+          this.onCharged.emit(resp);
+        } else {
+          const msg = resp?.error?.msg
+            || this.translate.instant('PAYMENTS.CHARGE_MODAL.ERROR');
+          this.toastr.error(msg);
+        }
       },
       error: () => {
         this.toastr.error(this.translate.instant('PAYMENTS.CHARGE_MODAL.ERROR'));

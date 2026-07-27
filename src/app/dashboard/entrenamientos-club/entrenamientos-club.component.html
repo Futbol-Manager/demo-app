@@ -1,0 +1,70 @@
+<div class="ec-wrapper">
+
+  <header class="ec-header">
+    <div class="ec-header__text">
+      <h1 class="ec-title">
+        <i class="bi bi-clipboard2-check"></i>
+        {{ 'ENTRENAMIENTOS.CLUB_TASKS_TITLE' | translate }}
+      </h1>
+      <p class="ec-subtitle">{{ 'ENTRENAMIENTOS.CLUB_TASKS_SUBTITLE' | translate }}</p>
+    </div>
+    <button type="button" class="ec-btn ec-btn--primary" (click)="openCreate()">
+      <i class="bi bi-plus-lg"></i>
+      {{ 'ENTRENAMIENTOS.NEW_TASK' | translate }}
+    </button>
+  </header>
+
+  <div class="ec-alert" *ngIf="error">{{ error | translate }}</div>
+
+  <div class="ec-loading" *ngIf="loading">
+    <span class="spinner-border spinner-border-sm"></span>
+    {{ 'ENTRENAMIENTOS.LOADING' | translate }}
+  </div>
+
+  <div class="ec-empty" *ngIf="!loading && tasks.length === 0">
+    <i class="bi bi-clipboard2-x"></i>
+    <p>{{ 'ENTRENAMIENTOS.EMPTY' | translate }}</p>
+  </div>
+
+  <div class="ec-grid" *ngIf="!loading && tasks.length > 0">
+    <article class="ec-card" *ngFor="let task of tasks; trackBy: trackByTask">
+      <div class="ec-card__head">
+        <span class="ec-chip" *ngIf="task.work">{{ task.work }}</span>
+        <div class="ec-card__actions">
+          <button type="button" class="ec-icon-btn" (click)="openEdit(task)"
+                  [attr.aria-label]="'ENTRENAMIENTOS.EDIT' | translate">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button type="button" class="ec-icon-btn ec-icon-btn--danger" (click)="removeTask(task)"
+                  [attr.aria-label]="'ENTRENAMIENTOS.DELETE' | translate">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </div>
+      <div class="ec-card__thumb" *ngIf="taskImageUrl(task) as imgUrl">
+        <img [src]="imgUrl" alt="" loading="lazy" />
+        <span class="ec-card__thumb-badge" *ngIf="isGif(task.imagenBoard)">GIF</span>
+      </div>
+      <h3 class="ec-card__title" *ngIf="task.title">{{ task.title }}</h3>
+      <p class="ec-card__desc">{{ task.description }}</p>
+      <ul class="ec-card__meta">
+        <li *ngIf="task.worktime"><i class="bi bi-stopwatch"></i> {{ task.worktime }}</li>
+        <li *ngIf="task.space"><i class="bi bi-arrows-fullscreen"></i> {{ task.space }}</li>
+        <li *ngIf="task.material"><i class="bi bi-box-seam"></i> {{ task.material }}</li>
+      </ul>
+      <a class="ec-card__video" *ngIf="task.video" [href]="task.video" target="_blank" rel="noopener">
+        <i class="bi bi-play-btn"></i> {{ 'ENTRENAMIENTOS.VIEW_VIDEO' | translate }}
+      </a>
+    </article>
+  </div>
+
+  <!-- Modal de creación / edición (componente reutilizable) -->
+  <app-club-task-form
+    *ngIf="showForm"
+    [clubId]="clubId"
+    [task]="editingTask"
+    (saved)="onFormSaved()"
+    (closed)="onFormClosed()">
+  </app-club-task-form>
+
+</div>

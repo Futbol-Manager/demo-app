@@ -219,6 +219,19 @@
               </select>
             </div>
 
+            <!-- FORMULARIO EXTENDIDO DEL CLUB: secciones tutor / general (una vez) -->
+            <app-dynamic-register-fields
+              *ngIf="hasTutorExtras"
+              [schema]="registerSchema"
+              sectionId="tutor">
+            </app-dynamic-register-fields>
+
+            <app-dynamic-register-fields
+              *ngIf="hasGeneralExtras"
+              [schema]="registerSchema"
+              sectionId="general">
+            </app-dynamic-register-fields>
+
             <!-- DATOS HIJOS -->
             <div *ngFor="let index of hijosVisibles; trackBy: trackByIndex" class="child-card">
 
@@ -272,6 +285,72 @@
                 ✖ {{ 'REGISTER.VALIDATION.PLAYER_EXISTS' | translate }}
               </div>
 
+              <!-- EQUIPO DEL HIJO -->
+              <div class="form-field mt-3" *ngIf="clubTeamsLoaded && clubTeams.length > 0">
+                <label class="form-label">
+                  {{ 'REGISTER.CHILDREN.TEAM' | translate }}
+                </label>
+                <select class="input-register" [formControlName]="'team' + (index + 1)">
+                  <option value="">{{ 'REGISTER.CHILDREN.SELECT_TEAM' | translate }}</option>
+                  <option *ngFor="let t of clubTeams" [value]="t.teamId">
+                    {{ t.name }}<span *ngIf="t.category"> · {{ t.category }}</span>
+                  </option>
+                </select>
+              </div>
+
+              <!-- FORMULARIO EXTENDIDO DEL CLUB: sección del hijo -->
+              <app-dynamic-register-fields
+                *ngIf="hasChildExtras"
+                [schema]="registerSchema"
+                sectionId="child"
+                [instanceId]="index">
+              </app-dynamic-register-fields>
+
+              <!-- VARIANTES DE PAGO DEL HIJO -->
+              <div class="payment-variants" *ngIf="getPaymentGroupsForChild(index).length > 0">
+                <h6 class="child-title mt-3">
+                  {{ 'REGISTER.PAYMENTS.TITLE' | translate }}
+                </h6>
+
+                <div class="payment-group" *ngFor="let g of getPaymentGroupsForChild(index)">
+                  <div class="payment-group__name">{{ g.titulo }}</div>
+                  <div class="payment-group__desc" *ngIf="g.descripcion">{{ g.descripcion }}</div>
+
+                  <!-- Precio fijo (sin variantes): checkbox de aceptación -->
+                  <label class="payment-fixed" *ngIf="isFixedPayment(g)">
+                    <input type="checkbox"
+                      [checked]="isFixedAccepted(index, g.pagoClubId)"
+                      (change)="toggleFixedAccept(index, g.pagoClubId, $any($event.target).checked)" />
+                    <span>
+                      {{ 'REGISTER.PAYMENTS.ACCEPT_PRICE' | translate }}
+                      <strong *ngIf="hasBasePrice(g)">{{ g.importe }} €</strong>
+                    </span>
+                  </label>
+
+                  <!-- Con variantes: selector -->
+                  <select class="input-register" *ngIf="!isFixedPayment(g)"
+                    [value]="getVariantSelection(index, g.pagoClubId) || ''"
+                    (change)="setVariantSelection(index, g.pagoClubId, $any($event.target).value)">
+                    <option value="">{{ 'REGISTER.PAYMENTS.SELECT_OPTION' | translate }}</option>
+                    <option value="-1" *ngIf="hasBasePrice(g)">
+                      {{ 'REGISTER.PAYMENTS.BASE_PRICE' | translate }} — {{ g.importe }} €
+                    </option>
+                    <option *ngFor="let v of g.variantes" [value]="v.id">
+                      {{ v.nombre }} — {{ v.importe }} €
+                    </option>
+                  </select>
+
+                  <div class="variant-missing" *ngIf="isVariantMissing(index, g.pagoClubId)">
+                    ⚠ {{ 'REGISTER.PAYMENTS.MISSING' | translate }}
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- AVISO CAMPOS/VARIANTES PENDIENTES -->
+            <div class="missing-banner" *ngIf="showMissingBanner">
+              ⚠ {{ 'REGISTER.PAYMENTS.COMPLETE_REQUIRED' | translate }}
             </div>
 
             <!-- BOTONES -->

@@ -137,7 +137,20 @@ export interface Injury {
   createdBy: string;
   /** Medical documents attached to this injury */
   documents?: InjuryDocument[];
+
+  // ── Campos usados por la Agenda médica (planificación RTP por fases) ──
+  /** Fin del rango de retorno estimado (además de dateReturn). */
+  dateReturnEnd?: string;
+  /** Fecha de inicio planificada de cada fase RTP (índice i → fase i+1). */
+  rtpDates?: (string | null | undefined)[];
+  /** Fecha de fin planificada de cada fase RTP (paralelo a rtpDates). */
+  rtpDatesEnd?: (string | null | undefined)[];
+  /** Distingue lesión ('injury') de incidencia ('incident', sin baja). */
+  kind?: InjuryKind;
 }
+
+/** Distingue una lesión con baja de una incidencia sin RTP. */
+export type InjuryKind = 'injury' | 'incident';
 
 /**
  * Medical document attached to an injury.
@@ -226,6 +239,8 @@ export interface MonthTrend {
 export interface RtpPhase {
   phase: number;
   label: string;
+  /** Clave i18n opcional para traducir la etiqueta de la fase. */
+  labelKey?: string;
   icon: string;
   color: string;
 }

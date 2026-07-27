@@ -1,0 +1,224 @@
+<!-- ── PAGE HEADER (estilo premium) ── -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h2 class="table-title">{{ 'CLUB_CLASIFICACIONES.TITLE' | translate }}</h2>
+    <p class="header-subtitle">{{ 'CLUB_CLASIFICACIONES.SUBTITLE' | translate }}</p>
+  </div>
+
+  <div class="header-right-info" *ngIf="!loading && items.length > 0">
+    <span class="header-count">
+      <i class="bi bi-shield-fill-check"></i>
+      {{ filteredItems.length }} {{ filteredItems.length === 1 ? ('CLUB_CLASIFICACIONES.TEAM_SINGULAR' | translate) : ('CLUB_CLASIFICACIONES.TEAMS_PLURAL' | translate) }}
+    </span>
+  </div>
+</div>
+
+<div class="cc-wrapper">
+
+  <!-- ── PILLS DE DEPORTE ── -->
+  <div class="cc-sport-pills" *ngIf="!loading && availableSports.length > 1">
+    <button class="cc-sport-pill"
+            [class.cc-sport-pill--active]="!activeSport"
+            (click)="setSportFilter('')">
+      <span>🏆</span>
+      <span>{{ 'FILTER.ALL' | translate }}</span>
+      <span class="cc-pill-count">{{ items.length }}</span>
+    </button>
+    <button *ngFor="let s of availableSports"
+            class="cc-sport-pill"
+            [class.cc-sport-pill--active]="activeSport === s.sport"
+            (click)="setSportFilter(s.sport)">
+      <span>{{ s.emoji }}</span>
+      <span>{{ ('EQUIPOS.SPORTS.' + s.sport) | translate }}</span>
+      <span class="cc-pill-count">{{ s.count }}</span>
+    </button>
+  </div>
+
+  <!-- ── LOADING ── -->
+  <div class="cc-loading" *ngIf="loading">
+    <div class="sph-spinner"></div>
+    <span>{{ 'CLUB_CLASIFICACIONES.LOADING' | translate }}</span>
+  </div>
+
+  <!-- ── ERROR ── -->
+  <div class="cc-empty" *ngIf="!loading && error">
+    <i class="bi bi-exclamation-circle"></i>
+    <p>{{ 'CLUB_CLASIFICACIONES.ERROR' | translate }}</p>
+    <button class="btn-sph-outline" (click)="loadResumen()">
+      <i class="bi bi-arrow-clockwise"></i> {{ 'COMMON.RETRY' | translate }}
+    </button>
+  </div>
+
+  <!-- ── VACÍO ── -->
+  <div class="cc-empty" *ngIf="!loading && !error && items.length === 0">
+    <i class="bi bi-trophy"></i>
+    <p>{{ 'CLUB_CLASIFICACIONES.EMPTY' | translate }}</p>
+  </div>
+
+  <!-- ── GRID DE EQUIPOS ── -->
+  <div class="cc-grid" *ngIf="!loading && !error && filteredItems.length > 0">
+
+    <div class="cc-card" *ngFor="let item of filteredItems">
+
+      <!-- Cabecera de la tarjeta -->
+      <div class="cc-card-header">
+        <div class="cc-team-name">
+          <i class="bi bi-shield-fill-check"></i>
+          <span>{{ item.teamName || ('CLUB_CLASIFICACIONES.NO_NAME' | translate) }}</span>
+        </div>
+        <div class="cc-badges">
+          <span class="badge-sport" *ngIf="availableSports.length > 1 && item.sport">
+            {{ getSportConfigFor(item.sport || 'futbol')?.emoji }}
+          </span>
+          <span class="badge-configured" *ngIf="item.hasUrl">
+            <i class="bi bi-link-45deg"></i>
+          </span>
+          <span class="badge-no-url" *ngIf="!item.hasUrl">
+            <i class="bi bi-exclamation-triangle"></i>
+          </span>
+        </div>
+      </div>
+
+      <!-- Fila: posición + puntos + forma -->
+      <div class="cc-stats-row">
+        <!-- Posición -->
+        <div class="cc-position-badge" *ngIf="item.hasData && item.myPosition !== null"
+             [ngClass]="positionClass(item.myPosition)">
+          <span class="pos-number">{{ item.myPosition }}º</span>
+          <span class="pos-label">/ {{ item.totalTeams }}</span>
+        </div>
+
+        <!-- Sin posición -->
+        <div class="cc-no-pos" *ngIf="item.hasData && item.myPosition === null">
+          <i class="bi bi-dash-circle"></i>
+        </div>
+
+        <!-- Puntos -->
+        <div class="cc-pts" *ngIf="item.hasData && item.points !== null">
+          <span class="pts-value">{{ item.points }}</span>
+          <span class="pts-label">{{ 'CLASIFICACION.COL_PTS' | translate }}</span>
+        </div>
+
+        <!-- Forma -->
+        <div class="cc-form" *ngIf="item.form">
+          <span class="form-badge" *ngFor="let r of formLetters(item.form)"
+                [ngClass]="formBadgeClass(r)">{{ r }}</span>
+        </div>
+
+        <!-- Sin datos -->
+        <div class="cc-no-data-inline" *ngIf="!item.hasData">
+          <i class="bi bi-cloud-slash"></i>
+          <span>{{ 'CLUB_CLASIFICACIONES.NO_DATA' | translate }}</span>
+        </div>
+      </div>
+
+      <!-- Mini tabla top 3 (colapsada) -->
+      <div class="cc-mini-table" *ngIf="item.hasData && item.topClasificacion?.length">
+        <div *ngIf="item.safeHtml; else parsedTable"
+             class="raw-table-container"
+             [innerHTML]="item.safeHtml">
+        </div>
+        <ng-template #parsedTable>
+          <table class="sph-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th class="td-name">{{ 'CLASIFICACION.COL_TEAM' | translate }}</th>
+                <th>Pts</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of item.topClasificacion.slice(0, 5); let i = index"
+                  [class.row-mine]="item.myPosition !== null && (i + 1) === item.myPosition">
+                <td><span class="pos-badge">{{ row.posicion }}</span></td>
+                <td class="td-name">{{ row.nombre }}</td>
+                <td class="pts-cell">{{ row.puntos }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </ng-template>
+      </div>
+
+      <!-- Panel configuración URL -->
+      <div class="cc-url-panel" *ngIf="urlEditOpenTeamId === item.teamId">
+        <div class="url-panel-header">
+          <i class="bi bi-link-45deg"></i>
+          <span>{{ 'CLUB_CLASIFICACIONES.URL_PANEL_TITLE' | translate }}</span>
+          <button class="btn-close-url" (click)="closeUrlEditor(item.teamId)">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <div class="url-panel-body">
+          <input
+            class="url-input"
+            type="url"
+            [(ngModel)]="urlInputs[item.teamId]"
+            [placeholder]="'CLUB_CLASIFICACIONES.URL_PLACEHOLDER' | translate"
+            (keyup.enter)="saveUrl(item)"
+          />
+          <button class="btn-save-url"
+                  (click)="saveUrl(item)"
+                  [disabled]="urlSaving[item.teamId] || !urlInputs[item.teamId]?.trim()">
+            <span class="mini-spinner" *ngIf="urlSaving[item.teamId]"></span>
+            <i class="bi bi-check-lg" *ngIf="!urlSaving[item.teamId]"></i>
+            {{ 'CLUB_CLASIFICACIONES.URL_SAVE' | translate }}
+          </button>
+        </div>
+        <div class="url-feedback ok" *ngIf="urlFeedback[item.teamId]?.ok">
+          <i class="bi bi-check-circle-fill"></i> {{ urlFeedback[item.teamId].msg }}
+        </div>
+        <div class="url-feedback err" *ngIf="urlFeedback[item.teamId]?.msg && !urlFeedback[item.teamId]?.ok">
+          <i class="bi bi-exclamation-circle-fill"></i> {{ urlFeedback[item.teamId].msg }}
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="cc-actions">
+        <button class="btn-sph-primary" (click)="goToClasificacion(item)">
+          <i class="bi bi-eye"></i>
+          {{ 'CLUB_CLASIFICACIONES.BTN_VIEW' | translate }}
+        </button>
+        <button class="btn-config-url"
+                (click)="openUrlEditor(item)"
+                [title]="'CLUB_CLASIFICACIONES.BTN_CONFIG_URL' | translate">
+          <i class="bi bi-link-45deg"></i>
+        </button>
+        <button class="btn-sph-ai"
+                (click)="requestAiSummary(item)"
+                [disabled]="aiLoadingTeamId === item.teamId">
+          <i class="bi bi-stars" *ngIf="aiLoadingTeamId !== item.teamId"></i>
+          <span class="mini-spinner" *ngIf="aiLoadingTeamId === item.teamId"></span>
+          IA
+        </button>
+      </div>
+
+      <!-- Panel IA -->
+      <div class="cc-ai-panel" *ngIf="aiOpenTeamId === item.teamId">
+        <div class="ai-panel-header">
+          <i class="bi bi-stars"></i>
+          <span>{{ 'CLUB_CLASIFICACIONES.AI_TITLE' | translate }}</span>
+          <button class="btn-close-ai" (click)="closeAiPanel()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <div class="ai-panel-body">
+          <div class="ai-loading" *ngIf="aiLoadingTeamId === item.teamId">
+            <div class="sph-spinner sm"></div>
+            <span>{{ 'CLUB_CLASIFICACIONES.AI_LOADING' | translate }}</span>
+          </div>
+          <p class="ai-text" *ngIf="aiResults[item.teamId]">{{ aiResults[item.teamId] }}</p>
+          <p class="ai-error" *ngIf="aiErrors[item.teamId]">{{ aiErrors[item.teamId] }}</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

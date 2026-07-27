@@ -46,3 +46,8 @@ Thumbs.db
 
 # API key local para generación de audios (no subir a repo)
 scripts/.elevenlabs-api-key
+
+# Script de despliegue de la demo: contiene credenciales FTP (no subir a repo)
+deploy-complete.js
+deploy-fast.js
+upload-complete.bat

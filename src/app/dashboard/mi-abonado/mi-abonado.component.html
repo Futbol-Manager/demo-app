@@ -1,0 +1,286 @@
+<div class="abonado-page">
+  <!-- ============================================== -->
+  <!-- Loading                                          -->
+  <!-- ============================================== -->
+  <div class="state-loading" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>{{ 'MI_ABONADO.LOADING' | translate }}</p>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- Error                                            -->
+  <!-- ============================================== -->
+  <div class="state-error" *ngIf="!loading && errorKey">
+    <div class="error-icon">!</div>
+    <h2>{{ 'MI_ABONADO.ERROR_TITLE' | translate }}</h2>
+    <p>{{ errorKey | translate }}</p>
+    <div class="actions">
+      <button type="button" class="btn-secondary" (click)="reload()">
+        {{ 'MI_ABONADO.ACTIONS.RETRY' | translate }}
+      </button>
+      <button type="button" class="btn-link" (click)="logout()">
+        {{ 'MI_ABONADO.ACTIONS.LOGOUT' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- Pantalla BLOQUEANTE (estado != 1)                -->
+  <!-- Cuando el abonado está pendiente de aprobación   -->
+  <!-- (estado=2) o de baja (estado=0) ocultamos        -->
+  <!-- por completo carnet, datos personales y          -->
+  <!-- temporada. Solo se le muestra una pantalla       -->
+  <!-- bloqueante con el escudo del club y el mensaje   -->
+  <!-- adecuado. Sin botón "cerrar sesión" — el         -->
+  <!-- usuario quedará en esta pantalla hasta que el    -->
+  <!-- club apruebe la cuenta y reciba el email.        -->
+  <!-- ============================================== -->
+  <div class="abonado-gate" *ngIf="!loading && !errorKey && data && !isAbonadoActive">
+    <!-- Branding fijo Sphaira Player arriba a la izquierda -->
+    <div class="abonado-brand abonado-brand--gate">
+      <i class="bi bi-broadcast" aria-hidden="true"></i>
+      <span>{{ 'MI_ABONADO.HEADER.BRAND_TAG' | translate }}</span>
+    </div>
+
+    <div class="gate-card" [ngClass]="estadoClass(data.abonado.estado)">
+      <!-- Escudo del club como hero de la pantalla bloqueante. Si el club
+           no tiene foto, mostramos el icono fallback con el degradado
+           de marca verde→navy detrás. -->
+      <div class="gate-shield">
+        <img
+          *ngIf="clubLogoUrl() as logoUrl"
+          [src]="logoUrl"
+          [alt]="data.club?.name || ''"
+          (error)="onClubLogoError()"
+        />
+        <i *ngIf="!clubLogoUrl()" class="bi bi-shield-fill" aria-hidden="true"></i>
+      </div>
+
+      <p class="gate-club" *ngIf="data.club">
+        {{ 'MI_ABONADO.HEADER.SUBSCRIBED_TO' | translate }}
+        <strong>{{ data.club.name }}</strong>
+      </p>
+
+      <div class="gate-status">
+        <i class="bi" [ngClass]="gateIcon(data.abonado.estado)" aria-hidden="true"></i>
+        <h1>{{ gateTitleKey(data.abonado.estado) | translate }}</h1>
+        <p>{{ gateBodyKey(data.abonado.estado) | translate }}</p>
+      </div>
+
+      <p class="gate-hint">
+        <i class="bi bi-envelope-check" aria-hidden="true"></i>
+        {{ gateHintKey(data.abonado.estado) | translate }}
+      </p>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- Dashboard (solo estado=1 — abonado activo)       -->
+  <!-- ============================================== -->
+  <ng-container *ngIf="!loading && !errorKey && data && isAbonadoActive">
+    <!-- Cabecera -->
+    <header class="abonado-header estado-activo">
+      <!-- Branding "Sphaira Player": identifica al abonado en qué producto
+           de Sphaira está. Se pinta arriba a la izquierda dentro de la
+           cabecera, encima del nombre del club. -->
+      <div class="abonado-brand">
+        <i class="bi bi-broadcast" aria-hidden="true"></i>
+        <span>{{ 'MI_ABONADO.HEADER.BRAND_TAG' | translate }}</span>
+      </div>
+      <div class="header-inner">
+        <div class="club-info">
+          <!-- Avatar del abonado con badge del escudo del club encima.
+               Click → cropper para cambiar/subir la foto. -->
+          <button
+            type="button"
+            class="abonado-avatar"
+            [class.has-image]="avatarUrl()"
+            (click)="openCropper()"
+            [disabled]="uploadingPhoto"
+            [attr.aria-label]="'MI_ABONADO.HEADER.CHANGE_PHOTO' | translate"
+          >
+            <img
+              *ngIf="avatarUrl() as photoUrl"
+              [src]="photoUrl"
+              [alt]="data.abonado.nombre"
+              (error)="onAvatarError()"
+            />
+            <i *ngIf="!avatarUrl()" class="bi bi-person-fill" aria-hidden="true"></i>
+            <span class="abonado-avatar__edit">
+              <i class="bi" [class.bi-pencil-fill]="!uploadingPhoto" [class.bi-arrow-clockwise]="uploadingPhoto"></i>
+            </span>
+            <span class="abonado-avatar__club-badge" *ngIf="clubLogoUrl() as clubUrl">
+              <img [src]="clubUrl" [alt]="data.club?.name || ''" (error)="onClubLogoError()" />
+            </span>
+          </button>
+          <div class="club-text">
+            <span class="welcome">{{ 'MI_ABONADO.HEADER.WELCOME' | translate }}</span>
+            <h1>{{ data.abonado.nombre }}</h1>
+            <p class="club-name" *ngIf="data.club">
+              {{ 'MI_ABONADO.HEADER.SUBSCRIBED_TO' | translate }}
+              <strong>{{ data.club.name }}</strong>
+            </p>
+            <p class="club-name muted" *ngIf="!data.club">
+              {{ 'MI_ABONADO.HEADER.NO_CLUB' | translate }}
+            </p>
+          </div>
+        </div>
+
+        <span class="estado-badge estado-activo">
+          {{ 'MI_ABONADO.STATUS.ACTIVE' | translate }}
+        </span>
+      </div>
+      <p class="estado-hint">{{ 'MI_ABONADO.STATUS.ACTIVE_HINT' | translate }}</p>
+    </header>
+
+    <!-- Carnet virtual con QR rotatorio (Bloque 4) -->
+    <section class="card-section">
+      <app-abonado-carnet
+        [fallbackName]="data.abonado.nombre + ' ' + data.abonado.apellidos"
+        [fallbackClubName]="data.club?.name || null"
+      ></app-abonado-carnet>
+    </section>
+
+    <!-- Datos personales: solo se pintan los campos con valor. Si el club
+         no le pidió el DNI o el teléfono en el formulario de registro,
+         no tiene sentido enseñarle al abonado un montón de "—". -->
+    <section class="card-section">
+      <h2 class="section-title">{{ 'MI_ABONADO.PROFILE.TITLE' | translate }}</h2>
+      <div class="info-grid">
+        <div class="info-cell" *ngFor="let f of personalFields" [class.info-cell-wide]="f.wide">
+          <span class="info-label">{{ f.labelKey | translate }}</span>
+          <span class="info-value">{{ f.value }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mis pagos (solo clubes ad-hoc sin temporada).
+         En clubes sin temporada anual el abonado puede estar dado de
+         alta por años, así que mostramos total acumulado, estado al día
+         e histórico completo en lugar de "cuota / pagado / restante". -->
+    <section class="card-section pay-section" *ngIf="showOpenPaymentsSection">
+      <h2 class="section-title">{{ 'MI_ABONADO.PAYMENTS.TITLE' | translate }}</h2>
+
+      <div class="pay-summary">
+        <div class="pay-card pay-card--green">
+          <span class="pay-card-label">{{ 'MI_ABONADO.PAYMENTS.TOTAL_PAID' | translate }}</span>
+          <span class="pay-card-value">{{ formatAmount(totalPagado) }}</span>
+          <span class="pay-card-foot">
+            {{ paymentHistory.length }}
+            {{ (paymentHistory.length === 1 ? 'MI_ABONADO.PAYMENTS.COUNT_ONE' : 'MI_ABONADO.PAYMENTS.COUNT_OTHER') | translate }}
+          </span>
+        </div>
+        <div class="pay-card pay-card--blue">
+          <span class="pay-card-label">{{ 'MI_ABONADO.PAYMENTS.STATUS' | translate }}</span>
+          <span class="pago-badge" [ngClass]="alDia ? 'pago-ok' : 'pago-warn'">
+            <i class="bi" [class.bi-check-circle-fill]="alDia" [class.bi-exclamation-circle-fill]="!alDia"></i>
+            {{ (alDia ? 'MI_ABONADO.PAYMENTS.UP_TO_DATE' : 'MI_ABONADO.PAYMENTS.PENDING') | translate }}
+          </span>
+          <span class="pay-card-foot" *ngIf="ultimoPagoFecha as f">
+            {{ 'MI_ABONADO.PAYMENTS.LAST_PAYMENT' | translate }}: {{ f }}
+          </span>
+        </div>
+      </div>
+
+      <h3 class="pay-history-title">
+        <i class="bi bi-clock-history"></i>
+        {{ 'MI_ABONADO.PAYMENTS.HISTORY' | translate }}
+      </h3>
+
+      <div class="pay-history-empty" *ngIf="paymentHistory.length === 0">
+        <i class="bi bi-inbox"></i>
+        <p>{{ 'MI_ABONADO.PAYMENTS.EMPTY' | translate }}</p>
+      </div>
+
+      <ul class="pay-history-list" *ngIf="paymentHistory.length > 0">
+        <li class="pay-history-item" *ngFor="let p of paymentHistory">
+          <div class="phi-left">
+            <span class="phi-date">{{ formatDate(p.fechaPago || p.fechaCreate) }}</span>
+            <span class="phi-meta">
+              <span class="phi-tipo" [class.phi-tipo--neg]="p.tipo !== 'Pagado'">{{ p.tipo }}</span>
+              <span class="phi-sep" *ngIf="p.metodo">·</span>
+              <span class="phi-metodo" *ngIf="p.metodo">{{ p.metodo }}</span>
+            </span>
+            <span class="phi-comment" *ngIf="p.comentario">{{ p.comentario }}</span>
+          </div>
+          <div class="phi-amount"
+               [class.phi-amount--pos]="p.tipo === 'Pagado'"
+               [class.phi-amount--neg]="p.tipo !== 'Pagado'">
+            {{ p.tipo === 'Pagado' ? '+' : '−' }} {{ formatAmount(p.cantidad) }}
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Temporada actual (solo clubes que gestionan abonados por temporadas;
+         los ad-hoc / asociaciones la ocultan completamente). -->
+    <section class="card-section" *ngIf="showSeasonSection && data.season as season">
+      <h2 class="section-title">{{ 'MI_ABONADO.SEASON.TITLE' | translate }}</h2>
+      <div class="season-card">
+        <div class="season-row">
+          <span class="info-label">{{ 'MI_ABONADO.SEASON.NAME' | translate }}</span>
+          <strong>{{ season.temporada }}</strong>
+        </div>
+        <div class="season-row">
+          <span class="info-label">{{ 'MI_ABONADO.SEASON.FEE' | translate }}</span>
+          <strong>{{ season.cuota || '0' }} €</strong>
+        </div>
+        <div class="season-row">
+          <span class="info-label">{{ 'MI_ABONADO.SEASON.PAID' | translate }}</span>
+          <strong>{{ season.pagado || '0' }} €</strong>
+        </div>
+        <div class="season-row">
+          <span class="info-label">{{ 'MI_ABONADO.SEASON.REMAINING' | translate }}</span>
+          <strong>{{ season.restante || '0' }} €</strong>
+        </div>
+        <div class="season-row">
+          <span class="info-label">{{ 'MI_ABONADO.SEASON.PAYMENT_STATUS' | translate }}</span>
+          <span class="pago-badge" [ngClass]="pagoClass(season.estadoPago)">
+            {{ pagoLabelKey(season.estadoPago) | translate }}
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Acceso directo a la bandeja de notificaciones (mensajes del club).
+         Reutilizamos el flujo de "correos" del club que ya envía push FCM. -->
+    <section class="card-section quick-actions" *ngIf="data.abonado.estado === 1">
+      <button type="button" class="qa-card" (click)="goToInbox()">
+        <span class="qa-icon">
+          <i class="bi bi-envelope-fill"></i>
+          <span class="qa-dot" *ngIf="unreadInbox > 0">{{ unreadInbox }}</span>
+        </span>
+        <span class="qa-text">
+          <strong>{{ 'MI_ABONADO.INBOX.TITLE' | translate }}</strong>
+          <small>{{ 'MI_ABONADO.INBOX.HINT' | translate }}</small>
+        </span>
+        <i class="bi bi-chevron-right qa-chevron"></i>
+      </button>
+      <!-- Bloque 8: acceso directo a los documentos publicados por el club. -->
+      <button type="button" class="qa-card" (click)="goToDocuments()">
+        <span class="qa-icon">
+          <i class="bi bi-folder2-open"></i>
+        </span>
+        <span class="qa-text">
+          <strong>{{ 'MI_ABONADO.DOCUMENTS.TITLE' | translate }}</strong>
+          <small>{{ 'MI_ABONADO.DOCUMENTS.HINT' | translate }}</small>
+        </span>
+        <i class="bi bi-chevron-right qa-chevron"></i>
+      </button>
+    </section>
+
+    <!-- Acciones (solo en el dashboard del abonado activo) -->
+    <section class="card-section actions-section">
+      <button type="button" class="btn-link" (click)="logout()">
+        {{ 'MI_ABONADO.ACTIONS.LOGOUT' | translate }}
+      </button>
+    </section>
+  </ng-container>
+
+  <!-- Modal del cropper de avatar (overlay full-screen). -->
+  <sph-avatar-cropper
+    *ngIf="showCropper"
+    (applied)="onPhotoApplied($event)"
+    (cancelled)="onPhotoCancelled()"
+  ></sph-avatar-cropper>
+</div>

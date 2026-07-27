@@ -1,4 +1,4 @@
-import { APIURLPROD, APIURLLOCAL, ApiEnvironments, APIURLPROD2, APIURLDEMO, ImageEnvironments } from "src/app/core/models/master/masters.enum";
+import { APIURLPROD, APIURLLOCAL, ApiEnvironments, APIURLPROD2, ImageEnvironments } from "src/app/core/models/master/masters.enum";
 
 /** Entorno para la app demo en LOCAL/desarrollo: login solo con email, leads se envían a la API que indiques (por defecto producción). */
 export const demoenvironment = {
@@ -40,12 +40,20 @@ export const demoenvironment = {
   } as Record<string, string>
 };
 
-/** Para desplegar en demo.sphairatech.com: leads a API dedicada (APIURLDEMO), que debe usar una BD distinta a producción. */
+/**
+ * Para desplegar en demo.sphairatech.com.
+ *
+ * Los leads van a la API de appsphairatech.com, que es la que lee el panel de
+ * administración (/dashboard/admin-leads-web). Antes apuntaba a APIURLDEMO
+ * (`demo.sphairatech.com/api/rest`), pero ahí no hay ninguna API desplegada: ese
+ * dominio solo sirve el front, así que el POST devolvía el index.html y todos los
+ * leads y cupones se perdían en silencio. Además el `.replace()` que llevaba
+ * convertía `https://` en `https:/` y dejaba la URL inválida.
+ */
 export const demoenvironmentDeploy = {
   ...demoenvironment,
   production: true,
-  /** API de demo: base de datos separada de producción. Configurar APIURLDEMO en masters.enum. */
-  demoLeadApiUrl: `${APIURLDEMO}/api/rest`.replace(/\/\/+/g, '/'),
+  demoLeadApiUrl: `${APIURLPROD2}${ApiEnvironments.PRO}`.replace(/\/$/, ''),
 };
 
 /** Igual que demoenvironment pero envía el lead a la API local (api-futbol-manager en :8081). Para verificar envío. */

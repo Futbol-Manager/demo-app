@@ -1,0 +1,240 @@
+<div class="planes-root">
+
+  <!-- ══════════════════════════════════════════════════════
+       LEFT — panel héroe oscuro (sticky)
+  ══════════════════════════════════════════════════════ -->
+  <aside class="planes-left">
+    <!-- decoración de fondo -->
+    <div class="left-mesh"  aria-hidden="true"></div>
+    <div class="left-orb left-orb--1" aria-hidden="true"></div>
+    <div class="left-orb left-orb--2" aria-hidden="true"></div>
+    <div class="left-orb left-orb--3" aria-hidden="true"></div>
+
+    <div class="left-content">
+
+
+      <div class="left-badge">
+        <span class="badge-ring" aria-hidden="true"></span>
+        <i class="bi bi-lightning-fill"></i>
+        Sphaira Tech
+      </div>
+
+      <h1 class="left-title">
+        Elige el plan<br>
+        <span class="title-accent">perfecto</span><br>
+        para tu fútbol
+      </h1>
+
+      <p class="left-subtitle">
+        Herramientas profesionales para clubes y entrenadores.
+        Empieza hoy, sin complicaciones.
+      </p>
+
+      <!-- Stats -->
+      <div class="left-stats">
+        <div class="left-stat" *ngFor="let stat of stats">
+          <span class="left-stat__value">{{ stat.value }}</span>
+          <span class="left-stat__label">{{ stat.label }}</span>
+        </div>
+      </div>
+
+      <!-- Trust mini strip -->
+      <div class="left-trust">
+        <span><i class="bi bi-lock-fill"></i> Pago seguro con Stripe</span>
+        <span><i class="bi bi-arrow-repeat"></i> Cancela cuando quieras</span>
+        <span><i class="bi bi-headset"></i> Soporte incluido</span>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- ══════════════════════════════════════════════════════
+       RIGHT — selector de planes
+  ══════════════════════════════════════════════════════ -->
+  <main class="planes-right">
+
+    <!-- Tabs sticky dentro del panel derecho -->
+    <div class="right-tabs-bar">
+      <div class="right-tabs">
+        <div class="tab-pill" [style.left]="tabIndicatorOffset" aria-hidden="true"></div>
+        <button
+          class="right-tab"
+          [class.active]="activeTab === 'clubs'"
+          (click)="setTab('clubs')"
+        >
+          <i class="bi bi-building"></i>
+          <span>Para Clubs</span>
+          <span class="tab-chip">3 planes</span>
+        </button>
+        <button
+          class="right-tab"
+          [class.active]="activeTab === 'coach'"
+          (click)="setTab('coach')"
+        >
+          <i class="bi bi-whistle-fill"></i>
+          <span>Para Entrenadores</span>
+          <span class="tab-chip">2 planes</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── PLANES CLUB ──────────────────────────────── -->
+    <section
+      class="right-section"
+      *ngIf="activeTab === 'clubs'"
+      [attr.data-key]="sectionKey"
+      aria-label="Planes para clubs"
+    >
+      <div class="section-lead">
+        <div class="section-lead__info">
+          <h2 class="section-lead__title">Planes para Clubs</h2>
+          <p  class="section-lead__sub">Digitaliza tu club y gestiona todo desde un solo lugar.</p>
+        </div>
+      </div>
+
+      <div class="plans-grid plans-grid--3">
+        <article
+          class="plan-card"
+          *ngFor="let plan of clubPlans; let i = index"
+          [class.plan-card--popular]="plan.recommended"
+          [class.plan-card--disabled]="plan.comingSoon"
+          [style.animation-delay]="getCardDelay(i)"
+          [attr.aria-label]="'Plan ' + plan.name"
+        >
+          <div class="card-glow" *ngIf="plan.recommended" aria-hidden="true"></div>
+
+          <div class="plan-card__soon-badge"    *ngIf="plan.comingSoon">
+            <i class="bi bi-clock"></i> Próximamente
+          </div>
+          <div class="plan-card__popular-badge" *ngIf="plan.recommended && !plan.comingSoon">
+            <i class="bi bi-star-fill"></i> {{ plan.tagline }}
+          </div>
+
+          <div class="plan-card__top">
+            <div class="plan-card__icon plan-icon--{{ plan.id }}">
+              <i class="bi" [ngClass]="plan.icon"></i>
+            </div>
+            <div class="plan-card__header">
+              <h3 class="plan-card__name">{{ plan.name }}</h3>
+              <p  class="plan-card__desc">{{ plan.description }}</p>
+            </div>
+          </div>
+
+          <div class="plan-card__pricing">
+            <div class="pricing-discount-row" *ngIf="plan.pricingTag">
+              <span class="pricing-tag">{{ plan.pricingTag }}</span>
+              <span class="pricing-old"      *ngIf="plan.pricingOld">{{ plan.pricingOld }}</span>
+              <span class="pricing-discount" *ngIf="plan.pricingDiscount">{{ plan.pricingDiscount }}</span>
+            </div>
+            <div class="pricing-main" [class.pricing-free]="plan.pricingFree">
+              {{ plan.pricingMain }}<span class="pricing-period" *ngIf="plan.pricingPeriod">{{ plan.pricingPeriod }}</span>
+            </div>
+            <div class="pricing-alt"  *ngIf="plan.pricingAlt">{{ plan.pricingAlt }}</div>
+            <p   class="pricing-note">{{ plan.pricingNote }}</p>
+          </div>
+
+          <ul class="plan-card__features">
+            <li *ngFor="let f of plan.features; let fi = index"
+                [style.animation-delay]="getCardDelay(i + fi * 0.25)">
+              <i class="bi bi-check-circle-fill"></i><span>{{ f }}</span>
+            </li>
+          </ul>
+
+          <button
+            class="plan-card__cta"
+            [class.plan-card__cta--solid]="plan.recommended"
+            [class.plan-card__cta--ghost]="!plan.recommended && !plan.comingSoon"
+            (click)="goToClubPlan(plan.id)"
+            [disabled]="plan.comingSoon"
+          >
+            <span class="cta-shine" aria-hidden="true"></span>
+            {{ plan.cta }}
+            <i class="bi bi-clock"       *ngIf="plan.comingSoon"></i>
+            <i class="bi bi-arrow-right" *ngIf="!plan.comingSoon"></i>
+          </button>
+        </article>
+      </div>
+    </section>
+
+    <!-- ── PLANES COACH ─────────────────────────────── -->
+    <section
+      class="right-section"
+      *ngIf="activeTab === 'coach'"
+      [attr.data-key]="sectionKey"
+      aria-label="Planes para entrenadores"
+    >
+      <div class="section-lead">
+        <div class="section-lead__info">
+          <h2 class="section-lead__title">Planes para Entrenadores</h2>
+          <p  class="section-lead__sub">Lleva tu metodología al siguiente nivel.</p>
+        </div>
+        <div class="trial-pill">
+          <i class="bi bi-gift-fill"></i> 3 días gratis
+        </div>
+      </div>
+
+      <div class="plans-grid plans-grid--2">
+        <article
+          class="plan-card"
+          *ngFor="let plan of coachPlans; let i = index"
+          [class.plan-card--popular]="plan.popular"
+          [class.plan-card--dark]="plan.popular"
+          [class.plan-card--dark-alt]="plan.darkCard && !plan.popular"
+          [style.animation-delay]="getCardDelay(i)"
+          [attr.aria-label]="'Plan ' + plan.name"
+        >
+          <div class="card-glow card-glow--green" *ngIf="plan.popular" aria-hidden="true"></div>
+
+          <div class="plan-card__popular-badge plan-card__popular-badge--green" *ngIf="plan.popular">
+            <i class="bi bi-star-fill"></i> {{ plan.tagline }}
+          </div>
+          <div class="plan-card__trial-badge" *ngIf="plan.trialBadge">
+            <i class="bi bi-gift-fill"></i> {{ plan.trialBadge }}
+          </div>
+
+          <div class="plan-card__top">
+            <div class="plan-card__icon" [ngClass]="plan.popular ? 'plan-icon--popular-dark' : 'plan-icon--basic'">
+              <i class="bi" [ngClass]="plan.icon"></i>
+            </div>
+            <div class="plan-card__header">
+              <h3 class="plan-card__name">{{ plan.name }}</h3>
+              <p  class="plan-card__tagline">{{ plan.tagline }}</p>
+            </div>
+          </div>
+
+          <div class="plan-card__pricing">
+            <div class="pricing-main">
+              <span class="pricing-currency">€</span><span class="pricing-amount">{{ plan.price }}</span>
+              <span class="pricing-period">{{ plan.pricePeriod }}</span>
+            </div>
+            <p class="pricing-note">{{ plan.priceNote }}</p>
+            <div class="savings-tag" *ngIf="plan.savings">
+              <i class="bi bi-lightning-fill"></i> {{ plan.savings }}
+            </div>
+          </div>
+
+          <ul class="plan-card__features">
+            <li *ngFor="let f of plan.features; let fi = index"
+                [style.animation-delay]="getCardDelay(i + fi * 0.25)">
+              <i class="bi bi-check-circle-fill"></i><span>{{ f }}</span>
+            </li>
+          </ul>
+
+          <button
+            class="plan-card__cta"
+            [class.plan-card__cta--green]="plan.popular"
+            [class.plan-card__cta--ghost-dark]="!plan.popular && plan.darkCard"
+            [class.plan-card__cta--ghost]="!plan.popular && !plan.darkCard"
+            (click)="goToCoachPlan(plan.type)"
+          >
+            <span class="cta-shine" aria-hidden="true"></span>
+            Empezar {{ plan.popular ? 'ahora' : 'con plan ' + plan.name }}
+            <i class="bi bi-arrow-right"></i>
+          </button>
+        </article>
+      </div>
+    </section>
+
+  </main><!-- /planes-right -->
+
+</div><!-- /planes-root -->

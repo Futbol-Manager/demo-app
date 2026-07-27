@@ -1,0 +1,301 @@
+// Colores de marca Sphaira
+$sphaira-navy: #002c40;
+$sphaira-green: #31b270;
+$sphaira-bg-highlight: #f4f4f4;
+$sphaira-gray: #636363;
+
+.dp-modal {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 70vh;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+// ─── HEADER ───────────────────────────────────────────
+.dp-header {
+  background: linear-gradient(135deg, $sphaira-green 0%, $sphaira-navy 100%);
+  color: #fff;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.dp-title {
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  i {
+    flex-shrink: 0;
+  }
+}
+
+.dp-btn-close {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.18s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.28);
+  }
+}
+
+// ─── BODY ─────────────────────────────────────────────
+.dp-body {
+  flex: 1;
+  min-height: 0;
+  background: $sphaira-bg-highlight;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
+  overflow: hidden;
+}
+
+.dp-loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dp-iframe,
+.dp-video {
+  width: 100%;
+  height: 100%;
+  min-height: 60vh;
+  border: 0;
+  background: #fff;
+}
+
+.dp-image-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  padding: 16px;
+  background: #1a1a1a;
+}
+
+.dp-image {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  background: transparent;
+}
+
+.dp-text-wrap {
+  flex: 1;
+  overflow: auto;
+  padding: 24px;
+  background: #fff;
+}
+
+.dp-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  color: $sphaira-navy;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin: 0;
+  background: $sphaira-bg-highlight;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid $sphaira-green;
+  line-height: 1.6;
+}
+
+.dp-fallback {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  text-align: center;
+  gap: 18px;
+
+  &-icon {
+    font-size: 4rem;
+    color: $sphaira-navy;
+    opacity: 0.55;
+  }
+
+  &-text {
+    color: $sphaira-gray;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.95rem;
+    margin: 0;
+    max-width: 420px;
+  }
+
+  &-btn {
+    background: $sphaira-green !important;
+    border-color: $sphaira-green !important;
+    color: #fff !important;
+    font-weight: 600;
+    padding: 10px 22px;
+    border-radius: 8px;
+
+    &:hover {
+      background: darken($sphaira-green, 6%) !important;
+      border-color: darken($sphaira-green, 6%) !important;
+    }
+  }
+}
+
+// ─── FOOTER ───────────────────────────────────────────
+.dp-footer {
+  background: #fff;
+  border-top: 1px solid #e9ecef;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.dp-btn {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1.5px solid transparent;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease,
+              color 0.18s ease, transform 0.12s ease,
+              box-shadow 0.18s ease;
+  white-space: nowrap;
+
+  i.bi {
+    font-size: 1rem;
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba($sphaira-green, 0.55);
+    outline-offset: 2px;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.dp-btn-primary {
+  background: $sphaira-green;
+  border-color: $sphaira-green;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba($sphaira-green, 0.28);
+
+  &:hover {
+    background: darken($sphaira-green, 6%);
+    border-color: darken($sphaira-green, 6%);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba($sphaira-green, 0.34);
+    transform: translateY(-1px);
+  }
+}
+
+.dp-btn-secondary {
+  background: #fff;
+  border-color: $sphaira-navy;
+  color: $sphaira-navy;
+
+  &:hover {
+    background: $sphaira-navy;
+    border-color: $sphaira-navy;
+    color: #fff;
+    box-shadow: 0 4px 10px rgba($sphaira-navy, 0.22);
+    transform: translateY(-1px);
+  }
+}
+
+.dp-btn-ghost {
+  background: transparent;
+  border-color: #e2e8f0;
+  color: $sphaira-navy;
+
+  &:hover {
+    background: $sphaira-bg-highlight;
+    border-color: #cbd5e1;
+    color: $sphaira-navy;
+  }
+}
+
+.dp-btn-danger {
+  background: #fff;
+  border-color: #e57373;
+  color: #c0392b;
+
+  &:hover {
+    background: #c0392b;
+    border-color: #c0392b;
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(192, 57, 43, 0.28);
+    transform: translateY(-1px);
+  }
+}
+
+@media (max-width: 575.98px) {
+  .dp-header {
+    padding: 12px 14px;
+  }
+
+  .dp-footer {
+    padding: 10px 14px;
+    flex-wrap: wrap;
+
+    .me-auto {
+      width: 100%;
+      margin-right: 0 !important;
+      margin-bottom: 6px;
+    }
+  }
+
+  .dp-image-wrap,
+  .dp-text-wrap {
+    padding: 12px;
+  }
+
+  .dp-fallback {
+    padding: 24px 16px;
+
+    &-icon {
+      font-size: 3rem;
+    }
+  }
+}

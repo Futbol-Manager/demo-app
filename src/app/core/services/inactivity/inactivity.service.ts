@@ -4,11 +4,15 @@ import { switchMap, startWith, takeUntil, throttleTime } from 'rxjs/operators';
 import { LoginService } from '../login/login.service';
 import { DemoActivityService } from '../demo/demo-activity.service';
 
-/** Tiempo total de inactividad antes del logout (5 minutos — entorno demo) */
-const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000;
+/**
+ * Tiempo total de inactividad antes del logout (30 minutos).
+ * Con 5 minutos, un directivo que se paraba a leer una pantalla o atendía una
+ * llamada era expulsado a la intro y perdía el contexto de la demo.
+ */
+const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
 
-/** Tiempo de aviso previo al logout (1 minuto antes) */
-const WARNING_BEFORE_MS = 1 * 60 * 1000;
+/** Tiempo de aviso previo al logout (2 minutos antes) */
+const WARNING_BEFORE_MS = 2 * 60 * 1000;
 
 /** Intervalo mínimo entre eventos mousemove para no saturar el stream */
 const MOUSEMOVE_THROTTLE_MS = 500;

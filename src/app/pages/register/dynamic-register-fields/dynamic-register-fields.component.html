@@ -1,0 +1,156 @@
+<section class="dyn-section" *ngIf="section && hasFields(); else emptyTpl" [formGroup]="formGroup">
+
+  <header class="dyn-section__header" *ngIf="showHeader">
+    <span class="dyn-section__icon" aria-hidden="true">
+      <i class="bi" [ngClass]="getSectionIcon()"></i>
+    </span>
+    <div class="dyn-section__header-text">
+      <h3 class="dyn-section__title">{{ section.title }}</h3>
+      <p class="dyn-section__subtitle" *ngIf="section.subtitle">{{ section.subtitle }}</p>
+    </div>
+  </header>
+
+  <div class="dyn-field"
+       *ngFor="let field of visibleFields(); trackBy: trackByFieldId"
+       [class.dyn-field--error]="fieldHasError(field.id)">
+
+    <ng-container [ngSwitch]="field.type">
+
+      <!-- INFO: bloque de texto estatico (no editable). -->
+      <ng-container *ngSwitchCase="'info'">
+        <div class="dyn-field__info">{{ field.text }}</div>
+      </ng-container>
+
+      <!-- DOCUMENT: archivo descargable subido por el club (solo lectura). -->
+      <ng-container *ngSwitchCase="'document'">
+        <div class="dyn-field__document">
+          <i class="bi dyn-field__document-icon" [ngClass]="documentIconFor(field)"></i>
+          <div class="dyn-field__document-info">
+            <strong class="dyn-field__document-title">{{ field.label }}</strong>
+            <p class="dyn-field__document-desc" *ngIf="field.text">{{ field.text }}</p>
+            <small class="dyn-field__document-meta">
+              <span *ngIf="field.fileName">{{ field.fileName }}</span>
+              <span *ngIf="field.fileName && field.fileSize"> · </span>
+              <span *ngIf="field.fileSize">{{ formatFileSize(field.fileSize) }}</span>
+            </small>
+          </div>
+          <a *ngIf="field.fileUrl"
+             class="dyn-field__document-download"
+             [href]="field.fileUrl"
+             target="_blank"
+             rel="noopener"
+             [download]="field.fileName || true">
+            <i class="bi bi-download"></i>
+            {{ 'CLUB_REGISTER_FORM.DOWNLOAD' | translate }}
+          </a>
+        </div>
+      </ng-container>
+
+      <!-- TEXT -->
+      <ng-container *ngSwitchCase="'text'">
+        <label class="dyn-field__label" [for]="'fld-' + field.id">
+          {{ displayLabel(field) }} <span class="dyn-field__req" *ngIf="field.required">*</span>
+        </label>
+        <input class="dyn-field__input"
+               type="text"
+               [id]="'fld-' + field.id"
+               [formControlName]="field.id"
+               [placeholder]="field.placeholder || ''" />
+      </ng-container>
+
+      <!-- TEXTAREA -->
+      <ng-container *ngSwitchCase="'textarea'">
+        <label class="dyn-field__label" [for]="'fld-' + field.id">
+          {{ displayLabel(field) }} <span class="dyn-field__req" *ngIf="field.required">*</span>
+        </label>
+        <textarea class="dyn-field__input dyn-field__textarea"
+                  rows="4"
+                  [id]="'fld-' + field.id"
+                  [formControlName]="field.id"
+                  [placeholder]="field.placeholder || ''"></textarea>
+      </ng-container>
+
+      <!-- NUMBER -->
+      <ng-container *ngSwitchCase="'number'">
+        <label class="dyn-field__label" [for]="'fld-' + field.id">
+          {{ displayLabel(field) }} <span class="dyn-field__req" *ngIf="field.required">*</span>
+        </label>
+        <input class="dyn-field__input"
+               type="number"
+               [id]="'fld-' + field.id"
+               [formControlName]="field.id"
+               [placeholder]="field.placeholder || ''" />
+      </ng-container>
+
+      <!-- DATE -->
+      <ng-container *ngSwitchCase="'date'">
+        <label class="dyn-field__label" [for]="'fld-' + field.id">
+          {{ displayLabel(field) }} <span class="dyn-field__req" *ngIf="field.required">*</span>
+        </label>
+        <input class="dyn-field__input"
+               type="date"
+               [id]="'fld-' + field.id"
+               [formControlName]="field.id" />
+      </ng-container>
+
+      <!-- SELECT -->
+      <ng-container *ngSwitchCase="'select'">
+        <label class="dyn-field__label" [for]="'fld-' + field.id">
+          {{ displayLabel(field) }} <span class="dyn-field__req" *ngIf="field.required">*</span>
+        </label>
+        <select class="dyn-field__input"
+                [id]="'fld-' + field.id"
+                [formControlName]="field.id">
+          <option value="">{{ 'CLUB_REGISTER_FORM.CHOOSE' | translate }}</option>
+          <option *ngFor="let opt of (field.options || []); trackBy: trackByOption" [value]="opt">
+            {{ opt }}
+          </option>
+        </select>
+      </ng-container>
+
+      <!-- CHECKBOX simple (si/no) -->
+      <ng-container *ngSwitchCase="'checkbox'">
+        <label class="dyn-field__check">
+          <input type="checkbox" [formControlName]="field.id" />
+          <span>{{ displayLabel(field) }} <span class="dyn-field__req" *ngIf="field.required">*</span></span>
+        </label>
+      </ng-container>
+
+      <!-- MULTI CHECK -->
+      <ng-container *ngSwitchCase="'multi_check'">
+        <fieldset class="dyn-field__fieldset" [formArrayName]="field.id">
+          <legend class="dyn-field__label">
+            {{ displayLabel(field) }} <span class="dyn-field__req" *ngIf="field.required">*</span>
+          </legend>
+          <label class="dyn-field__check"
+                 *ngFor="let opt of (field.options || []); let i = index; trackBy: trackByOption">
+            <input type="checkbox" [formControlName]="i" />
+            <span>{{ opt }}</span>
+          </label>
+        </fieldset>
+      </ng-container>
+
+      <!-- CONSENT -->
+      <ng-container *ngSwitchCase="'consent'">
+        <label class="dyn-field__label">
+          {{ displayLabel(field) }} <span class="dyn-field__req" *ngIf="field.required">*</span>
+        </label>
+        <div class="dyn-field__consent-text" *ngIf="field.text">{{ field.text }}</div>
+        <label class="dyn-field__check">
+          <input type="checkbox" [formControlName]="field.id" />
+          <span>{{ 'CLUB_REGISTER_FORM.ACCEPT' | translate }}</span>
+        </label>
+      </ng-container>
+
+    </ng-container>
+
+    <p class="dyn-field__help" *ngIf="field.helpText && field.type !== 'info' && field.type !== 'document'">{{ field.helpText }}</p>
+    <p class="dyn-field__error" *ngIf="field.type !== 'info' && field.type !== 'document' && fieldHasError(field.id)">
+      {{ 'CLUB_REGISTER_FORM.FIELD_REQUIRED' | translate }}
+    </p>
+
+  </div>
+
+</section>
+
+<ng-template #emptyTpl></ng-template>

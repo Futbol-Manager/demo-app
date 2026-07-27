@@ -850,6 +850,33 @@ $muted:    rgba(255,255,255,0.65);
   font-size: 0.72rem;
   color: rgba(255,255,255,0.4);
 }
+
+/* Sello de la oferta Club Fundador dentro de la tarjeta de precio */
+.promo-founder {
+  margin: 12px 0 4px;
+  padding: 11px 13px;
+  border-radius: 12px;
+  background: rgba(49, 178, 112, 0.14);
+  border: 1px solid rgba(49, 178, 112, 0.38);
+  text-align: left;
+}
+.promo-founder__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #31b270;
+  i { font-size: 0.7rem; }
+}
+.promo-founder__text {
+  margin: 5px 0 0;
+  font-size: 0.76rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.86);
+}
 .promo-features {
   list-style: none;
   margin: 0;
@@ -2118,6 +2145,10 @@ $muted:    rgba(255,255,255,0.65);
   .promo-amount { font-size: 1.8rem; }
   .promo-unit   { font-size: 0.68rem; }
   .promo-card__min { font-size: 0.6rem; margin-top: -3px; }
+
+  .promo-founder { margin: 8px 0 2px; padding: 8px 10px; }
+  .promo-founder__badge { font-size: 0.56rem; }
+  .promo-founder__text { font-size: 0.66rem; }
 
   .promo-features {
     grid-template-columns: 1fr 1fr;

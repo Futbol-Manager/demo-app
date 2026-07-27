@@ -1,0 +1,398 @@
+/* ═══════════════════════════════════════════════════════
+   MODAL "Reordenar menú" (MenuLayoutEditorComponent)
+   Branding Sphaira: navy + green con tipografía Plus Jakarta Sans.
+   ═══════════════════════════════════════════════════════ */
+$navy:           #002c40;
+$navy-deep:      #001e2e;
+$green:          #31b270;
+$green-light:    #c4e8d6;
+$gray-text:      #636363;
+$bg-light:       #f4f4f4;
+$white:          #ffffff;
+$border:         #e2e8f0;
+$danger:         #d64545;
+
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: 10500;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  pointer-events: none;
+  display: block;
+}
+
+/* Backdrop semitransparente con blur */
+.mle-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 30, 46, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  pointer-events: auto;
+  animation: mleBackdropIn 0.18s ease-out;
+}
+
+/* Caja del diálogo, centrada */
+.mle-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100vh - 64px);
+  background: $white;
+  border-radius: 18px;
+  box-shadow: 0 24px 80px rgba(0, 30, 46, 0.45);
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: mleDialogIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes mleBackdropIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes mleDialogIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.96); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* ───── Cabecera ───── */
+.mle-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  border-bottom: 1px solid $border;
+  background: linear-gradient(135deg, $green 0%, $navy 100%);
+  color: $white;
+}
+
+.mle-header-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  i {
+    font-size: 1.3rem;
+    color: $white;
+  }
+}
+
+.mle-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.mle-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.mle-subtitle {
+  margin: 4px 0 0;
+  font-size: 0.82rem;
+  opacity: 0.85;
+  line-height: 1.3;
+}
+
+.mle-close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(255, 255, 255, 0.15);
+  color: $white;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s ease;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.28);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* ───── Hint informativo ───── */
+.mle-hint {
+  margin: 0;
+  padding: 12px 20px;
+  font-size: 0.82rem;
+  color: $gray-text;
+  background: $bg-light;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  border-bottom: 1px solid $border;
+
+  i {
+    color: $green;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+}
+
+/* ───── Lista de items reordenables ───── */
+.mle-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: $white;
+}
+
+.mle-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid $border;
+  background: $white;
+  cursor: grab;
+  user-select: none;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    background: rgba(49, 178, 112, 0.06);
+    border-color: rgba(49, 178, 112, 0.5);
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.mle-item-drag-handle {
+  color: rgba($navy, 0.5);
+  font-size: 1.1rem;
+  cursor: grab;
+  flex-shrink: 0;
+  line-height: 1;
+  padding: 4px;
+
+  .mle-item:active &,
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.mle-item-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, rgba($green, 0.15), rgba($navy, 0.08));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: $navy;
+
+  i {
+    font-size: 1.05rem;
+  }
+}
+
+.mle-item-label {
+  flex: 1;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: $navy;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mle-item-arrows {
+  display: inline-flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.mle-arrow-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 0;
+  background: rgba($green, 0.12);
+  color: $navy;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.15s ease, transform 0.12s ease;
+
+  &:hover:not(:disabled) {
+    background: rgba($green, 0.25);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.92);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+}
+
+/* Placeholder mientras se arrastra (CDK añade *cdkDragPlaceholder) */
+.mle-item-placeholder {
+  height: 56px;
+  background: rgba($green, 0.1);
+  border: 1.5px dashed rgba($green, 0.6);
+  border-radius: 10px;
+}
+
+/* Item siendo arrastrado (preview que sigue al cursor) */
+::ng-deep .cdk-drag-preview.mle-item {
+  background: $white;
+  box-shadow: 0 12px 32px rgba(0, 30, 46, 0.35);
+  border: 1.5px solid rgba($green, 0.55);
+  border-radius: 10px;
+}
+
+::ng-deep .cdk-drag-animating {
+  transition: transform 220ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* ───── Vacío ───── */
+.mle-empty {
+  padding: 32px 16px;
+  text-align: center;
+  color: $gray-text;
+  font-size: 0.92rem;
+
+  i {
+    display: block;
+    font-size: 2rem;
+    color: rgba($navy, 0.4);
+    margin-bottom: 12px;
+  }
+}
+
+/* ───── Error ───── */
+.mle-error {
+  margin: 0;
+  padding: 10px 20px;
+  font-size: 0.82rem;
+  color: $danger;
+  background: rgba($danger, 0.08);
+  border-top: 1px solid rgba($danger, 0.25);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+
+  i {
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+}
+
+/* ───── Footer ───── */
+.mle-footer {
+  display: flex;
+  gap: 10px;
+  padding: 14px 20px;
+  border-top: 1px solid $border;
+  background: $bg-light;
+  justify-content: flex-end;
+}
+
+.mle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.12s ease;
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.06);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  i {
+    font-size: 1rem;
+  }
+
+  &--primary {
+    background: $green;
+    color: $white;
+  }
+
+  &--secondary {
+    background: $white;
+    color: $navy;
+    border: 1px solid $border;
+  }
+}
+
+@keyframes mleSpin {
+  to { transform: rotate(360deg); }
+}
+
+.mle-spin {
+  animation: mleSpin 0.8s linear infinite;
+  display: inline-block;
+}
+
+/* ───── Móvil: dialogo a pantalla casi completa ───── */
+@media (max-width: 640px) {
+  .mle-dialog {
+    width: calc(100vw - 16px);
+    max-height: calc(100vh - 32px);
+  }
+
+  .mle-header {
+    padding: 14px 16px;
+  }
+
+  .mle-list {
+    padding: 10px 12px;
+  }
+
+  .mle-item {
+    padding: 9px 10px;
+  }
+
+  .mle-item-label {
+    font-size: 0.88rem;
+  }
+
+  .mle-footer {
+    padding: 12px 14px;
+  }
+}

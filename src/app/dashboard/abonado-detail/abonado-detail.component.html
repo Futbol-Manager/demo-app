@@ -1,0 +1,932 @@
+<div class="abonado-detail" *ngIf="!loading && !error && abonado as a">
+
+  <!-- ─────────────── HEADER ─────────────── -->
+  <div class="detail-header">
+    <button type="button" class="back-btn" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      <span>{{ 'SUBS.DETAIL.BACK' | translate }}</span>
+    </button>
+
+    <div class="header-content">
+      <div class="header-left">
+        <!-- Avatar editable: el club puede sustituir la foto del abonado
+             pulsando sobre la imagen. El input file está oculto y se
+             dispara via `fotoInput.click()`. Aceptamos jpg/png/webp y
+             el backend valida tamaño + extensión + pertenencia al club. -->
+        <button type="button"
+                class="avatar-wrap avatar-wrap--editable"
+                [class.avatar-wrap--uploading]="uploadingPhoto"
+                [disabled]="uploadingPhoto"
+                [title]="'SUBS.DETAIL.PHOTO.CHANGE' | translate"
+                (click)="fotoInput.click()">
+          <img *ngIf="a.imgPerfil" [src]="abonadoImageBase + a.imgPerfil" alt="" class="avatar-img" />
+          <div *ngIf="!a.imgPerfil" class="avatar-initials">{{ getInitials() }}</div>
+          <span class="avatar-overlay">
+            <i class="fas" [class.fa-camera]="!uploadingPhoto" [class.fa-spinner]="uploadingPhoto" [class.fa-spin]="uploadingPhoto"></i>
+            <span class="avatar-overlay-text">
+              {{ (uploadingPhoto ? 'SUBS.DETAIL.PHOTO.UPLOADING' : 'SUBS.DETAIL.PHOTO.CHANGE') | translate }}
+            </span>
+          </span>
+        </button>
+        <input #fotoInput
+               type="file"
+               accept="image/jpeg,image/jpg,image/png,image/webp"
+               hidden
+               (change)="onAvatarFileSelected($event, fotoInput)" />
+        <div class="header-info">
+          <h1 class="detail-name">{{ a.nombre }} {{ a.apellidos }}</h1>
+          <div class="detail-meta">
+            <span class="status-pill" [ngClass]="getEstadoCssClass()">
+              {{ getEstadoLabel() | translate }}
+            </span>
+            <span *ngIf="a.numeroSocio" class="meta-chip">
+              <i class="fas fa-id-card"></i>
+              {{ 'SUBS.DETAIL.MEMBER_NUMBER_SHORT' | translate }}: {{ a.numeroSocio }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <span class="autosave-status" *ngIf="saving">
+          <i class="fas fa-spinner fa-spin"></i>
+          {{ 'SUBS.DETAIL.SAVING' | translate }}
+        </span>
+        <span class="autosave-status autosave-status--saved" *ngIf="!saving && recentlySavedField">
+          <i class="fas fa-check-circle"></i>
+          {{ 'SUBS.DETAIL.SAVED' | translate }}
+        </span>
+        <!-- Acciones de estado (Bloque 6) — visibles cuando NO está pendiente,
+             porque el caso pendiente ya tiene su propio banner abajo. -->
+        <ng-container *ngIf="!isPending()">
+          <button *ngIf="a.estado === 1"
+                  type="button"
+                  class="btn-estado btn-estado--deactivate"
+                  [disabled]="saving"
+                  [title]="'SUBS.ACTIONS.DEACTIVATE' | translate"
+                  (click)="reject()">
+            <i class="fas fa-pause-circle"></i>
+            <span>{{ 'SUBS.ACTIONS.DEACTIVATE' | translate }}</span>
+          </button>
+          <button *ngIf="a.estado === 0"
+                  type="button"
+                  class="btn-estado btn-estado--reactivate"
+                  [disabled]="saving"
+                  [title]="'SUBS.ACTIONS.REOPEN' | translate"
+                  (click)="reactivate()">
+            <i class="fas fa-arrow-rotate-left"></i>
+            <span>{{ 'SUBS.ACTIONS.REOPEN' | translate }}</span>
+          </button>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────── BANNER PENDIENTE ─────────────── -->
+  <div class="pending-banner" *ngIf="isPending()">
+    <div class="pending-content">
+      <div class="pending-icon">
+        <i class="fas fa-clock"></i>
+      </div>
+      <div class="pending-text">
+        <h3>{{ 'SUBS.DETAIL.PENDING_TITLE' | translate }}</h3>
+        <p>{{ 'SUBS.DETAIL.PENDING_MSG' | translate }}</p>
+      </div>
+    </div>
+    <div class="pending-actions">
+      <button type="button" class="btn btn-success" (click)="approve()" [disabled]="saving">
+        <i class="fas fa-check"></i>
+        {{ 'SUBS.DETAIL.APPROVE_CTA' | translate }}
+      </button>
+      <button type="button" class="btn btn-danger" (click)="reject()" [disabled]="saving">
+        <i class="fas fa-times"></i>
+        {{ 'SUBS.DETAIL.REJECT_CTA' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ─────────────── TABS ─────────────── -->
+  <div class="tabs-bar">
+    <button
+      type="button"
+      class="tab-btn"
+      [class.tab-btn--active]="activeTab === 'datos'"
+      (click)="setActiveTab('datos')">
+      <i class="fas fa-user"></i>
+      <span>{{ 'SUBS.DETAIL.TAB_PERSONAL' | translate }}</span>
+    </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.tab-btn--active]="activeTab === 'pagos'"
+      (click)="setActiveTab('pagos')">
+      <i class="fas fa-euro-sign"></i>
+      <span>{{ 'SUBS.DETAIL.TAB_PAYMENTS' | translate }}</span>
+    </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.tab-btn--active]="activeTab === 'documentos'"
+      (click)="setActiveTab('documentos')">
+      <i class="fas fa-folder-open"></i>
+      <span>{{ 'SUBS.DETAIL.TAB_DOCUMENTS' | translate }}</span>
+      <span class="tab-count" *ngIf="documentos.length">{{ documentos.length }}</span>
+    </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.tab-btn--active]="activeTab === 'comunicaciones'"
+      (click)="setActiveTab('comunicaciones')">
+      <i class="fas fa-paper-plane"></i>
+      <span>{{ 'SUBS.DETAIL.TAB_COMMUNICATIONS' | translate }}</span>
+      <span class="tab-count" *ngIf="comunicaciones.length">{{ comunicaciones.length }}</span>
+    </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.tab-btn--active]="activeTab === 'familiares'"
+      (click)="setActiveTab('familiares')">
+      <i class="fas fa-users"></i>
+      <span>{{ 'SUBS.DETAIL.TAB_FAMILY' | translate }}</span>
+      <span class="tab-count" *ngIf="familiares.length">{{ familiares.length }}</span>
+    </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.tab-btn--active]="activeTab === 'actividad'"
+      (click)="setActiveTab('actividad')">
+      <i class="fas fa-stream"></i>
+      <span>{{ 'SUBS.DETAIL.TAB_ACTIVITY' | translate }}</span>
+    </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.tab-btn--active]="activeTab === 'carnet'"
+      (click)="setActiveTab('carnet')">
+      <i class="fas fa-id-card"></i>
+      <span>{{ 'SUBS.DETAIL.TAB_CARD' | translate }}</span>
+    </button>
+  </div>
+
+  <!-- ─────────────── TAB DATOS PERSONALES ─────────────── -->
+  <div class="tab-panel" *ngIf="activeTab === 'datos'">
+    <!-- Toolbar de autosave (sin botón Editar/Hecho). Desde el
+         rediseño 2026-05-25 la ficha se muestra siempre editable y
+         el autosave por campo (debounce 600ms) persiste cambios al
+         instante. Solo mostramos hints de estado: "Guardando…" y
+         "Guardado". -->
+    <div class="abonado-edit-toolbar abonado-edit-toolbar--autosave-only">
+      <span class="abonado-edit-toolbar__hint" *ngIf="saving">
+        <i class="fas fa-spinner fa-spin"></i>
+        {{ 'SUBS.DETAIL.SAVING' | translate }}
+      </span>
+      <span class="abonado-edit-toolbar__hint abonado-edit-toolbar__hint--ok"
+            *ngIf="!saving && recentlySavedField">
+        <i class="fas fa-check"></i>
+        {{ 'SUBS.DETAIL.AUTOSAVED' | translate }}
+      </span>
+    </div>
+
+    <!-- Bloque 1: Identidad -->
+    <section class="bento">
+      <header class="bento-head">
+        <div class="bento-head-icon"><i class="fas fa-user-circle"></i></div>
+        <div>
+          <h2 class="bento-title">{{ 'SUBS.DETAIL.BLOCK_IDENTITY' | translate }}</h2>
+          <p class="bento-sub">{{ 'SUBS.DETAIL.BLOCK_IDENTITY_SUB' | translate }}</p>
+        </div>
+      </header>
+      <div class="bento-grid">
+        <div class="field">
+          <label>{{ 'SUBS.MODAL.FIELDS.NAME' | translate }}</label>
+          <input type="text" [ngModel]="a.nombre"
+                 (ngModelChange)="onFieldChange('nombre', $event)" />
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.MODAL.FIELDS.SURNAMES' | translate }}</label>
+          <input type="text" [ngModel]="a.apellidos"
+                 (ngModelChange)="onFieldChange('apellidos', $event)" />
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.MODAL.FIELDS.DNI' | translate }}</label>
+          <input type="text" [ngModel]="a.dni"
+                 (ngModelChange)="onFieldChange('dni', $event)" />
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.MODAL.FIELDS.BIRTHDATE' | translate }}</label>
+          <input type="date" [ngModel]="a.fechaDeNacimiento"
+                 (ngModelChange)="onFieldChange('fechaDeNacimiento', $event)" />
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.MODAL.GENDER' | translate }}</label>
+          <select [ngModel]="a.genero" (ngModelChange)="onFieldChange('genero', $event)">
+            <option value=""></option>
+            <option value="Masculino">{{ 'SUBS.MODAL.GENDER_M' | translate }}</option>
+            <option value="Femenino">{{ 'SUBS.MODAL.GENDER_F' | translate }}</option>
+            <option value="Otro">{{ 'SUBS.MODAL.GENDER_O' | translate }}</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.DETAIL.MEMBER_NUMBER' | translate }}</label>
+          <input type="text" [ngModel]="a.numeroSocio"
+                 (ngModelChange)="onFieldChange('numeroSocio', $event)"
+                 placeholder="SOC-2026-001" />
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.DETAIL.PROFESSION' | translate }}</label>
+          <input type="text" [ngModel]="a.profesion"
+                 (ngModelChange)="onFieldChange('profesion', $event)"
+                 [placeholder]="'SUBS.DETAIL.PROFESSION_PLACEHOLDER' | translate" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Bloque 2: Contacto -->
+    <section class="bento">
+      <header class="bento-head">
+        <div class="bento-head-icon"><i class="fas fa-envelope"></i></div>
+        <div>
+          <h2 class="bento-title">{{ 'SUBS.DETAIL.BLOCK_CONTACT' | translate }}</h2>
+          <p class="bento-sub">{{ 'SUBS.DETAIL.BLOCK_CONTACT_SUB' | translate }}</p>
+        </div>
+      </header>
+      <div class="bento-grid">
+        <div class="field">
+          <label>{{ 'SUBS.MODAL.FIELDS.EMAIL' | translate }}</label>
+          <input type="email" [ngModel]="a.mail"
+                 (ngModelChange)="onFieldChange('mail', $event)" />
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.MODAL.FIELDS.PHONE' | translate }}</label>
+          <input type="tel" [ngModel]="a.telefono"
+                 (ngModelChange)="onFieldChange('telefono', $event)" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Bloque 3: Dirección -->
+    <section class="bento">
+      <header class="bento-head">
+        <div class="bento-head-icon"><i class="fas fa-map-marker-alt"></i></div>
+        <div>
+          <h2 class="bento-title">{{ 'SUBS.DETAIL.BLOCK_ADDRESS' | translate }}</h2>
+          <p class="bento-sub">{{ 'SUBS.DETAIL.BLOCK_ADDRESS_SUB' | translate }}</p>
+        </div>
+      </header>
+      <div class="bento-grid">
+        <div class="field field--full">
+          <label>{{ 'SUBS.DETAIL.STREET' | translate }}</label>
+          <input type="text" [ngModel]="a.direccion"
+                 (ngModelChange)="onFieldChange('direccion', $event)"
+                 placeholder="C/ Mayor 12, 3º B" />
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.DETAIL.CITY' | translate }}</label>
+          <input type="text" [ngModel]="a.ciudad"
+                 (ngModelChange)="onFieldChange('ciudad', $event)" />
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.DETAIL.POSTAL_CODE' | translate }}</label>
+          <input type="text" [ngModel]="a.codigoPostal"
+                 (ngModelChange)="onFieldChange('codigoPostal', $event)" />
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.DETAIL.PROVINCE' | translate }}</label>
+          <input type="text" [ngModel]="a.provincia"
+                 (ngModelChange)="onFieldChange('provincia', $event)" />
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.DETAIL.COUNTRY' | translate }}</label>
+          <input type="text" [ngModel]="a.pais"
+                 (ngModelChange)="onFieldChange('pais', $event)"
+                 [placeholder]="'SUBS.DETAIL.COUNTRY_PLACEHOLDER' | translate" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Bloque 3 bis: Datos bancarios (IBAN cifrado en BD) -->
+    <section class="bento">
+      <header class="bento-head">
+        <div class="bento-head-icon"><i class="fas fa-university"></i></div>
+        <div>
+          <h2 class="bento-title">{{ 'SUBS.DETAIL.BLOCK_BANK' | translate }}</h2>
+          <p class="bento-sub">{{ 'SUBS.DETAIL.BLOCK_BANK_SUB' | translate }}</p>
+        </div>
+      </header>
+      <div class="bento-grid">
+        <div class="field field--full">
+          <label>{{ 'SUBS.DETAIL.IBAN' | translate }}</label>
+          <input type="text" [ngModel]="a.iban"
+                 (ngModelChange)="onFieldChange('iban', $event)"
+                 autocomplete="off"
+                 placeholder="ES00 0000 0000 0000 0000 0000" />
+        </div>
+        <div class="field field--full">
+          <label>{{ 'SUBS.DETAIL.IBAN_HOLDER' | translate }}</label>
+          <input type="text" [ngModel]="a.ibanTitular"
+                 (ngModelChange)="onFieldChange('ibanTitular', $event)"
+                 [placeholder]="'SUBS.DETAIL.IBAN_HOLDER_PLACEHOLDER' | translate" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Bloque 4: Contacto de emergencia -->
+    <section class="bento">
+      <header class="bento-head">
+        <div class="bento-head-icon"><i class="fas fa-shield-alt"></i></div>
+        <div>
+          <h2 class="bento-title">{{ 'SUBS.DETAIL.BLOCK_EMERGENCY' | translate }}</h2>
+          <p class="bento-sub">{{ 'SUBS.DETAIL.BLOCK_EMERGENCY_SUB' | translate }}</p>
+        </div>
+      </header>
+      <div class="bento-grid">
+        <div class="field">
+          <label>{{ 'SUBS.DETAIL.EMERGENCY_NAME' | translate }}</label>
+          <input type="text" [ngModel]="a.contactoEmergenciaNombre"
+                 (ngModelChange)="onFieldChange('contactoEmergenciaNombre', $event)" />
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.DETAIL.EMERGENCY_PHONE' | translate }}</label>
+          <input type="tel" [ngModel]="a.contactoEmergenciaTelefono"
+                 (ngModelChange)="onFieldChange('contactoEmergenciaTelefono', $event)" />
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.DETAIL.EMERGENCY_RELATION' | translate }}</label>
+          <select [ngModel]="a.contactoEmergenciaRelacion"
+                  (ngModelChange)="onFieldChange('contactoEmergenciaRelacion', $event)">
+            <option value=""></option>
+            <option value="Padre">{{ 'SUBS.DETAIL.REL_FATHER' | translate }}</option>
+            <option value="Madre">{{ 'SUBS.DETAIL.REL_MOTHER' | translate }}</option>
+            <option value="Pareja">{{ 'SUBS.DETAIL.REL_PARTNER' | translate }}</option>
+            <option value="Hermano">{{ 'SUBS.DETAIL.REL_SIBLING' | translate }}</option>
+            <option value="Hijo">{{ 'SUBS.DETAIL.REL_CHILD' | translate }}</option>
+            <option value="Amigo">{{ 'SUBS.DETAIL.REL_FRIEND' | translate }}</option>
+            <option value="Otro">{{ 'SUBS.DETAIL.REL_OTHER' | translate }}</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Bloque dinámico: Extras del club
+         ───────────────────────────────────────────────────────────────
+         Renderiza los campos custom del schema del club que NO tienen
+         binding canónico (i.e. los que solo viven en `answers_json`).
+         Si el club no tiene plantilla activa o no tiene campos custom,
+         este bloque no se pinta. Permite edición con autosave (debounce
+         500ms) llamando a `PUT /club-abonado-form/.../response`.
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="bento" *ngIf="customExtraFields.length > 0">
+      <header class="bento-head">
+        <div class="bento-head-icon"><i class="fas fa-puzzle-piece"></i></div>
+        <div>
+          <h2 class="bento-title">{{ 'SUBS.DETAIL.BLOCK_CLUB_EXTRAS' | translate }}</h2>
+          <p class="bento-sub">{{ 'SUBS.DETAIL.BLOCK_CLUB_EXTRAS_SUB' | translate }}</p>
+        </div>
+      </header>
+      <div class="bento-grid">
+        <ng-container *ngFor="let f of customExtraFields; trackBy: trackByCustomFieldId">
+          <!-- text / number / date -->
+          <div class="field"
+               *ngIf="f.type === 'text' || f.type === 'number' || f.type === 'date'">
+            <label>{{ f.label }}</label>
+            <input [type]="f.type"
+                   [ngModel]="customAnswers[f.sectionId]?.[f.id]"
+                   (ngModelChange)="onCustomFieldChange(f, $event)"
+                   [placeholder]="f.placeholder || ''" />
+          </div>
+
+          <!-- textarea -->
+          <div class="field field--full" *ngIf="f.type === 'textarea'">
+            <label>{{ f.label }}</label>
+            <textarea rows="3"
+                      [ngModel]="customAnswers[f.sectionId]?.[f.id]"
+                      (ngModelChange)="onCustomFieldChange(f, $event)"
+                      [placeholder]="f.placeholder || ''"></textarea>
+          </div>
+
+          <!-- select -->
+          <div class="field" *ngIf="f.type === 'select'">
+            <label>{{ f.label }}</label>
+            <select [ngModel]="customAnswers[f.sectionId]?.[f.id]"
+                    (ngModelChange)="onCustomFieldChange(f, $event)">
+              <option value=""></option>
+              <option *ngFor="let opt of f.options" [value]="opt">{{ opt }}</option>
+            </select>
+          </div>
+
+          <!-- checkbox / consent (booleano simple) -->
+          <div class="field field--full" *ngIf="f.type === 'checkbox' || f.type === 'consent'">
+            <label class="field-check">
+              <input type="checkbox"
+                     [checked]="!!customAnswers[f.sectionId]?.[f.id]"
+                     (change)="onCustomFieldChange(f, $any($event.target).checked)" />
+              <span>{{ f.label }}</span>
+            </label>
+            <p class="field-text" *ngIf="f.text">{{ f.text }}</p>
+          </div>
+
+          <!-- multi_check (array de strings) -->
+          <div class="field field--full" *ngIf="f.type === 'multi_check'">
+            <label>{{ f.label }}</label>
+            <div class="field-multi">
+              <label class="field-check" *ngFor="let opt of f.options">
+                <input type="checkbox"
+                       [checked]="isCustomMultiSelected(f, opt)"
+                       (change)="toggleCustomMulti(f, opt, $any($event.target).checked)" />
+                <span>{{ opt }}</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- info (solo lectura, bloque de texto del club) -->
+          <div class="field field--full field--info" *ngIf="f.type === 'info'">
+            <h4 class="field-info-title">{{ f.label }}</h4>
+            <p class="field-info-text" *ngIf="f.text">{{ f.text }}</p>
+          </div>
+
+          <!-- document (descarga subida por el club) -->
+          <div class="field field--full" *ngIf="f.type === 'document'">
+            <label>{{ f.label }}</label>
+            <a *ngIf="f.fileUrl" class="field-doc-link" [href]="f.fileUrl" target="_blank" rel="noopener">
+              <i class="fas fa-file-alt"></i>
+              <span>{{ f.fileName || ('SUBS.DETAIL.DOWNLOAD' | translate) }}</span>
+            </a>
+            <span *ngIf="!f.fileUrl" class="field-empty">—</span>
+          </div>
+        </ng-container>
+      </div>
+    </section>
+
+    <!-- Bloque 5: Notas internas -->
+    <section class="bento">
+      <header class="bento-head">
+        <div class="bento-head-icon"><i class="fas fa-sticky-note"></i></div>
+        <div>
+          <h2 class="bento-title">{{ 'SUBS.DETAIL.BLOCK_NOTES' | translate }}</h2>
+          <p class="bento-sub">{{ 'SUBS.DETAIL.BLOCK_NOTES_SUB' | translate }}</p>
+        </div>
+      </header>
+      <div class="bento-grid">
+        <div class="field field--full">
+          <textarea rows="5"
+                    [ngModel]="a.notasInternas"
+                    (ngModelChange)="onFieldChange('notasInternas', $event)"
+                    [placeholder]="'SUBS.DETAIL.NOTES_PLACEHOLDER' | translate"></textarea>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ─────────────── TAB PAGOS ─────────────── -->
+  <div class="tab-panel" *ngIf="activeTab === 'pagos'">
+
+    <!-- Resumen de la cuota actual (modo TEMPORADA: cuota total cerrada) -->
+    <section class="bento" *ngIf="seasonsEnabled && abonadosTemporada as at">
+      <header class="bento-head">
+        <div class="bento-head-icon"><i class="fas fa-receipt"></i></div>
+        <div>
+          <h2 class="bento-title">{{ 'SUBS.DETAIL.PAY_SUMMARY' | translate }}</h2>
+          <p class="bento-sub">{{ 'SUBS.DETAIL.PAY_SUMMARY_SUB' | translate }}</p>
+        </div>
+        <div class="bento-head-actions">
+          <button type="button"
+                  class="btn-primary-sph"
+                  (click)="openPaymentModal()"
+                  [disabled]="payButtonState !== 'ok'"
+                  [attr.title]="payButtonTooltipKey ? (payButtonTooltipKey | translate) : null">
+            <i class="fas fa-plus"></i>
+            {{ 'SUBS.DETAIL.ADD_PAYMENT' | translate }}
+          </button>
+        </div>
+      </header>
+      <div class="pay-no-catalog-hint" *ngIf="payButtonState === 'no-catalog'">
+        <i class="fas fa-info-circle"></i>
+        <span>{{ 'SUBS.DETAIL.PAY_NO_CATALOG_HINT' | translate }}</span>
+        <button type="button" class="pay-no-catalog-link" (click)="goToNewCuotas()">
+          {{ 'SUBS.DETAIL.PAY_NO_CATALOG_GOTO' | translate }}
+        </button>
+      </div>
+      <div class="pay-all-paid-hint" *ngIf="payButtonState === 'all-paid'">
+        <i class="fas fa-check-circle"></i>
+        <span>{{ 'SUBS.DETAIL.PAY_ALL_PAID_HINT' | translate }}</span>
+      </div>
+      <div class="pay-summary">
+        <div class="pay-card">
+          <div class="pay-card-label">{{ 'SUBS.DETAIL.FEE' | translate }}</div>
+          <div class="pay-card-value">{{ formatAmount(at.cuota) }}</div>
+        </div>
+        <div class="pay-card pay-card--green">
+          <div class="pay-card-label">{{ 'SUBS.DETAIL.PAID' | translate }}</div>
+          <div class="pay-card-value">{{ formatAmount(at.pagado) }}</div>
+        </div>
+        <div class="pay-card pay-card--orange" *ngIf="hasRemaining()">
+          <div class="pay-card-label">{{ 'SUBS.DETAIL.REMAINING' | translate }}</div>
+          <div class="pay-card-value">{{ formatAmount(at.restante) }}</div>
+        </div>
+        <div class="pay-card pay-card--blue">
+          <div class="pay-card-label">{{ 'SUBS.DETAIL.PAY_STATE' | translate }}</div>
+          <div class="pay-card-value pay-card-value--small">
+            <span class="status-pill" [ngClass]="getPagoCssClass(at.estado)">
+              {{ getPagoLabel(at.estado) | translate }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Resumen sin temporada (clubes Sphaira Adhoc sin "mi-temporada"):
+         no existe cuota total cerrada, solo importa cuánto ha pagado el
+         abonado a lo largo del tiempo y si está al día. -->
+    <section class="bento" *ngIf="!seasonsEnabled">
+      <header class="bento-head">
+        <div class="bento-head-icon"><i class="fas fa-receipt"></i></div>
+        <div>
+          <h2 class="bento-title">{{ 'SUBS.DETAIL.PAY_SUMMARY' | translate }}</h2>
+          <p class="bento-sub">{{ 'SUBS.DETAIL.PAY_OPEN_SUB' | translate }}</p>
+        </div>
+        <div class="bento-head-actions">
+          <button type="button"
+                  class="btn-primary-sph"
+                  (click)="openPaymentModal()"
+                  [disabled]="payButtonState !== 'ok'"
+                  [attr.title]="payButtonTooltipKey ? (payButtonTooltipKey | translate) : null">
+            <i class="fas fa-plus"></i>
+            {{ 'SUBS.DETAIL.ADD_PAYMENT' | translate }}
+          </button>
+        </div>
+      </header>
+      <div class="pay-no-catalog-hint" *ngIf="payButtonState === 'no-catalog'">
+        <i class="fas fa-info-circle"></i>
+        <span>{{ 'SUBS.DETAIL.PAY_NO_CATALOG_HINT' | translate }}</span>
+        <button type="button" class="pay-no-catalog-link" (click)="goToNewCuotas()">
+          {{ 'SUBS.DETAIL.PAY_NO_CATALOG_GOTO' | translate }}
+        </button>
+      </div>
+      <div class="pay-all-paid-hint" *ngIf="payButtonState === 'all-paid'">
+        <i class="fas fa-check-circle"></i>
+        <span>{{ 'SUBS.DETAIL.PAY_ALL_PAID_HINT' | translate }}</span>
+      </div>
+      <div class="pay-summary pay-summary--open">
+        <div class="pay-card pay-card--green">
+          <div class="pay-card-label">{{ 'SUBS.DETAIL.TOTAL_PAID' | translate }}</div>
+          <div class="pay-card-value">{{ formatAmount(totalPagadoHistorico) }}</div>
+          <div class="pay-card-foot">
+            {{ historicoPagos.length }}
+            {{ (historicoPagos.length === 1 ? 'SUBS.DETAIL.PAY_COUNT_ONE' : 'SUBS.DETAIL.PAY_COUNT_OTHER') | translate }}
+          </div>
+        </div>
+        <div class="pay-card pay-card--blue">
+          <div class="pay-card-label">{{ 'SUBS.DETAIL.PAY_STATUS' | translate }}</div>
+          <div class="pay-card-value pay-card-value--small">
+            <span class="status-pill"
+                  [ngClass]="alDia ? 'status-pill--paid' : 'status-pill--pending-pay'">
+              <i class="fas" [class.fa-check-circle]="alDia" [class.fa-exclamation-circle]="!alDia"></i>
+              {{ (alDia ? 'SUBS.DETAIL.UP_TO_DATE' : 'SUBS.DETAIL.NOT_UP_TO_DATE') | translate }}
+            </span>
+          </div>
+          <div class="pay-card-foot" *ngIf="ultimoPagoFecha as f">
+            {{ 'SUBS.DETAIL.LAST_PAYMENT' | translate }}: {{ f }}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Histórico de pagos -->
+    <section class="bento">
+      <header class="bento-head">
+        <div class="bento-head-icon"><i class="fas fa-history"></i></div>
+        <div>
+          <h2 class="bento-title">{{ 'SUBS.DETAIL.PAY_HISTORY' | translate }}</h2>
+          <p class="bento-sub">{{ 'SUBS.DETAIL.PAY_HISTORY_SUB' | translate }}</p>
+        </div>
+      </header>
+
+      <div class="empty-state" *ngIf="!historicoPagos.length">
+        <i class="fas fa-inbox"></i>
+        <p>{{ 'SUBS.DETAIL.PAY_HISTORY_EMPTY' | translate }}</p>
+      </div>
+
+      <div class="pay-history-table" *ngIf="historicoPagos.length">
+        <div class="pay-history-row pay-history-row--head">
+          <span>{{ 'SUBS.DETAIL.PAY_DATE' | translate }}</span>
+          <span>{{ 'SUBS.DETAIL.PAY_TYPE' | translate }}</span>
+          <span>{{ 'SUBS.DETAIL.PAY_METHOD' | translate }}</span>
+          <span>{{ 'SUBS.DETAIL.PAY_AMOUNT' | translate }}</span>
+          <span>{{ 'SUBS.DETAIL.PAY_COMMENT' | translate }}</span>
+        </div>
+        <div class="pay-history-row" *ngFor="let p of historicoPagosOrdenado">
+          <span>{{ formatDate(p.fechaPago || p.fechaCreate) }}</span>
+          <span>
+            <span class="amount-chip"
+                  [ngClass]="p.tipo === 'Pagado' ? 'amount-chip--green' : 'amount-chip--red'">
+              {{ p.tipo }}
+            </span>
+          </span>
+          <span>{{ p.metodo || '—' }}</span>
+          <span class="amount">{{ formatAmount(p.cantidad) }}</span>
+          <span class="comment">{{ p.comentario || '—' }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Historial de accesos (sólo si el club tiene el módulo Modo portero) -->
+    <app-access-history-card
+      *ngIf="accessControlEnabled"
+      [clubId]="clubId"
+      [subjectType]="'ABONADO'"
+      [subjectId]="abonadoId">
+    </app-access-history-card>
+
+  </div>
+
+  <!-- ─────────────── TAB DOCUMENTOS ─────────────── -->
+  <!-- Extraída a su propio componente standalone. Los listados
+       `documentos` y `clubDocs` viven en el padre como caché (badge del
+       tab + evitar recargas al volver a entrar) vía two-way binding. -->
+  <div class="tab-panel" *ngIf="activeTab === 'documentos'">
+    <app-documentos-tab
+      [abonadoId]="abonadoId"
+      [clubId]="clubId"
+      [(documentos)]="documentos"
+      [(clubDocs)]="clubDocs">
+    </app-documentos-tab>
+  </div>
+
+  <!-- ─────────────── TAB COMUNICACIONES ─────────────── -->
+  <!-- Extraída a su propio componente standalone. El listado
+       `comunicaciones` vive en el padre como caché (badge del tab +
+       evitar recargas al volver a entrar) vía two-way binding. -->
+  <div class="tab-panel" *ngIf="activeTab === 'comunicaciones'">
+    <app-comunicaciones-tab
+      [abonadoId]="abonadoId"
+      [clubId]="clubId"
+      [abonado]="abonado"
+      [(comunicaciones)]="comunicaciones">
+    </app-comunicaciones-tab>
+  </div>
+
+  <!-- ─────────────── TAB FAMILIARES ─────────────── -->
+  <!-- Extraída a su propio componente standalone. El listado
+       `familiares` vive en el padre como caché (badge del tab + evitar
+       recargas al volver a entrar) vía two-way binding. La navegación
+       a la ficha del familiar (`goToRelated`) la hace el hijo con Router. -->
+  <div class="tab-panel" *ngIf="activeTab === 'familiares'">
+    <app-familiares-tab
+      [abonadoId]="abonadoId"
+      [clubId]="clubId"
+      [(familiares)]="familiares">
+    </app-familiares-tab>
+  </div>
+
+  <!-- ─────────────── TAB ACTIVIDAD ─────────────── -->
+  <div class="tab-panel" *ngIf="activeTab === 'actividad'">
+
+    <section class="bento">
+      <header class="bento-head">
+        <div class="bento-head-icon"><i class="fas fa-stream"></i></div>
+        <div>
+          <h2 class="bento-title">{{ 'SUBS.DETAIL.ACT.TITLE' | translate }}</h2>
+          <p class="bento-sub">{{ 'SUBS.DETAIL.ACT.SUB' | translate }}</p>
+        </div>
+        <div class="bento-head-actions">
+          <button type="button" class="btn-secondary-sph" (click)="loadActividad()" [disabled]="actividadLoading">
+            <i class="fas" [ngClass]="actividadLoading ? 'fa-spinner fa-spin' : 'fa-sync-alt'"></i>
+            {{ 'SUBS.DETAIL.ACT.REFRESH' | translate }}
+          </button>
+        </div>
+      </header>
+
+      <div class="docs-loading" *ngIf="actividadLoading">
+        <div class="loader loader--inline"></div>
+        <span>{{ 'SUBS.DETAIL.LOADING' | translate }}</span>
+      </div>
+
+      <div class="empty-state" *ngIf="!actividadLoading && !actividad.length">
+        <i class="fas fa-stream"></i>
+        <p>{{ 'SUBS.DETAIL.ACT.EMPTY' | translate }}</p>
+      </div>
+
+      <ol class="timeline" *ngIf="!actividadLoading && actividad.length">
+        <li class="timeline-item" *ngFor="let ev of actividad">
+          <div class="tl-marker" [ngClass]="getActCss(ev.tipo)">
+            <span>{{ getActIcon(ev.tipo) }}</span>
+          </div>
+          <div class="tl-card">
+            <div class="tl-head">
+              <h3 class="tl-subject">{{ ev.titulo | translate }}</h3>
+              <span class="tl-date">{{ formatDate(ev.fecha) }}</span>
+            </div>
+            <p class="tl-body" *ngIf="ev.detalle">{{ ev.detalle }}</p>
+            <!-- Meta secundaria (importe, canal, etc.) parseada del JSON -->
+            <ng-container *ngIf="parseActMeta(ev.meta) as meta">
+              <div class="act-meta">
+                <span class="act-meta-chip" *ngIf="meta.amount">
+                  {{ formatAmount(meta.amount) }}
+                </span>
+                <span class="act-meta-chip" *ngIf="meta.method">{{ meta.method }}</span>
+                <!-- Solo mostramos el chip de temporada en clubes que usan
+                     temporadas. En clubes ad-hoc el backend guarda igualmente
+                     una temporada interna por consistencia de modelo, pero
+                     no la mostramos para no confundir al usuario, que en el
+                     resto del producto no ve nunca el concepto. -->
+                <span class="act-meta-chip" *ngIf="meta.season && seasonsEnabled">{{ meta.season }}</span>
+                <span class="act-meta-chip" *ngIf="meta.canal">{{ meta.canal }}</span>
+                <span class="act-meta-chip" *ngIf="meta.tipo">{{ meta.tipo }}</span>
+                <span class="act-meta-chip" *ngIf="meta.relacion">{{ meta.relacion }}</span>
+              </div>
+            </ng-container>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ═══════════ Histórico de cambios de estado (Bloque 6) ═══════════ -->
+    <section class="bento bento--estado-hist">
+      <header class="bento-head">
+        <div class="bento-head-icon"><i class="fas fa-history"></i></div>
+        <div>
+          <h2 class="bento-title">{{ 'SUBS.STATUS_HIST.TITLE' | translate }}</h2>
+          <p class="bento-sub">{{ 'SUBS.STATUS_HIST.SUB' | translate }}</p>
+        </div>
+        <div class="bento-head-actions">
+          <button type="button" class="btn-secondary-sph"
+                  (click)="loadEstadoHistorico()"
+                  [disabled]="estadoHistoricoLoading">
+            <i class="fas" [ngClass]="estadoHistoricoLoading ? 'fa-spinner fa-spin' : 'fa-sync-alt'"></i>
+            {{ 'SUBS.DETAIL.ACT.REFRESH' | translate }}
+          </button>
+        </div>
+      </header>
+
+      <div class="docs-loading" *ngIf="estadoHistoricoLoading">
+        <div class="loader loader--inline"></div>
+        <span>{{ 'SUBS.DETAIL.LOADING' | translate }}</span>
+      </div>
+
+      <div class="empty-state" *ngIf="!estadoHistoricoLoading && !estadoHistorico.length">
+        <i class="fas fa-history"></i>
+        <p>{{ 'SUBS.STATUS_HIST.EMPTY' | translate }}</p>
+      </div>
+
+      <ul class="aeh-list" *ngIf="!estadoHistoricoLoading && estadoHistorico.length">
+        <li class="aeh-item" *ngFor="let row of estadoHistorico">
+          <div class="aeh-transition">
+            <span [class]="estadoBadgeClass(row.estadoAnterior)">
+              {{ estadoLabelKey(row.estadoAnterior) | translate }}
+            </span>
+            <i class="fas fa-arrow-right aeh-arrow"></i>
+            <span [class]="estadoBadgeClass(row.estadoNuevo)">
+              {{ estadoLabelKey(row.estadoNuevo) | translate }}
+            </span>
+          </div>
+          <div class="aeh-meta">
+            <span class="aeh-date">{{ formatDate(row.changedAt) }}</span>
+            <span class="aeh-by" *ngIf="row.changedByUserName">
+              <i class="fas fa-user-shield"></i>
+              {{ row.changedByUserName }}
+            </span>
+          </div>
+          <p class="aeh-motivo" *ngIf="row.motivo">
+            <i class="fas fa-quote-left"></i>
+            {{ row.motivo }}
+          </p>
+          <p class="aeh-motivo aeh-motivo--empty" *ngIf="!row.motivo">
+            {{ 'SUBS.STATUS_HIST.NO_REASON' | translate }}
+          </p>
+        </li>
+      </ul>
+    </section>
+
+  </div>
+
+  <!-- ─────────────── TAB CARNET + BENEFICIOS (PR4) ─────────────── -->
+  <!-- Extraída a su propio componente standalone. El hijo recarga el
+       carnet en su ngOnInit cada vez que se entra a la pestaña (igual
+       que hacía setActiveTab). El padre actualiza la foto del carnet
+       tras subir avatar vía ViewChild (applyUploadedPhoto). -->
+  <div class="tab-panel" *ngIf="activeTab === 'carnet'">
+    <app-carnet-tab [abonadoId]="abonadoId"></app-carnet-tab>
+  </div>
+
+</div>
+
+<!-- ─────────────── ESTADOS ─────────────── -->
+<div class="state state--loading" *ngIf="loading">
+  <div class="loader"></div>
+  <p>{{ 'SUBS.DETAIL.LOADING' | translate }}</p>
+</div>
+
+<div class="state state--error" *ngIf="error && !loading">
+  <i class="fas fa-exclamation-triangle"></i>
+  <h2>{{ 'SUBS.DETAIL.LOAD_ERROR' | translate }}</h2>
+  <button type="button" class="btn-primary-sph" (click)="goBack()">
+    {{ 'SUBS.DETAIL.BACK' | translate }}
+  </button>
+</div>
+
+<!-- ─────────────── MODAL REGISTRAR PAGO ─────────────── -->
+<div class="sph-modal-overlay" *ngIf="showPaymentModal" (click)="closePaymentModal()">
+  <div class="sph-modal" (click)="$event.stopPropagation()">
+    <div class="sph-modal-head">
+      <h2><i class="fas fa-euro-sign"></i> {{ 'SUBS.DETAIL.ADD_PAYMENT' | translate }}</h2>
+      <button type="button" class="sph-modal-close" (click)="closePaymentModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="sph-modal-body">
+      <div class="bento-grid">
+        <div class="field field--full">
+          <label>{{ 'SUBS.PAY.LINKED_CUOTA' | translate }}</label>
+          <select [(ngModel)]="pagoClubIdSeleccionado"
+                  (ngModelChange)="onCuotaSeleccionadaChange()"
+                  [disabled]="cuotasPendientesLoading">
+            <option [ngValue]="null">{{ 'SUBS.PAY.LINKED_CUOTA_NONE' | translate }}</option>
+            <option *ngFor="let c of cuotasPendientes" [ngValue]="c.pagoClubId">
+              {{ c.nombre || ('SUBS.PAY.LINKED_CUOTA_FALLBACK' | translate) }}
+              — {{ c.restante | number:'1.2-2' }} €
+            </option>
+          </select>
+          <small class="field-hint" *ngIf="cuotasPendientesLoading">
+            <i class="fas fa-spinner fa-spin"></i>
+            {{ 'SUBS.PAY.LINKED_CUOTA_LOADING' | translate }}
+          </small>
+          <small class="field-hint field-hint--empty"
+                 *ngIf="!cuotasPendientesLoading && cuotasPendientes.length === 0">
+            {{ 'SUBS.PAY.LINKED_CUOTA_EMPTY' | translate }}
+          </small>
+          <small class="field-hint field-hint--info"
+                 *ngIf="pagoClubIdSeleccionado != null">
+            <i class="fas fa-lock"></i>
+            {{ 'SUBS.PAY.LINKED_CUOTA_AMOUNT_LOCKED' | translate }}
+          </small>
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.PAY.TYPE' | translate }}</label>
+          <select [(ngModel)]="pagoTipo">
+            <option value="Pagado">{{ 'SUBS.PAY.TYPE_PAID' | translate }}</option>
+            <option value="Reembolso">{{ 'SUBS.PAY.TYPE_REFUND' | translate }}</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.PAY.AMOUNT' | translate }}</label>
+          <input type="number" min="0" step="0.01"
+                 [(ngModel)]="pagoCantidad"
+                 [readonly]="pagoCantidadBloqueada"
+                 [class.is-locked]="pagoCantidadBloqueada" />
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.PAY.DATE' | translate }}</label>
+          <input type="date" [(ngModel)]="pagoFecha" />
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.PAY.METHOD' | translate }}</label>
+          <select [(ngModel)]="pagoMetodo">
+            <option value="Tarjeta">{{ 'SUBS.PAY.METHODS.CARD' | translate }}</option>
+            <option value="Efectivo">{{ 'SUBS.PAY.METHODS.CASH' | translate }}</option>
+            <option value="Transferencia">{{ 'SUBS.PAY.METHODS.TRANSFER' | translate }}</option>
+            <option value="Bizum">{{ 'SUBS.PAY.METHODS.BIZUM' | translate }}</option>
+            <option value="Otro">{{ 'SUBS.PAY.METHODS.OTHER' | translate }}</option>
+          </select>
+        </div>
+        <div class="field field--full">
+          <label>{{ 'SUBS.PAY.COMMENT' | translate }}</label>
+          <textarea rows="2" [(ngModel)]="pagoComentario"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="sph-modal-foot">
+      <button type="button" class="btn-secondary-sph" (click)="closePaymentModal()" [disabled]="pagoSaving">
+        {{ 'APP.BUTTONS.CLOSE' | translate }}
+      </button>
+      <button type="button" class="btn-primary-sph" (click)="savePayment()" [disabled]="pagoSaving">
+        <i class="fas fa-save" *ngIf="!pagoSaving"></i>
+        <i class="fas fa-spinner fa-spin" *ngIf="pagoSaving"></i>
+        {{ 'APP.BUTTONS.SAVE' | translate }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Los modales "Enviar comunicación", "Vincular socio", "Canje beneficio",
+     "Familiar externo" y "Subir respuesta del abonado" viven ahora dentro
+     de sus componentes de pestaña (comunicaciones-tab, familiares-tab,
+     carnet-tab y documentos-tab). Siguen usando position:fixed, así que
+     cubren el viewport igual que cuando se renderizaban desde aquí. -->
+
+<!-- ═══════════ Modal cambio de estado con motivo (Bloque 6) ═══════════ -->
+<!-- IMPORTANTE: el modal vive FUERA del wrapper `.abonado-detail *ngIf=...`
+     para que su render NO dependa de la embedded view del wrapper.
+     Su position:fixed cubre el viewport sin contención. -->
+<app-abonado-estado-modal *ngIf="estadoModalOpen && abonado"
+  [action]="estadoModalAction"
+  [abonadoNombre]="abonadoFullName"
+  [saving]="saving"
+  (confirm)="onEstadoModalConfirm($event)"
+  (cancel)="cancelEstadoModal()">
+</app-abonado-estado-modal>
+
+<!-- El modal "Subir respuesta del abonado" (Bloque 8 / Fase 2) vive ahora
+     dentro de documentos-tab. Mantiene position:fixed, así que sigue
+     cubriendo el viewport completo aunque se renderice desde el hijo. -->

@@ -1,0 +1,113 @@
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+  <h2 class="table-title">{{ 'CLUB_EVAL.COMPARE.TITLE' | translate }}</h2>
+</div>
+
+<div class="compare-container">
+
+  <div *ngIf="playersLoading" class="loading-state">
+    <div class="spinner"></div>
+  </div>
+
+  <ng-container *ngIf="!playersLoading">
+
+    <div class="compare-hint">
+      <i class="bi bi-info-circle"></i>
+      {{ 'CLUB_EVAL.COMPARE.HINT' | translate }}
+    </div>
+
+    <!-- Player selection -->
+    <div class="players-selection-grid">
+      <div *ngFor="let player of teamPlayers"
+           class="selection-card"
+           [class.selected]="isSelected(player.playerId)"
+           [class.disabled]="!isSelected(player.playerId) && selectedPlayerIds.length >= 3"
+           (click)="togglePlayer(player.playerId)">
+        <div class="sel-check" [style.background]="isSelected(player.playerId) ? getPlayerColor(selectedPlayerIds.indexOf(player.playerId)) : ''">
+          <i class="bi" [class.bi-check-lg]="isSelected(player.playerId)" [class.bi-circle]="!isSelected(player.playerId)"></i>
+        </div>
+        <div class="sel-name">{{ player.nombre }} {{ player.apellido }}</div>
+        <div class="sel-pos">{{ player.posicion }}</div>
+      </div>
+    </div>
+
+    <div class="compare-actions">
+      <span class="selected-count">
+        {{ selectedPlayerIds.length }}/3 {{ 'CLUB_EVAL.COMPARE.SELECTED' | translate }}
+      </span>
+      <button class="btn-primary compare-btn"
+              [disabled]="selectedPlayerIds.length < 2 || compareLoading"
+              (click)="compare()">
+        <i *ngIf="compareLoading" class="bi bi-arrow-clockwise spin"></i>
+        <i *ngIf="!compareLoading" class="bi bi-bar-chart-line"></i>
+        {{ 'CLUB_EVAL.COMPARE.BTN' | translate }}
+      </button>
+    </div>
+
+    <!-- Results -->
+    <ng-container *ngIf="compareResult">
+
+      <!-- Summary cards -->
+      <div class="player-summary-row">
+        <div *ngFor="let p of compareResult.players; let i = index" class="player-summary-card">
+          <div class="pscard-color-bar" [style.background]="getPlayerColor(i)"></div>
+          <div class="pscard-body">
+            <div class="pscard-name">{{ p.nombre }}</div>
+            <div class="pscard-pos">{{ p.posicion }}</div>
+            <div class="pscard-overall">
+              <span class="overall-label">{{ 'CLUB_EVAL.COMPARE.OVERALL' | translate }}</span>
+              <span class="overall-value" [style.color]="getPlayerColor(i)">{{ p.overallAvg }}/10</span>
+            </div>
+            <div class="pscard-evals">
+              <i class="bi bi-clipboard2-check"></i>
+              {{ p.evalCount }} {{ 'CLUB_EVAL.PLAYERS.TOTAL_EVALS' | translate }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bar chart -->
+      <div class="chart-card">
+        <h4 class="chart-title">{{ 'CLUB_EVAL.COMPARE.CHART_TITLE' | translate }}</h4>
+        <div class="chart-wrap">
+          <canvas #compareChart></canvas>
+        </div>
+      </div>
+
+      <!-- Field-by-field table -->
+      <div class="field-table-card">
+        <h4 class="chart-title">{{ 'CLUB_EVAL.COMPARE.TABLE_TITLE' | translate }}</h4>
+        <div class="field-table-scroll">
+          <table class="field-table">
+            <thead>
+              <tr>
+                <th>{{ 'CLUB_EVAL.PLAYER.FIELD' | translate }}</th>
+                <th *ngFor="let p of compareResult.players; let i = index" [style.color]="getPlayerColor(i)">
+                  {{ p.nombre.split(' ')[0] }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let field of compareResult.fields">
+                <td class="field-name-cell">{{ field }}</td>
+                <td *ngFor="let p of compareResult.players; let i = index">
+                  <span class="score-pill" [style.background]="getPlayerColor(i) + '22'" [style.color]="getPlayerColor(i)">
+                    {{ (p.fieldAverages[field] ?? 0) }}/10
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </ng-container>
+
+  </ng-container>
+
+</div>

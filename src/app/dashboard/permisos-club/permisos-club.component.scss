@@ -1,0 +1,659 @@
+@use 'sass:color';
+
+$navy: #002c40;
+$navy-mid: #0a4a6e;
+$green: #31b270;
+$green-dark: color.adjust($green, $lightness: -6%);
+$border: #e2e8f0;
+$text: #1e293b;
+$text-muted: #64748b;
+$bg-page: #f8fafc;
+$gradient-header: linear-gradient(135deg, $navy 0%, $navy-mid 50%, $green 100%);
+
+:host {
+  display: block;
+  min-height: 100%;
+  background: $bg-page;
+  --perm-gutter: clamp(0.9rem, 2.8vw, 1.65rem);
+}
+
+.permisos-root {
+  font-family: 'Archivo', system-ui, sans-serif;
+  padding-bottom: 2.5rem;
+}
+
+// Barra de contexto (misma linea visual que staff-club; sin margenes laterales al main)
+.permisos-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 58px;
+  padding: 0.7rem var(--perm-gutter);
+  margin: 0 0 1.35rem;
+  border-radius: 0 0 18px 18px;
+  background: $gradient-header;
+  box-shadow:
+    0 4px 24px rgba(0, 44, 64, 0.2),
+    0 1px 4px rgba(49, 178, 112, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+    pointer-events: none;
+  }
+}
+
+.permisos-header-back {
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.permisos-btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.9rem;
+  background: rgba(255, 255, 255, 0.13);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  backdrop-filter: blur(4px);
+
+  i {
+    font-size: 1rem;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.22);
+    transform: translateX(-2px);
+  }
+}
+
+.permisos-header-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 1;
+  max-width: min(92vw, 520px);
+  padding: 0 0.5rem;
+}
+
+.permisos-header-title {
+  margin: 0;
+  font-size: clamp(1.05rem, 2.2vw, 1.22rem);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.permisos-header-subtitle {
+  margin: 4px 0 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.permisos-header-spacer {
+  flex-shrink: 0;
+  min-width: 90px;
+}
+
+// Contenido: misma anchura de lectura que el resto del dashboard club
+.permisos-page-content {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 var(--perm-gutter);
+}
+
+.permisos-toolbar {
+  margin-bottom: 1.5rem;
+  padding: 1.15rem 1.35rem;
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: 16px;
+  box-shadow:
+    0 1px 2px rgba(0, 44, 64, 0.04),
+    0 10px 28px rgba(0, 44, 64, 0.055);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, $navy-mid, $green);
+    border-radius: 16px 0 0 16px;
+    opacity: 0.85;
+  }
+}
+
+.permisos-toolbar-text {
+  padding-left: 0.35rem;
+}
+
+.permisos-section-title {
+  margin: 0 0 0.45rem;
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: $text;
+  letter-spacing: -0.025em;
+}
+
+.permisos-section-help {
+  margin: 0;
+  font-size: 0.9rem;
+  color: $text-muted;
+  line-height: 1.55;
+  max-width: 62ch;
+}
+
+.permisos-state {
+  text-align: center;
+  padding: 2.5rem 1.25rem;
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: 14px;
+  color: $text-muted;
+  box-shadow: 0 1px 3px rgba(0, 44, 64, 0.05);
+
+  &--warn {
+    color: #a17000;
+    border-color: rgba(217, 119, 6, 0.25);
+    background: linear-gradient(180deg, #fffbeb 0%, #fff 100%);
+
+    i {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.92rem;
+    font-weight: 500;
+  }
+}
+
+.permisos-spinner {
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: 0 auto 0.75rem;
+  border: 3px solid rgba($green, 0.2);
+  border-top-color: $green;
+  border-radius: 50%;
+  animation: permSpin 0.75s linear infinite;
+}
+
+@keyframes permSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.permisos-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+// Tarjetas de permiso
+.perm-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0 1.1rem;
+  align-items: stretch;
+  padding: 1.35rem 1.45rem;
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: 18px;
+  box-shadow:
+    0 1px 2px rgba(0, 44, 64, 0.035),
+    0 14px 36px rgba(0, 44, 64, 0.055);
+  overflow: hidden;
+  transition: box-shadow 0.22s ease, border-color 0.22s ease, transform 0.2s ease;
+
+  &:hover {
+    border-color: rgba($green, 0.2);
+    box-shadow:
+      0 1px 2px rgba(0, 44, 64, 0.045),
+      0 18px 44px rgba(0, 44, 64, 0.075);
+    transform: translateY(-1px);
+  }
+
+  &--master {
+    border-color: rgba(10, 74, 110, 0.2);
+    background: linear-gradient(165deg, #fbfdff 0%, #ffffff 55%);
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: linear-gradient(180deg, $navy-mid, $green);
+      border-radius: 16px 0 0 16px;
+    }
+  }
+}
+
+.perm-card__main {
+  display: flex;
+  gap: 1rem;
+  min-width: 0;
+  grid-column: 1;
+}
+
+.perm-card--master .perm-card__main {
+  padding-left: 0.5rem;
+}
+
+.perm-card__icon {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.45rem;
+
+  &--wellness {
+    background: rgba($green, 0.12);
+    color: $green-dark;
+  }
+
+  &--rpe {
+    background: linear-gradient(135deg, #fff7df 0%, #fef3c7 100%);
+    color: #b45309;
+  }
+
+  &--pro {
+    background: linear-gradient(135deg, $navy-mid 0%, #5b21b6 100%);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(10, 74, 110, 0.35);
+  }
+
+  &--access {
+    background: linear-gradient(135deg, #002c40 0%, #31b270 100%);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(49, 178, 112, 0.35);
+  }
+}
+
+.perm-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+  padding: 0.5rem 0.95rem;
+  border-radius: 10px;
+  background: rgba($green, 0.12);
+  color: $green-dark;
+  font-weight: 600;
+  font-size: 0.88rem;
+  text-decoration: none;
+  transition: background 0.15s ease, transform 0.15s ease;
+
+  &:hover {
+    background: rgba($green, 0.2);
+    transform: translateY(-1px);
+  }
+
+  i {
+    font-size: 0.95rem;
+  }
+}
+
+.perm-card__body {
+  min-width: 0;
+}
+
+.perm-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.65rem;
+}
+
+.perm-card__name {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: $text;
+  letter-spacing: -0.02em;
+}
+
+.perm-pill {
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+
+  &--on {
+    background: rgba($green, 0.15);
+    color: color.adjust($green, $lightness: -12%);
+  }
+
+  &--off {
+    background: #f1f5f9;
+    color: $text-muted;
+  }
+}
+
+.perm-badge-pro {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  background: linear-gradient(135deg, $navy-mid 0%, #6d28d9 100%);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.perm-card__desc {
+  margin: 0.75rem 0 0;
+  font-size: 0.91rem;
+  line-height: 1.58;
+  color: color.adjust($text, $lightness: 5%);
+
+  &--emphasis {
+    margin-top: 0.4rem;
+    color: $text-muted;
+    font-size: 0.86rem;
+
+    strong {
+      color: $text;
+    }
+  }
+}
+
+.perm-card__bullets {
+  margin: 0.85rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.42rem;
+  font-size: 0.875rem;
+  color: color.adjust($text, $lightness: 8%);
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    line-height: 1.45;
+  }
+
+  i {
+    flex-shrink: 0;
+    margin-top: 0.12rem;
+    color: $green;
+    font-size: 1rem;
+  }
+}
+
+.perm-card__toggle {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 0.15rem;
+}
+
+// Switch
+.perm-switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+  cursor: pointer;
+
+  &--disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+}
+
+.perm-switch-slider {
+  position: absolute;
+  inset: 0;
+  background: #cbd5e1;
+  transition: 0.2s;
+  border-radius: 999px;
+
+  &::before {
+    position: absolute;
+    content: '';
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    top: 3px;
+    background: #fff;
+    transition: 0.2s;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.perm-switch input:checked + .perm-switch-slider {
+  background: linear-gradient(90deg, $green, $green-dark);
+}
+
+.perm-switch input:checked + .perm-switch-slider::before {
+  transform: translateX(24px);
+}
+
+:host-context(body.dark) {
+  background: var(--bg-surface, #0f172a);
+
+  .permisos-page-header {
+    box-shadow:
+      0 4px 28px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .permisos-toolbar,
+  .permisos-state,
+  .perm-card,
+  .club-sport {
+    background: var(--bg-card, #1e293b);
+    border-color: var(--border-color, rgba(148, 163, 184, 0.2));
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+  }
+
+  .club-sport__option {
+    background: rgba(148, 163, 184, 0.08);
+    border-color: var(--border-color, rgba(148, 163, 184, 0.2));
+    color: var(--text-primary, #e2e8f0);
+
+    &--active {
+      background: rgba(49, 178, 112, 0.18);
+      border-color: $green;
+      color: var(--text-primary, #f1f5f9);
+    }
+  }
+
+  .permisos-section-title,
+  .perm-card__name {
+    color: var(--text-primary, #f1f5f9);
+  }
+
+  .permisos-section-help,
+  .perm-card__desc,
+  .perm-card__bullets {
+    color: var(--text-muted, #94a3b8);
+  }
+
+  .perm-card__desc--emphasis strong {
+    color: var(--text-primary, #e2e8f0);
+  }
+
+  .perm-pill--off {
+    background: rgba(148, 163, 184, 0.12);
+    color: var(--text-muted, #94a3b8);
+  }
+
+  .perm-card--master {
+    background: linear-gradient(165deg, rgba(30, 41, 59, 0.95) 0%, var(--bg-card, #1e293b) 55%);
+  }
+}
+
+@media (max-width: 640px) {
+  .permisos-page-header {
+    flex-wrap: wrap;
+    padding: 0.75rem var(--perm-gutter);
+    border-radius: 0 0 14px 14px;
+  }
+
+  .permisos-header-center {
+    position: static;
+    transform: none;
+    order: 3;
+    width: 100%;
+    max-width: none;
+    text-align: left;
+    padding-top: 0.25rem;
+  }
+
+  .permisos-header-spacer {
+    display: none;
+  }
+
+  .perm-card {
+    grid-template-columns: 1fr;
+  }
+
+  .perm-card__toggle {
+    grid-column: 1;
+    grid-row: auto;
+    justify-content: flex-start;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba($border, 0.85);
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+  }
+}
+
+// Selector de deporte del menú del club
+.club-sport {
+  margin-bottom: 1.5rem;
+  padding: 1.15rem 1.35rem;
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: 16px;
+  box-shadow:
+    0 1px 2px rgba(0, 44, 64, 0.04),
+    0 10px 28px rgba(0, 44, 64, 0.055);
+}
+
+.club-sport__text {
+  padding-left: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.club-sport__options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.club-sport__option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 1rem 0.5rem;
+  background: $bg-page;
+  border: 2px solid $border;
+  border-radius: 14px;
+  color: $text;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.12s ease;
+
+  .club-sport__emoji {
+    font-size: 1.6rem;
+    line-height: 1;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: color.adjust($green, $lightness: 12%);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &--active {
+    border-color: $green;
+    background: color.adjust($green, $lightness: 48%);
+    color: $navy;
+  }
+}
+
+.club-sport__check {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  font-size: 1rem;
+  color: $green;
+}
+
+@media (max-width: 640px) {
+  .club-sport__options {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .perm-card:hover {
+    transform: none;
+  }
+
+  .club-sport__option:hover:not(:disabled) {
+    transform: none;
+  }
+
+  .permisos-spinner {
+    animation: none;
+    border-top-color: transparent;
+  }
+}

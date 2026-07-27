@@ -1,0 +1,171 @@
+<div class="scan-page">
+
+  <header class="scan-header">
+    <div class="scan-header-icon"><i class="fas fa-qrcode"></i></div>
+    <div class="scan-header-info">
+      <h1>{{ 'SCAN.TITLE' | translate }}</h1>
+      <p>{{ 'SCAN.SUBTITLE' | translate }}</p>
+    </div>
+  </header>
+
+  <!-- Estado: escaneando o esperando resultado -->
+  <section class="scan-layout">
+
+    <div class="scan-camera-wrap">
+      <div class="scan-frame">
+        <div #qrReader id="qr-reader" class="qr-reader-box"></div>
+        <div class="scan-overlay" *ngIf="!result"></div>
+        <div class="scan-target" *ngIf="!result"></div>
+      </div>
+
+      <div class="scan-state state state--error" *ngIf="scanError">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>{{ 'SCAN.ERROR_CAMERA' | translate }}</p>
+        <button type="button" class="btn-primary-sph" (click)="startScanner()">
+          <i class="fas fa-redo"></i>
+          {{ 'SCAN.RETRY' | translate }}
+        </button>
+      </div>
+
+      <div class="scan-hint" *ngIf="!scanError && !result">
+        <i class="fas fa-camera"></i>
+        <span *ngIf="!validating">{{ 'SCAN.HINT' | translate }}</span>
+        <span *ngIf="validating">
+          <i class="fas fa-spinner fa-spin"></i>
+          {{ 'SCAN.VALIDATING' | translate }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Resultado -->
+    <div class="scan-result" *ngIf="result">
+
+      <!-- Carnet inválido -->
+      <div class="result-card result-card--invalid" *ngIf="!result.valid">
+        <div class="result-card-icon">
+          <i class="fas fa-times-circle"></i>
+        </div>
+        <h2>{{ 'SCAN.INVALID_TITLE' | translate }}</h2>
+        <p>{{ getReasonLabel() | translate }}</p>
+        <button type="button" class="btn-primary-sph" (click)="resetScan()">
+          <i class="fas fa-redo"></i>
+          {{ 'SCAN.SCAN_AGAIN' | translate }}
+        </button>
+      </div>
+
+      <!-- Carnet válido -->
+      <ng-container *ngIf="result.valid && result.abonado as a">
+        <article class="result-card result-card--valid">
+          <div class="result-head">
+            <div class="result-avatar">
+              <span>{{ getInitials() }}</span>
+            </div>
+            <div class="result-head-info">
+              <span class="status-pill"
+                    [ngClass]="getEstadoCss(a.estado)">
+                {{ getEstadoLabel(a.estado) | translate }}
+              </span>
+              <h2>{{ a.nombre }} {{ a.apellidos }}</h2>
+              <p class="result-meta" *ngIf="a.numeroSocio">#{{ a.numeroSocio }}</p>
+            </div>
+            <button type="button" class="icon-btn icon-btn--primary"
+                    (click)="resetScan()"
+                    [title]="'SCAN.SCAN_AGAIN' | translate">
+              <i class="fas fa-redo"></i>
+            </button>
+          </div>
+
+          <div class="result-divider"></div>
+
+          <h3 class="result-section-title">
+            <i class="fas fa-gift"></i>
+            {{ 'SCAN.PERKS_TITLE' | translate }}
+          </h3>
+
+          <div class="empty-state" *ngIf="!result.perks?.length">
+            <i class="fas fa-gift"></i>
+            <p>{{ 'SCAN.NO_PERKS' | translate }}</p>
+          </div>
+
+          <div class="result-perks" *ngIf="result.perks?.length">
+            <button type="button" class="perk-row"
+                    *ngFor="let p of result.perks"
+                    [class.perk-row--locked]="!p.canCanjear"
+                    [disabled]="!p.canCanjear"
+                    (click)="openRedeem(p)">
+              <div class="perk-row-icon">
+                <span *ngIf="isEmojiIcon(p.icono)">{{ p.icono }}</span>
+                <i *ngIf="!isEmojiIcon(p.icono)" class="fas" [ngClass]="p.icono || 'fa-gift'"></i>
+              </div>
+              <div class="perk-row-info">
+                <div class="perk-row-title">{{ p.titulo }}</div>
+                <div class="perk-row-meta">
+                  <span *ngIf="p.maxCanjesPorSocio !== null">
+                    {{ p.canjesUsados }} / {{ p.maxCanjesPorSocio }}
+                  </span>
+                  <span *ngIf="p.maxCanjesPorSocio === null">
+                    <i class="fas fa-infinity"></i> {{ 'SUBS.DETAIL.PERKS.UNLIMITED' | translate }}
+                  </span>
+                </div>
+              </div>
+              <div class="perk-row-cta">
+                <i class="fas"
+                   [ngClass]="p.canCanjear ? 'fa-check-circle' : 'fa-lock'"></i>
+              </div>
+            </button>
+          </div>
+        </article>
+      </ng-container>
+
+    </div>
+  </section>
+
+  <!-- Modal canje -->
+  <div class="sph-modal-overlay" *ngIf="selectedPerk" (click)="cancelRedeem()">
+    <div class="sph-modal" (click)="$event.stopPropagation()">
+      <div class="sph-modal-head">
+        <h2><i class="fas fa-gift"></i> {{ 'SUBS.DETAIL.PERKS.REDEEM_TITLE' | translate }}</h2>
+        <button type="button" class="sph-modal-close" (click)="cancelRedeem()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="sph-modal-body">
+        <div class="perk-summary">
+          <div class="perk-icon">
+            <span *ngIf="isEmojiIcon(selectedPerk.icono)">{{ selectedPerk.icono }}</span>
+            <i *ngIf="!isEmojiIcon(selectedPerk.icono)" class="fas" [ngClass]="selectedPerk.icono"></i>
+          </div>
+          <div>
+            <h3>{{ selectedPerk.titulo }}</h3>
+            <p *ngIf="selectedPerk.descripcion">{{ selectedPerk.descripcion }}</p>
+            <div class="perk-summary-meta">
+              <span *ngIf="selectedPerk.maxCanjesPorSocio !== null">
+                {{ 'SUBS.DETAIL.PERKS.REMAINING' | translate }}:
+                <strong>{{ selectedPerk.canjesRestantes }} / {{ selectedPerk.maxCanjesPorSocio }}</strong>
+              </span>
+              <span *ngIf="selectedPerk.maxCanjesPorSocio === null">
+                <i class="fas fa-infinity"></i> {{ 'SUBS.DETAIL.PERKS.UNLIMITED' | translate }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="field field--full">
+          <label>{{ 'SUBS.DETAIL.PERKS.NOTE' | translate }}</label>
+          <textarea rows="3" [(ngModel)]="redeemNota"
+                    [placeholder]="'SUBS.DETAIL.PERKS.NOTE_PLACEHOLDER' | translate"></textarea>
+        </div>
+      </div>
+      <div class="sph-modal-foot">
+        <button type="button" class="btn-secondary-sph" (click)="cancelRedeem()" [disabled]="redeeming">
+          {{ 'APP.BUTTONS.CLOSE' | translate }}
+        </button>
+        <button type="button" class="btn-primary-sph" (click)="confirmRedeem()" [disabled]="redeeming">
+          <i class="fas" [ngClass]="redeeming ? 'fa-spinner fa-spin' : 'fa-check-circle'"></i>
+          {{ (redeeming ? 'SUBS.DETAIL.PERKS.REDEEMING' : 'SUBS.DETAIL.PERKS.CONFIRM_REDEEM') | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

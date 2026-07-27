@@ -1,0 +1,155 @@
+<section class="abonado-carnet">
+  <header class="abonado-carnet__head">
+    <h2 class="abonado-carnet__title">
+      <i class="bi bi-credit-card-2-front"></i>
+      {{ 'MI_ABONADO.CARD.TITLE' | translate }}
+    </h2>
+    <button
+      type="button"
+      class="abonado-carnet__pdf-btn"
+      (click)="downloadPdf()"
+      [disabled]="generatingPdf || !carnet"
+      [attr.aria-label]="'MI_ABONADO.CARD.DOWNLOAD_PDF' | translate"
+    >
+      <i class="bi" [class.bi-file-earmark-pdf]="!generatingPdf" [class.bi-arrow-repeat]="generatingPdf"></i>
+      <span>{{ (generatingPdf ? 'MI_ABONADO.CARD.GENERATING' : 'MI_ABONADO.CARD.DOWNLOAD_PDF') | translate }}</span>
+    </button>
+  </header>
+
+  <!-- Skeleton mientras cargamos el primer carnet -->
+  <div class="abonado-carnet__skeleton" *ngIf="loading && !carnet">
+    <div class="sk-card"></div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════════
+       Carnet horizontal estilo ID-1 (ratio 1.585:1, como DNI / tarjeta
+       de crédito). Tres columnas: foto carnet 3:4 a la izquierda, datos
+       en el centro, QR rotatorio a la derecha. Banda inferior con
+       branding Sphaira y degradado verde→navy.
+       ═════════════════════════════════════════════════════════════════ -->
+  <div class="abonado-carnet__wrap" *ngIf="carnet as c">
+    <article class="carnet-card" #carnetRoot
+             [class.carnet-card--active]="c.estado === 1"
+             [class.carnet-card--pending]="c.estado === 2"
+             [class.carnet-card--inactive]="c.estado === 0">
+
+      <!-- Marca de agua decorativa (escudo Sphaira muy sutil) -->
+      <div class="carnet-card__watermark" aria-hidden="true">
+        <i class="bi bi-broadcast"></i>
+      </div>
+
+      <!-- ─── Columna 1: foto del abonado tipo carnet (ratio 3:4) ─── -->
+      <div class="carnet-card__photo">
+        <ng-container *ngIf="avatarUrl() as a; else avatarFb">
+          <img
+            [src]="a"
+            [alt]="c.nombre + ' ' + c.apellidos"
+            (error)="onAvatarError()"
+          />
+        </ng-container>
+        <ng-template #avatarFb>
+          <div class="carnet-card__photo-fb">
+            <span>{{ initials() }}</span>
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- ─── Columna 2: datos principales del abonado ─── -->
+      <div class="carnet-card__data">
+
+        <!-- Cabecera: logo + nombre del club -->
+        <header class="cc-club-head">
+          <div class="cc-club-logo" *ngIf="clubLogoUrl() as logo; else clubLogoFallback">
+            <img [src]="logo" [alt]="c.clubName" (error)="onClubLogoError()" />
+          </div>
+          <ng-template #clubLogoFallback>
+            <div class="cc-club-logo cc-club-logo--fb">
+              <i class="bi bi-shield-fill"></i>
+            </div>
+          </ng-template>
+          <span class="cc-club-name">{{ c.clubName }}</span>
+        </header>
+
+        <!-- Nombre y apellidos del abonado (el dato más prominente) -->
+        <h3 class="cc-name">
+          {{ c.nombre }} <span class="cc-name__last">{{ c.apellidos }}</span>
+        </h3>
+
+        <!-- Datos meta: nº socio, fecha alta -->
+        <dl class="cc-meta">
+          <div class="cc-meta-row" *ngIf="c.numeroSocio">
+            <dt>{{ 'MI_ABONADO.CARD.NUMBER' | translate }}</dt>
+            <dd class="cc-meta-row__value cc-meta-row__value--mono">
+              {{ c.numeroSocio }}
+            </dd>
+          </div>
+          <div class="cc-meta-row" *ngIf="c.fechaAlta">
+            <dt>{{ 'MI_ABONADO.CARD.SINCE' | translate }}</dt>
+            <dd class="cc-meta-row__value">{{ c.fechaAlta }}</dd>
+          </div>
+        </dl>
+
+        <!-- Estado como badge prominente -->
+        <div class="cc-status-wrap">
+          <span class="cc-status"
+                [class.cc-status--active]="c.estado === 1"
+                [class.cc-status--pending]="c.estado === 2"
+                [class.cc-status--inactive]="c.estado === 0">
+            <i class="bi"
+               [class.bi-patch-check-fill]="c.estado === 1"
+               [class.bi-hourglass-split]="c.estado === 2"
+               [class.bi-x-octagon-fill]="c.estado === 0"></i>
+            {{ (c.estado === 1
+              ? 'MI_ABONADO.STATUS.ACTIVE'
+              : c.estado === 2
+                ? 'MI_ABONADO.STATUS.PENDING'
+                : 'MI_ABONADO.STATUS.INACTIVE') | translate }}
+          </span>
+        </div>
+      </div>
+
+      <!-- ─── Columna 3: QR rotatorio + countdown ─── -->
+      <aside class="carnet-card__qr">
+        <div class="qr-frame">
+          <qrcode
+            [qrdata]="c.qrToken"
+            [width]="160"
+            [errorCorrectionLevel]="'M'"
+            [margin]="1"
+            [colorDark]="'#002c40'"
+            [colorLight]="'#ffffff'"
+            elementType="img"
+          ></qrcode>
+          <div class="qr-frame__corner qr-frame__corner--tl"></div>
+          <div class="qr-frame__corner qr-frame__corner--tr"></div>
+          <div class="qr-frame__corner qr-frame__corner--bl"></div>
+          <div class="qr-frame__corner qr-frame__corner--br"></div>
+        </div>
+        <div class="qr-countdown" *ngIf="!isStatic() && remainingSec > 0">
+          <i class="bi bi-arrow-repeat" [class.spinning]="remainingSec <= 5"></i>
+          <span>{{ 'MI_ABONADO.CARD.REFRESH_IN' | translate: { seconds: remainingSec } }}</span>
+        </div>
+        <div class="qr-static-badge" *ngIf="isStatic()">
+          <i class="bi bi-shield-check"></i>
+          <span>{{ 'MI_ABONADO.CARD.STATIC_BADGE' | translate }}</span>
+        </div>
+      </aside>
+
+      <!-- ─── Banda inferior: branding Sphaira ─── -->
+      <footer class="carnet-card__footer">
+        <span class="cc-brand">
+          <i class="bi bi-broadcast"></i>
+          Sphaira Player
+        </span>
+        <span class="cc-brand-tag">
+          {{ 'MI_ABONADO.CARD.TAG' | translate }}
+        </span>
+      </footer>
+    </article>
+
+    <p class="abonado-carnet__hint">
+      <i class="bi bi-info-circle"></i>
+      {{ 'MI_ABONADO.CARD.HINT' | translate }}
+    </p>
+  </div>
+</section>

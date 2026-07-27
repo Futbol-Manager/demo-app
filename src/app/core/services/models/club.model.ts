@@ -285,3 +285,89 @@ export class CorreoEnviadoFede {
         this.opciones = object.opciones || 0;
     }
 }
+
+// ─── Encuestas ───────────────────────────────────────────────────────────────
+
+export interface EncuestaOpcion {
+    opcionId: number;
+    preguntaId: number;
+    orden: number;
+    texto: string;
+}
+
+export interface EncuestaPregunta {
+    preguntaId: number;
+    encuestaId: number;
+    orden: number;
+    texto: string;
+    /** 'OPCION_MULTIPLE' | 'TEXTO_LIBRE' */
+    tipo: string;
+    requerida: number;
+    opciones?: EncuestaOpcion[];
+    /** Respuesta previa del usuario (para pre-rellenar al editar) */
+    respuestaPreviaOpcionId?: number | null;
+    respuestaPreviaTexto?: string | null;
+}
+
+export interface EncuestaResumen {
+    encuestaId: number;
+    titulo: string;
+    descripcion?: string;
+    fechaCreate?: string;
+    fechaCierre?: string;
+    activa: number;
+    totalDestinatarios: number;
+    totalRespondieron: number;
+    yaRespondio: boolean;
+    creatorUserId?: number;
+}
+
+export interface OpcionResultado {
+    opcionId: number;
+    texto: string;
+    count: number;
+    porcentaje: number;
+    nombresRespondentes: string[];
+}
+
+export interface RespuestaTextual {
+    userId: number;
+    nombreDisplay: string;
+    respuesta: string;
+    fecha: string;
+}
+
+export interface PreguntaResultado {
+    preguntaId: number;
+    orden: number;
+    texto: string;
+    tipo: string;
+    opciones?: OpcionResultado[];
+    respuestasTexto?: RespuestaTextual[];
+}
+
+export interface PendienteEncuesta {
+    userId: number;
+    nombreDisplay: string;
+}
+
+export interface EncuestaResultados {
+    encuestaId: number;
+    titulo: string;
+    descripcion?: string;
+    activa: number;
+    totalDestinatarios: number;
+    totalRespondieron: number;
+    preguntas: PreguntaResultado[];
+    pendientes: PendienteEncuesta[];
+}
+
+export interface EncuestaDetalle {
+    encuestaId: number;
+    titulo: string;
+    descripcion?: string;
+    activa: number;
+    fechaCierre?: string;
+    yaRespondio: boolean;
+    preguntas: EncuestaPregunta[];
+}

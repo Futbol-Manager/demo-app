@@ -1,0 +1,64 @@
+<section class="ahc" *ngIf="!disabled">
+  <header class="ahc__head">
+    <div class="ahc__title">
+      <i class="bi bi-door-open" aria-hidden="true"></i>
+      <h3>{{ 'ACCESS_HISTORY.TITLE' | translate }}</h3>
+    </div>
+    <span *ngIf="totalElements > 0" class="ahc__count">
+      {{ totalElements }} {{ 'ACCESS_HISTORY.TOTAL' | translate }}
+    </span>
+  </header>
+
+  <div *ngIf="loading && logs.length === 0" class="ahc__state">
+    <div class="ahc__spinner"></div>
+    <span>{{ 'ACCESS_HISTORY.LOADING' | translate }}</span>
+  </div>
+
+  <div *ngIf="error" class="ahc__state ahc__state--error">
+    <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+    <span>{{ 'ACCESS_HISTORY.ERROR' | translate }}</span>
+  </div>
+
+  <div *ngIf="!loading && !error && logs.length === 0" class="ahc__state">
+    <i class="bi bi-inbox" aria-hidden="true"></i>
+    <span>{{ 'ACCESS_HISTORY.EMPTY' | translate }}</span>
+  </div>
+
+  <ul *ngIf="logs.length > 0" class="ahc__list">
+    <li *ngFor="let l of logs" class="ahc__item" [ngClass]="'ahc__item--' + l.result">
+      <div class="ahc__when">
+        <span class="ahc__date">{{ l.scannedAt | date:'dd/MM/yyyy' }}</span>
+        <span class="ahc__time">{{ l.scannedAt | date:'HH:mm' }}</span>
+      </div>
+      <div class="ahc__body">
+        <div class="ahc__row">
+          <span class="ahc__pill" [ngClass]="{
+            'ahc__pill--on': l.result === 'ALLOWED',
+            'ahc__pill--warn': l.result === 'WARNING',
+            'ahc__pill--off': l.result === 'DENIED'
+          }">
+            {{ ('ACCESS_CONTROL.RESULT_' + l.result) | translate }}
+          </span>
+          <span class="ahc__dir" *ngIf="l.direction">
+            <i [class]="l.direction === 'IN' ? 'bi bi-box-arrow-in-right' : 'bi bi-box-arrow-right'"
+               aria-hidden="true"></i>
+            {{ ('ACCESS_CONTROL.DIR_' + l.direction) | translate }}
+          </span>
+        </div>
+        <div class="ahc__meta">
+          <span *ngIf="l.pointName" class="ahc__point">
+            <i class="bi bi-geo-alt" aria-hidden="true"></i> {{ l.pointName }}
+          </span>
+          <span *ngIf="l.reason" class="ahc__reason">{{ l.reason }}</span>
+        </div>
+      </div>
+    </li>
+  </ul>
+
+  <div *ngIf="canLoadMore" class="ahc__more">
+    <button type="button" class="ahc__btn" [disabled]="loading" (click)="loadMore()">
+      <i class="bi bi-arrow-down-circle" aria-hidden="true"></i>
+      {{ (loading ? 'ACCESS_HISTORY.LOADING' : 'ACCESS_HISTORY.LOAD_MORE') | translate }}
+    </button>
+  </div>
+</section>

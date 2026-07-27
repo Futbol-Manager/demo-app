@@ -1,0 +1,237 @@
+<!-- ─────────────── TAB DOCUMENTOS ─────────────── -->
+
+<!-- Subir documento (dropzone + form) -->
+<section class="bento">
+  <header class="bento-head">
+    <div class="bento-head-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+    <div>
+      <h2 class="bento-title">{{ 'SUBS.DETAIL.DOCS.UPLOAD_TITLE' | translate }}</h2>
+      <p class="bento-sub">{{ 'SUBS.DETAIL.DOCS.UPLOAD_SUB' | translate }}</p>
+    </div>
+  </header>
+
+  <div class="dropzone"
+       [class.dropzone--over]="isDragOver"
+       [class.dropzone--has-file]="pendingFile"
+       (dragover)="onDragOver($event)"
+       (dragleave)="onDragLeave($event)"
+       (drop)="onDrop($event)">
+    <input type="file"
+           id="abonado-doc-input"
+           (change)="onFileSelected($event)"
+           accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,.xls,.xlsx,.heic"
+           hidden />
+    <ng-container *ngIf="!pendingFile">
+      <i class="fas fa-cloud-upload-alt dropzone-icon"></i>
+      <p class="dropzone-text">{{ 'SUBS.DETAIL.DOCS.DROPZONE' | translate }}</p>
+      <label for="abonado-doc-input" class="btn-secondary-sph">
+        <i class="fas fa-folder-open"></i>
+        {{ 'SUBS.DETAIL.DOCS.PICK_FILE' | translate }}
+      </label>
+    </ng-container>
+    <ng-container *ngIf="pendingFile">
+      <div class="pending-file">
+        <i class="fas fa-file-alt"></i>
+        <div class="pending-file-meta">
+          <div class="pending-file-name">{{ pendingFile.name }}</div>
+          <div class="pending-file-size">{{ formatSize(pendingFile.size) }}</div>
+        </div>
+        <button type="button" class="icon-btn" (click)="clearPendingFile()" title="{{ 'COMMON.REMOVE' | translate }}">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="pending-form">
+        <div class="field">
+          <label>{{ 'SUBS.DETAIL.DOCS.TYPE_LABEL' | translate }}</label>
+          <select [(ngModel)]="pendingTipo">
+            <option *ngFor="let t of docTypes" [value]="t.value">{{ t.labelKey | translate }}</option>
+          </select>
+        </div>
+        <div class="field field--full">
+          <label>{{ 'SUBS.DETAIL.DOCS.DESCRIPTION' | translate }}</label>
+          <input type="text" [(ngModel)]="pendingDescripcion"
+                 [placeholder]="'SUBS.DETAIL.DOCS.DESCRIPTION_PLACEHOLDER' | translate" />
+        </div>
+        <div class="pending-actions">
+          <button type="button" class="btn-secondary-sph" (click)="clearPendingFile()" [disabled]="uploading">
+            {{ 'COMMON.CANCEL' | translate }}
+          </button>
+          <button type="button" class="btn-primary-sph" (click)="uploadPending()" [disabled]="uploading">
+            <i class="fas" [ngClass]="uploading ? 'fa-spinner fa-spin' : 'fa-upload'"></i>
+            {{ (uploading ? 'SUBS.DETAIL.DOCS.UPLOADING' : 'SUBS.DETAIL.DOCS.UPLOAD_NOW') | translate }}
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</section>
+
+<!-- Lista de documentos -->
+<section class="bento">
+  <header class="bento-head">
+    <div class="bento-head-icon"><i class="fas fa-folder-open"></i></div>
+    <div>
+      <h2 class="bento-title">{{ 'SUBS.DETAIL.DOCS.LIST_TITLE' | translate }}</h2>
+      <p class="bento-sub">{{ 'SUBS.DETAIL.DOCS.LIST_SUB' | translate }}</p>
+    </div>
+  </header>
+
+  <div class="docs-loading" *ngIf="documentosLoading">
+    <div class="loader loader--inline"></div>
+    <span>{{ 'SUBS.DETAIL.LOADING' | translate }}</span>
+  </div>
+
+  <div class="empty-state" *ngIf="!documentosLoading && !documentos.length">
+    <i class="fas fa-folder-open"></i>
+    <p>{{ 'SUBS.DETAIL.DOCS.EMPTY' | translate }}</p>
+  </div>
+
+  <div class="docs-grid" *ngIf="!documentosLoading && documentos.length">
+    <article class="doc-card" *ngFor="let d of documentos" [class.is-deleting]="deletingId === d.documentoId">
+      <div class="doc-card-preview">
+        <img *ngIf="isImage(d)" [src]="thumbnailUrl(d)" [alt]="d.nombreOriginal" />
+        <div class="doc-card-icon" *ngIf="!isImage(d)">{{ getDocIcon(d.mimeType) }}</div>
+      </div>
+      <div class="doc-card-body">
+        <div class="doc-card-type">
+          <span class="status-pill status-pill--neutral">
+            {{ getDocTypeLabel(d.tipo) | translate }}
+          </span>
+        </div>
+        <div class="doc-card-name" [title]="d.nombreOriginal">{{ d.nombreOriginal }}</div>
+        <div class="doc-card-meta">
+          <span>{{ formatSize(d.sizeBytes) }}</span>
+          <span>·</span>
+          <span>{{ formatDate(d.fechaCreacion) }}</span>
+        </div>
+        <p class="doc-card-desc" *ngIf="d.descripcion">{{ d.descripcion }}</p>
+      </div>
+      <div class="doc-card-actions">
+        <button type="button" class="icon-btn icon-btn--primary" (click)="downloadDoc(d)"
+                [title]="'SUBS.DETAIL.DOCS.DOWNLOAD' | translate">
+          <i class="fas fa-download"></i>
+        </button>
+        <button type="button" class="icon-btn icon-btn--danger" (click)="deleteDoc(d)"
+                [disabled]="deletingId === d.documentoId"
+                [title]="'COMMON.DELETE' | translate">
+          <i class="fas" [ngClass]="deletingId === d.documentoId ? 'fa-spinner fa-spin' : 'fa-trash'"></i>
+        </button>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ─── Documentos del club (Bloque 8 / Fase 2) ───
+     Lista de documentos que el club ha REQUERIDO al abonado
+     (destinatario=2). El club puede marcar como subido en nombre del
+     abonado adjuntando el archivo digitalizado. Si el abonado tiene
+     app móvil, también podrá subirlo él directamente (Fase 3). -->
+<section class="bento" *ngIf="clubDocsLoading || clubDocs.length">
+  <header class="bento-head">
+    <div class="bento-head-icon"><i class="fas fa-file-shield"></i></div>
+    <div>
+      <h2 class="bento-title">{{ 'SUBS.DETAIL.DOCS.CLUB_TITLE' | translate }}</h2>
+      <p class="bento-sub">{{ 'SUBS.DETAIL.DOCS.CLUB_SUB' | translate }}</p>
+    </div>
+  </header>
+
+  <div class="docs-loading" *ngIf="clubDocsLoading">
+    <div class="loader loader--inline"></div>
+    <span>{{ 'SUBS.DETAIL.LOADING' | translate }}</span>
+  </div>
+
+  <div class="docs-grid docs-grid--list" *ngIf="!clubDocsLoading && clubDocs.length">
+    <article class="doc-card doc-card--row" *ngFor="let cd of clubDocs"
+             [class.doc-card--done]="cd.subido === 1"
+             [class.doc-card--pending]="cd.requiere === 1 && cd.subido !== 1">
+      <div class="doc-card-icon-row">
+        <i class="fas"
+           [ngClass]="cd.subido === 1 ? 'fa-circle-check' : (cd.requiere === 1 ? 'fa-hourglass-half' : 'fa-circle-info')"></i>
+      </div>
+      <div class="doc-card-body">
+        <div class="doc-card-type">
+          <span class="status-pill" *ngIf="cd.requiere === 1 && cd.subido === 1">
+            {{ 'SUBS.DETAIL.DOCS.STATE_DONE' | translate }}
+          </span>
+          <span class="status-pill status-pill--warning" *ngIf="cd.requiere === 1 && cd.subido !== 1">
+            {{ 'SUBS.DETAIL.DOCS.STATE_PENDING' | translate }}
+          </span>
+          <span class="status-pill status-pill--neutral" *ngIf="cd.requiere !== 1">
+            {{ 'SUBS.DETAIL.DOCS.STATE_INFO' | translate }}
+          </span>
+        </div>
+        <div class="doc-card-name" [title]="cd.nombre">{{ cd.nombre }}</div>
+        <p class="doc-card-desc" *ngIf="cd.descripcion">{{ cd.descripcion }}</p>
+        <p class="doc-card-desc doc-card-desc--small" *ngIf="cd.subido === 1 && cd.fecCompletado">
+          <i class="fas fa-clock"></i>
+          {{ 'SUBS.DETAIL.DOCS.UPLOADED_ON' | translate: { date: cd.fecCompletado } }}
+        </p>
+      </div>
+      <div class="doc-card-actions">
+        <a *ngIf="cd.fileClub"
+           class="icon-btn icon-btn--ghost"
+           [href]="buildClubFileUrl(cd.fileClub)" target="_blank" rel="noopener"
+           [title]="'SUBS.DETAIL.DOCS.DOWNLOAD_CLUB' | translate">
+          <i class="fas fa-download"></i>
+        </a>
+        <a *ngIf="cd.subido === 1 && cd.fileAbonado"
+           class="icon-btn icon-btn--primary"
+           [href]="buildAbonadoFileUrl(cd.fileAbonado)" target="_blank" rel="noopener"
+           [title]="'SUBS.DETAIL.DOCS.VIEW_RESPONSE' | translate">
+           <i class="fas fa-eye"></i>
+        </a>
+        <button *ngIf="cd.requiere === 1"
+                type="button" class="icon-btn icon-btn--primary"
+                (click)="openClubDocUpload(cd)"
+                [title]="(cd.subido === 1 ? 'SUBS.DETAIL.DOCS.REPLACE' : 'SUBS.DETAIL.DOCS.UPLOAD_FOR_SUBSCRIBER') | translate">
+          <i class="fas fa-upload"></i>
+        </button>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ═══════════ Modal "Subir respuesta del abonado" (Bloque 8 / Fase 2) ═══════════
+     El club adjunta el archivo digitalizado del abonado para marcar como
+     completado un doc requerido. Vive con `position: fixed` cubriendo todo
+     el viewport (igual que cuando se renderizaba desde el padre). -->
+<div class="sph-modal-backdrop" *ngIf="showClubDocUploadModal && clubDocPending" (click)="closeClubDocUpload()">
+  <div class="sph-modal sph-modal--md" (click)="$event.stopPropagation()">
+    <header class="sph-modal-head">
+      <h3>{{ 'SUBS.DETAIL.DOCS.UPLOAD_MODAL_TITLE' | translate }}</h3>
+      <button type="button" class="sph-modal-close" (click)="closeClubDocUpload()">
+        <i class="fas fa-times"></i>
+      </button>
+    </header>
+    <div class="sph-modal-body">
+      <p class="sph-modal-doc-name">
+        <i class="fas fa-file-shield"></i>
+        <strong>{{ clubDocPending.nombre }}</strong>
+      </p>
+      <p class="sph-modal-doc-desc" *ngIf="clubDocPending.descripcion">{{ clubDocPending.descripcion }}</p>
+
+      <label class="sph-modal-label">
+        <span>{{ 'SUBS.DETAIL.DOCS.FILE_LABEL' | translate }}</span>
+        <input type="file" (change)="onClubDocFile($event)" accept=".pdf,.jpg,.jpeg,.png" />
+      </label>
+      <p class="sph-modal-hint" *ngIf="clubDocFile">
+        <i class="fas fa-paperclip"></i> {{ clubDocFile.name }}
+      </p>
+
+      <label class="sph-modal-label">
+        <span>{{ 'SUBS.DETAIL.DOCS.COMMENT_LABEL' | translate }}</span>
+        <textarea rows="2" [(ngModel)]="clubDocComment"
+                  [placeholder]="'SUBS.DETAIL.DOCS.COMMENT_PLACEHOLDER' | translate"></textarea>
+      </label>
+    </div>
+    <footer class="sph-modal-footer">
+      <button type="button" class="btn-ghost-sph" (click)="closeClubDocUpload()" [disabled]="clubDocUploading">
+        {{ 'COMMON.CANCEL' | translate }}
+      </button>
+      <button type="button" class="btn-primary-sph" (click)="submitClubDoc()" [disabled]="clubDocUploading">
+        <i class="fas" [ngClass]="clubDocUploading ? 'fa-spinner fa-spin' : 'fa-upload'"></i>
+        {{ (clubDocUploading ? 'COMMON.SAVING' : 'SUBS.DETAIL.DOCS.UPLOAD_NOW') | translate }}
+      </button>
+    </footer>
+  </div>
+</div>

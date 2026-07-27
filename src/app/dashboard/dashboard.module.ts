@@ -51,6 +51,7 @@ import { PartidosEntrevistasComponent } from './partidos-entrevistas/partidos-en
 import { MenuClubComponent } from './menu-club/menu-club.component';
 import { ClasificacionResultadosComponent } from './clasificacion-resultados/clasificacion-resultados.component';
 import { DocumentosClubComponent } from './documentos-club/documentos-club.component';
+import { DocumentPreviewDialogComponent } from './document-preview-dialog/document-preview-dialog.component';
 import { DocumentosJugadorComponent } from './documentos-jugador/documentos-jugador.component';
 import { DocumentosEntrenadorComponent } from './documentos-entrenador/documentos-entrenador.component';
 import { NewCuotasComponent } from './new-cuotas/new-cuotas.component';
@@ -59,6 +60,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateModule } from '@ngx-translate/core';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { QRCodeModule } from 'angularx-qrcode';
 import { EquiposComponent } from './equipos/equipos.component';
 import { SugerenciasClubComponent } from './sugerencias-club/sugerencias-club.component';
 import { LogoSpinnerComponent } from '../shared/logo-spinner/logo-spinner.component';
@@ -142,6 +144,75 @@ import { TaskEditModalComponent } from './task-edit-modal/task-edit-modal.compon
 import { ClubShopComponent } from './club-shop/club-shop.component';
 import { ClubPostComponent } from './club-post/club-post.component';
 import { PostGeneratorModalComponent } from './club-post/post-generator-modal/post-generator-modal.component';
+// --- Componentes portados desde rep-futbol (paridad de funcionalidad) ---
+import { AbonadoDetailComponent } from './abonado-detail/abonado-detail.component';
+import { CarnetTabComponent } from './abonado-detail/components/carnet-tab/carnet-tab.component';
+import { ComunicacionesTabComponent } from './abonado-detail/components/comunicaciones-tab/comunicaciones-tab.component';
+import { DocumentosTabComponent } from './abonado-detail/components/documentos-tab/documentos-tab.component';
+import { FamiliaresTabComponent } from './abonado-detail/components/familiares-tab/familiares-tab.component';
+import { AccessControlComponent } from './access-control/access-control.component';
+import { AccessKioskoComponent } from './access-control/kiosko/access-kiosko.component';
+import { AccessHistoryCardComponent } from './access-history-card/access-history-card.component';
+import { ActivityScheduleTimesComponent } from './activity-schedule/activity-schedule-times.component';
+import { AgendaMedicaComponent } from './agenda-medica/agenda-medica.component';
+import { AyudaComponent } from './ayuda/ayuda.component';
+import { ClubClasificacionesComponent } from './club-clasificaciones/club-clasificaciones.component';
+import { ClubEvalCompareComponent } from './club-eval/club-eval-compare/club-eval-compare.component';
+import { ClubEvalConfigComponent } from './club-eval/club-eval-config/club-eval-config.component';
+import { ClubEvalFormComponent } from './club-eval/club-eval-form/club-eval-form.component';
+import { ClubEvalPlayerComponent } from './club-eval/club-eval-player/club-eval-player.component';
+import { ClubEvalSessionComponent } from './club-eval/club-eval-session/club-eval-session.component';
+import { ClubEvalComponent } from './club-eval/club-eval.component';
+import { ClubNewsModalComponent } from './club-news-modal/club-news-modal.component';
+import { DiarioMedicoEquipoComponent } from './diario-medico/diario-medico-equipo.component';
+import { DisponibilidadEquipoComponent } from './disponibilidad/disponibilidad-equipo.component';
+import { DocumentosAbonadosComponent } from './documentos-abonados/documentos-abonados.component';
+import { DuplicatesModalComponent } from './duplicates-modal/duplicates-modal.component';
+import { EncuestasComponent } from './encuestas/encuestas.component';
+import { EntrenamientosComponent } from './entrenamientos/entrenamientos.component';
+import { MethodologyTrainingsComponent } from './entrenamientos/metodologias/methodology-trainings/methodology-trainings.component';
+import { MetodologiasComponent } from './entrenamientos/metodologias/metodologias.component';
+import { ClubTaskFormComponent } from './entrenamientos-club/club-task-form/club-task-form.component';
+import { EntrenamientosClubComponent } from './entrenamientos-club/entrenamientos-club.component';
+import { FinanzasClubComponent } from './finanzas-club/finanzas-club.component';
+import { HelpFabComponent } from './help-fab/help-fab.component';
+import { HorariosEquipoComponent } from './horarios-equipo/horarios-equipo.component';
+import { InformeDiarioComponent } from './informe-diario/informe-diario.component';
+import { ListadoClubesComponent } from './listado-clubes/listado-clubes.component';
+import { MaterialEquipoComponent } from './material/material-equipo.component';
+import { MenuLayoutEditorComponent } from './menu-layout-editor/menu-layout-editor.component';
+import { AbonadoCarnetComponent } from './mi-abonado/abonado-carnet/abonado-carnet.component';
+import { MiAbonadoComponent } from './mi-abonado/mi-abonado.component';
+import { MiAbonadoDocumentosComponent } from './mi-abonado-documentos/mi-abonado-documentos.component';
+import { MiAbonadoNotificacionesComponent } from './mi-abonado-notificaciones/mi-abonado-notificaciones.component';
+import { MiTemporadaComponent } from './mi-temporada/mi-temporada.component';
+import { MicrociclosComponent } from './microciclos/microciclos.component';
+import { NutricionJugadorComponent } from './nutricion/nutricion-jugador.component';
+import { NutricionEquipoComponent } from './nutricion-equipo/nutricion-equipo.component';
+import { PanelDiarioComponent } from './panel-diario/panel-diario.component';
+import { PermisosClubComponent } from './permisos-club/permisos-club.component';
+import { PhysicalAssessmentComponent } from './physical-assessment/physical-assessment.component';
+import { PlanesComponent } from './planes/planes.component';
+import { ReadaptacionEquipoComponent } from './readaptacion/readaptacion-equipo.component';
+import { RpeCargaSemanalComponent } from './rpe/carga-semanal.component';
+import { MonthlyPlanWizardComponent } from './rrss/monthly-plan-wizard/monthly-plan-wizard.component';
+import { PostEditorModalComponent } from './rrss/post-editor-modal/post-editor-modal.component';
+import { RrssCalendarComponent } from './rrss/rrss-calendar/rrss-calendar.component';
+import { RrssCommentsComponent } from './rrss/rrss-comments/rrss-comments.component';
+import { RrssMatchPostComponent } from './rrss/rrss-match-post/rrss-match-post.component';
+import { RrssPostsComponent } from './rrss/rrss-posts/rrss-posts.component';
+import { RrssSettingsComponent } from './rrss/rrss-settings/rrss-settings.component';
+import { RrssComponent } from './rrss/rrss.component';
+import { ScanCarnetComponent } from './scan-carnet/scan-carnet.component';
+import { SportAlertBannerComponent } from './sport-alert-banner/sport-alert-banner.component';
+import { SportOnboardingComponent } from './sport-onboarding/sport-onboarding.component';
+import { TaskPickerModalComponent } from './tareas/task-picker-modal/task-picker-modal.component';
+import { TrainingScheduleEditorComponent } from './training-schedule/training-schedule-editor.component';
+import { WellnessEquipoComponent } from './wellness/wellness-equipo.component';
+import { AbonadoEstadoModalComponent } from '../shared/abonado-estado-modal/abonado-estado-modal.component';
+import { AvatarCropperComponent } from '../ui/avatar-cropper/avatar-cropper.component';
+import { ClubRegisterFormBuilderComponent } from './club-register-form-builder/club-register-form-builder.component';
+import { ClubAbonadoFormBuilderComponent } from './club-abonado-form-builder/club-abonado-form-builder.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -198,6 +269,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     MenuClubComponent,
     ClasificacionResultadosComponent,
     DocumentosClubComponent,
+    DocumentPreviewDialogComponent,
     DocumentosJugadorComponent,
     DocumentosEntrenadorComponent,
     NewCuotasComponent,
@@ -283,6 +355,75 @@ export function HttpLoaderFactory(http: HttpClient) {
     ClubShopComponent,
     ClubPostComponent,
     PostGeneratorModalComponent,
+    // --- Componentes portados desde rep-futbol (paridad de funcionalidad) ---
+    AbonadoDetailComponent,
+    CarnetTabComponent,
+    ComunicacionesTabComponent,
+    DocumentosTabComponent,
+    FamiliaresTabComponent,
+    AccessControlComponent,
+    AccessKioskoComponent,
+    AccessHistoryCardComponent,
+    ActivityScheduleTimesComponent,
+    AgendaMedicaComponent,
+    AyudaComponent,
+    ClubClasificacionesComponent,
+    ClubEvalCompareComponent,
+    ClubEvalConfigComponent,
+    ClubEvalFormComponent,
+    ClubEvalPlayerComponent,
+    ClubEvalSessionComponent,
+    ClubEvalComponent,
+    ClubNewsModalComponent,
+    ClubRegisterFormBuilderComponent,
+    ClubAbonadoFormBuilderComponent,
+    DiarioMedicoEquipoComponent,
+    DisponibilidadEquipoComponent,
+    DocumentosAbonadosComponent,
+    DuplicatesModalComponent,
+    EncuestasComponent,
+    EntrenamientosComponent,
+    MethodologyTrainingsComponent,
+    MetodologiasComponent,
+    ClubTaskFormComponent,
+    EntrenamientosClubComponent,
+    FinanzasClubComponent,
+    HelpFabComponent,
+    HorariosEquipoComponent,
+    InformeDiarioComponent,
+    ListadoClubesComponent,
+    MaterialEquipoComponent,
+    MenuLayoutEditorComponent,
+    AbonadoCarnetComponent,
+    MiAbonadoComponent,
+    MiAbonadoDocumentosComponent,
+    MiAbonadoNotificacionesComponent,
+    MiTemporadaComponent,
+    MicrociclosComponent,
+    NutricionJugadorComponent,
+    NutricionEquipoComponent,
+    PanelDiarioComponent,
+    PermisosClubComponent,
+    PhysicalAssessmentComponent,
+    PlanesComponent,
+    ReadaptacionEquipoComponent,
+    RpeCargaSemanalComponent,
+    MonthlyPlanWizardComponent,
+    PostEditorModalComponent,
+    RrssCalendarComponent,
+    RrssCommentsComponent,
+    RrssMatchPostComponent,
+    RrssPostsComponent,
+    RrssSettingsComponent,
+    RrssComponent,
+    ScanCarnetComponent,
+    SportAlertBannerComponent,
+    SportOnboardingComponent,
+    TaskPickerModalComponent,
+    TrainingScheduleEditorComponent,
+    WellnessEquipoComponent,
+    AbonadoEstadoModalComponent,
+    AvatarCropperComponent,
   ],
   imports: [
     CommonModule,
@@ -295,6 +436,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     DragDropModule,
     MatDialogModule,
     SharedModule,
+    QRCodeModule,
   ]
 })
 export class DashboardModule { }

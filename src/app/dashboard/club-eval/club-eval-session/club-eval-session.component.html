@@ -1,0 +1,208 @@
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+  <h2 class="table-title">
+    {{ 'CLUB_EVAL.SESSION.TITLE' | translate }}
+    <span *ngIf="isEditMode" class="edit-mode-badge">
+      <i class="bi bi-pencil-fill"></i> {{ 'CLUB_EVAL.SESSION.EDITING' | translate }}
+    </span>
+  </h2>
+  <div class="header-right">
+    <span class="included-badge">{{ includedCount }} {{ 'CLUB_EVAL.SESSION.INCLUDED' | translate }}</span>
+    <button class="btn-save" (click)="saveSession()" [disabled]="saving || includedCount === 0">
+      <span *ngIf="saving" class="spinner-border spinner-border-sm me-1"></span>
+      <i *ngIf="!saving" class="bi bi-check-lg"></i>
+      {{ saving ? ('COMMON.SAVING' | translate) : ('CLUB_EVAL.SESSION.SAVE' | translate) }}
+    </button>
+  </div>
+</div>
+
+<div class="session-container">
+
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+  </div>
+
+  <ng-container *ngIf="!loading">
+
+    <!-- BLOQUE: Vincular evento a la sesión -->
+    <div class="event-link-card">
+      <div class="event-link-header">
+        <i class="bi bi-calendar-event"></i>
+        <span>{{ 'CLUB_EVAL.SESSION.LINK_EVENT' | translate }}</span>
+        <span class="event-optional">{{ 'CLUB_EVAL.SESSION.LINK_EVENT_OPT' | translate }}</span>
+      </div>
+
+      <div class="event-link-body">
+        <!-- Tipo de evento -->
+        <div class="event-pills">
+          <button class="event-pill" [class.active]="linkedEventType === 'none'" (click)="linkedEventType = 'none'; onLinkedEventTypeChange()">
+            <i class="bi bi-dash-circle"></i> {{ 'CLUB_EVAL.FORM.EVENT_NONE' | translate }}
+          </button>
+          <button class="event-pill" [class.active]="linkedEventType === 'match'" (click)="linkedEventType = 'match'; onLinkedEventTypeChange()">
+            <i class="bi bi-trophy"></i> {{ 'CLUB_EVAL.FORM.EVENT_MATCH' | translate }}
+          </button>
+          <button class="event-pill" [class.active]="linkedEventType === 'training'" (click)="linkedEventType = 'training'; onLinkedEventTypeChange()">
+            <i class="bi bi-activity"></i> {{ 'CLUB_EVAL.FORM.EVENT_TRAINING' | translate }}
+          </button>
+          <button class="event-pill" [class.active]="linkedEventType === 'free'" (click)="linkedEventType = 'free'; onLinkedEventTypeChange()">
+            <i class="bi bi-pencil"></i> {{ 'CLUB_EVAL.FORM.EVENT_FREE' | translate }}
+          </button>
+        </div>
+
+        <!-- Selector de partido -->
+        <div *ngIf="linkedEventType === 'match'" class="event-selector-row">
+          <select class="event-select"
+                  [disabled]="calendarLoading"
+                  [(ngModel)]="selectedMatchId"
+                  (ngModelChange)="onMatchSelected($event)">
+            <option [value]="0">{{ calendarLoading ? ('COMMON.LOADING' | translate) : ('CLUB_EVAL.FORM.SELECT_MATCH' | translate) }}</option>
+            <option *ngFor="let m of matches" [value]="m.id">{{ m.label }} — {{ m.date }}</option>
+          </select>
+        </div>
+
+        <!-- Selector de entrenamiento -->
+        <div *ngIf="linkedEventType === 'training'" class="event-selector-row">
+          <select class="event-select"
+                  [disabled]="calendarLoading"
+                  [(ngModel)]="selectedTrainingId"
+                  (ngModelChange)="onTrainingSelected($event)">
+            <option [value]="0">{{ calendarLoading ? ('COMMON.LOADING' | translate) : ('CLUB_EVAL.FORM.SELECT_TRAINING' | translate) }}</option>
+            <option *ngFor="let t of trainings" [value]="t.id">{{ t.label }} — {{ t.date }}</option>
+          </select>
+        </div>
+
+        <!-- Evento libre -->
+        <div *ngIf="linkedEventType === 'free'" class="event-selector-row">
+          <input type="text" class="event-free-input"
+                 [placeholder]="'CLUB_EVAL.FORM.FREE_LABEL_PH' | translate"
+                 [(ngModel)]="freeEventLabel">
+        </div>
+
+        <!-- Fecha de la sesión -->
+        <div class="session-date-row">
+          <label class="session-date-label"><i class="bi bi-calendar3"></i> {{ 'CLUB_EVAL.FORM.DATE' | translate }}</label>
+          <input type="date" class="session-date-input" [(ngModel)]="sessionDate">
+        </div>
+      </div>
+    </div>
+
+    <div class="session-hint">
+      <i class="bi bi-info-circle"></i>
+      {{ 'CLUB_EVAL.SESSION.HINT' | translate }}
+    </div>
+
+    <div *ngIf="rows.length === 0" class="empty-state">
+      <i class="bi bi-people"></i>
+      <p>{{ 'CLUB_EVAL.PLAYERS.EMPTY' | translate }}</p>
+    </div>
+
+    <div *ngIf="rows.length > 0" class="session-table-wrapper">
+      <table class="session-table">
+        <thead>
+          <tr>
+            <th class="col-include">
+              <i class="bi bi-check2-square" title="{{ 'CLUB_EVAL.SESSION.INCLUDE' | translate }}"></i>
+            </th>
+            <th class="col-player">{{ 'CLUB_EVAL.SESSION.PLAYER' | translate }}</th>
+            <th class="col-overall">{{ 'CLUB_EVAL.FORM.OVERALL_RATING' | translate }}</th>
+            <th *ngFor="let field of activeFields" class="col-field">{{ field.fieldLabel }}</th>
+            <th class="col-notes">{{ 'CLUB_EVAL.FORM.NOTES' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of rows" [class.row-included]="row.included">
+
+            <td class="col-include">
+              <label class="checkbox-wrap" (click)="toggleRow(row)">
+                <div class="custom-checkbox" [class.checked]="row.included">
+                  <i class="bi bi-check-lg" *ngIf="row.included"></i>
+                </div>
+              </label>
+            </td>
+
+            <!-- Celda del jugador: foto más grande -->
+            <td class="col-player">
+              <div class="player-cell">
+                <div class="player-photo-lg">
+                  <img *ngIf="row.foto && !brokenPhotos[row.playerId]"
+                       [src]="imageBaseUrl + row.foto"
+                       [alt]="row.nombre"
+                       (error)="onPhotoError(row.playerId)">
+                  <i *ngIf="!row.foto || brokenPhotos[row.playerId]" class="bi bi-person-fill"></i>
+                </div>
+                <div class="player-info">
+                  <div class="player-name-cell">{{ row.nombre }} {{ row.apellido }}</div>
+                  <div class="player-pos-cell">{{ row.posicion }}</div>
+                </div>
+              </div>
+            </td>
+
+            <td class="col-overall">
+              <input type="number" min="0" max="10"
+                     class="score-input overall-input"
+                     [placeholder]="'-'"
+                     [value]="row.overallRating ?? ''"
+                     (change)="onOverallChange(row, $any($event.target).value)">
+            </td>
+
+            <td *ngFor="let field of activeFields" class="col-field">
+              <input type="number" min="0" max="10"
+                     class="score-input"
+                     [placeholder]="'-'"
+                     [value]="row.scores[field.fieldKey] ?? ''"
+                     (change)="onScoreChange(row, field.fieldKey, $any($event.target).value)">
+            </td>
+
+            <!-- Notas como textarea + botón micrófono -->
+            <td class="col-notes">
+              <div class="notes-field-wrap" [class.listening]="isListening && activeAudioPlayerId === row.playerId">
+                <textarea class="notes-textarea"
+                          rows="3"
+                          [placeholder]="'CLUB_EVAL.FORM.NOTES_PH' | translate"
+                          [(ngModel)]="row.notes"
+                          (ngModelChange)="onNotesChange()"></textarea>
+                <div class="interim-text" *ngIf="isListening && activeAudioPlayerId === row.playerId && interimText">
+                  <i class="bi bi-soundwave"></i> {{ interimText }}
+                </div>
+              </div>
+              <button *ngIf="speechAvailable"
+                      class="btn-audio"
+                      [class.recording]="isListening && activeAudioPlayerId === row.playerId"
+                      (click)="toggleMic(row.playerId)"
+                      type="button">
+                <ng-container *ngIf="!(isListening && activeAudioPlayerId === row.playerId)">
+                  <i class="bi bi-mic"></i>
+                  <span>{{ 'DEBRIEF.DICTATE' | translate }}</span>
+                </ng-container>
+                <ng-container *ngIf="isListening && activeAudioPlayerId === row.playerId">
+                  <i class="bi bi-stop-circle-fill recording-pulse"></i>
+                  <span>{{ 'DEBRIEF.STOP_LISTENING' | translate }}</span>
+                </ng-container>
+              </button>
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="bottom-actions" *ngIf="rows.length > 0">
+      <span *ngIf="dirty && !savedSuccessfully" class="unsaved-indicator">
+        <i class="bi bi-exclamation-circle"></i>
+        {{ 'CLUB_EVAL.SESSION.UNSAVED_CHANGES' | translate }}
+      </span>
+      <span *ngIf="!dirty || savedSuccessfully"></span>
+      <button class="btn-save-bottom" (click)="saveSession()" [disabled]="saving || includedCount === 0">
+        <i *ngIf="saving" class="bi bi-arrow-clockwise spin"></i>
+        <i *ngIf="!saving" class="bi bi-check-lg"></i>
+        {{ isEditMode ? ('CLUB_EVAL.SESSION.UPDATE' | translate) : ('CLUB_EVAL.SESSION.SAVE' | translate) }} ({{ includedCount }})
+      </button>
+    </div>
+
+  </ng-container>
+</div>

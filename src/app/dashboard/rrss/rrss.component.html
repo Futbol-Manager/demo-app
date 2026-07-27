@@ -1,0 +1,55 @@
+<div class="rrss-shell">
+
+  <!-- Header -->
+  <div class="rrss-header">
+    <div class="rrss-header-left">
+      <div class="rrss-icon-wrap">
+        <i class="bi bi-calendar3"></i>
+      </div>
+      <div>
+        <h2 class="rrss-title">Redes Sociales</h2>
+        <p class="rrss-subtitle">Gestiona contenido, calendario y configuración de tus redes</p>
+      </div>
+    </div>
+    <div class="rrss-header-nets">
+      <span class="net-dot" style="background:#e1306c" title="Instagram"><i class="bi bi-instagram"></i></span>
+      <span class="net-dot" style="background:#1877f2" title="Facebook"><i class="bi bi-facebook"></i></span>
+      <span class="net-dot" style="background:#0a66c2" title="LinkedIn"><i class="bi bi-linkedin"></i></span>
+      <span class="net-dot" style="background:#14171a" title="Twitter/X"><i class="bi bi-twitter-x"></i></span>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="rrss-tabs">
+    <button class="rrss-tab" [class.active]="activeTab === 'calendar'" (click)="setTab('calendar')">
+      <i class="bi bi-calendar-week"></i>
+      <span>Calendario</span>
+    </button>
+    <button class="rrss-tab" [class.active]="activeTab === 'posts'" (click)="setTab('posts')">
+      <i class="bi bi-layout-text-sidebar-reverse"></i>
+      <span>Posts</span>
+    </button>
+    <button class="rrss-tab" [class.active]="activeTab === 'match'" (click)="setTab('match')">
+      <i class="bi bi-image"></i>
+      <span>Post partido</span>
+    </button>
+    <button class="rrss-tab" [class.active]="activeTab === 'settings'" (click)="setTab('settings')">
+      <i class="bi bi-sliders"></i>
+      <span>Configuración</span>
+    </button>
+    <button class="rrss-tab" [class.active]="activeTab === 'comments'" (click)="setTab('comments')">
+      <i class="bi bi-chat-left-dots"></i>
+      <span>Comentarios</span>
+    </button>
+    <div class="rrss-tab-indicator"></div>
+  </div>
+
+  <!-- Content -->
+  <div class="rrss-tab-content">
+    <app-rrss-calendar *ngIf="activeTab === 'calendar'"></app-rrss-calendar>
+    <app-rrss-posts    *ngIf="activeTab === 'posts'"></app-rrss-posts>
+    <app-rrss-match-post *ngIf="activeTab === 'match'"></app-rrss-match-post>
+    <app-rrss-settings  *ngIf="activeTab === 'settings'"></app-rrss-settings>
+    <app-rrss-comments *ngIf="activeTab === 'comments'"></app-rrss-comments>
+  </div>
+</div>

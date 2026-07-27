@@ -1,0 +1,589 @@
+// Tokens Sphaira (alineados con sphaira-brand-styles.mdc).
+$navy: #002c40;
+$navy-deep: #001e2e;
+$green: #31b270;
+$green-soft: #c4e8d6;
+$gray-text: #636363;
+$bg-soft: #f4f4f4;
+$white: #ffffff;
+$danger: #d9504e;
+$amber: #b27500;
+$amber-soft: rgba(255, 178, 0, 0.18);
+
+// Ratio ISO/IEC 7810 ID-1 (1.585:1) — el de DNI, tarjetas de crédito y
+// carnets físicos. Sin esto el carnet "no parece un carnet".
+$carnet-ratio: 1.585;
+
+.abonado-carnet {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.abonado-carnet__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.abonado-carnet__title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: $navy;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+
+  i { color: $green; }
+}
+
+.abonado-carnet__pdf-btn {
+  appearance: none;
+  border: 0;
+  background: $navy;
+  color: $white;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 13.5px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 120ms ease, background 120ms ease, box-shadow 160ms ease;
+  box-shadow: 0 6px 18px rgba(0, 44, 64, 0.18);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    background: $green;
+    box-shadow: 0 10px 24px rgba(49, 178, 112, 0.25);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  i { font-size: 16px; }
+}
+
+// ---------- Skeleton ----------
+.abonado-carnet__skeleton {
+  .sk-card {
+    width: 100%;
+    max-width: 640px;
+    aspect-ratio: #{$carnet-ratio};
+    border-radius: 18px;
+    background: linear-gradient(
+      90deg,
+      rgba(0, 44, 64, 0.06) 25%,
+      rgba(0, 44, 64, 0.12) 37%,
+      rgba(0, 44, 64, 0.06) 63%
+    );
+    background-size: 400% 100%;
+    animation: sk-shimmer 1.4s ease infinite;
+  }
+}
+
+@keyframes sk-shimmer {
+  0%   { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+// ═════════════════════════════════════════════════════════════════════
+// CARNET — Layout principal
+// ═════════════════════════════════════════════════════════════════════
+.abonado-carnet__wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.carnet-card {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  aspect-ratio: #{$carnet-ratio};
+
+  // Grid de 3 columnas + footer.
+  // Col 1: foto carnet 3:4 (anchura proporcional a la altura).
+  // Col 2: datos del abonado (flex-grow).
+  // Col 3: QR rotatorio (más generoso para que se escanee fácil).
+  display: grid;
+  grid-template-columns: minmax(160px, 30%) minmax(0, 1fr) minmax(170px, 34%);
+  grid-template-rows: 1fr 40px;
+  grid-template-areas:
+    "photo data qr"
+    "footer footer footer";
+  gap: 0;
+
+  background: $white;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow:
+    0 18px 44px rgba(0, 44, 64, 0.18),
+    0 2px 6px rgba(0, 44, 64, 0.08);
+  border: 1px solid rgba(0, 44, 64, 0.08);
+
+  // Borde acento sutil que cambia según el estado.
+  &--active   { border-top: 4px solid $green; }
+  &--pending  { border-top: 4px solid #ffb200; }
+  &--inactive { border-top: 4px solid $gray-text; }
+}
+
+// Marca de agua eliminada: distraía más que aportaba en un carnet
+// que ya tiene branding propio en el footer. Mantenemos la clase para
+// no romper el template HTML.
+.carnet-card__watermark { display: none; }
+
+// ─── Columna 1 · Foto del abonado (estilo foto de carnet 3:4) ───
+.carnet-card__photo {
+  grid-area: photo;
+  position: relative;
+  background: linear-gradient(160deg, $bg-soft 0%, #e8eef1 100%);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  z-index: 1;
+
+  // Aspect 3:4 dentro del card: damos a la imagen toda la columna.
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+  }
+
+  &-fb {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(160deg, $green-soft 0%, $bg-soft 100%);
+    position: relative;
+
+    span {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: clamp(64px, 12vw, 110px);
+      color: $navy;
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+
+    // Etiqueta pequeña "FOTO" en la esquina para evidenciar el placeholder.
+    &::after {
+      content: 'FOTO';
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: rgba(0, 44, 64, 0.35);
+    }
+  }
+
+  // Separador vertical sutil hacia la columna de datos.
+  &::after {
+    content: '';
+    position: absolute;
+    top: 12%;
+    bottom: 12%;
+    right: 0;
+    width: 1px;
+    background: rgba(0, 44, 64, 0.1);
+  }
+}
+
+// ─── Columna 2 · Datos del abonado ───
+.carnet-card__data {
+  grid-area: data;
+  position: relative;
+  z-index: 1;
+  padding: 18px 22px 16px;
+  display: flex;
+  flex-direction: column;
+  // Distribuye el contenido por toda la altura disponible para evitar
+  // el "agujero blanco" en el centro del carnet.
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.cc-club-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.cc-club-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: $white;
+  box-shadow: 0 2px 6px rgba(0, 44, 64, 0.12);
+  display: grid;
+  place-items: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &--fb {
+    background: $green;
+    i { color: $white; font-size: 14px; }
+  }
+}
+
+.cc-club-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 11.5px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: $green;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.cc-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: clamp(22px, 3.2vw, 30px);
+  color: $navy;
+  margin: 0;
+  line-height: 1.05;
+  letter-spacing: -0.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+
+  &__last {
+    font-weight: 700;
+    display: inline;
+  }
+}
+
+.cc-meta {
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.cc-meta-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed rgba(0, 44, 64, 0.1);
+
+  &:last-child { border-bottom: 0; padding-bottom: 0; }
+
+  dt {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: $gray-text;
+    flex-shrink: 0;
+    min-width: 72px;
+  }
+
+  &__value {
+    margin: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: $navy;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &--mono {
+      // Monospace para el número de socio: se lee como código de identidad.
+      font-family: 'JetBrains Mono', 'Consolas', monospace;
+      font-size: 17px;
+      letter-spacing: 1.5px;
+    }
+  }
+}
+
+.cc-status-wrap {
+  padding-top: 2px;
+}
+
+.cc-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  background: $green-soft;
+  color: darken($green, 8%);
+  box-shadow: 0 2px 6px rgba(49, 178, 112, 0.18);
+
+  i { font-size: 13px; }
+
+  &--pending {
+    background: $amber-soft;
+    color: $amber;
+    box-shadow: 0 2px 6px rgba(255, 178, 0, 0.18);
+  }
+  &--inactive {
+    background: rgba(99, 99, 99, 0.18);
+    color: $gray-text;
+    box-shadow: none;
+  }
+}
+
+// ─── Columna 3 · QR rotatorio ───
+.carnet-card__qr {
+  grid-area: qr;
+  position: relative;
+  z-index: 1;
+  background: $bg-soft;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 16px 14px;
+  gap: 10px;
+  border-left: 1px solid rgba(0, 44, 64, 0.08);
+}
+
+.qr-frame {
+  position: relative;
+  padding: 8px;
+  background: $white;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 44, 64, 0.12);
+  // El QR ocupa el 90% del ancho de su columna, con un techo de 200px
+  // para que no se haga gigante en desktops anchos.
+  width: clamp(140px, 90%, 200px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+
+  // Esquinas estilo "viewfinder" para reforzar la idea "escanéame".
+  .qr-frame__corner {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2.5px solid $green;
+
+    &--tl { top: -4px;    left: -4px;    border-right: 0; border-bottom: 0; }
+    &--tr { top: -4px;    right: -4px;   border-left: 0;  border-bottom: 0; }
+    &--bl { bottom: -4px; left: -4px;    border-right: 0; border-top: 0; }
+    &--br { bottom: -4px; right: -4px;   border-left: 0;  border-top: 0; }
+  }
+
+  :host ::ng-deep qrcode { display: block; width: 100%; }
+  :host ::ng-deep qrcode img,
+  :host ::ng-deep qrcode svg {
+    display: block;
+    width: 100% !important;
+    height: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+  }
+}
+
+.qr-countdown {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  color: $gray-text;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  text-align: center;
+  line-height: 1.1;
+  background: $white;
+  padding: 4px 10px;
+  border-radius: 999px;
+  box-shadow: 0 1px 4px rgba(0, 44, 64, 0.08);
+
+  i {
+    font-size: 10px;
+    color: $green;
+    flex-shrink: 0;
+
+    &.spinning { animation: spin 0.9s linear infinite; }
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+// Badge "QR imprimible" cuando el club tiene el modo STATIC. Sustituye al
+// countdown rotatorio para dejar claro al usuario que el QR es persistente.
+.qr-static-badge {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  color: $navy;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  text-align: center;
+  line-height: 1.1;
+  background: $white;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba($green, 0.3);
+  box-shadow: 0 1px 4px rgba(0, 44, 64, 0.08);
+
+  i {
+    font-size: 11px;
+    color: $green;
+    flex-shrink: 0;
+  }
+}
+
+// ─── Fila inferior · Branding Sphaira ───
+.carnet-card__footer {
+  grid-area: footer;
+  background: linear-gradient(90deg, $green 0%, $navy 100%);
+  color: $white;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  z-index: 1;
+
+  .cc-brand {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 11.5px;
+    letter-spacing: 0.6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    i { font-size: 12.5px; opacity: 0.9; }
+  }
+
+  .cc-brand-tag {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    opacity: 0.85;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// ─── Hint inferior ───
+.abonado-carnet__hint {
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12.5px;
+  color: $gray-text;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  text-align: center;
+  justify-content: center;
+  max-width: 640px;
+
+  i { color: $green; margin-top: 2px; flex-shrink: 0; }
+}
+
+// ═════════════════════════════════════════════════════════════════════
+// RESPONSIVE — Tablets (carnet más pequeño pero conservando ratio)
+// ═════════════════════════════════════════════════════════════════════
+@media (max-width: 720px) {
+  .carnet-card {
+    max-width: 100%;
+    // En tablet/móvil mantenemos horizontal pero compactamos.
+    grid-template-columns: 100px 1fr 110px;
+
+    .cc-name { font-size: 17px; }
+    .cc-meta-row__value { font-size: 12px; }
+    .cc-meta-row__value--mono { font-size: 13px; }
+    .cc-meta-row dt { min-width: 50px; font-size: 9px; }
+    .cc-club-logo { width: 22px; height: 22px; }
+    .cc-club-name { font-size: 10px; }
+    .qr-frame { max-width: 96px; }
+    .qr-countdown { font-size: 9px; }
+  }
+
+  .carnet-card__data { padding: 12px 12px 10px; gap: 6px; }
+  .carnet-card__qr { padding: 10px 8px; }
+  .carnet-card__footer {
+    padding: 5px 10px;
+    .cc-brand { font-size: 10px; }
+    .cc-brand-tag { font-size: 8.5px; letter-spacing: 0.8px; }
+  }
+  .carnet-card__watermark { font-size: 140px; right: 110px; bottom: 28px; }
+
+  .carnet-card__photo-fb span { font-size: 38px; }
+}
+
+// ═════════════════════════════════════════════════════════════════════
+// RESPONSIVE — Móvil estrecho: stack vertical pero manteniendo
+// estética de carnet (no se rompe a "tarjeta de portfolio").
+// ═════════════════════════════════════════════════════════════════════
+@media (max-width: 480px) {
+  .carnet-card {
+    aspect-ratio: auto;
+    grid-template-columns: 86px 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "photo data"
+      "qr    qr"
+      "footer footer";
+  }
+
+  .carnet-card__photo {
+    aspect-ratio: 3 / 4;
+    &::after { display: none; }
+  }
+
+  .carnet-card__qr {
+    flex-direction: row;
+    justify-content: center;
+    gap: 14px;
+    padding: 12px;
+    border-left: 0;
+    border-top: 1px solid rgba(0, 44, 64, 0.08);
+
+    .qr-frame { max-width: 110px; }
+    .qr-countdown { font-size: 10px; }
+  }
+
+  .carnet-card__watermark { display: none; }
+}

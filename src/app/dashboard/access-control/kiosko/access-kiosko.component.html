@@ -1,0 +1,269 @@
+<div class="kiosko-root"
+     [class.kiosko-root--allowed]="feedback?.result === 'ALLOWED'"
+     [class.kiosko-root--warning]="feedback?.result === 'WARNING'"
+     [class.kiosko-root--denied]="feedback?.result === 'DENIED'">
+
+  <!-- Top bar -->
+  <header class="kiosko-topbar">
+    <div class="kiosko-topbar-left">
+      <button type="button" class="kiosko-exit" (click)="exit()">
+        <i class="bi bi-x-lg" aria-hidden="true"></i>
+        {{ 'ACCESS_KIOSKO.EXIT' | translate }}
+      </button>
+    </div>
+    <div class="kiosko-topbar-center">
+      <h1>
+        <i class="bi bi-shield-lock-fill" aria-hidden="true"></i>
+        {{ 'ACCESS_KIOSKO.TITLE' | translate }}
+      </h1>
+    </div>
+    <div class="kiosko-topbar-right">
+      <!-- Selector de punto -->
+      <select *ngIf="points.length > 1"
+              class="kiosko-select"
+              [ngModel]="selectedPointId"
+              (ngModelChange)="setPoint($event)">
+        <option *ngFor="let p of points" [ngValue]="p.pointId">{{ p.name }}</option>
+      </select>
+      <span *ngIf="points.length === 1" class="kiosko-point-name">
+        <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+        {{ points[0].name }}
+      </span>
+
+      <!-- Toggle IN / OUT -->
+      <div class="kiosko-direction">
+        <button type="button"
+                class="kiosko-direction-btn"
+                [class.kiosko-direction-btn--active]="direction === 'IN'"
+                (click)="setDirection('IN')">
+          <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
+          {{ 'ACCESS_KIOSKO.IN' | translate }}
+        </button>
+        <button type="button"
+                class="kiosko-direction-btn"
+                [class.kiosko-direction-btn--active]="direction === 'OUT'"
+                (click)="setDirection('OUT')">
+          <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+          {{ 'ACCESS_KIOSKO.OUT' | translate }}
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="kiosko-state">
+    <div class="kiosko-spinner"></div>
+    <p>{{ 'ACCESS_KIOSKO.LOADING' | translate }}</p>
+  </div>
+
+  <!-- Módulo desactivado -->
+  <div *ngIf="!loading && modules && !modules.accessControlEnabled" class="kiosko-state kiosko-state--off">
+    <i class="bi bi-toggle-off" aria-hidden="true"></i>
+    <h2>{{ 'ACCESS_KIOSKO.OFF_TITLE' | translate }}</h2>
+    <p>{{ 'ACCESS_KIOSKO.OFF_DESC' | translate }}</p>
+  </div>
+
+  <!-- Sin puntos -->
+  <div *ngIf="!loading && modules?.accessControlEnabled && !points.length"
+       class="kiosko-state kiosko-state--off">
+    <i class="bi bi-geo-alt" aria-hidden="true"></i>
+    <h2>{{ 'ACCESS_KIOSKO.NO_POINTS_TITLE' | translate }}</h2>
+    <p>{{ 'ACCESS_KIOSKO.NO_POINTS_DESC' | translate }}</p>
+  </div>
+
+  <!-- Vista principal -->
+  <main *ngIf="!loading && modules?.accessControlEnabled && points.length"
+        class="kiosko-main">
+
+    <!-- Panel cámara / manual -->
+    <section class="kiosko-scanner">
+      <!-- Wrapper visual del escaneo. Solo se renderiza cuando la cámara
+           está activa. Contiene:
+             - Modo nativo: <video #videoEl> que controlamos nosotros.
+             - Modo fallback: div con id donde html5-qrcode pinta su <video>.
+           El render del wrapper se fuerza síncronamente con `detectChanges`
+           desde `startCamera()` antes de instanciar el decoder, para que
+           el div con id ya exista en el DOM cuando se llame a la librería. -->
+      <div *ngIf="cameraActive" class="kiosko-video-wrap">
+        <video *ngIf="scannerMode === 'native'"
+               #videoEl playsinline muted autoplay></video>
+
+        <div *ngIf="scannerMode === 'fallback'"
+             id="kiosko-fallback-reader"
+             class="kiosko-video-fallback"></div>
+
+        <div class="kiosko-video-overlay">
+          <div class="kiosko-video-frame"></div>
+          <p class="kiosko-video-hint">{{ 'ACCESS_KIOSKO.AIM' | translate }}</p>
+        </div>
+        <button type="button" class="kiosko-cam-stop" (click)="stopCamera()">
+          <i class="bi bi-camera-video-off" aria-hidden="true"></i>
+          {{ 'ACCESS_KIOSKO.STOP_CAMERA' | translate }}
+        </button>
+      </div>
+
+      <ng-container *ngIf="!cameraActive">
+        <ng-container *ngTemplateOutlet="scannerIdle"></ng-container>
+      </ng-container>
+
+      <ng-template #scannerIdle>
+        <div class="kiosko-scanner-idle">
+          <i class="bi bi-qr-code-scan" aria-hidden="true"></i>
+          <h2>{{ 'ACCESS_KIOSKO.READY' | translate }}</h2>
+          <p>{{ 'ACCESS_KIOSKO.READY_HINT' | translate }}</p>
+
+          <button *ngIf="cameraSupported"
+                  type="button"
+                  class="kiosko-btn kiosko-btn--primary"
+                  (click)="startCamera()">
+            <i class="bi bi-camera-video-fill" aria-hidden="true"></i>
+            {{ 'ACCESS_KIOSKO.START_CAMERA' | translate }}
+          </button>
+
+          <p *ngIf="!cameraSupported" class="kiosko-note">
+            <i class="bi bi-info-circle" aria-hidden="true"></i>
+            {{ 'ACCESS_KIOSKO.CAMERA_UNSUPPORTED' | translate }}
+          </p>
+          <p *ngIf="cameraError" class="kiosko-error-line">
+            <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+            {{ cameraError }}
+          </p>
+        </div>
+      </ng-template>
+
+      <!-- Entrada manual / lector USB -->
+      <form class="kiosko-manual" (ngSubmit)="onManualSubmit()">
+        <label for="kiosko-token-input">{{ 'ACCESS_KIOSKO.MANUAL_LABEL' | translate }}</label>
+        <div class="kiosko-manual-row">
+          <input #manualInput
+                 id="kiosko-token-input"
+                 type="text"
+                 [(ngModel)]="manualToken"
+                 [placeholder]="'ACCESS_KIOSKO.MANUAL_PH' | translate"
+                 name="manualToken"
+                 autocomplete="off" />
+          <button type="submit"
+                  class="kiosko-btn kiosko-btn--primary"
+                  [disabled]="!manualToken">
+            <i class="bi bi-send-fill" aria-hidden="true"></i>
+            {{ 'ACCESS_KIOSKO.MANUAL_SUBMIT' | translate }}
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Aforo / ocupación -->
+    <aside class="kiosko-aside">
+      <h2>
+        <i class="bi bi-people-fill" aria-hidden="true"></i>
+        {{ 'ACCESS_KIOSKO.OCCUPANCY' | translate }}
+      </h2>
+      <ul class="kiosko-occupancy">
+        <li *ngFor="let o of occupancy"
+            [class.kiosko-occupancy__full]="o.maxCapacity && o.currentOccupancy >= o.maxCapacity">
+          <div class="kiosko-occupancy__name">
+            <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+            {{ o.pointName }}
+          </div>
+          <div class="kiosko-occupancy__count">
+            <strong>{{ o.currentOccupancy }}</strong>
+            <span *ngIf="o.maxCapacity"> / {{ o.maxCapacity }}</span>
+          </div>
+          <div class="kiosko-occupancy__meta">
+            <span title="{{ 'ACCESS_KIOSKO.IN' | translate }}">
+              <i class="bi bi-arrow-down-circle" aria-hidden="true"></i>
+              {{ o.entriesToday }}
+            </span>
+            <span title="{{ 'ACCESS_KIOSKO.OUT' | translate }}">
+              <i class="bi bi-arrow-up-circle" aria-hidden="true"></i>
+              {{ o.exitsToday }}
+            </span>
+          </div>
+        </li>
+        <li *ngIf="!occupancy.length" class="kiosko-occupancy__empty">
+          <i class="bi bi-inbox" aria-hidden="true"></i>
+          {{ 'ACCESS_KIOSKO.OCCUPANCY_EMPTY' | translate }}
+        </li>
+      </ul>
+
+      <!-- Últimos accesos del día (lista persistente con nombre y hora) -->
+      <h2 class="kiosko-aside-h2--secondary">
+        <i class="bi bi-clock-history" aria-hidden="true"></i>
+        {{ 'ACCESS_KIOSKO.RECENT' | translate }}
+      </h2>
+      <ul class="kiosko-recent">
+        <li *ngFor="let l of recentLogs"
+            class="kiosko-recent__item"
+            [class.kiosko-recent__item--in]="l.direction === 'IN'"
+            [class.kiosko-recent__item--out]="l.direction === 'OUT'"
+            [class.kiosko-recent__item--denied]="l.result === 'DENIED'"
+            [class.kiosko-recent__item--warning]="l.result === 'WARNING'">
+          <span class="kiosko-recent__dir" [attr.aria-label]="l.direction === 'IN' ? ('ACCESS_KIOSKO.IN' | translate) : ('ACCESS_KIOSKO.OUT' | translate)">
+            <i [class]="l.direction === 'IN' ? 'bi bi-box-arrow-in-right' : 'bi bi-box-arrow-right'" aria-hidden="true"></i>
+          </span>
+          <div class="kiosko-recent__body">
+            <p class="kiosko-recent__name">
+              {{ l.subjectName || ('ID ' + l.subjectId) }}
+            </p>
+            <p class="kiosko-recent__meta">
+              <span *ngIf="l.pointName" class="kiosko-recent__point">
+                <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                {{ l.pointName }}
+              </span>
+              <span class="kiosko-recent__time">
+                <i class="bi bi-clock" aria-hidden="true"></i>
+                {{ l.scannedAt | date:'HH:mm:ss' }}
+              </span>
+            </p>
+          </div>
+          <span class="kiosko-recent__badge"
+                [class.kiosko-recent__badge--allowed]="l.result === 'ALLOWED'"
+                [class.kiosko-recent__badge--warning]="l.result === 'WARNING'"
+                [class.kiosko-recent__badge--denied]="l.result === 'DENIED'">
+            <i *ngIf="l.result === 'ALLOWED'" class="bi bi-check-lg" aria-hidden="true"></i>
+            <i *ngIf="l.result === 'WARNING'" class="bi bi-exclamation-lg" aria-hidden="true"></i>
+            <i *ngIf="l.result === 'DENIED'"  class="bi bi-x-lg" aria-hidden="true"></i>
+          </span>
+        </li>
+        <li *ngIf="!recentLogs.length" class="kiosko-recent__empty">
+          <i class="bi bi-inbox" aria-hidden="true"></i>
+          {{ 'ACCESS_KIOSKO.RECENT_EMPTY' | translate }}
+        </li>
+      </ul>
+    </aside>
+  </main>
+
+  <!-- Overlay de feedback de scan -->
+  <div *ngIf="feedback" class="kiosko-feedback">
+    <div class="kiosko-feedback-card">
+      <div class="kiosko-feedback-icon">
+        <i *ngIf="feedback.result === 'ALLOWED'"  class="bi bi-check-circle-fill" aria-hidden="true"></i>
+        <i *ngIf="feedback.result === 'WARNING'"  class="bi bi-exclamation-circle-fill" aria-hidden="true"></i>
+        <i *ngIf="feedback.result === 'DENIED'"   class="bi bi-x-circle-fill" aria-hidden="true"></i>
+      </div>
+      <h2>
+        <ng-container *ngIf="feedback.result === 'ALLOWED'">{{ 'ACCESS_KIOSKO.ALLOWED' | translate }}</ng-container>
+        <ng-container *ngIf="feedback.result === 'WARNING'">{{ 'ACCESS_KIOSKO.WARNING' | translate }}</ng-container>
+        <ng-container *ngIf="feedback.result === 'DENIED'">{{ 'ACCESS_KIOSKO.DENIED' | translate }}</ng-container>
+      </h2>
+      <div class="kiosko-feedback-subject">
+        <img *ngIf="resolvePicture(feedback.subjectPicture) as pic"
+             [src]="pic" alt="" class="kiosko-feedback-photo" />
+        <div class="kiosko-feedback-info">
+          <p class="kiosko-feedback-name">{{ feedback.subjectName || ('ID ' + (feedback.subjectId || '—')) }}</p>
+          <p *ngIf="feedback.subjectType" class="kiosko-feedback-type">
+            {{ ('ACCESS_CONTROL.SUBJECT_' + feedback.subjectType) | translate }}
+          </p>
+          <p *ngIf="feedback.message" class="kiosko-feedback-message">
+            {{ feedback.message }}
+          </p>
+          <p *ngIf="feedback.paymentStatus" class="kiosko-feedback-payment">
+            <i class="bi bi-cash-coin" aria-hidden="true"></i>
+            {{ feedback.paymentStatus }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

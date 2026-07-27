@@ -14,6 +14,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { DemoService, DemoRole } from 'src/app/core/services/demo/demo.service';
 import { DemoCouponService, DemoCouponResponse } from 'src/app/core/services/demo/demo-coupon.service';
+import { DemoAnalyticsService } from 'src/app/core/services/demo/demo-analytics.service';
 import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
 import { gsap } from 'gsap';
 
@@ -568,15 +569,24 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     return digits.length >= 6 && digits.length <= 15;
   }
 
+  /** true cuando el visitante no ha escrito nada en el teléfono. */
+  get isPhoneEmpty(): boolean {
+    return this.phoneNumber.replace(/\D/g, '').length === 0;
+  }
+
   /** Teléfono completo en formato internacional (prefijo + dígitos). */
   get fullPhone(): string {
     const digits = this.phoneNumber.replace(/\D/g, '');
     return digits ? `${this.phonePrefix}${digits}` : '';
   }
 
-  /** true cuando email Y teléfono son válidos (requisito para acceder a la demo). */
+  /**
+   * Requisito para acceder a la demo: solo el email.
+   * El teléfono es opcional (pedirlo antes de que el visitante haya visto nada
+   * de la plataforma hundía la entrada); si lo rellena, sí debe ser válido.
+   */
   get canSubmitDemoAccess(): boolean {
-    return this.isValidEmail && this.isValidPhone;
+    return this.isValidEmail && (this.isPhoneEmpty || this.isValidPhone);
   }
 
   /** Limpia el número conforme se escribe (solo dígitos y espacios). */
@@ -593,6 +603,7 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     public demoCouponService: DemoCouponService,
     private tutorialService: TutorialService,
     private translate: TranslateService,
+    private demoAnalytics: DemoAnalyticsService,
     private cdr: ChangeDetectorRef,
   ) {}
 
@@ -796,6 +807,7 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
   onUserInteraction(): void {
     if (!this.audioPending || !this.audioPlayer) return;
 
+    this.demoAnalytics.track('demo_intro_start', { lang: this.activeLang });
     this.audioPending      = false;
     this.audioPausedByUser = false;
     this.audioMuted        = false;
@@ -896,6 +908,13 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
 
   skipIntro(): void {
     this.stopAudio();
+    this.demoAnalytics.track('demo_intro_skip', { slide: this.currentSlide });
+    this.goToStep2();
+  }
+
+  /** Sale de la intro habiéndola visto entera (botón del último slide). */
+  completeIntro(): void {
+    this.demoAnalytics.track('demo_intro_complete', { lang: this.activeLang });
     this.goToStep2();
   }
 
@@ -907,16 +926,19 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
       gsap.from('.demo-role-header', { opacity: 0, y: -20, duration: 0.6, ease: 'power3.out' });
       gsap.from('.demo-role-card',   { opacity: 0, y: 24,  duration: 0.55, stagger: 0.1, ease: 'power3.out', delay: 0.15 });
     }, 50);
-    setTimeout(() => this.tutorialService.start('demo-role', true), 700);
   }
 
-  openTutorial(): void { this.tutorialService.start('demo-role', true); }
+  openTutorial(): void {
+    this.demoAnalytics.track('demo_tutorial_start', { screen: 'demo-role' });
+    this.tutorialService.start('demo-role', true, 'user');
+  }
 
   // ═══════════════════════════════════════════════════════════════════════════
   //  STEP 2 — Selección de rol + email
   // ═══════════════════════════════════════════════════════════════════════════
 
   onRoleCardClick(role: DemoRole): void {
+    this.demoAnalytics.track('demo_role_selected', { role });
     this.selectedRole    = role;
     this.emailValue      = '';
     this.emailError      = '';
@@ -960,6 +982,10 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     const phone = this.fullPhone;
     sessionStorage.setItem('demoEmail', email);
     sessionStorage.setItem('demoPhone', phone);
+    this.demoAnalytics.track('demo_email_submitted', {
+      role: this.selectedRole ?? 'none',
+      has_phone: !!phone,
+    });
 
     // Marcar que el usuario completó el flujo del email: el modal no volverá a aparecer
     this.demoCouponService.markModalShown();
@@ -981,9 +1007,10 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
           this.couponExpires  = res.expiresAt;
           if (!this.emailAlreadyHasCoupon) {
             this.demoCouponService.saveCouponToSession(res.code);
-            if (typeof (window as any).fbq === 'function') {
-              (window as any).fbq('track', 'Lead');
-            }
+            this.demoAnalytics.trackMetaConversion('Lead');
+            this.demoAnalytics.track('demo_coupon_generated', {
+              discount: res.discountPercent,
+            });
           }
         } else {
           this.couponLoadError = true;
@@ -1030,8 +1057,6 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
    * Navega directamente al dashboard usando solo el email introducido.
    */
   skipCouponModal(): void {
-    // El teléfono y el email siguen siendo obligatorios para acceder a la demo,
-    // aunque el usuario decida saltar la generación del cupón.
     if (!this.canSubmitDemoAccess) {
       this.emailTouched = true;
       this.phoneTouched = true;
@@ -1042,6 +1067,11 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     const role  = this.selectedRole;
     sessionStorage.setItem('demoEmail', email);
     sessionStorage.setItem('demoPhone', this.fullPhone);
+    this.demoAnalytics.track('demo_email_submitted', {
+      role: role ?? 'none',
+      has_phone: !this.isPhoneEmpty,
+      skipped_coupon: true,
+    });
     this.showEmailModal = false;
     this.cdr.markForCheck();
     if (email && role) {
@@ -1053,6 +1083,7 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
   private navigateToDashboard(email: string, role: DemoRole): void {
     this.isLoading  = true;
     this.emailError = '';
+    this.demoAnalytics.track('demo_started', { role });
     this.cdr.markForCheck();
 
     this.loginService.loginDemoAndSetRole(email, role)

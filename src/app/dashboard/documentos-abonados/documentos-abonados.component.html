@@ -1,0 +1,226 @@
+<div class="docs-page" [class.docs-page--embedded]="embedded">
+
+  <!-- ─────────────── HEADER ───────────────
+       Se oculta cuando el componente está embebido como tab dentro de
+       otra pantalla (DocumentosClubComponent) para no duplicar headers.
+       En modo embebido el bot\u00f3n Upload se mueve a la zona de acciones del tab.
+       -->
+  <header *ngIf="!embedded" class="docs-header">
+    <div class="docs-header__title">
+      <div class="docs-header__icon"><i class="bi bi-folder2-open"></i></div>
+      <div class="docs-header__text">
+        <h1>{{ 'CLUB_DOCS.PAGE_TITLE' | translate }}</h1>
+        <p>{{ 'CLUB_DOCS.PAGE_SUBTITLE' | translate }}</p>
+      </div>
+    </div>
+    <button type="button" class="docs-upload-btn" (click)="openUploadModal()">
+      <i class="bi bi-cloud-upload"></i>
+      <span>{{ 'CLUB_DOCS.ACTIONS.UPLOAD' | translate }}</span>
+    </button>
+  </header>
+
+  <!-- Versión embebida: botón Upload sin header (más compacto, integrado en el tab). -->
+  <div *ngIf="embedded" class="docs-embedded-actions">
+    <button type="button" class="docs-upload-btn" (click)="openUploadModal()">
+      <i class="bi bi-cloud-upload"></i>
+      <span>{{ 'CLUB_DOCS.ACTIONS.UPLOAD' | translate }}</span>
+    </button>
+  </div>
+
+  <!-- ─────────────── FILTROS ─────────────── -->
+  <section class="docs-toolbar" *ngIf="!loading && allDocs && allDocs.length">
+    <div class="docs-toolbar__search">
+      <i class="bi bi-search"></i>
+      <input type="text"
+             [(ngModel)]="search"
+             (ngModelChange)="onSearchChange()"
+             [placeholder]="'CLUB_DOCS.SEARCH_PLACEHOLDER' | translate" />
+    </div>
+    <div class="docs-toolbar__chips" *ngIf="usedCategories.length">
+      <button type="button"
+              class="docs-chip"
+              [class.docs-chip--active]="filtroCategoria === null"
+              (click)="setCategoriaFiltro(null)">
+        {{ 'CLUB_DOCS.CATEGORY.ALL' | translate }}
+      </button>
+      <button type="button"
+              *ngFor="let cat of usedCategories"
+              class="docs-chip"
+              [class.docs-chip--active]="filtroCategoria === cat"
+              (click)="setCategoriaFiltro(cat)">
+        <i class="bi" [ngClass]="iconForCategoria(cat)"></i>
+        <span>{{ ('CLUB_DOCS.CATEGORY.' + cat.toUpperCase()) | translate }}</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ─────────────── ESTADO DE CARGA ─────────────── -->
+  <div class="docs-loading" *ngIf="loading">
+    <div class="docs-loading__spinner"></div>
+    <p>{{ 'CLUB_DOCS.LOADING' | translate }}</p>
+  </div>
+
+  <!-- ─────────────── EMPTY STATE ─────────────── -->
+  <div class="docs-empty" *ngIf="!loading && allDocs.length === 0">
+    <div class="docs-empty__icon"><i class="bi bi-folder-x"></i></div>
+    <h2>{{ 'CLUB_DOCS.EMPTY.TITLE' | translate }}</h2>
+    <p>{{ 'CLUB_DOCS.EMPTY.SUBTITLE' | translate }}</p>
+    <button type="button" class="docs-upload-btn" (click)="openUploadModal()">
+      <i class="bi bi-cloud-upload"></i>
+      <span>{{ 'CLUB_DOCS.ACTIONS.UPLOAD' | translate }}</span>
+    </button>
+  </div>
+
+  <!-- ─────────────── LISTA DE DOCUMENTOS ─────────────── -->
+  <section class="docs-grid" *ngIf="!loading && docs.length">
+    <article *ngFor="let d of docs"
+             class="doc-card"
+             [class.doc-card--pinned]="d.pinned"
+             [class.doc-card--busy]="busyDocId === d.id">
+
+      <header class="doc-card__head">
+        <div class="doc-card__cat">
+          <i class="bi" [ngClass]="iconForCategoria(d.categoria)"></i>
+          <span>{{ ('CLUB_DOCS.CATEGORY.' + d.categoria.toUpperCase()) | translate }}</span>
+        </div>
+        <button *ngIf="d.pinned" class="doc-card__pin" type="button" [title]="'CLUB_DOCS.PINNED' | translate">
+          <i class="bi bi-pin-angle-fill"></i>
+        </button>
+      </header>
+
+      <div class="doc-card__body">
+        <h3 class="doc-card__title">{{ d.titulo }}</h3>
+        <p *ngIf="d.descripcion" class="doc-card__desc">{{ d.descripcion }}</p>
+        <ul class="doc-card__meta">
+          <li><i class="bi bi-file-earmark"></i><span>{{ d.nombreOriginal }}</span></li>
+          <li><i class="bi bi-hdd"></i><span>{{ prettySize(d.sizeBytes) }}</span></li>
+          <li><i class="bi bi-calendar3"></i><span>{{ d.createdAt | date:'dd MMM y' }}</span></li>
+          <li *ngIf="d.createdByUserName"><i class="bi bi-person"></i><span>{{ d.createdByUserName }}</span></li>
+          <li *ngIf="d.notifiedAbonados" class="doc-card__notified"><i class="bi bi-send-check"></i><span>{{ 'CLUB_DOCS.NOTIFIED' | translate }}</span></li>
+        </ul>
+      </div>
+
+      <footer class="doc-card__actions">
+        <button type="button"
+                class="doc-action doc-action--primary"
+                [disabled]="busyDocId === d.id"
+                (click)="download(d)">
+          <i class="bi bi-download"></i>
+          <span>{{ 'CLUB_DOCS.ACTIONS.DOWNLOAD' | translate }}</span>
+        </button>
+        <button type="button"
+                class="doc-action"
+                [disabled]="busyDocId === d.id"
+                (click)="togglePin(d)"
+                [title]="(d.pinned ? 'CLUB_DOCS.ACTIONS.UNPIN' : 'CLUB_DOCS.ACTIONS.PIN') | translate">
+          <i class="bi" [ngClass]="d.pinned ? 'bi-pin-angle-fill' : 'bi-pin-angle'"></i>
+        </button>
+        <button type="button"
+                class="doc-action doc-action--danger"
+                [disabled]="busyDocId === d.id"
+                (click)="askDelete(d)"
+                [title]="'CLUB_DOCS.ACTIONS.DELETE' | translate">
+          <i class="bi bi-trash"></i>
+        </button>
+      </footer>
+    </article>
+  </section>
+
+  <!-- ─────────────── EMPTY POR FILTRO ─────────────── -->
+  <div class="docs-empty docs-empty--filter"
+       *ngIf="!loading && allDocs.length > 0 && docs.length === 0">
+    <div class="docs-empty__icon"><i class="bi bi-search"></i></div>
+    <h2>{{ 'CLUB_DOCS.EMPTY_FILTER.TITLE' | translate }}</h2>
+    <p>{{ 'CLUB_DOCS.EMPTY_FILTER.SUBTITLE' | translate }}</p>
+  </div>
+</div>
+
+<!-- ─────────────── MODAL: subir documento ─────────────── -->
+<div *ngIf="showUploadModal" class="docs-modal" (click)="closeUploadModal()">
+  <div class="docs-modal__panel" (click)="$event.stopPropagation()">
+    <header class="docs-modal__head">
+      <h2><i class="bi bi-cloud-upload"></i> {{ 'CLUB_DOCS.UPLOAD_MODAL.TITLE' | translate }}</h2>
+      <button type="button" class="docs-modal__close" (click)="closeUploadModal()" [disabled]="uploadInProgress">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </header>
+
+    <div class="docs-modal__body">
+
+      <label class="docs-field">
+        <span class="docs-field__label">
+          {{ 'CLUB_DOCS.UPLOAD_MODAL.FILE_LABEL' | translate }}
+          <em>{{ 'CLUB_DOCS.UPLOAD_MODAL.FILE_HINT' | translate }}</em>
+        </span>
+        <div class="docs-filebox" [class.docs-filebox--filled]="!!uploadFile">
+          <input type="file" (change)="onFileSelected($event)" [disabled]="uploadInProgress" />
+          <div class="docs-filebox__inner">
+            <i class="bi" [ngClass]="uploadFile ? 'bi-file-earmark-check' : 'bi-cloud-arrow-up'"></i>
+            <p *ngIf="!uploadFile">{{ 'CLUB_DOCS.UPLOAD_MODAL.FILE_DROP' | translate }}</p>
+            <p *ngIf="uploadFile">{{ uploadFile.name }}<br><small>{{ prettySize(uploadFile.size) }}</small></p>
+          </div>
+        </div>
+      </label>
+
+      <label class="docs-field">
+        <span class="docs-field__label">{{ 'CLUB_DOCS.UPLOAD_MODAL.TITLE_LABEL' | translate }}</span>
+        <input type="text"
+               class="docs-input"
+               [(ngModel)]="uploadForm.titulo"
+               [disabled]="uploadInProgress"
+               maxlength="255"
+               [placeholder]="'CLUB_DOCS.UPLOAD_MODAL.TITLE_PLACEHOLDER' | translate" />
+      </label>
+
+      <label class="docs-field">
+        <span class="docs-field__label">{{ 'CLUB_DOCS.UPLOAD_MODAL.DESCRIPTION_LABEL' | translate }}</span>
+        <textarea class="docs-input docs-input--area"
+                  [(ngModel)]="uploadForm.descripcion"
+                  [disabled]="uploadInProgress"
+                  rows="3"
+                  [placeholder]="'CLUB_DOCS.UPLOAD_MODAL.DESCRIPTION_PLACEHOLDER' | translate"></textarea>
+      </label>
+
+      <label class="docs-field">
+        <span class="docs-field__label">{{ 'CLUB_DOCS.UPLOAD_MODAL.CATEGORY_LABEL' | translate }}</span>
+        <select class="docs-input"
+                [(ngModel)]="uploadForm.categoria"
+                [disabled]="uploadInProgress">
+          <option *ngFor="let c of allCategories" [value]="c">
+            {{ ('CLUB_DOCS.CATEGORY.' + c.toUpperCase()) | translate }}
+          </option>
+        </select>
+      </label>
+
+      <div class="docs-checks">
+        <label class="docs-check">
+          <input type="checkbox" [(ngModel)]="uploadForm.pinned" [disabled]="uploadInProgress" />
+          <span><i class="bi bi-pin-angle"></i> {{ 'CLUB_DOCS.UPLOAD_MODAL.PIN_LABEL' | translate }}</span>
+        </label>
+        <label class="docs-check">
+          <input type="checkbox" [(ngModel)]="uploadForm.notify" [disabled]="uploadInProgress" />
+          <span><i class="bi bi-bell"></i> {{ 'CLUB_DOCS.UPLOAD_MODAL.NOTIFY_LABEL' | translate }}</span>
+        </label>
+      </div>
+
+      <p *ngIf="uploadError" class="docs-error">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>{{ uploadError | translate }}</span>
+      </p>
+    </div>
+
+    <footer class="docs-modal__foot">
+      <button type="button" class="docs-btn docs-btn--ghost"
+              (click)="closeUploadModal()" [disabled]="uploadInProgress">
+        {{ 'COMMON.CANCEL' | translate }}
+      </button>
+      <button type="button" class="docs-btn docs-btn--primary"
+              (click)="submitUpload()"
+              [disabled]="uploadInProgress || !uploadFile || !uploadForm.titulo.trim()">
+        <i *ngIf="!uploadInProgress" class="bi bi-cloud-upload"></i>
+        <i *ngIf="uploadInProgress" class="bi bi-arrow-repeat spin"></i>
+        <span>{{ (uploadInProgress ? 'COMMON.SAVING' : 'CLUB_DOCS.UPLOAD_MODAL.SUBMIT') | translate }}</span>
+      </button>
+    </footer>
+  </div>
+</div>

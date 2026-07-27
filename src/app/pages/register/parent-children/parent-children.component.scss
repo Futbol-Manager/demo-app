@@ -1122,4 +1122,61 @@ select:focus.ng-invalid.ng-touched {
     width: calc(100% + 2.5rem);
     font-size: 0.8rem;
   }
+
+  /* ===== VARIANTES DE PAGO POR HIJO ===== */
+  .payment-variants {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed #d7dee6;
+  }
+
+  .payment-group {
+    background: #f4f7fb;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.75rem 0.9rem;
+    margin-bottom: 0.75rem;
+
+    &__name {
+      font-weight: 600;
+      color: #002c40;
+      margin-bottom: 0.25rem;
+    }
+
+    &__desc {
+      font-size: 0.82rem;
+      color: #636363;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .payment-fixed {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.88rem;
+    color: #333;
+    cursor: pointer;
+
+    input {
+      margin-top: 3px;
+    }
+  }
+
+  .variant-missing {
+    margin-top: 0.35rem;
+    font-size: 0.8rem;
+    color: #c0392b;
+  }
+
+  .missing-banner {
+    margin: 0.75rem 0;
+    padding: 0.7rem 0.9rem;
+    border-radius: 10px;
+    background: #fdecea;
+    border: 1px solid #f5c6c2;
+    color: #c0392b;
+    font-size: 0.88rem;
+    font-weight: 500;
+  }
 }

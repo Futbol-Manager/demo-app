@@ -743,6 +743,245 @@ $shadow: 0 4px 20px rgba(0,0,0,.09);
   color: $green;
 }
 
+// Spinner del boton de checkout
+.spin { display: inline-block; animation: shop-spin 0.8s linear infinite; }
+@keyframes shop-spin { to { transform: rotate(360deg); } }
+
+// ---------------------------------------------------------------------------
+// PEDIDOS
+// ---------------------------------------------------------------------------
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.order-card {
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: $radius;
+  box-shadow: $shadow;
+  overflow: hidden;
+}
+
+.order-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  transition: background .15s ease;
+
+  &:hover { background: $gray; }
+}
+
+.order-head-left {
+  display: flex;
+  flex-direction: column;
+  gap: .15rem;
+
+  .order-ref { font-weight: 700; color: $blue; }
+  .order-date { font-size: .8rem; color: #7a8699; }
+}
+
+.order-head-right {
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+
+  .order-total { font-weight: 700; color: $blue; }
+  .order-chevron { color: #9aa6b6; font-size: .9rem; }
+}
+
+.order-status {
+  padding: .28rem .7rem;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+
+  &.st-pending-payment { background: #fff3cd; color: #8a6d00; }
+  &.st-paid { background: #dbeafe; color: #1e40af; }
+  &.st-preparing { background: #e0e7ff; color: #4338ca; }
+  &.st-delivered { background: rgba($green, .15); color: darken($green, 12%); }
+}
+
+.order-body {
+  padding: 1rem 1.25rem 1.25rem;
+  border-top: 1px solid $border;
+}
+
+// Timeline
+.order-timeline {
+  display: flex;
+  justify-content: space-between;
+  gap: .5rem;
+  margin-bottom: 1.25rem;
+  position: relative;
+
+  .tl-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .4rem;
+    text-align: center;
+    position: relative;
+
+    &:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      width: 100%;
+      height: 2px;
+      background: $border;
+      z-index: 0;
+    }
+
+    .tl-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: $gray;
+      border: 2px solid $border;
+      color: #9aa6b6;
+      font-size: 1rem;
+      z-index: 1;
+    }
+
+    .tl-meta { display: flex; flex-direction: column; gap: .1rem; }
+    .tl-label { font-size: .72rem; font-weight: 600; color: #7a8699; }
+    .tl-date { font-size: .68rem; color: #9aa6b6; }
+
+    &.done {
+      .tl-icon { background: rgba($green, .15); border-color: $green; color: darken($green, 8%); }
+      &::after { background: $green; }
+      .tl-label { color: $blue; }
+    }
+    &.active {
+      .tl-icon { background: $green; border-color: $green; color: #fff; box-shadow: 0 0 0 4px rgba($green, .2); }
+      .tl-label { color: $blue; font-weight: 700; }
+    }
+  }
+}
+
+// Items del pedido
+.order-items {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+
+  img {
+    width: 46px;
+    height: 46px;
+    object-fit: cover;
+    border-radius: 8px;
+    background: $gray;
+  }
+
+  .oi-info { flex: 1; display: flex; flex-direction: column; }
+  .oi-name { font-size: .88rem; font-weight: 600; color: $blue; }
+  .oi-variant { font-size: .72rem; color: #7a8699; }
+  .oi-qty { font-size: .82rem; color: #7a8699; }
+  .oi-price { font-weight: 700; color: $blue; min-width: 70px; text-align: right; }
+}
+
+.order-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: .85rem;
+  border-top: 1px dashed $border;
+  font-size: .9rem;
+  color: #7a8699;
+
+  strong { color: $blue; }
+}
+
+// ---------------------------------------------------------------------------
+// MODAL EXITO CHECKOUT
+// ---------------------------------------------------------------------------
+.checkout-success-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 28, 46, .55);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+  padding: 1rem;
+  animation: cs-fade .2s ease;
+}
+
+@keyframes cs-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.checkout-success-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 2rem 1.75rem;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+  animation: cs-pop .25s cubic-bezier(.18,.89,.32,1.28);
+
+  .cs-icon {
+    font-size: 3.2rem;
+    color: $green;
+    line-height: 1;
+    margin-bottom: .75rem;
+  }
+  .cs-title { font-size: 1.35rem; font-weight: 800; color: $blue; margin: 0 0 .4rem; }
+  .cs-text { font-size: .9rem; color: #636363; margin: 0 0 1.1rem; }
+
+  .cs-ref {
+    display: flex;
+    justify-content: center;
+    gap: .5rem;
+    align-items: center;
+    background: $gray;
+    border-radius: 10px;
+    padding: .6rem;
+    margin-bottom: .9rem;
+    font-size: .85rem;
+    color: #7a8699;
+
+    strong { color: $blue; }
+  }
+
+  .cs-demo-note {
+    font-size: .76rem;
+    color: #8a6d00;
+    background: #fff3cd;
+    border-radius: 8px;
+    padding: .5rem .65rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .cs-actions {
+    display: flex;
+    gap: .6rem;
+
+    button { flex: 1; }
+  }
+}
+
 // 
 @media (max-width: 768px) {
   .pdm-card { grid-template-columns: 1fr; }
@@ -751,5 +990,7 @@ $shadow: 0 4px 20px rgba(0,0,0,.09);
   .shop-hero { padding: .85rem 1rem; }
   .hero-center { position: static; transform: none; display: none; }
   .product-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: .85rem; }
+  .order-timeline .tl-step .tl-date { display: none; }
+  .order-timeline .tl-step .tl-label { font-size: .64rem; }
 }
 

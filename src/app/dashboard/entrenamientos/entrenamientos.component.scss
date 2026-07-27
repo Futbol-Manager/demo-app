@@ -1,0 +1,31 @@
+:host {
+  display: block;
+  padding: 20px 24px;
+}
+
+.page-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 22px;
+  border-bottom: 2px solid #e3e8ee;
+
+  button {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    padding: 12px 18px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #636363;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+
+    i { margin-right: 6px; }
+
+    &.active {
+      color: #002c40;
+      border-bottom-color: #31b270;
+    }
+  }
+}

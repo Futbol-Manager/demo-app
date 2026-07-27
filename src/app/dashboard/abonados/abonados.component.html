@@ -1,645 +1,1153 @@
-<div class="back-container" data-tutorial="abo-volver">
-  <div class="btn-back-clean" href="javascript:void(0)" (click)="goBack()">
-    <i class="bi bi-arrow-left"></i>
-    <span>{{ 'COMMON.BACK' | translate }}</span>
+<!-- ===== PAGE HEADER (estilo Sphaira moderno) ===== -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+  <div class="header-center">
+    <h2 class="table-title">
+      <i class="bi bi-person-vcard-fill me-2"></i>{{ 'SUBS.TITLE_TABLE' | translate }}
+    </h2>
+    <p class="header-subtitle">{{ 'SUBS.SUBTITLE' | translate }}</p>
   </div>
 </div>
 
-<!-- Skeleton Loading -->
+<!-- ===== BARRA DE ACCIONES ===== -->
+<div class="header-actions-bar">
+  <div class="header-actions-inner">
+    <button class="header-action-btn" (click)="openModalCreateUpdateAbonado()"
+            [title]="'SUBS.CREATE' | translate">
+      <i class="bi bi-person-plus-fill"></i>
+      <span>{{ 'SUBS.CREATE' | translate }}</span>
+    </button>
+    <button class="header-action-btn header-action-btn--qr" (click)="openInviteModal()"
+            [title]="'ABONADOS.INVITE_BUTTON' | translate">
+      <i class="bi bi-qr-code"></i>
+      <span>{{ 'ABONADOS.INVITE_BUTTON' | translate }}</span>
+    </button>
+    <button class="header-action-btn header-action-btn--form" (click)="openFormBuilder()"
+            [title]="'ABONADOS.FORM_BUILDER_BUTTON' | translate">
+      <i class="bi bi-ui-checks-grid"></i>
+      <span>{{ 'ABONADOS.FORM_BUILDER_BUTTON' | translate }}</span>
+    </button>
+    <button class="header-action-btn header-action-btn--export" (click)="exportTableToExcel()"
+            [title]="'SUBS.DOWNLOAD_EXCEL' | translate">
+      <i class="bi bi-file-earmark-excel-fill"></i>
+      <span>{{ 'SUBS.DOWNLOAD_EXCEL' | translate }}</span>
+    </button>
+    <!-- Toggle de recordatorio semanal de pendientes (Bloque 7) -->
+    <button class="header-action-btn header-action-btn--reminder"
+            [class.header-action-btn--reminder-off]="!subsReminderEnabled"
+            (click)="toggleSubsReminder()"
+            [disabled]="subsReminderLoading"
+            [title]="(subsReminderEnabled
+                       ? 'SUBS.REMINDER.TOGGLE_OFF_TOOLTIP'
+                       : 'SUBS.REMINDER.TOGGLE_ON_TOOLTIP') | translate">
+      <i class="bi" [ngClass]="subsReminderEnabled ? 'bi-bell-fill' : 'bi-bell-slash'"></i>
+      <span>{{ (subsReminderEnabled
+                 ? 'SUBS.REMINDER.TOGGLE_ON'
+                 : 'SUBS.REMINDER.TOGGLE_OFF') | translate }}</span>
+    </button>
+  </div>
+</div>
+
+<!-- ===== SKELETON LOADING ===== -->
 <div *ngIf="!datosCargados" class="container mt-3">
-    <div class="skeleton-table">
-        <div class="skeleton-row" *ngFor="let r of [1,2,3,4,5,6,7,8]">
-            <div class="skeleton-cell" *ngFor="let c of [1,2,3,4,5,6,7,8]"></div>
-        </div>
+  <div class="skeleton-table">
+    <div class="skeleton-row" *ngFor="let r of [1,2,3,4,5,6,7,8]">
+      <div class="skeleton-cell" *ngFor="let c of [1,2,3,4,5,6,7,8]"></div>
     </div>
+  </div>
 </div>
 
 <div class="container mt-3" *ngIf="datosCargados">
-    <div style="margin-top: 2em;">
-        <h2>{{ 'SUBS.TITLE_TABLE' | translate }}</h2>
 
-        <div data-tutorial="abo-actions">
-        <button class="btn btn-success" style="margin-bottom: 2em; margin-right: 2em;"
-            (click)="openModalCreateUpdateAbonado()">
-            {{ 'SUBS.CREATE' | translate }}
-        </button>
-
-        <button class="btn btn-success" style="margin-bottom: 2em;" (click)="exportTableToExcel()">
-            <i class="bi bi-file-earmark-spreadsheet-fill"></i>
-            {{ 'SUBS.DOWNLOAD_EXCEL' | translate }}
-        </button>
-        </div>
-
-        <!-- Table Controls: Search + Page Size -->
-        <div class="table-controls" data-tutorial="abo-controls">
-            <div class="table-controls-left">
-                <label for="pageSize">{{ 'COMMON.SHOW' | translate }}</label>
-                <select id="pageSize" class="form-select form-select-sm" [(ngModel)]="pageSize"
-                    (change)="currentPage = 1" style="width: auto; display: inline-block;">
-                    <option *ngFor="let opt of pageSizeOptions" [ngValue]="opt">{{ opt }}</option>
-                </select>
-                <span>{{ 'COMMON.RECORDS' | translate }}</span>
-            </div>
-            <div class="table-controls-right">
-                <label for="searchInput">{{ 'COMMON.SEARCH' | translate }}:</label>
-                <input id="searchInput" type="text" class="form-control form-control-sm"
-                    [(ngModel)]="searchTerm" (input)="applyFilter()"
-                    [attr.placeholder]="'COMMON.SEARCH_PLACEHOLDER' | translate"
-                    style="width: 250px; display: inline-block;">
-            </div>
-        </div>
-
-        <!-- Info text -->
-        <div class="table-info">
-            {{ 'COMMON.SHOWING' | translate }} {{ filteredList.length === 0 ? 0 : ((currentPage - 1) * pageSize) + 1 }}
-            {{ 'COMMON.TO' | translate }} {{ currentPage * pageSize > filteredList.length ? filteredList.length : currentPage * pageSize }}
-            {{ 'COMMON.OF' | translate }} {{ filteredList.length }} {{ 'COMMON.RECORDS' | translate }}
-            <span *ngIf="searchTerm">({{ 'COMMON.FILTERED_OF' | translate }} {{ listAT.length }} {{ 'COMMON.TOTAL_RECORDS' | translate }})</span>
-        </div>
-
-        <div style="overflow-x: auto;" data-tutorial="abo-tabla">
-            <table class="table table-bordered table-striped text-center">
-                <thead class="table-custom">
-                    <tr>
-                        <th>{{ 'SUBS.TABLE.IMAGE' | translate }}</th>
-                        <th class="sortable" (click)="sortBy('abonado.nombre')">
-                            {{ 'SUBS.TABLE.NAME' | translate }}
-                            <span class="sort-icon">
-                                <span [class.active]="sortColumn === 'abonado.nombre' && sortDirection === 'asc'">&#9650;</span>
-                                <span [class.active]="sortColumn === 'abonado.nombre' && sortDirection === 'desc'">&#9660;</span>
-                            </span>
-                        </th>
-                        <th class="sortable" (click)="sortBy('abonado.apellidos')">
-                            {{ 'SUBS.TABLE.SURNAMES' | translate }}
-                            <span class="sort-icon">
-                                <span [class.active]="sortColumn === 'abonado.apellidos' && sortDirection === 'asc'">&#9650;</span>
-                                <span [class.active]="sortColumn === 'abonado.apellidos' && sortDirection === 'desc'">&#9660;</span>
-                            </span>
-                        </th>
-                        <th class="sortable" (click)="sortBy('abonado.mail')">
-                            {{ 'SUBS.TABLE.EMAIL' | translate }}
-                            <span class="sort-icon">
-                                <span [class.active]="sortColumn === 'abonado.mail' && sortDirection === 'asc'">&#9650;</span>
-                                <span [class.active]="sortColumn === 'abonado.mail' && sortDirection === 'desc'">&#9660;</span>
-                            </span>
-                        </th>
-                        <th>{{ 'SUBS.TABLE.PHONE' | translate }}</th>
-                        <th class="sortable" (click)="sortBy('estado')">
-                            {{ 'SUBS.TABLE.STATUS' | translate }}
-                            <span class="sort-icon">
-                                <span [class.active]="sortColumn === 'estado' && sortDirection === 'asc'">&#9650;</span>
-                                <span [class.active]="sortColumn === 'estado' && sortDirection === 'desc'">&#9660;</span>
-                            </span>
-                        </th>
-                        <th class="sortable" (click)="sortBy('cuota')">
-                            {{ 'SUBS.TABLE.FEE' | translate }}
-                            <span class="sort-icon">
-                                <span [class.active]="sortColumn === 'cuota' && sortDirection === 'asc'">&#9650;</span>
-                                <span [class.active]="sortColumn === 'cuota' && sortDirection === 'desc'">&#9660;</span>
-                            </span>
-                        </th>
-                        <th class="sortable" (click)="sortBy('pagado')">
-                            {{ 'SUBS.TABLE.PAID' | translate }}
-                            <span class="sort-icon">
-                                <span [class.active]="sortColumn === 'pagado' && sortDirection === 'asc'">&#9650;</span>
-                                <span [class.active]="sortColumn === 'pagado' && sortDirection === 'desc'">&#9660;</span>
-                            </span>
-                        </th>
-                        <th class="sortable" (click)="sortBy('restante')">
-                            {{ 'SUBS.TABLE.REMAINING' | translate }}
-                            <span class="sort-icon">
-                                <span [class.active]="sortColumn === 'restante' && sortDirection === 'asc'">&#9650;</span>
-                                <span [class.active]="sortColumn === 'restante' && sortDirection === 'desc'">&#9660;</span>
-                            </span>
-                        </th>
-                        <th>{{ 'SUBS.TABLE.ACTIONS' | translate }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let abonadoTemp of paginatedList; let i = index">
-                        <td *ngIf="abonadoTemp.abonado.imgPerfil">
-                            <div class="container">
-                                <img [src]="imageBaseUrl + abonadoTemp.abonado.imgPerfil" alt="user-player" width="50"
-                                    height="50" class="rounded-circle me-2">
-                            </div>
-                        </td>
-                        <td *ngIf="!abonadoTemp.abonado.imgPerfil">
-                            <div class="container">
-                                <span class="bi bi-person" style="font-size: 3rem;"></span>
-                            </div>
-                        </td>
-
-                        <td>{{ abonadoTemp.abonado.nombre }}</td>
-                        <td>{{ abonadoTemp.abonado.apellidos }}</td>
-                        <td>{{ abonadoTemp.abonado.mail }}</td>
-                        <td>{{ abonadoTemp.abonado.telefono }}</td>
-
-                        <td>
-                            <span *ngIf="abonadoTemp.estado === 0" class="badge bg-danger"
-                                [attr.title]="'SUBS.STATUS.NONE' | translate">
-                                <i class="bi bi-x-circle"></i> {{ 'SUBS.STATUS.NONE' | translate }}
-                            </span>
-                            <span *ngIf="abonadoTemp.estado === 1" class="badge bg-warning text-dark"
-                                [attr.title]="'SUBS.STATUS.PENDING' | translate">
-                                <i class="bi bi-exclamation-triangle"></i> {{ 'SUBS.STATUS.PENDING' | translate }}
-                            </span>
-                            <span *ngIf="abonadoTemp.estado === 2" class="badge bg-success"
-                                [attr.title]="'SUBS.STATUS.DONE' | translate">
-                                <i class="bi bi-check-circle"></i> {{ 'SUBS.STATUS.DONE' | translate }}
-                            </span>
-                        </td>
-
-                        <td>{{ abonadoTemp.cuota }}</td>
-                        <td>{{ abonadoTemp.pagado }}</td>
-                        <td>{{ abonadoTemp.restante }}</td>
-
-                        <td>
-                            <i class="bi bi-pencil" style="cursor: pointer;"
-                                [attr.title]="'SUBS.ACTIONS.EDIT' | translate"
-                                role="button" tabindex="0" [attr.aria-label]="'SUBS.ACTIONS.EDIT' | translate"
-                                (click)="openModalUpdateAbonado(i)"></i>
-
-                            <i class="bi bi-wallet2 ms-2" style="cursor: pointer;"
-                                [attr.title]="'SUBS.ACTIONS.INSERT_PAY' | translate"
-                                role="button" tabindex="0" [attr.aria-label]="'SUBS.ACTIONS.INSERT_PAY' | translate"
-                                (click)="openModalPagoAbonado(i)"></i>
-
-                            <i class="bi bi-clock-history ms-2" style="cursor: pointer;"
-                                [attr.title]="'SUBS.ACTIONS.VIEW_HISTORY' | translate"
-                                role="button" tabindex="0" [attr.aria-label]="'SUBS.ACTIONS.VIEW_HISTORY' | translate"
-                                (click)="openModalHistorialPagos(i)"></i>
-                        </td>
-                    </tr>
-                    <tr *ngIf="paginatedList.length === 0">
-                        <td colspan="10">
-                            <app-empty-state variant="compact" icon="bi-people-fill"
-                              [title]="'EMPTY_STATES.NO_RESULTS' | translate"
-                              [message]="'EMPTY_STATES.SUBSCRIBERS.MESSAGE' | translate">
-                            </app-empty-state>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Pagination -->
-        <div class="pagination-container" *ngIf="totalPages > 1">
-            <button class="page-btn" (click)="goToPage(1)" [disabled]="currentPage === 1"
-                title="Primera página">&laquo;</button>
-            <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"
-                title="Anterior">&lsaquo;</button>
-            <button *ngFor="let p of pages" class="page-btn" [class.active]="p === currentPage"
-                (click)="goToPage(p)">{{ p }}</button>
-            <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"
-                title="Siguiente">&rsaquo;</button>
-            <button class="page-btn" (click)="goToPage(totalPages)" [disabled]="currentPage === totalPages"
-                title="Última página">&raquo;</button>
-        </div>
+  <!-- ═══════════ BARRA DE FILTROS ═══════════ -->
+  <div class="uf-bar mb-3">
+    <!-- BUSCADOR -->
+    <div class="uf-search">
+      <i class="bi bi-search uf-search-icon"></i>
+      <input id="searchInput" type="text" class="uf-input"
+             [(ngModel)]="searchTerm" (input)="applyFilter()"
+             [placeholder]="'COMMON.SEARCH_PLACEHOLDER' | translate">
     </div>
-</div>
 
-<!-- tabla para imprimir en excel -->
-<div style="display: none;">
-    <table id="tablaExcel" class="table table-bordered table-striped text-center" #table1>
-        <thead class="table-custom">
-            <tr>
-                <th>{{ 'SUBS.TABLE.NAME' | translate }}</th>
-                <th>{{ 'SUBS.TABLE.SURNAMES' | translate }}</th>
-                <th>{{ 'SUBS.TABLE.EMAIL' | translate }}</th>
-                <th>{{ 'SUBS.TABLE.PHONE' | translate }}</th>
-                <th>{{ 'SUBS.TABLE.STATUS' | translate }}</th>
-                <th>{{ 'SUBS.TABLE.FEE' | translate }}</th>
-                <th>{{ 'SUBS.TABLE.PAID' | translate }}</th>
-                <th>{{ 'SUBS.TABLE.REMAINING' | translate }}</th>
-            </tr>
+    <div class="uf-sep"></div>
+
+    <!-- TABS DE ESTADO DEL ABONADO -->
+    <div class="uf-estado-chips">
+      <button class="uf-estado-chip"
+              [class.active]="estadoFilter === 'all'"
+              (click)="setEstadoFilter('all')">
+        <i class="bi bi-collection"></i> {{ 'SUBS.TABS.ALL' | translate }}
+        <span class="uf-count">{{ listAT.length }}</span>
+      </button>
+      <button class="uf-estado-chip uf-estado-chip--pendiente"
+              [class.active]="estadoFilter === 'pending'"
+              (click)="setEstadoFilter('pending')">
+        <i class="bi bi-hourglass-split"></i> {{ 'SUBS.TABS.PENDING' | translate }}
+        <span class="uf-count" *ngIf="pendingCount > 0">{{ pendingCount }}</span>
+      </button>
+      <button class="uf-estado-chip uf-estado-chip--ok"
+              [class.active]="estadoFilter === 'active'"
+              (click)="setEstadoFilter('active')">
+        <i class="bi bi-check-circle-fill"></i> {{ 'SUBS.TABS.ACTIVE' | translate }}
+      </button>
+      <button class="uf-estado-chip uf-estado-chip--vencida"
+              [class.active]="estadoFilter === 'inactive'"
+              (click)="setEstadoFilter('inactive')">
+        <i class="bi bi-slash-circle"></i> {{ 'SUBS.TABS.INACTIVE' | translate }}
+      </button>
+    </div>
+
+    <div class="uf-sep"></div>
+
+    <!-- PAGE SIZE -->
+    <div class="uf-pagesize">
+      <label for="pageSize">{{ 'COMMON.SHOW' | translate }}</label>
+      <select id="pageSize" class="uf-select" [(ngModel)]="pageSize"
+              (change)="currentPage = 1">
+        <option *ngFor="let opt of pageSizeOptions" [ngValue]="opt">{{ opt }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ═══════════ INFO TEXT ═══════════ -->
+  <div class="table-info">
+    {{ 'COMMON.SHOWING' | translate }}
+    {{ filteredList.length === 0 ? 0 : ((currentPage - 1) * pageSize) + 1 }}–{{ currentPage * pageSize > filteredList.length ? filteredList.length : currentPage * pageSize }}
+    {{ 'COMMON.OF' | translate }} {{ filteredList.length }}
+    <span *ngIf="searchTerm" class="table-info-filtered">
+      ({{ 'COMMON.FILTERED_OF' | translate }} {{ listAT.length }})
+    </span>
+  </div>
+
+  <!-- ═══════════ BULK ACTIONS BAR (Bloque 5) ═══════════ -->
+  <!--
+    Visible cuando el usuario tiene >= 1 abonado seleccionado. Las acciones
+    se muestran condicionalmente según el estado de los abonados marcados:
+    no tiene sentido mostrar "Aprobar" si ninguno está pendiente.
+  -->
+  <div class="bulk-bar" *ngIf="selectedIds.size > 0" [class.bulk-bar--busy]="bulkProcessing">
+    <div class="bulk-bar__count">
+      <i class="bi bi-check2-square"></i>
+      <span>{{ 'SUBS.BULK.SELECTED' | translate: { count: selectedIds.size } }}</span>
+      <button type="button" class="bulk-bar__clear" (click)="clearSelection()"
+              [title]="'SUBS.BULK.CLEAR' | translate">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="bulk-bar__actions">
+      <button type="button" class="bulk-btn bulk-btn--ok"
+              *ngIf="bulkAvailable().approve"
+              [disabled]="bulkProcessing"
+              (click)="applyBulkAction('approve')">
+        <i class="bi bi-check-lg"></i> {{ 'SUBS.BULK.APPROVE' | translate }}
+      </button>
+      <button type="button" class="bulk-btn bulk-btn--ok"
+              *ngIf="bulkAvailable().reactivate"
+              [disabled]="bulkProcessing"
+              (click)="applyBulkAction('reactivate')">
+        <i class="bi bi-arrow-counterclockwise"></i> {{ 'SUBS.BULK.REACTIVATE' | translate }}
+      </button>
+      <button type="button" class="bulk-btn bulk-btn--warn"
+              *ngIf="bulkAvailable().deactivate"
+              [disabled]="bulkProcessing"
+              (click)="applyBulkAction('deactivate')">
+        <i class="bi bi-pause-circle"></i> {{ 'SUBS.BULK.DEACTIVATE' | translate }}
+      </button>
+      <button type="button" class="bulk-btn bulk-btn--danger"
+              *ngIf="bulkAvailable().reject"
+              [disabled]="bulkProcessing"
+              (click)="applyBulkAction('reject')">
+        <i class="bi bi-x-circle"></i> {{ 'SUBS.BULK.REJECT' | translate }}
+      </button>
+      <span class="bulk-bar__spinner" *ngIf="bulkProcessing">
+        <i class="bi bi-arrow-repeat"></i>
+      </span>
+    </div>
+  </div>
+
+  <!-- ═══════════ TABLA MODERNA ═══════════ -->
+  <div class="table-wrapper">
+    <div class="table-scroll">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <!-- Checkbox de selección masiva (Bloque 5). Refleja solo
+                 la página visible para no actuar sobre filas ocultas. -->
+            <th class="col-check">
+              <label class="bulk-check"
+                     [title]="(isAllVisibleSelected() ? 'SUBS.BULK.UNSELECT_PAGE' : 'SUBS.BULK.SELECT_PAGE') | translate">
+                <input type="checkbox"
+                       [checked]="isAllVisibleSelected()"
+                       [indeterminate]="isSomeVisibleSelected()"
+                       (change)="toggleSelectAllVisible()" />
+                <span class="bulk-check__box"></span>
+              </label>
+            </th>
+            <th class="col-avatar"></th>
+            <th class="col-name sortable" (click)="sortBy('abonado.nombre')">
+              {{ 'SUBS.TABLE.NAME' | translate }}
+              <i class="bi ms-1" [ngClass]="{
+                'bi-arrow-up': sortColumn === 'abonado.nombre' && sortDirection === 'asc',
+                'bi-arrow-down': sortColumn === 'abonado.nombre' && sortDirection === 'desc',
+                'bi-arrow-down-up': sortColumn !== 'abonado.nombre'
+              }"></i>
+            </th>
+            <th class="sortable" (click)="sortBy('abonado.estado')">
+              {{ 'SUBS.TABLE.SUBSCRIBER_STATUS' | translate }}
+              <i class="bi ms-1" [ngClass]="{
+                'bi-arrow-up': sortColumn === 'abonado.estado' && sortDirection === 'asc',
+                'bi-arrow-down': sortColumn === 'abonado.estado' && sortDirection === 'desc',
+                'bi-arrow-down-up': sortColumn !== 'abonado.estado'
+              }"></i>
+            </th>
+            <th class="sortable" (click)="sortBy('estado')">
+              {{ 'SUBS.TABLE.STATUS' | translate }}
+              <i class="bi ms-1" [ngClass]="{
+                'bi-arrow-up': sortColumn === 'estado' && sortDirection === 'asc',
+                'bi-arrow-down': sortColumn === 'estado' && sortDirection === 'desc',
+                'bi-arrow-down-up': sortColumn !== 'estado'
+              }"></i>
+            </th>
+            <th class="sortable col-member-num" (click)="sortBy('abonado.numeroSocio')">
+              {{ 'SUBS.TABLE.MEMBER_NUM' | translate }}
+              <i class="bi ms-1" [ngClass]="{
+                'bi-arrow-up': sortColumn === 'abonado.numeroSocio' && sortDirection === 'asc',
+                'bi-arrow-down': sortColumn === 'abonado.numeroSocio' && sortDirection === 'desc',
+                'bi-arrow-down-up': sortColumn !== 'abonado.numeroSocio'
+              }"></i>
+            </th>
+            <th class="sortable col-age" (click)="sortBy('abonado.fechaDeNacimiento')">
+              {{ 'SUBS.TABLE.AGE' | translate }}
+              <i class="bi ms-1" [ngClass]="{
+                'bi-arrow-up': sortColumn === 'abonado.fechaDeNacimiento' && sortDirection === 'asc',
+                'bi-arrow-down': sortColumn === 'abonado.fechaDeNacimiento' && sortDirection === 'desc',
+                'bi-arrow-down-up': sortColumn !== 'abonado.fechaDeNacimiento'
+              }"></i>
+            </th>
+            <th class="sortable col-family" (click)="sortBy('numFamiliares')">
+              {{ 'SUBS.TABLE.FAMILY' | translate }}
+              <i class="bi ms-1" [ngClass]="{
+                'bi-arrow-up': sortColumn === 'numFamiliares' && sortDirection === 'asc',
+                'bi-arrow-down': sortColumn === 'numFamiliares' && sortDirection === 'desc',
+                'bi-arrow-down-up': sortColumn !== 'numFamiliares'
+              }"></i>
+            </th>
+            <th class="col-actions">{{ 'SUBS.TABLE.ACTIONS' | translate }}</th>
+          </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let abonadoTemp of listAT; let i = index">
-                <td>{{ abonadoTemp.abonado.nombre }}</td>
-                <td>{{ abonadoTemp.abonado.apellidos }}</td>
-                <td>{{ abonadoTemp.abonado.mail }}</td>
-                <td>{{ abonadoTemp.abonado.telefono }}</td>
-                <td>
-                    <ng-container *ngIf="abonadoTemp.estado === 0">
-                        {{ 'SUBS.STATUS.NONE' | translate }}
-                    </ng-container>
-                    <ng-container *ngIf="abonadoTemp.estado === 1">
-                        {{ 'SUBS.STATUS.PENDING' | translate }}
-                    </ng-container>
-                    <ng-container *ngIf="abonadoTemp.estado === 2">
-                        {{ 'SUBS.STATUS.DONE' | translate }}
-                    </ng-container>
-                </td>
-                <td>{{ abonadoTemp.cuota }}</td>
-                <td>{{ abonadoTemp.pagado }}</td>
-                <td>{{ abonadoTemp.restante }}</td>
-            </tr>
+          <!-- SIN RESULTADOS -->
+          <tr *ngIf="paginatedList.length === 0">
+            <td colspan="9" class="empty-row">
+              <app-empty-state variant="compact" icon="bi-people-fill"
+                [title]="'EMPTY_STATES.NO_RESULTS' | translate"
+                [message]="'EMPTY_STATES.SUBSCRIBERS.MESSAGE' | translate">
+              </app-empty-state>
+            </td>
+          </tr>
+
+          <tr *ngFor="let abonadoTemp of paginatedList; let i = index"
+              [class.is-row-selected]="isSelected(abonadoTemp)">
+            <!-- Checkbox de fila (Bloque 5) -->
+            <!-- IMPORTANTE: dejar SOLO el handler `(change)` del input. Si se
+                 añade `(click)` también al label, el click se dispara dos
+                 veces (label + input al re-disparar el click) y `toggleSelect`
+                 se ejecuta dos veces, anulando la selección. `(click)` del
+                 label aquí solo sirve para detener la propagación al `<tr>`. -->
+            <td class="check-cell">
+              <label class="bulk-check" (click)="$event.stopPropagation()">
+                <input type="checkbox"
+                       [checked]="isSelected(abonadoTemp)"
+                       (change)="toggleSelect(abonadoTemp)" />
+                <span class="bulk-check__box"></span>
+              </label>
+            </td>
+            <!-- AVATAR -->
+            <td class="avatar-cell">
+              <!-- Las fotos viven en `abonado/<fileName>`. Si el club las sube
+                   desde su panel o el abonado desde el registro, ambas rutas
+                   acaban con el mismo prefijo. -->
+              <img *ngIf="abonadoTemp.abonado.imgPerfil" loading="lazy"
+                   class="avatar-fill"
+                   [src]="imageBaseUrlAbonado + abonadoTemp.abonado.imgPerfil"
+                   [alt]="abonadoTemp.abonado.nombre"
+                   (error)="onAvatarError($any($event.target))">
+              <div *ngIf="!abonadoTemp.abonado.imgPerfil" class="avatar-placeholder">
+                <span>{{ (abonadoTemp.abonado.nombre || '?')[0] }}{{ (abonadoTemp.abonado.apellidos || '')[0] }}</span>
+              </div>
+            </td>
+
+            <!-- NOMBRE -->
+            <td class="name-cell">
+              <button type="button" class="btn-link-name" (click)="goToDetail(abonadoTemp)">
+                {{ abonadoTemp.abonado.nombre }} {{ abonadoTemp.abonado.apellidos }}
+              </button>
+            </td>
+
+            <!-- ESTADO ABONADO -->
+            <td class="status-cell">
+              <span class="status-pill"
+                    [ngClass]="{
+                      'status-pill--ok':        abonadoTemp.abonado.estado === 1,
+                      'status-pill--pendiente': abonadoTemp.abonado.estado === 2,
+                      'status-pill--no-quota':  abonadoTemp.abonado.estado === 0
+                    }">
+                <span class="status-pill-dot"></span>
+                <i class="bi status-pill-icon"
+                   [ngClass]="{
+                     'bi-check2':            abonadoTemp.abonado.estado === 1,
+                     'bi-hourglass-split':   abonadoTemp.abonado.estado === 2,
+                     'bi-slash-circle':      abonadoTemp.abonado.estado === 0
+                   }"></i>
+                <span class="status-pill-text">
+                  {{ abonadoTemp.abonado.estado === 1 ? ('SUBS.SUBSCRIBER_STATUS.ACTIVE' | translate)
+                     : abonadoTemp.abonado.estado === 2 ? ('SUBS.SUBSCRIBER_STATUS.PENDING' | translate)
+                     : ('SUBS.SUBSCRIBER_STATUS.INACTIVE' | translate) }}
+                </span>
+              </span>
+            </td>
+
+            <!-- ESTADO CUOTA -->
+            <td class="status-cell">
+              <span class="status-pill"
+                    [ngClass]="{
+                      'status-pill--ok':        abonadoTemp.estado === 2,
+                      'status-pill--pendiente': abonadoTemp.estado === 1,
+                      'status-pill--vencida':   abonadoTemp.estado === 0
+                    }">
+                <span class="status-pill-dot"></span>
+                <i class="bi status-pill-icon"
+                   [ngClass]="{
+                     'bi-check2':                abonadoTemp.estado === 2,
+                     'bi-exclamation-lg':        abonadoTemp.estado === 1,
+                     'bi-x-circle':              abonadoTemp.estado === 0
+                   }"></i>
+                <span class="status-pill-text">
+                  {{ abonadoTemp.estado === 2 ? ('SUBS.STATUS.DONE' | translate)
+                     : abonadoTemp.estado === 1 ? ('SUBS.STATUS.PENDING' | translate)
+                     : ('SUBS.STATUS.NONE' | translate) }}
+                </span>
+              </span>
+            </td>
+
+            <!-- Nº SOCIO -->
+            <td class="member-num-cell">
+              <ng-container *ngIf="abonadoTemp.abonado.numeroSocio; else noMemberNum">
+                <span class="member-num-tag" [title]="abonadoTemp.abonado.numeroSocio">
+                  <i class="bi bi-hash"></i>
+                  <span class="member-num-text">{{ abonadoTemp.abonado.numeroSocio }}</span>
+                </span>
+              </ng-container>
+              <ng-template #noMemberNum>
+                <span class="empty-dash">—</span>
+              </ng-template>
+            </td>
+
+            <!-- EDAD -->
+            <td class="age-cell">
+              <ng-container *ngIf="getEdad(abonadoTemp.abonado.fechaDeNacimiento) as edad; else noAge">
+                <span class="age-pill">
+                  <span class="age-num">{{ edad }}</span>
+                  <span class="age-unit">{{ 'SUBS.TABLE.AGE_UNIT' | translate }}</span>
+                </span>
+              </ng-container>
+              <ng-template #noAge>
+                <span class="empty-dash">—</span>
+              </ng-template>
+            </td>
+
+            <!-- FAMILIARES -->
+            <td class="family-cell">
+              <button type="button"
+                      class="fam-badge"
+                      [class.fam-badge--empty]="!abonadoTemp.numFamiliares"
+                      [title]="'SUBS.TABLE.FAMILY_HINT' | translate"
+                      (click)="goToDetail(abonadoTemp)">
+                <i class="bi bi-people-fill"></i>
+                <span class="fam-num">{{ abonadoTemp.numFamiliares || 0 }}</span>
+              </button>
+            </td>
+
+            <!-- ACCIONES -->
+            <td class="actions-cell">
+              <div class="actions-group">
+                <!-- Aprobar/Rechazar (solo si está pendiente) -->
+                <button *ngIf="abonadoTemp.abonado.estado === 2"
+                        class="btn-icon approve"
+                        [disabled]="approvingId === abonadoTemp.abonado.abonadoId"
+                        [title]="'SUBS.ACTIONS.APPROVE' | translate"
+                        (click)="changeAbonadoEstado(abonadoTemp, 1)">
+                  <i class="bi bi-check-lg"></i>
+                </button>
+                <button *ngIf="abonadoTemp.abonado.estado === 2"
+                        class="btn-icon reject"
+                        [disabled]="approvingId === abonadoTemp.abonado.abonadoId"
+                        [title]="'SUBS.ACTIONS.REJECT' | translate"
+                        (click)="changeAbonadoEstado(abonadoTemp, 0)">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+
+                <!-- Editar -->
+                <button class="btn-icon edit"
+                        [title]="'SUBS.ACTIONS.EDIT' | translate"
+                        (click)="openModalUpdateAbonado(i)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+
+                <!-- Pago -->
+                <button class="btn-icon pay"
+                        [title]="'SUBS.ACTIONS.INSERT_PAY' | translate"
+                        (click)="openModalPagoAbonado(i)">
+                  <i class="bi bi-wallet2"></i>
+                </button>
+
+                <!-- Historial -->
+                <button class="btn-icon history"
+                        [title]="'SUBS.ACTIONS.VIEW_HISTORY' | translate"
+                        (click)="openModalHistorialPagos(i)">
+                  <i class="bi bi-clock-history"></i>
+                </button>
+
+                <!-- Dar de baja (solo si está activo, Bloque 6) -->
+                <button *ngIf="abonadoTemp.abonado.estado === 1"
+                        class="btn-icon deactivate"
+                        [disabled]="approvingId === abonadoTemp.abonado.abonadoId"
+                        [title]="'SUBS.ACTIONS.DEACTIVATE' | translate"
+                        (click)="changeAbonadoEstado(abonadoTemp, 0)">
+                  <i class="bi bi-pause-circle"></i>
+                </button>
+
+                <!-- Reactivar (solo si está dado de baja) -->
+                <button *ngIf="abonadoTemp.abonado.estado === 0"
+                        class="btn-icon reactivate"
+                        [disabled]="approvingId === abonadoTemp.abonado.abonadoId"
+                        [title]="'SUBS.ACTIONS.REOPEN' | translate"
+                        (click)="changeAbonadoEstado(abonadoTemp, 1)">
+                  <i class="bi bi-arrow-counterclockwise"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
         </tbody>
-    </table>
-</div>
-
-<!-- Modal crear/actualizar abonado -->
-<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalCreateUpdateAbonado}">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="stripeModalLabel">{{ 'SUBS.MODAL.TITLE' | translate }}</h5>
-                    <button type="button" class="btn-close" aria-label="Close"
-                        (click)="cerrarModalCreateUpdateAbonado()"></button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="row text-center">
-                            <div class="col-12 col-md-12">
-                                <div class="row mt-3">
-                                    <div class="col-12 col-md-12">
-                                        <label><strong>{{ 'SUBS.MODAL.DATA_LABEL' | translate }}</strong></label>
-                                    </div>
-                                </div>
-
-                                <div class="row mt-3">
-                                    <div class="col-12 col-md-4">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control custom-input" id="nombre"
-                                                name="nombre" [(ngModel)]="abonadoObj.nombre"
-                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.NAME' | translate"
-                                                #primerCampo>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-8">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control custom-input" id="apellido"
-                                                name="apellido" [(ngModel)]="abonadoObj.apellidos"
-                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.SURNAMES' | translate">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row mt-3">
-                                    <div class="col-12 col-md-4">
-                                        <div class="form-group">
-                                            <input type="date" class="form-control custom-input" id="fechaDeNacimiento"
-                                                name="fechaDeNacimiento" [(ngModel)]="abonadoObj.fechaDeNacimiento"
-                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.BIRTHDATE' | translate">
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-8">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control custom-input" id="dni" name="dni"
-                                                [(ngModel)]="abonadoObj.dni"
-                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.DNI' | translate">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row mt-3">
-                                    <div class="col-12 col-md-4">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control custom-input" id="telefono"
-                                                name="telefono" [(ngModel)]="abonadoObj.telefono" maxlength="9"
-                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.PHONE' | translate">
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-8">
-                                        <div class="form-group">
-                                            <input type="mail" class="form-control custom-input" id="email" name="email"
-                                                [(ngModel)]="abonadoObj.mail"
-                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.EMAIL' | translate">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row mt-3">
-                                    <div class="col-12 col-md-4">
-                                        <div class="form-group">
-                                            <select class="form-select input-register custom-input" id="genero"
-                                                name="genero" [(ngModel)]="abonadoObj.genero">
-                                                <option value="" disabled selected hidden>{{ 'SUBS.MODAL.GENDER' |
-                                                    translate }}</option>
-                                                <option value="M">{{ 'SUBS.MODAL.GENDER_M' | translate }}</option>
-                                                <option value="F">{{ 'SUBS.MODAL.GENDER_F' | translate }}</option>
-                                                <option value="O">{{ 'SUBS.MODAL.GENDER_O' | translate }}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <div class="row text-center mt-3">
-                            <div class="col-12 col-md-12">
-                                <div class="row mt-3">
-                                    <div class="col-12 col-md-12">
-                                        <label><strong>{{ 'SUBS.MODAL.FEE_SECTION' | translate }}</strong></label>
-                                    </div>
-                                </div>
-                                <div class="row mt-3">
-                                    <div class="col-12 col-md-4">
-                                        <div class="form-group">
-                                            <input type="number" class="form-control custom-input" id="cuota"
-                                                name="cuota" [readOnly]="cuotaReadOnly" [(ngModel)]="cuotaAbonado"
-                                                [attr.placeholder]="'SUBS.MODAL.FEE_PLACEHOLDER' | translate">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal-footer mt-3">
-                            <button type="button" class="btn btn-success float-end" (click)="createUpdateAbonado()">
-                                {{ 'BUTTONS.SAVE' | translate }}
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-            </div>
-        </div>
+      </table>
     </div>
+  </div>
+
+  <!-- ═══════════ PAGINACIÓN ═══════════ -->
+  <div class="pagination-wrapper" *ngIf="totalPages > 1">
+    <div class="pagination-content">
+      <div class="pagination-info">
+        {{ 'COMMON.SHOWING' | translate }}
+        {{ (currentPage - 1) * pageSize + 1 }}–{{ currentPage * pageSize > filteredList.length ? filteredList.length : currentPage * pageSize }}
+        {{ 'COMMON.OF' | translate }}
+        {{ filteredList.length }}
+      </div>
+      <div class="pagination-controls">
+        <button class="page-btn" (click)="goToPage(1)" [disabled]="currentPage === 1" title="«">
+          <i class="bi bi-chevron-double-left"></i>
+        </button>
+        <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1" title="‹">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <button *ngFor="let p of pages" class="page-btn"
+                [class.active]="p === currentPage"
+                (click)="goToPage(p)">{{ p }}</button>
+        <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages" title="›">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+        <button class="page-btn" (click)="goToPage(totalPages)" [disabled]="currentPage === totalPages" title="»">
+          <i class="bi bi-chevron-double-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- Modal editar abonado + cuota -->
+<!-- ═══════════════════════════════════════════════════════════════
+     TABLA OCULTA PARA EXPORT EXCEL (no se renderiza visualmente)
+     ═══════════════════════════════════════════════════════════════ -->
+<div style="display: none;">
+  <table id="tablaExcel" class="table table-bordered table-striped text-center" #table1>
+    <thead class="table-custom">
+      <tr>
+        <th>{{ 'SUBS.TABLE.MEMBER_NUM' | translate }}</th>
+        <th>{{ 'SUBS.TABLE.NAME' | translate }}</th>
+        <th>{{ 'SUBS.TABLE.SURNAMES' | translate }}</th>
+        <th>{{ 'SUBS.TABLE.EMAIL' | translate }}</th>
+        <th>{{ 'SUBS.TABLE.PHONE' | translate }}</th>
+        <th>{{ 'SUBS.TABLE.SUBSCRIBER_STATUS' | translate }}</th>
+        <th>{{ 'SUBS.TABLE.STATUS' | translate }}</th>
+        <th>{{ 'SUBS.TABLE.AGE' | translate }}</th>
+        <th>{{ 'SUBS.TABLE.FAMILY' | translate }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let abonadoTemp of listAT; let i = index">
+        <td>{{ abonadoTemp.abonado.numeroSocio }}</td>
+        <td>{{ abonadoTemp.abonado.nombre }}</td>
+        <td>{{ abonadoTemp.abonado.apellidos }}</td>
+        <td>{{ abonadoTemp.abonado.mail }}</td>
+        <td>{{ abonadoTemp.abonado.telefono }}</td>
+        <td>
+          <ng-container *ngIf="abonadoTemp.abonado.estado === 0">{{ 'SUBS.SUBSCRIBER_STATUS.INACTIVE' | translate }}</ng-container>
+          <ng-container *ngIf="abonadoTemp.abonado.estado === 1">{{ 'SUBS.SUBSCRIBER_STATUS.ACTIVE' | translate }}</ng-container>
+          <ng-container *ngIf="abonadoTemp.abonado.estado === 2">{{ 'SUBS.SUBSCRIBER_STATUS.PENDING' | translate }}</ng-container>
+        </td>
+        <td>
+          <ng-container *ngIf="abonadoTemp.estado === 0">{{ 'SUBS.STATUS.NONE' | translate }}</ng-container>
+          <ng-container *ngIf="abonadoTemp.estado === 1">{{ 'SUBS.STATUS.PENDING' | translate }}</ng-container>
+          <ng-container *ngIf="abonadoTemp.estado === 2">{{ 'SUBS.STATUS.DONE' | translate }}</ng-container>
+        </td>
+        <td>{{ getEdad(abonadoTemp.abonado.fechaDeNacimiento) || '' }}</td>
+        <td>{{ abonadoTemp.numFamiliares || 0 }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MODAL CREAR ABONADO (estilo Sphaira moderno)
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="sph-modal-backdrop" *ngIf="showModalCreateUpdateAbonado"
+     (click)="cerrarModalCreateUpdateAbonado()"></div>
+<div class="sph-modal" tabindex="-1" role="dialog"
+     [class.sph-modal--open]="showModalCreateUpdateAbonado"
+     *ngIf="showModalCreateUpdateAbonado">
+  <div class="sph-modal-dialog" role="document" (click)="$event.stopPropagation()">
+    <div class="sph-modal-content">
+
+      <!-- HEADER degradado -->
+      <div class="sph-modal-header">
+        <div class="sph-modal-title-wrap">
+          <div class="sph-modal-icon">
+            <i class="bi bi-person-plus-fill"></i>
+          </div>
+          <div>
+            <h5 class="sph-modal-title">{{ 'SUBS.MODAL.TITLE' | translate }}</h5>
+            <p class="sph-modal-subtitle">{{ 'SUBS.MODAL.DATA_LABEL' | translate }}</p>
+          </div>
+        </div>
+        <button type="button" class="sph-modal-close" aria-label="Close"
+                (click)="cerrarModalCreateUpdateAbonado()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <!-- BODY -->
+      <div class="sph-modal-body">
+        <form>
+          <!-- Sección: Datos personales -->
+          <div class="sph-form-section">
+            <div class="sph-form-section-header">
+              <i class="bi bi-person-vcard"></i>
+              <span>{{ 'SUBS.MODAL.DATA_LABEL' | translate }}</span>
+            </div>
+
+            <div class="sph-form-grid">
+              <div class="sph-field sph-field--md">
+                <label for="nombre">{{ 'SUBS.MODAL.FIELDS.NAME' | translate }}</label>
+                <input type="text" class="sph-input" id="nombre" name="nombre"
+                       [(ngModel)]="abonadoObj.nombre"
+                       [placeholder]="'SUBS.MODAL.FIELDS.NAME' | translate"
+                       #primerCampo>
+              </div>
+              <div class="sph-field sph-field--lg">
+                <label for="apellido">{{ 'SUBS.MODAL.FIELDS.SURNAMES' | translate }}</label>
+                <input type="text" class="sph-input" id="apellido" name="apellido"
+                       [(ngModel)]="abonadoObj.apellidos"
+                       [placeholder]="'SUBS.MODAL.FIELDS.SURNAMES' | translate">
+              </div>
+
+              <div class="sph-field sph-field--md">
+                <label for="fechaDeNacimiento">{{ 'SUBS.MODAL.FIELDS.BIRTHDATE' | translate }}</label>
+                <input type="date" class="sph-input" id="fechaDeNacimiento"
+                       name="fechaDeNacimiento"
+                       [(ngModel)]="abonadoObj.fechaDeNacimiento">
+              </div>
+              <div class="sph-field sph-field--lg">
+                <label for="dni">{{ 'SUBS.MODAL.FIELDS.DNI' | translate }}</label>
+                <input type="text" class="sph-input" id="dni" name="dni"
+                       [(ngModel)]="abonadoObj.dni"
+                       [placeholder]="'SUBS.MODAL.FIELDS.DNI' | translate">
+              </div>
+
+              <div class="sph-field sph-field--md">
+                <label for="telefono">{{ 'SUBS.MODAL.FIELDS.PHONE' | translate }}</label>
+                <input type="tel" class="sph-input" id="telefono" name="telefono"
+                       [(ngModel)]="abonadoObj.telefono" maxlength="15"
+                       [placeholder]="'SUBS.MODAL.FIELDS.PHONE' | translate">
+              </div>
+              <div class="sph-field sph-field--lg">
+                <label for="email">{{ 'SUBS.MODAL.FIELDS.EMAIL' | translate }}</label>
+                <input type="email" class="sph-input" id="email" name="email"
+                       [(ngModel)]="abonadoObj.mail"
+                       [placeholder]="'SUBS.MODAL.FIELDS.EMAIL' | translate">
+              </div>
+
+              <div class="sph-field sph-field--md">
+                <label for="genero">{{ 'SUBS.MODAL.GENDER' | translate }}</label>
+                <select class="sph-input sph-select" id="genero" name="genero"
+                        [(ngModel)]="abonadoObj.genero">
+                  <option value="" disabled selected hidden>{{ 'SUBS.MODAL.GENDER' | translate }}</option>
+                  <option value="M">{{ 'SUBS.MODAL.GENDER_M' | translate }}</option>
+                  <option value="F">{{ 'SUBS.MODAL.GENDER_F' | translate }}</option>
+                  <option value="O">{{ 'SUBS.MODAL.GENDER_O' | translate }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sección de cuota individual eliminada (2026-05-17):
+               la cuota deja de ser personal por abonado. El club fija
+               cuotas mensuales o anuales globales (conceptos vigentes
+               con audiencia=ABONADOS) y al dar de alta se aplican
+               siempre, sin pregunta. La lógica de aplicación sigue
+               viva en createUpdateAbonado() del .ts. -->
+        </form>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="sph-modal-footer">
+        <button type="button" class="sph-btn sph-btn--ghost"
+                (click)="cerrarModalCreateUpdateAbonado()">
+          {{ 'APP.BUTTONS.CANCEL' | translate }}
+        </button>
+        <button type="button" class="sph-btn sph-btn--primary"
+                (click)="createUpdateAbonado()" [disabled]="savingAbonado">
+          <span *ngIf="savingAbonado" class="spinner-border spinner-border-sm me-1"></span>
+          <i *ngIf="!savingAbonado" class="bi bi-check-lg me-1"></i>
+          {{ 'APP.BUTTONS.SAVE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MODAL EDITAR ABONADO + CUOTA
+     ═══════════════════════════════════════════════════════════════ -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalUpdateAbonado}">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="stripeModalLabel">{{ 'SUBS.MODAL.TITLE' | translate }}</h5>
-                    <button type="button" class="btn-close" aria-label="Close" (click)="updateAbonado()"></button>
-                </div>
-
-                <div class="modal-body">
-                    <form>
-                        <div class="row text-center">
-                            <div class="col-12 col-md-12">
-                                <div class="row text-center align-items-center">
-                                    <div class="col-12 col-md-12">
-                                        <ng-container *ngIf="abonadoUpdate.abonado.abonadoId !== 0">
-                                            <div class="form-group">
-                                                <ng-container *ngIf="abonadoUpdate.abonado.imgPerfil">
-                                                    <div class="container">
-                                                        <img [src]="imageBaseUrl + abonadoUpdate.abonado.imgPerfil"
-                                                            alt="user-player" width="150" height="150"
-                                                            class="rounded-circle me-2">
-                                                    </div>
-                                                </ng-container>
-                                                <ng-container *ngIf="!abonadoUpdate.abonado.imgPerfil">
-                                                    <span class="bi bi-person" style="font-size: 3rem;"></span>
-                                                </ng-container>
-
-                                                <h4>{{ 'SUBS.MODAL.UPLOAD_TITLE' | translate }}</h4>
-
-                                                <form (submit)="onSubmit(abonadoUpdate.abonado.abonadoId)"
-                                                    enctype="multipart/form-data">
-                                                    <div class="form-group">
-                                                        <p>{{ 'SUBS.MODAL.SELECT_IMAGE_TEXT' | translate }}</p>
-                                                        <input type="file" id="image" (change)="onFileSelected($event)">
-                                                        <div *ngIf="showPreview" style="margin-top: 2em;">
-                                                            <img [src]="imagePreviewUrl"
-                                                                [attr.alt]="'SUBS.MODAL.IMAGE_PREVIEW_ALT' | translate"
-                                                                width="150" height="150" class="rounded-circle me-2">
-                                                            <button *ngIf="showbtnupimg" style="margin-top: 1em;"
-                                                                type="submit" class="btn btn-success">
-                                                                {{ 'SUBS.MODAL.UPLOAD_PHOTO' | translate }}
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </ng-container>
-
-                                        <ng-container *ngIf="abonadoUpdate.abonado.abonadoId == 0">
-                                            <span class="bi bi-person" style="font-size: 3rem;"></span>
-                                        </ng-container>
-                                    </div>
-                                </div>
-
-                                <div class="row mt-3">
-                                    <div class="col-12 col-md-12">
-                                        <label><strong>{{ 'SUBS.MODAL.EDIT_DATA_LABEL' | translate
-                                                }}</strong></label>
-                                    </div>
-                                </div>
-
-                                <div class="row mt-3">
-                                    <div class="col-12 col-md-4">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control custom-input" id="nombre"
-                                                name="nombre" [(ngModel)]="abonadoUpdate.abonado.nombre"
-                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.NAME' | translate"
-                                                #primerCampo>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-8">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control custom-input" id="apellido"
-                                                name="apellido" [(ngModel)]="abonadoUpdate.abonado.apellidos"
-                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.SURNAMES' | translate">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row mt-3">
-                                    <div class="col-12 col-md-4">
-                                        <div class="form-group">
-                                            <input type="date" class="form-control custom-input" id="fechaDeNacimiento"
-                                                name="fechaDeNacimiento"
-                                                [(ngModel)]="abonadoUpdate.abonado.fechaDeNacimiento"
-                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.BIRTHDATE' | translate">
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-8">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control custom-input" id="dni" name="dni"
-                                                [(ngModel)]="abonadoUpdate.abonado.dni"
-                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.DNI' | translate">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row mt-3">
-                                    <div class="col-12 col-md-4">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control custom-input" id="telefono"
-                                                name="telefono" [(ngModel)]="abonadoUpdate.abonado.telefono"
-                                                maxlength="9"
-                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.PHONE' | translate">
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-8">
-                                        <div class="form-group">
-                                            <input type="mail" class="form-control custom-input" id="email" name="email"
-                                                [(ngModel)]="abonadoUpdate.abonado.mail"
-                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.EMAIL' | translate">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row mt-3">
-                                    <div class="col-12 col-md-4">
-                                        <div class="form-group">
-                                            <select class="form-select input-register custom-input" id="genero"
-                                                name="genero" [(ngModel)]="abonadoUpdate.abonado.genero">
-                                                <option value="" disabled selected hidden>{{ 'SUBS.MODAL.GENDER' |
-                                                    translate }}</option>
-                                                <option value="M">{{ 'SUBS.MODAL.GENDER_M' | translate }}</option>
-                                                <option value="F">{{ 'SUBS.MODAL.GENDER_F' | translate }}</option>
-                                                <option value="O">{{ 'SUBS.MODAL.GENDER_O' | translate }}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <div class="row text-center mt-3">
-                            <div class="col-12 col-md-12">
-                                <div class="row mt-3">
-                                    <div class="col-12 col-md-12">
-                                        <label><strong>{{ 'SUBS.MODAL.FEE_SECTION' | translate }}</strong></label>
-                                    </div>
-                                </div>
-                                <div class="row mt-3">
-                                    <div class="col-12 col-md-4">
-                                        <div class="form-group">
-                                            <input type="number" class="form-control custom-input" id="cuota"
-                                                name="cuota" [readOnly]="cuotaReadOnly"
-                                                [(ngModel)]="abonadoUpdate.cuota"
-                                                [attr.placeholder]="'SUBS.MODAL.FEE_PLACEHOLDER' | translate">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </form>
-                </div>
-
-            </div>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ 'SUBS.MODAL.TITLE' | translate }}</h5>
+          <button type="button" class="btn-close" aria-label="Close"
+                  (click)="cerrarModalUpdateAbonado()"></button>
         </div>
+
+        <div class="modal-body">
+          <form>
+            <div class="row text-center">
+              <div class="col-12 col-md-12">
+                <div class="row text-center align-items-center">
+                  <div class="col-12 col-md-12">
+                    <ng-container *ngIf="abonadoUpdate.abonado.abonadoId !== 0">
+                      <div class="form-group">
+                        <ng-container *ngIf="abonadoUpdate.abonado.imgPerfil">
+                          <div class="container">
+                            <img [src]="imageBaseUrl + abonadoUpdate.abonado.imgPerfil"
+                                 alt="user-player" width="150" height="150"
+                                 class="rounded-circle me-2">
+                          </div>
+                        </ng-container>
+                        <ng-container *ngIf="!abonadoUpdate.abonado.imgPerfil">
+                          <span class="bi bi-person" style="font-size: 3rem;"></span>
+                        </ng-container>
+
+                        <h4>{{ 'SUBS.MODAL.UPLOAD_TITLE' | translate }}</h4>
+
+                        <form (submit)="onSubmit(abonadoUpdate.abonado.abonadoId)" enctype="multipart/form-data">
+                          <div class="form-group">
+                            <p>{{ 'SUBS.MODAL.SELECT_IMAGE_TEXT' | translate }}</p>
+                            <input type="file" id="image" (change)="onFileSelected($event)">
+                            <div *ngIf="showPreview" style="margin-top: 2em;">
+                              <img [src]="imagePreviewUrl"
+                                   [attr.alt]="'SUBS.MODAL.IMAGE_PREVIEW_ALT' | translate"
+                                   width="150" height="150" class="rounded-circle me-2">
+                              <button *ngIf="showbtnupimg" style="margin-top: 1em;"
+                                      type="submit" class="btn btn-success" [disabled]="uploadingFoto">
+                                <span *ngIf="uploadingFoto" class="spinner-border spinner-border-sm me-1"></span>
+                                {{ 'SUBS.MODAL.UPLOAD_PHOTO' | translate }}
+                              </button>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="abonadoUpdate.abonado.abonadoId == 0">
+                      <span class="bi bi-person" style="font-size: 3rem;"></span>
+                    </ng-container>
+                  </div>
+                </div>
+
+                <div class="row mt-3">
+                  <div class="col-12 col-md-12">
+                    <label><strong>{{ 'SUBS.MODAL.EDIT_DATA_LABEL' | translate }}</strong></label>
+                  </div>
+                </div>
+
+                <div class="row mt-3">
+                  <div class="col-12 col-md-4">
+                    <div class="form-group">
+                      <input type="text" class="form-control custom-input" id="nombre"
+                             name="nombre" [(ngModel)]="abonadoUpdate.abonado.nombre"
+                             [attr.placeholder]="'SUBS.MODAL.FIELDS.NAME' | translate"
+                             #primerCampo>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-8">
+                    <div class="form-group">
+                      <input type="text" class="form-control custom-input" id="apellido"
+                             name="apellido" [(ngModel)]="abonadoUpdate.abonado.apellidos"
+                             [attr.placeholder]="'SUBS.MODAL.FIELDS.SURNAMES' | translate">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mt-3">
+                  <div class="col-12 col-md-4">
+                    <div class="form-group">
+                      <input type="date" class="form-control custom-input" id="fechaDeNacimiento"
+                             name="fechaDeNacimiento"
+                             [(ngModel)]="abonadoUpdate.abonado.fechaDeNacimiento"
+                             [attr.placeholder]="'SUBS.MODAL.FIELDS.BIRTHDATE' | translate">
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-8">
+                    <div class="form-group">
+                      <input type="text" class="form-control custom-input" id="dni" name="dni"
+                             [(ngModel)]="abonadoUpdate.abonado.dni"
+                             [attr.placeholder]="'SUBS.MODAL.FIELDS.DNI' | translate">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mt-3">
+                  <div class="col-12 col-md-4">
+                    <div class="form-group">
+                      <input type="text" class="form-control custom-input" id="telefono"
+                             name="telefono" [(ngModel)]="abonadoUpdate.abonado.telefono"
+                             maxlength="9"
+                             [attr.placeholder]="'SUBS.MODAL.FIELDS.PHONE' | translate">
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-8">
+                    <div class="form-group">
+                      <input type="mail" class="form-control custom-input" id="email" name="email"
+                             [(ngModel)]="abonadoUpdate.abonado.mail"
+                             [attr.placeholder]="'SUBS.MODAL.FIELDS.EMAIL' | translate">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mt-3">
+                  <div class="col-12 col-md-4">
+                    <div class="form-group">
+                      <select class="form-select input-register custom-input" id="genero"
+                              name="genero" [(ngModel)]="abonadoUpdate.abonado.genero">
+                        <option value="" disabled selected hidden>{{ 'SUBS.MODAL.GENDER' | translate }}</option>
+                        <option value="M">{{ 'SUBS.MODAL.GENDER_M' | translate }}</option>
+                        <option value="F">{{ 'SUBS.MODAL.GENDER_F' | translate }}</option>
+                        <option value="O">{{ 'SUBS.MODAL.GENDER_O' | translate }}</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row text-center mt-3">
+              <div class="col-12 col-md-12">
+                <div class="row mt-3">
+                  <div class="col-12 col-md-12">
+                    <label><strong>{{ 'SUBS.MODAL.FEE_SECTION' | translate }}</strong></label>
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-12 col-md-4">
+                    <div class="form-group">
+                      <input type="number" class="form-control custom-input" id="cuota"
+                             name="cuota" [readOnly]="cuotaReadOnly"
+                             [(ngModel)]="abonadoUpdate.cuota"
+                             [attr.placeholder]="'SUBS.MODAL.FEE_PLACEHOLDER' | translate">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success float-end" (click)="updateAbonado()"
+                  [disabled]="savingUpdateAbonado">
+            <span *ngIf="savingUpdateAbonado" class="spinner-border spinner-border-sm me-1"></span>
+            {{ 'APP.BUTTONS.SAVE' | translate }}
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
-<!-- Modal insertar pago -->
+<!-- ═══════════════════════════════════════════════════════════════
+     MODAL INSERTAR PAGO
+     ═══════════════════════════════════════════════════════════════ -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalAgregarPago}">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="standard-modalLabel">{{ 'SUBS.PAY.TITLE' | translate }}</h5>
-                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalAgregarPago()"></button>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ 'SUBS.PAY.TITLE' | translate }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalAgregarPago()"></button>
+      </div>
+      <div class="modal-body">
+        <p [innerHTML]="'SUBS.PAY.INFO' | translate:{ name: textoInfoNameAbonado }"></p>
+
+        <form (ngSubmit)="createPagoAbonado()">
+          <div class="row mb-3">
+            <div class="col">
+              <p style="color: red;">{{ 'SUBS.PAY.ONLY_INTEGER_NOTICE' | translate }}</p>
             </div>
-            <div class="modal-body">
-                <p [innerHTML]="'SUBS.PAY.INFO' | translate:{ name: textoInfoNameAbonado }"></p>
+          </div>
 
-                <form (ngSubmit)="createPagoAbonado()">
-                    <div class="row mb-3">
-                        <div class="col">
-                            <p style="color: red;">{{ 'SUBS.PAY.ONLY_INTEGER_NOTICE' | translate }}</p>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <label for="cantidad" class="form-label">{{ 'SUBS.PAY.AMOUNT' | translate }}</label>
-                            <input type="number" class="form-control" id="cantidad" name="cantidad"
-                                [(ngModel)]="agregarPago.cantidad">
-                        </div>
-                        <div class="col-6">
-                            <label for="metodo" class="form-label">{{ 'SUBS.PAY.METHOD' | translate }}</label>
-                            <select class="form-control" id="metodo" name="metodo" [(ngModel)]="agregarPago.metodo">
-                                <option value="Tarjeta">{{ 'SUBS.PAY.METHODS.CARD' | translate }}</option>
-                                <option value="Efectivo">{{ 'SUBS.PAY.METHODS.CASH' | translate }}</option>
-                                <option value="Transferencia">{{ 'SUBS.PAY.METHODS.TRANSFER' | translate }}</option>
-                                <option value="Bizum">{{ 'SUBS.PAY.METHODS.BIZUM' | translate }}</option>
-                                <option value="Otro">{{ 'SUBS.PAY.METHODS.OTHER' | translate }}</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <label for="fecha" class="form-label">{{ 'SUBS.PAY.DATE' | translate }}</label>
-                            <input type="date" class="form-control" id="fecha" name="fecha"
-                                [(ngModel)]="agregarPago.fechaPago">
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <label for="comentario" class="form-label">{{ 'SUBS.PAY.COMMENT' | translate }}</label>
-                            <textarea class="form-control" id="comentario" name="comentario"
-                                [(ngModel)]="agregarPago.comentario" rows="5"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success float-end">
-                            {{ 'BUTTONS.SAVE' | translate }}
-                        </button>
-                    </div>
-
-                    <div class="mb-3 d-flex">
-                        <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
-                            {{ 'SUBS.PAY.SAVED_OK' | translate }}
-                        </div>
-                    </div>
-                </form>
+          <div class="row mb-3">
+            <div class="col-6">
+              <label for="cantidad" class="form-label">{{ 'SUBS.PAY.AMOUNT' | translate }}</label>
+              <input type="number" class="form-control" id="cantidad" name="cantidad"
+                     [(ngModel)]="agregarPago.cantidad">
             </div>
-        </div>
+            <div class="col-6">
+              <label for="metodo" class="form-label">{{ 'SUBS.PAY.METHOD' | translate }}</label>
+              <select class="form-control" id="metodo" name="metodo" [(ngModel)]="agregarPago.metodo">
+                <option value="Tarjeta">{{ 'SUBS.PAY.METHODS.CARD' | translate }}</option>
+                <option value="Efectivo">{{ 'SUBS.PAY.METHODS.CASH' | translate }}</option>
+                <option value="Transferencia">{{ 'SUBS.PAY.METHODS.TRANSFER' | translate }}</option>
+                <option value="Bizum">{{ 'SUBS.PAY.METHODS.BIZUM' | translate }}</option>
+                <option value="Otro">{{ 'SUBS.PAY.METHODS.OTHER' | translate }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-6">
+              <label for="fecha" class="form-label">{{ 'SUBS.PAY.DATE' | translate }}</label>
+              <input type="date" class="form-control" id="fecha" name="fecha"
+                     [(ngModel)]="agregarPago.fechaPago">
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-12">
+              <label for="comentario" class="form-label">{{ 'SUBS.PAY.COMMENT' | translate }}</label>
+              <textarea class="form-control" id="comentario" name="comentario"
+                        [(ngModel)]="agregarPago.comentario" rows="5"></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success float-end" [disabled]="savingPago">
+              <span *ngIf="savingPago" class="spinner-border spinner-border-sm me-1"></span>
+              {{ 'APP.BUTTONS.SAVE' | translate }}
+            </button>
+          </div>
+
+          <div class="mb-3 d-flex">
+            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+              {{ 'SUBS.PAY.SAVED_OK' | translate }}
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
 
-<!-- Modal historial pagos -->
-<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalVerHistorialPagos}">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="stripeModalLabel">{{ 'SUBS.HISTORY.TITLE' | translate }}</h5>
-                    <button type="button" class="btn-close" aria-label="Close"
-                        (click)="cerrarModalHistorialPagos()"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>{{ 'SUBS.HISTORY.AMOUNT' | translate }}</th>
-                                    <th>{{ 'SUBS.HISTORY.DATE' | translate }}</th>
-                                    <th>{{ 'SUBS.HISTORY.METHOD' | translate }}</th>
-                                    <th>{{ 'SUBS.HISTORY.COMMENT' | translate }}</th>
-                                    <th>{{ 'SUBS.HISTORY.REFUND' | translate }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let pago of historyPagosAbonado">
-                                    <td>{{ pago.cantidad }}</td>
-                                    <td>{{ pago.fechaPago }}</td>
-                                    <td>{{ pago.metodo }}</td>
-                                    <td>{{ pago.comentario }}</td>
-                                    <td>
-                                        <button *ngIf="!pago.cantidad.includes('-')" class="btn btn-warning"
-                                            [attr.title]="'SUBS.HISTORY.REFUND_TITLE' | translate"
-                                            (click)="confirmReturnPay(pago)">
-                                            <span class="bi bi-arrow-counterclockwise btn-danger"></span>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+<!-- ═══════════════════════════════════════════════════════════════
+     MODAL HISTORIAL PAGOS · Sphaira styling
+     ═══════════════════════════════════════════════════════════════ -->
+<div *ngIf="showModalVerHistorialPagos"
+     class="pay-history-overlay"
+     (click)="cerrarModalHistorialPagos()">
+  <div class="pay-history-modal"
+       role="dialog"
+       aria-modal="true"
+       [attr.aria-label]="'SUBS.HISTORY.TITLE' | translate"
+       (click)="$event.stopPropagation()">
 
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success float-end" (click)="cerrarModalHistorialPagos()">
-                            {{ 'BUTTONS.CLOSE' | translate }}
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-        </div>
+    <div class="pay-history-modal__header">
+      <div class="pay-history-modal__icon-wrap" aria-hidden="true">
+        <i class="bi bi-receipt"></i>
+      </div>
+      <div class="pay-history-modal__title-group">
+        <h3 class="pay-history-modal__title">{{ 'SUBS.HISTORY.TITLE' | translate }}</h3>
+        <p class="pay-history-modal__subtitle">
+          {{ historyPagosAbonado?.length || 0 }}
+          {{ (historyPagosAbonado?.length === 1 ? 'SUBS.HISTORY.MOVEMENT' : 'SUBS.HISTORY.MOVEMENTS') | translate }}
+        </p>
+      </div>
+      <button type="button"
+              class="pay-history-modal__close"
+              [attr.aria-label]="'APP.BUTTONS.CLOSE' | translate"
+              (click)="cerrarModalHistorialPagos()">
+        <i class="bi bi-x-lg"></i>
+      </button>
     </div>
+
+    <div class="pay-history-modal__body">
+      <!-- Empty state -->
+      <div *ngIf="!historyPagosAbonado?.length" class="pay-history-modal__empty">
+        <div class="pay-history-modal__empty-icon">
+          <i class="bi bi-inbox"></i>
+        </div>
+        <p class="pay-history-modal__empty-text">
+          {{ 'SUBS.HISTORY.EMPTY' | translate }}
+        </p>
+      </div>
+
+      <!-- Lista de movimientos -->
+      <ul *ngIf="historyPagosAbonado?.length" class="pay-history-list">
+        <li *ngFor="let pago of historyPagosAbonado"
+            class="pay-history-list__item"
+            [class.pay-history-list__item--refund]="pago.cantidad?.includes('-')">
+          <div class="pay-history-list__amount">
+            <span class="pay-history-list__amount-value">{{ pago.cantidad }} €</span>
+            <span *ngIf="pago.cantidad?.includes('-')"
+                  class="pay-history-list__refund-badge">
+              <i class="bi bi-arrow-counterclockwise"></i>
+              {{ 'SUBS.HISTORY.REFUND' | translate }}
+            </span>
+          </div>
+          <div class="pay-history-list__main">
+            <div class="pay-history-list__row">
+              <i class="bi bi-calendar3 pay-history-list__icon"></i>
+              <span class="pay-history-list__text">{{ pago.fechaPago }}</span>
+            </div>
+            <div class="pay-history-list__row">
+              <i class="bi bi-credit-card pay-history-list__icon"></i>
+              <span class="pay-history-list__method-chip">{{ pago.metodo }}</span>
+            </div>
+            <div *ngIf="pago.comentario" class="pay-history-list__row pay-history-list__row--comment">
+              <i class="bi bi-chat-left-text pay-history-list__icon"></i>
+              <span class="pay-history-list__text">{{ pago.comentario }}</span>
+            </div>
+          </div>
+          <button *ngIf="!pago.cantidad?.includes('-')"
+                  class="pay-history-list__refund-btn"
+                  [attr.title]="'SUBS.HISTORY.REFUND_TITLE' | translate"
+                  [attr.aria-label]="'SUBS.HISTORY.REFUND_TITLE' | translate"
+                  [disabled]="savingReembolso"
+                  (click)="confirmReturnPay(pago)">
+            <span *ngIf="savingReembolso" class="spinner-border spinner-border-sm"></span>
+            <i *ngIf="!savingReembolso" class="bi bi-arrow-counterclockwise"></i>
+            <span class="pay-history-list__refund-btn-label">
+              {{ 'SUBS.HISTORY.REFUND_TITLE' | translate }}
+            </span>
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="pay-history-modal__footer">
+      <button type="button"
+              class="pay-history-modal__btn pay-history-modal__btn--primary"
+              (click)="cerrarModalHistorialPagos()">
+        {{ 'APP.BUTTONS.CLOSE' | translate }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MODAL QR DE AUTO-REGISTRO DE ABONADOS
+     URL fija por club, imprimible para colocar en la sede.
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="invite-overlay" *ngIf="showInviteModal" (click)="closeInviteModal()">
+  <div class="invite-modal" (click)="$event.stopPropagation()">
+
+    <div class="invite-modal__header">
+      <div class="invite-modal__icon-wrap">
+        <i class="bi bi-person-vcard-fill"></i>
+      </div>
+      <div class="invite-modal__title-group">
+        <h3 class="invite-modal__title">{{ 'ABONADOS.INVITE_MODAL.TITLE' | translate }}</h3>
+        <p class="invite-modal__subtitle">{{ 'ABONADOS.INVITE_MODAL.SUBTITLE' | translate }}</p>
+      </div>
+      <button class="invite-modal__close" (click)="closeInviteModal()"
+              [attr.aria-label]="'ABONADOS.INVITE_MODAL.CLOSE' | translate">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="invite-modal__qr-section">
+      <p class="invite-modal__section-label">
+        <i class="bi bi-qr-code"></i>
+        {{ 'ABONADOS.INVITE_MODAL.QR_LABEL' | translate }}
+      </p>
+      <div class="invite-modal__qr-frame">
+        <img
+          class="invite-modal__qr-img"
+          [src]="inviteQrUrl"
+          crossorigin="anonymous"
+          [width]="240"
+          [height]="240"
+          alt="QR"
+          (load)="onQrCodeGenerated()"
+        />
+        <div class="invite-modal__qr-logo">
+          <img src="assets/images/iconoSphaira.svg" alt="Sphaira" />
+          <div class="invite-modal__qr-logo-glow"></div>
+        </div>
+      </div>
+      <p class="invite-modal__qr-hint">{{ 'ABONADOS.INVITE_MODAL.QR_SUBTITLE' | translate }}</p>
+
+      <div class="invite-modal__qr-actions">
+        <button class="invite-modal__qr-btn" (click)="downloadQr()" [disabled]="!qrReady"
+                [title]="'ABONADOS.INVITE_MODAL.DOWNLOAD' | translate">
+          <i class="bi bi-download"></i>
+          <span>{{ 'ABONADOS.INVITE_MODAL.DOWNLOAD' | translate }}</span>
+        </button>
+
+        <button class="invite-modal__qr-btn invite-modal__qr-btn--whatsapp"
+                (click)="shareWhatsApp()" [disabled]="!qrReady"
+                [title]="'ABONADOS.INVITE_MODAL.WHATSAPP' | translate">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="15" height="15">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          <span>WhatsApp</span>
+        </button>
+
+        <button *ngIf="canShareNative" class="invite-modal__qr-btn invite-modal__qr-btn--share"
+                (click)="shareNative()"
+                [title]="'ABONADOS.INVITE_MODAL.SHARE' | translate">
+          <i class="bi bi-share-fill"></i>
+          <span>{{ 'ABONADOS.INVITE_MODAL.SHARE' | translate }}</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="invite-modal__divider">
+      <span>{{ 'COMMON.OR' | translate }}</span>
+    </div>
+
+    <div class="invite-modal__link-section">
+      <p class="invite-modal__section-label">
+        <i class="bi bi-link-45deg"></i>
+        {{ 'ABONADOS.INVITE_MODAL.LINK_LABEL' | translate }}
+      </p>
+      <div class="invite-modal__link-row">
+        <div class="invite-modal__link-input">
+          <span class="invite-modal__link-text">{{ inviteLink }}</span>
+        </div>
+        <button
+          class="invite-modal__copy-btn"
+          [class.invite-modal__copy-btn--copied]="inviteLinkCopied"
+          (click)="copyInviteLink()">
+          <i class="bi" [class.bi-clipboard]="!inviteLinkCopied" [class.bi-check2]="inviteLinkCopied"></i>
+          <span>{{ (inviteLinkCopied ? 'ABONADOS.INVITE_MODAL.COPIED' : 'ABONADOS.INVITE_MODAL.COPY') | translate }}</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Mini-modal: instrucciones WhatsApp -->
+  <div class="wa-confirm-overlay" *ngIf="showWaConfirm" (click)="cancelWaConfirm()">
+    <div class="wa-confirm" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+      <div class="wa-confirm__icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+      </div>
+      <h3 class="wa-confirm__title">{{ 'ABONADOS.INVITE_MODAL.WA_TITLE' | translate }}</h3>
+
+      <div class="wa-confirm__step">
+        <p class="wa-confirm__step-text">{{ 'ABONADOS.INVITE_MODAL.WA_BODY' | translate }}</p>
+      </div>
+
+      <div class="wa-confirm__actions">
+        <button class="wa-confirm__btn wa-confirm__btn--go" (click)="goToWhatsApp()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          {{ 'ABONADOS.INVITE_MODAL.WA_GO' | translate }}
+        </button>
+        <button class="wa-confirm__btn wa-confirm__btn--cancel" (click)="cancelWaConfirm()">
+          {{ 'ABONADOS.INVITE_MODAL.WA_CANCEL' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════ Modal cambio de estado con motivo (Bloque 6) ═══════════
+     OJO: este modal vive FUERA del invite-overlay (showInviteModal). Si
+     se anida dentro, no aparece nunca al aprobar/rechazar un abonado
+     porque el contenedor padre no se renderiza. -->
+<!-- Modal inline (no se usa el componente standalone app-abonado-estado-modal
+     porque abonados NO es standalone y no se puede tocar dashboard.module.ts). -->
+<div class="aem-backdrop" *ngIf="estadoModalAt" (click)="onEstadoBackdrop($event)">
+  <div class="aem-modal" role="dialog" aria-modal="true">
+    <header class="aem-header" [class.aem-header--warn]="estadoModalIsWarn">
+      <div class="aem-header__icon">
+        <i class="bi" [ngClass]="estadoModalHeaderIcon"></i>
+      </div>
+      <div class="aem-header__text">
+        <h3>{{ estadoModalTitleKey | translate }}</h3>
+        <p *ngIf="estadoModalAbonadoName">
+          {{ 'SUBS.REASON.FOR' | translate }} <strong>{{ estadoModalAbonadoName }}</strong>
+        </p>
+      </div>
+      <button type="button" class="aem-close" (click)="closeEstadoModal()"
+              [attr.aria-label]="'COMMON.CANCEL' | translate">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </header>
+
+    <section class="aem-body">
+      <p class="aem-sub">{{ estadoModalSubtitleKey | translate }}</p>
+
+      <label class="aem-label" for="aem-motivo">
+        {{ 'SUBS.REASON.LABEL' | translate }}
+        <span class="aem-optional">{{ 'SUBS.REASON.OPTIONAL' | translate }}</span>
+      </label>
+      <textarea id="aem-motivo"
+                class="aem-textarea"
+                rows="4"
+                maxlength="2000"
+                [(ngModel)]="estadoMotivo"
+                [placeholder]="'SUBS.REASON.PLACEHOLDER' | translate"
+                [disabled]="estadoModalSaving"></textarea>
+      <div class="aem-counter">{{ estadoMotivo.length }} / 2000</div>
+      <p class="aem-hint">
+        <i class="bi bi-shield-lock"></i>
+        {{ 'SUBS.REASON.PRIVATE_HINT' | translate }}
+      </p>
+    </section>
+
+    <footer class="aem-footer">
+      <button type="button" class="aem-btn aem-btn--ghost"
+              (click)="closeEstadoModal()"
+              [disabled]="estadoModalSaving">
+        {{ 'COMMON.CANCEL' | translate }}
+      </button>
+      <button type="button"
+              class="aem-btn"
+              [class.aem-btn--warn]="estadoModalIsWarn"
+              [class.aem-btn--primary]="!estadoModalIsWarn"
+              (click)="confirmEstadoChange(estadoMotivo.trim())"
+              [disabled]="estadoModalSaving">
+        <i class="bi bi-arrow-repeat aem-spin" *ngIf="estadoModalSaving"></i>
+        <span *ngIf="!estadoModalSaving">{{ estadoModalConfirmKey | translate }}</span>
+        <span *ngIf="estadoModalSaving">{{ 'COMMON.SAVING' | translate }}</span>
+      </button>
+    </footer>
+  </div>
 </div>

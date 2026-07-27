@@ -1,0 +1,130 @@
+<div class="ec-modal-backdrop" (click)="cancel()">
+  <div class="ec-modal" (click)="$event.stopPropagation()">
+    <div class="ec-modal__head">
+      <h2>{{ (editingId ? 'ENTRENAMIENTOS.EDIT_TASK' : 'ENTRENAMIENTOS.NEW_TASK') | translate }}</h2>
+      <button type="button" class="ec-icon-btn" (click)="cancel()" aria-label="close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <form class="ec-form" (ngSubmit)="save()">
+      <label class="ec-field ec-field--full">
+        <span>{{ 'ENTRENAMIENTOS.FIELD_TITLE' | translate }} *</span>
+        <input type="text" name="title" [(ngModel)]="form.title" required />
+      </label>
+      <label class="ec-field ec-field--full">
+        <span>{{ 'ENTRENAMIENTOS.FIELD_DESCRIPTION' | translate }} *</span>
+        <textarea name="description" rows="3" [(ngModel)]="form.description" required></textarea>
+      </label>
+
+      <!-- Vídeo: enlace o subir archivo (primero: se sube antes que la imagen) -->
+      <div class="ec-media ec-field--half">
+        <span class="ec-media__label">{{ 'ENTRENAMIENTOS.FIELD_VIDEO' | translate }}</span>
+        <div class="ec-media__tabs">
+          <button type="button" class="ec-media__tab" [class.is-active]="videoMode === 'link'"
+                  (click)="setVideoMode('link')">
+            <i class="bi bi-link-45deg"></i> {{ 'ENTRENAMIENTOS.VIDEO_LINK' | translate }}
+          </button>
+          <button type="button" class="ec-media__tab" [class.is-active]="videoMode === 'upload'"
+                  (click)="setVideoMode('upload')">
+            <i class="bi bi-upload"></i> {{ 'ENTRENAMIENTOS.VIDEO_UPLOAD' | translate }}
+          </button>
+        </div>
+
+        <div *ngIf="videoMode === 'link'">
+          <input type="text" name="video" [(ngModel)]="form.video"
+                 placeholder="https://..." />
+        </div>
+
+        <div *ngIf="videoMode === 'upload'">
+          <div class="ec-media__row">
+            <div class="ec-media__preview ec-media__preview--video"
+                 *ngIf="videoPreviewUrl || isUploadedVideoUrl(form.video)">
+              <video [src]="videoPreviewUrl || form.video" controls preload="metadata"></video>
+              <button type="button" class="ec-media__remove" (click)="removeVideoFile()"
+                      [attr.aria-label]="'ENTRENAMIENTOS.REMOVE_VIDEO' | translate">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+            <label class="ec-media__upload">
+              <i class="bi bi-camera-video"></i>
+              <span>{{ 'ENTRENAMIENTOS.UPLOAD_VIDEO' | translate }}</span>
+              <input type="file" [accept]="videoAccept" (change)="onVideoSelected($event)" hidden />
+            </label>
+          </div>
+          <small class="ec-media__hint">{{ 'ENTRENAMIENTOS.VIDEO_HINT' | translate }}</small>
+        </div>
+      </div>
+
+      <!-- Imagen / GIF (después del vídeo) -->
+      <div class="ec-media ec-field--half">
+        <span class="ec-media__label">{{ 'ENTRENAMIENTOS.FIELD_IMAGE' | translate }}</span>
+        <div class="ec-media__row">
+          <div class="ec-media__preview" *ngIf="formImageUrl() as imgUrl">
+            <img [src]="imgUrl" alt="" />
+            <span class="ec-media__gif" *ngIf="selectedImageFile ? isGif(selectedImageFile.name) : isGif(form.imagenBoard)">GIF</span>
+            <button type="button" class="ec-media__remove" (click)="removeImage()"
+                    [attr.aria-label]="'ENTRENAMIENTOS.REMOVE_IMAGE' | translate">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <label class="ec-media__upload">
+            <i class="bi bi-image"></i>
+            <span>{{ 'ENTRENAMIENTOS.UPLOAD_IMAGE' | translate }}</span>
+            <input type="file" [accept]="imageAccept" (change)="onImageSelected($event)" hidden />
+          </label>
+        </div>
+        <small class="ec-media__hint">{{ 'ENTRENAMIENTOS.IMAGE_HINT' | translate }}</small>
+      </div>
+
+      <label class="ec-field">
+        <span>{{ 'ENTRENAMIENTOS.FIELD_WORK' | translate }}</span>
+        <input type="text" name="work" [(ngModel)]="form.work" />
+      </label>
+      <label class="ec-field">
+        <span>{{ 'ENTRENAMIENTOS.FIELD_WORKTIME' | translate }}</span>
+        <input type="text" name="worktime" [(ngModel)]="form.worktime" />
+      </label>
+      <label class="ec-field">
+        <span>{{ 'ENTRENAMIENTOS.FIELD_SPACE' | translate }}</span>
+        <input type="text" name="space" [(ngModel)]="form.space" />
+      </label>
+      <label class="ec-field">
+        <span>{{ 'ENTRENAMIENTOS.FIELD_MATERIAL' | translate }}</span>
+        <input type="text" name="material" [(ngModel)]="form.material" />
+      </label>
+
+      <label class="ec-field ec-field--full">
+        <span>{{ 'ENTRENAMIENTOS.FIELD_RULES' | translate }}</span>
+        <textarea name="rules" rows="2" [(ngModel)]="form.rules"></textarea>
+      </label>
+      <label class="ec-field ec-field--full">
+        <span>{{ 'ENTRENAMIENTOS.FIELD_VARIANTS' | translate }}</span>
+        <textarea name="variants" rows="2" [(ngModel)]="form.variants"></textarea>
+      </label>
+      <label class="ec-field ec-field--full">
+        <span>{{ 'ENTRENAMIENTOS.FIELD_SLOGANS' | translate }}</span>
+        <textarea name="slogans" rows="2" [(ngModel)]="form.slogans"></textarea>
+      </label>
+
+      <label class="ec-field">
+        <span>{{ 'ENTRENAMIENTOS.FIELD_STRATEGY' | translate }}</span>
+        <input type="text" name="estrategia" [(ngModel)]="form.estrategia" />
+      </label>
+      <label class="ec-field">
+        <span>{{ 'ENTRENAMIENTOS.FIELD_INTENTION' | translate }}</span>
+        <input type="text" name="intencion" [(ngModel)]="form.intencion" />
+      </label>
+
+      <div class="ec-alert ec-alert--inline" *ngIf="error">{{ error | translate }}</div>
+
+      <div class="ec-modal__foot">
+        <button type="button" class="ec-btn" (click)="cancel()">{{ 'ENTRENAMIENTOS.CANCEL' | translate }}</button>
+        <button type="submit" class="ec-btn ec-btn--primary" [disabled]="saving">
+          <span class="spinner-border spinner-border-sm" *ngIf="saving"></span>
+          {{ 'ENTRENAMIENTOS.SAVE' | translate }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

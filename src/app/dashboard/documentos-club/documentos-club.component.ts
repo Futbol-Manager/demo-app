@@ -9,6 +9,12 @@ import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs/operators';
 import { HttpEventType } from '@angular/common/http';
 import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
+import { MatDialog } from '@angular/material/dialog';
+import { environment } from 'src/environments/environment';
+import {
+  DocumentPreviewDialogComponent,
+  DocumentPreviewData,
+} from '../document-preview-dialog/document-preview-dialog.component';
 
 @Component({
   selector: 'app-documentos-club',
@@ -56,6 +62,7 @@ export class DocumentosClubComponent implements OnInit {
   mostrarModalCompletionDetail = false;
   completionDetailList: any[] = [];
   loadingCompletionDetail = false;
+  completionDetailDoc: any = null;
 
   // Team filter
   equiposClub: any[] = [];
@@ -82,7 +89,8 @@ export class DocumentosClubComponent implements OnInit {
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private toastr: ToastrService,
-    private tutorialService: TutorialService
+    private tutorialService: TutorialService,
+    private dialog: MatDialog
   ) {
     this.formDocumento = this.fb.group({
       nombre: ['', Validators.required],
@@ -257,9 +265,73 @@ export class DocumentosClubComponent implements OnInit {
   }
 
   abrirPdf(nombreArchivo: string): void {
-    const link =
-      'https://appsphairatech.com/images/documentos/' + nombreArchivo;
-    window.open(link, '_blank');
+    if (!nombreArchivo) return;
+    const url = `${environment.images}documentos/${nombreArchivo}`;
+    const data: DocumentPreviewData = {
+      url,
+      fileName: nombreArchivo,
+      title: nombreArchivo,
+      allowDownload: true,
+      allowDelete: false,
+    };
+    this.dialog.open(DocumentPreviewDialogComponent, {
+      data,
+      width: '90%',
+      maxWidth: '1100px',
+      maxHeight: '90vh',
+      panelClass: 'document-preview-dialog-panel',
+    });
+  }
+
+  /**
+   * Determina si un item del detalle de completado se puede previsualizar:
+   * o bien tiene un archivo binario subido, o bien es un formulario relleno
+   * con texto/descripcion.
+   */
+  puedePreviewItem(item: any): boolean {
+    if (!item || !item.completado) return false;
+    if (item.file) return true;
+    if (item.descripcion && (item.descripcion + '').trim().length > 0) return true;
+    return false;
+  }
+
+  /**
+   * Abre el visor con el archivo o las respuestas del formulario que ha
+   * subido este jugador/entrenador para el documento del detalle abierto.
+   */
+  abrirPreviewDocItem(item: any): void {
+    if (!this.puedePreviewItem(item)) return;
+
+    const titulo = `${item.nombre || ''} ${item.apellido || ''}`.trim();
+    const docNombre = this.completionDetailDoc?.nombre || '';
+    const title = docNombre ? `${docNombre} — ${titulo}` : titulo;
+
+    let data: DocumentPreviewData;
+    if (item.file) {
+      data = {
+        url: `${environment.images}docs-padres/${item.file}`,
+        fileName: item.file,
+        title,
+        allowDownload: true,
+        allowDelete: false,
+      };
+    } else {
+      data = {
+        url: '',
+        title,
+        textContent: item.descripcion || '',
+        allowDownload: false,
+        allowDelete: false,
+      };
+    }
+
+    this.dialog.open(DocumentPreviewDialogComponent, {
+      data,
+      width: '90%',
+      maxWidth: '1100px',
+      maxHeight: '90vh',
+      panelClass: 'document-preview-dialog-panel',
+    });
   }
 
   ordenarPor(campo: string) {
@@ -683,6 +755,7 @@ export class DocumentosClubComponent implements OnInit {
     this.mostrarModalCompletionDetail = true;
     this.loadingCompletionDetail = true;
     this.completionDetailList = [];
+    this.completionDetailDoc = doc;
     const tipo = this.activeDocTab === 'entrenadores' ? 'entrenadores' : 'padres';
     this.clubService.getDocCompletionDetail(doc.docClubesId, this.clubId, tipo).subscribe({
       next: (res: any) => {
@@ -699,6 +772,7 @@ export class DocumentosClubComponent implements OnInit {
   cerrarModalCompletionDetail(): void {
     this.mostrarModalCompletionDetail = false;
     this.completionDetailList = [];
+    this.completionDetailDoc = null;
   }
 
   // ========== TEAM FILTER ==========

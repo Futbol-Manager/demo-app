@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map, timeout } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { isDemoMode } from '../demo/demo-mode';
 
 @Injectable({
   providedIn: 'root'
@@ -19,9 +20,62 @@ export class ProspectService {
 
   constructor(private http: HttpClient) { }
 
+  // ── Datos mock para el módulo de RRSS en modo demo ────────────────────────
+
+  /** Posts sociales de ejemplo distribuidos en la semana actual (modo demo). */
+  private demoSocialPosts(): any[] {
+    const base = new Date();
+    const at = (dayOffset: number, hour: number): string => {
+      const d = new Date(base);
+      d.setDate(base.getDate() + dayOffset);
+      d.setHours(hour, 0, 0, 0);
+      const pad = (n: number) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:00:00`;
+    };
+    return [
+      { post_id: 101, network: 'instagram', content_type: 'feature', status: 'PUBLISHED', scheduled_at: at(-1, 18),
+        text_content: '¡Victoria del Juvenil A este fin de semana! 3-1 con doblete de García. 💪⚽ #FCDemo', image_url: '', is_thread: 0 },
+      { post_id: 102, network: 'facebook', content_type: 'stats', status: 'APPROVED', scheduled_at: at(0, 12),
+        text_content: 'Ya está abierto el plazo de inscripción para la temporada 2026/27. ¡Apúntate!', image_url: '', is_thread: 0 },
+      { post_id: 103, network: 'twitter', content_type: 'tip', status: 'DRAFT', scheduled_at: at(0, 20),
+        text_content: 'Consejo del cuerpo técnico: la hidratación empieza el día antes del partido. 💧', image_url: '', is_thread: 0,
+        external_post_id: null },
+      { post_id: 104, network: 'linkedin', content_type: 'case_study', status: 'SCHEDULED', scheduled_at: at(1, 9),
+        text_content: 'Cómo digitalizamos la gestión del club con Sphaira: menos papeleo, más deporte.', image_url: '', is_thread: 0 },
+      { post_id: 105, network: 'twitter', content_type: 'feature', status: 'PUBLISHED', scheduled_at: at(2, 13),
+        text_content: 'Hilo: las 5 claves de la pretemporada 🧵', image_url: '', is_thread: 1,
+        thread_tweets: JSON.stringify([{ text: 'Las 5 claves de la pretemporada 🧵' }, { text: '1. Carga progresiva' }]),
+        external_post_id: '1789456123' },
+      { post_id: 106, network: 'instagram', content_type: 'behind_scenes', status: 'REJECTED', scheduled_at: at(3, 18),
+        text_content: 'Entrenamiento a puerta abierta este miércoles.', image_url: '', is_thread: 0 },
+    ];
+  }
+
+  private demoNetworkConfig(network: string): any {
+    const withImage = network === 'instagram' || network === 'facebook';
+    return {
+      network,
+      topics: JSON.stringify(['Caso de éxito', 'Dato del sector', 'Tutorial']),
+      tone: 'cercano',
+      audience: 'Familias y jugadores del club',
+      post_frequency: 1,
+      default_hashtags: JSON.stringify(['#FCDemo', '#futbolbase']),
+      extra_instructions: '',
+      text_ai_model: 'claude-sonnet-4-6',
+      image_ai_model: 'dalle3',
+      include_image: withImage ? 1 : 0,
+    };
+  }
+
   // ── Social posts CRUD → Java backend (MySQL compartida) ───────────────────
 
   getSocialPostsJava(network?: string, status?: string, campaignId?: number): Observable<any[]> {
+    if (isDemoMode()) {
+      let list = this.demoSocialPosts();
+      if (network) list = list.filter(p => p.network === network);
+      if (status) list = list.filter(p => p.status === status);
+      return of(list);
+    }
     let params: any = {};
     if (network) params['network'] = network;
     if (status) params['status'] = status;
@@ -37,48 +91,72 @@ export class ProspectService {
     scheduled_at?: string | null; status?: string;
     is_thread?: number; thread_tweets?: string | null;
   }): Observable<any> {
+    if (isDemoMode()) {
+      return of({ ...data, post_id: Date.now() });
+    }
     return this.http.post<any>(`${this.javaBase}social/posts`, data).pipe(
       map((r: any) => r?.data ?? r)
     );
   }
 
   updateSocialPostJava(postId: number, data: any): Observable<any> {
+    if (isDemoMode()) {
+      return of({ ...data, post_id: postId });
+    }
     return this.http.put<any>(`${this.javaBase}social/posts/${postId}`, data).pipe(
       map((r: any) => r?.data ?? r)
     );
   }
 
   deleteSocialPostJava(postId: number): Observable<any> {
+    if (isDemoMode()) {
+      return of({ post_id: postId, deleted: true });
+    }
     return this.http.delete<any>(`${this.javaBase}social/posts/${postId}`).pipe(
       map((r: any) => r?.data ?? r)
     );
   }
 
   approveSocialPostJava(postId: number): Observable<any> {
+    if (isDemoMode()) {
+      return of({ post_id: postId, status: 'APPROVED' });
+    }
     return this.http.post<any>(`${this.javaBase}social/posts/${postId}/approve`, {}).pipe(
       map((r: any) => r?.data ?? r)
     );
   }
 
   rejectSocialPostJava(postId: number): Observable<any> {
+    if (isDemoMode()) {
+      return of({ post_id: postId, status: 'REJECTED' });
+    }
     return this.http.post<any>(`${this.javaBase}social/posts/${postId}/reject`, {}).pipe(
       map((r: any) => r?.data ?? r)
     );
   }
 
   schedulePostJava(postId: number, scheduledAt: string): Observable<any> {
+    if (isDemoMode()) {
+      return of({ post_id: postId, scheduled_at: scheduledAt });
+    }
     return this.http.put<any>(`${this.javaBase}social/posts/${postId}/schedule`, { scheduled_at: scheduledAt }).pipe(
       map((r: any) => r?.data ?? r)
     );
   }
 
   getCalendarPostsJava(start: string, end: string): Observable<any[]> {
+    if (isDemoMode()) {
+      return of(this.demoSocialPosts());
+    }
     return this.http.get<any>(`${this.javaBase}social/posts/calendar`, { params: { start, end } }).pipe(
       map((r: any) => r?.data ?? r ?? [])
     );
   }
 
   getNetworkConfigJava(network: string): Observable<any> {
+    if (isDemoMode()) {
+      return of(this.demoNetworkConfig(network));
+    }
     return this.http.get<any>(`${this.javaBase}social/network-config/${network}`).pipe(
       map((r: any) => r?.data ?? r)
     );
@@ -89,12 +167,18 @@ export class ProspectService {
     default_hashtags: string; extra_instructions: string;
     text_ai_model: string; image_ai_model: string; include_image: number;
   }): Observable<any> {
+    if (isDemoMode()) {
+      return of({ network, ...config });
+    }
     return this.http.put<any>(`${this.javaBase}social/network-config/${network}`, config).pipe(
       map((r: any) => r?.data ?? r)
     );
   }
 
   getAIKeys(): Observable<Record<string, boolean>> {
+    if (isDemoMode()) {
+      return of({ anthropic_api_key: true, openai_api_key: true, replicate_api_token: false, gemini_api_key: false, gcp_project_id: false });
+    }
     return this.http.get<Record<string, boolean>>(`${this.base}settings/ai-keys`);
   }
 
@@ -317,6 +401,9 @@ export class ProspectService {
   }
 
   updateSetting(key: string, value: string): Observable<any> {
+    if (isDemoMode()) {
+      return of({ ok: true, key });
+    }
     return this.http.put<any>(`${this.base}settings/${key}`, { value });
   }
 
@@ -355,6 +442,13 @@ export class ProspectService {
     target_audience?: string;
     specific_feature?: string;
   }): Observable<any> {
+    if (isDemoMode()) {
+      return of({
+        text_content: `¡En ${params.network === 'twitter' ? 'X' : params.network} tenemos novedades! Nuestro club sigue creciendo gracias a Sphaira. ⚽ #FCDemo`,
+        image_prompt: 'Jugadores de fútbol base celebrando en un campo verde al atardecer',
+        post_id: Date.now(),
+      });
+    }
     return this.http.post<any>(`${this.base}social/generate`, params);
   }
 
@@ -416,6 +510,9 @@ export class ProspectService {
   }
 
   generatePostImage(postId: number, imagePrompt: string, network: string, contentType: string, imageModel = ''): Observable<{ok: boolean, image_url: string, model_used: string}> {
+    if (isDemoMode()) {
+      return of({ ok: true, image_url: 'https://picsum.photos/seed/fcdemo' + postId + '/600/600', model_used: imageModel || 'dalle3' });
+    }
     return this.http.post<any>(`${this.base}social/posts/${postId}/generate-image`, {
       image_prompt: imagePrompt,
       network,
@@ -459,16 +556,40 @@ export class ProspectService {
     tone?: string;
     objective?: string;
   }): Observable<{ ok: boolean; tweets: { text: string; image_url?: string }[] }> {
+    if (isDemoMode()) {
+      const n = options.num_tweets ?? 5;
+      const tweets = Array.from({ length: n }, (_, i) => ({
+        text: i === 0
+          ? 'Hilo: las claves de esta temporada en el FC Demo 🧵⚽'
+          : `${i}. ${['Trabajo de cantera', 'Compromiso del cuerpo técnico', 'Apoyo de las familias', 'Instalaciones renovadas', 'Digitalización con Sphaira', 'Objetivos de ascenso', 'Valores de equipo'][i % 7]}.`,
+      }));
+      return of({ ok: true, tweets });
+    }
     return this.http.post<any>(
       `${this.base}social/generate-thread`, options
     ).pipe(timeout(90_000));
   }
 
   getPostMetrics(postId: number): Observable<any> {
+    if (isDemoMode()) {
+      return of({ ok: true, metrics: { impressions: 1240 + postId, likes: 87, retweets: 14, replies: 6 } });
+    }
     return this.http.get<any>(`${this.base}social/posts/${postId}/metrics`);
   }
 
   adaptForNetworks(text: string, sourceNetwork: string, networks: string[]): Observable<any> {
+    if (isDemoMode()) {
+      return of({
+        ok: true,
+        versions: networks.map(net => ({
+          network: net,
+          is_original: net === sourceNetwork,
+          text: net === sourceNetwork
+            ? text
+            : `[${net}] ${text}`.slice(0, net === 'twitter' ? 280 : 3000),
+        })),
+      });
+    }
     return this.http.post<any>(`${this.base}social/adapt-for-networks`, {
       text, source_network: sourceNetwork, networks,
     }).pipe(timeout(120_000));
@@ -483,16 +604,27 @@ export class ProspectService {
     tone?:         string;
     extra_context?: string;
   }): Observable<{ ok: boolean; created: number; post_ids: number[]; errors: string[] }> {
+    if (isDemoMode()) {
+      const nets = payload.networks?.length || 3;
+      const created = Math.max(1, nets * 6);
+      return of({ ok: true, created, post_ids: Array.from({ length: created }, (_, i) => 2000 + i), errors: [] });
+    }
     return this.http.post<any>(
       `${this.base}social/generate-monthly-plan`, payload
     ).pipe(timeout(300_000));
   }
 
   getSocialTokens(): Observable<Record<string, boolean>> {
+    if (isDemoMode()) {
+      return of({ meta_access_token: true, meta_ig_user_id: true, meta_fb_page_id: true, linkedin_access_token: false, linkedin_author_urn: false, twitter_api_key: false, twitter_api_secret: false, twitter_access_token: false, twitter_access_secret: false });
+    }
     return this.http.get<Record<string, boolean>>(`${this.base}social/tokens`);
   }
 
   updateSocialToken(key: string, value: string): Observable<any> {
+    if (isDemoMode()) {
+      return of({ ok: true, key });
+    }
     return this.http.put<any>(`${this.base}social/tokens/${key}`, { value });
   }
 
@@ -545,6 +677,17 @@ export class ProspectService {
   }
 
   getCommentLogs(platform?: string, status?: string, limit = 50): Observable<any[]> {
+    if (isDemoMode()) {
+      let list = [
+        { log_id: 1, platform: 'instagram', status: 'PENDING', comment_text: '¿A qué hora es el partido del sábado?', reply_text: null, created_at: new Date(Date.now() - 3600_000).toISOString() },
+        { log_id: 2, platform: 'facebook', status: 'REPLIED', comment_text: '¡Enhorabuena por la victoria!', reply_text: '¡Gracias por el apoyo! 💚', created_at: new Date(Date.now() - 7200_000).toISOString() },
+        { log_id: 3, platform: 'instagram', status: 'SKIPPED', comment_text: 'spam link promo', reply_text: null, created_at: new Date(Date.now() - 86_400_000).toISOString() },
+        { log_id: 4, platform: 'facebook', status: 'PENDING', comment_text: '¿Dónde puedo inscribir a mi hijo?', reply_text: null, created_at: new Date(Date.now() - 1800_000).toISOString() },
+      ];
+      if (platform) list = list.filter(c => c.platform === platform);
+      if (status) list = list.filter(c => c.status === status);
+      return of(list);
+    }
     const params: any = { limit };
     if (platform) params['platform'] = platform;
     if (status)   params['status']   = status;
@@ -552,10 +695,16 @@ export class ProspectService {
   }
 
   replyComment(logId: number, replyText: string): Observable<any> {
+    if (isDemoMode()) {
+      return of({ ok: true, log_id: logId, reply_text: replyText });
+    }
     return this.http.post<any>(`${this.base}social/comments/${logId}/reply`, { reply_text: replyText });
   }
 
   skipComment(logId: number): Observable<any> {
+    if (isDemoMode()) {
+      return of({ ok: true, log_id: logId, status: 'SKIPPED' });
+    }
     return this.http.post<any>(`${this.base}social/comments/${logId}/skip`, {});
   }
 
@@ -605,6 +754,21 @@ export class ProspectService {
     default_text_model: string;
     default_image_model: string;
   }> {
+    if (isDemoMode()) {
+      return of({
+        text_models: [
+          { key: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6', provider: 'Anthropic' },
+          { key: 'gpt-4.1', label: 'GPT-4.1', provider: 'OpenAI' },
+          { key: 'gpt-4o-mini', label: 'GPT-4o Mini', provider: 'OpenAI' },
+        ],
+        image_models: [
+          { key: 'dalle3', label: 'DALL-E 3' },
+          { key: 'flux-pro', label: 'Flux 1.1 Pro' },
+        ],
+        default_text_model: 'claude-sonnet-4-6',
+        default_image_model: 'dalle3',
+      });
+    }
     return this.http.get<any>(`${this.base}social/ai-models`);
   }
 
@@ -613,6 +777,9 @@ export class ProspectService {
   }
 
   batchSchedulePosts(slots: { network: string; scheduled_at: string; content_type: string; generate_text: boolean }[]): Observable<any> {
+    if (isDemoMode()) {
+      return of({ ok: true, created: slots.length, post_ids: slots.map((_, i) => 3000 + i) });
+    }
     return this.http.post<any>(`${this.base}social/posts/batch-schedule`, { slots });
   }
 

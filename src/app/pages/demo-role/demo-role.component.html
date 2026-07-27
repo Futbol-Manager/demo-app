@@ -272,6 +272,16 @@
             </div>
             <p class="promo-card__min">{{ 'DEMO_INTRO.PROMO_MIN' | translate }}</p>
 
+            <!-- Oferta Club Fundador: es la misma que se ofrece por WhatsApp y al
+                 terminar el recorrido de la demo, para no dar tres precios distintos. -->
+            <div class="promo-founder">
+              <span class="promo-founder__badge">
+                <i class="fas fa-award"></i>
+                {{ 'DEMO_JOURNEY.OFFER_BADGE' | translate }}
+              </span>
+              <p class="promo-founder__text">{{ 'DEMO_INTRO.PROMO_FOUNDER' | translate }}</p>
+            </div>
+
             <ul class="promo-features">
               <li><i class="fas fa-check-circle"></i> {{ 'DEMO_INTRO.PROMO_F1' | translate }}</li>
               <li><i class="fas fa-check-circle"></i> {{ 'DEMO_INTRO.PROMO_F2' | translate }}</li>
@@ -294,7 +304,7 @@
 
             <!-- Botón "Ver la demo" — aparece al terminar el audio del último slide -->
             <div class="promo-ver-demo-wrap" *ngIf="visibleLineCount >= currentSlideData.lines.length">
-              <button class="promo-ver-demo" (click)="goToStep2()" type="button">
+              <button class="promo-ver-demo" (click)="completeIntro()" type="button">
                 {{ 'DEMO_INTRO.CTA_BUTTON' | translate }} <i class="fas fa-arrow-right"></i>
               </button>
               <p class="promo-guarantee">
@@ -329,7 +339,7 @@
 
       <!-- Acción en el último slide -->
       <div class="narration__cta-row" *ngIf="isLastSlide && visibleLineCount >= currentSlideData.lines.length">
-        <button class="btn-ver-demo" (click)="goToStep2()" type="button">
+        <button class="btn-ver-demo" (click)="completeIntro()" type="button">
           {{ 'DEMO_INTRO.CTA_BUTTON' | translate }} <i class="fas fa-arrow-right"></i>
         </button>
         <p class="narration__guarantee">
@@ -497,7 +507,7 @@
         <i class="fas fa-exclamation-circle"></i> {{ emailError }}
       </p>
 
-      <!-- Teléfono obligatorio: prefijo de país + número -->
+      <!-- Teléfono opcional: prefijo de país + número -->
       <div class="email-modal__phone-wrap">
         <select
           [(ngModel)]="phonePrefix"
@@ -510,7 +520,7 @@
           [(ngModel)]="phoneNumber"
           [placeholder]="'DEMO_INTRO.PHONE_PLACEHOLDER' | translate"
           class="email-modal__input email-modal__phone-input"
-          [class.email-modal__input--error]="phoneTouched && !isValidPhone"
+          [class.email-modal__input--error]="phoneTouched && !isPhoneEmpty && !isValidPhone"
           [class.email-modal__input--valid]="phoneTouched && isValidPhone"
           (input)="onPhoneInput()"
           (blur)="phoneTouched = true"
@@ -519,7 +529,7 @@
           inputmode="tel">
       </div>
 
-      <p class="email-modal__error" *ngIf="phoneTouched && !isValidPhone">
+      <p class="email-modal__error" *ngIf="phoneTouched && !isPhoneEmpty && !isValidPhone">
         <i class="fas fa-exclamation-circle"></i> {{ 'DEMO_INTRO.PHONE_INVALID' | translate }}
       </p>
 

@@ -22,8 +22,12 @@ import { ChangePasswordComponent } from './pages/change-password/change-password
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { ParentChildrenComponent } from './pages/register/parent-children/parent-children.component';
+import { RegisterSuccessComponent } from './pages/register/register-success/register-success.component';
+import { RegisterAbonadoComponent } from './pages/register-abonado/register-abonado.component';
+import { SharedModule } from './shared/shared.module';
 import { ConfirmationDialogComponent } from './shared/confirmation-dialog/confirmation-dialog.component';
 import { TutorialOverlayComponent } from './shared/tutorial-overlay/tutorial-overlay.component';
+import { DemoJourneyComponent } from './shared/demo-journey/demo-journey.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -38,8 +42,11 @@ export function HttpLoaderFactory(http: HttpClient) {
     ChangePasswordComponent,
     ProfileComponent,
     ParentChildrenComponent,
+    RegisterSuccessComponent,
+    RegisterAbonadoComponent,
     ConfirmationDialogComponent,
     TutorialOverlayComponent,
+    DemoJourneyComponent,
   ],
   imports: [
     BrowserModule,
@@ -71,6 +78,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
 
     CommonModule,
+    SharedModule,
     MatSnackBarModule,
     MatDialogModule,
     MatFormFieldModule,

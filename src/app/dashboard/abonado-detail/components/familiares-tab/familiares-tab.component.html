@@ -1,0 +1,249 @@
+<!-- ─────────────── TAB FAMILIARES ─────────────── -->
+
+<section class="bento">
+  <header class="bento-head">
+    <div class="bento-head-icon"><i class="fas fa-users"></i></div>
+    <div>
+      <h2 class="bento-title">{{ 'SUBS.DETAIL.FAM.TITLE' | translate }}</h2>
+      <p class="bento-sub">{{ 'SUBS.DETAIL.FAM.SUB' | translate }}</p>
+    </div>
+    <div class="bento-head-actions">
+      <button type="button" class="btn-secondary-sph" (click)="openExternalModal()">
+        <i class="fas fa-user-plus"></i>
+        {{ 'SUBS.DETAIL.FAM.ADD_EXTERNAL' | translate }}
+      </button>
+      <button type="button" class="btn-primary-sph" (click)="openLinkModal()">
+        <i class="fas fa-link"></i>
+        {{ 'SUBS.DETAIL.FAM.LINK_MEMBER' | translate }}
+      </button>
+    </div>
+  </header>
+
+  <div class="docs-loading" *ngIf="familiaresLoading">
+    <div class="loader loader--inline"></div>
+    <span>{{ 'SUBS.DETAIL.LOADING' | translate }}</span>
+  </div>
+
+  <div class="empty-state" *ngIf="!familiaresLoading && !familiares.length">
+    <i class="fas fa-users"></i>
+    <p>{{ 'SUBS.DETAIL.FAM.EMPTY' | translate }}</p>
+  </div>
+
+  <div class="fam-grid" *ngIf="!familiaresLoading && familiares.length">
+    <article class="fam-card" *ngFor="let f of familiares" [class.is-deleting]="deletingFamId === f.familiarId">
+      <div class="fam-card-head">
+        <div class="fam-avatar">
+          <span *ngIf="!f.relatedAbonado?.imgPerfil">{{ getFamInitials(f) }}</span>
+          <img *ngIf="f.relatedAbonado?.imgPerfil"
+               [src]="getFamAvatarUrl(f)"
+               [alt]="getFamFullName(f)" />
+        </div>
+        <div class="fam-head-info">
+          <div class="fam-relation">
+            <span class="status-pill status-pill--neutral">{{ getRelacionLabel(f.relacion) | translate }}</span>
+            <span class="status-pill" [ngClass]="isExternalFamiliar(f) ? 'status-pill--external' : 'status-pill--member'">
+              {{ (isExternalFamiliar(f) ? 'SUBS.DETAIL.FAM.EXTERNAL' : 'SUBS.DETAIL.FAM.MEMBER') | translate }}
+            </span>
+          </div>
+          <h3 class="fam-name">{{ getFamFullName(f) }}</h3>
+          <p class="fam-meta" *ngIf="f.relatedAbonado?.numeroSocio">#{{ f.relatedAbonado?.numeroSocio }}</p>
+        </div>
+        <div class="fam-card-actions">
+          <button type="button" class="icon-btn icon-btn--primary"
+                  *ngIf="f.relatedAbonadoId"
+                  (click)="goToRelated(f)"
+                  [title]="'SUBS.DETAIL.FAM.OPEN_PROFILE' | translate">
+            <i class="fas fa-external-link-alt"></i>
+          </button>
+          <button type="button" class="icon-btn icon-btn--danger"
+                  (click)="deleteFamiliar(f)"
+                  [disabled]="deletingFamId === f.familiarId"
+                  [title]="'COMMON.DELETE' | translate">
+            <i class="fas" [ngClass]="deletingFamId === f.familiarId ? 'fa-spinner fa-spin' : 'fa-trash'"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="fam-card-body">
+        <!-- Para externos mostramos campos editables inline (autosave). -->
+        <ng-container *ngIf="isExternalFamiliar(f); else memberInfo">
+          <div class="fam-fields">
+            <div class="field">
+              <label>{{ 'SUBS.DETAIL.FAM.RELATION' | translate }}</label>
+              <select [ngModel]="f.relacion"
+                      (ngModelChange)="updateFamiliarField(f, 'relacion', $event)">
+                <option *ngFor="let r of relationOptions" [value]="r.value">{{ r.labelKey | translate }}</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>{{ 'SUBS.DETAIL.FAM.EMAIL' | translate }}</label>
+              <input type="email"
+                     [ngModel]="f.email"
+                     (ngModelChange)="updateFamiliarField(f, 'email', $event)" />
+            </div>
+            <div class="field">
+              <label>{{ 'SUBS.DETAIL.FAM.PHONE' | translate }}</label>
+              <input type="tel"
+                     [ngModel]="f.telefono"
+                     (ngModelChange)="updateFamiliarField(f, 'telefono', $event)" />
+            </div>
+            <div class="field">
+              <label>{{ 'SUBS.DETAIL.FAM.BIRTHDATE' | translate }}</label>
+              <input type="date"
+                     [ngModel]="f.fechaNacimiento"
+                     (ngModelChange)="updateFamiliarField(f, 'fechaNacimiento', $event)" />
+            </div>
+            <div class="field field--full">
+              <label>{{ 'SUBS.DETAIL.FAM.NOTES' | translate }}</label>
+              <textarea rows="2"
+                        [ngModel]="f.notas"
+                        (ngModelChange)="updateFamiliarField(f, 'notas', $event)"></textarea>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- Para socios enlazados, mostramos los datos como info de solo lectura
+             con CTA para abrir ficha. La relación sigue siendo editable. -->
+        <ng-template #memberInfo>
+          <div class="fam-fields">
+            <div class="field">
+              <label>{{ 'SUBS.DETAIL.FAM.RELATION' | translate }}</label>
+              <select [ngModel]="f.relacion"
+                      (ngModelChange)="updateFamiliarField(f, 'relacion', $event)">
+                <option *ngFor="let r of relationOptions" [value]="r.value">{{ r.labelKey | translate }}</option>
+              </select>
+            </div>
+            <div class="fam-readonly">
+              <i class="fas fa-info-circle"></i>
+              {{ 'SUBS.DETAIL.FAM.MEMBER_HINT' | translate }}
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ─────────────── MODAL VINCULAR SOCIO (PR3) ─────────────── -->
+<div class="sph-modal-overlay" *ngIf="showLinkModal" (click)="closeLinkModal()">
+  <div class="sph-modal sph-modal--wide" (click)="$event.stopPropagation()">
+    <div class="sph-modal-head">
+      <h2><i class="fas fa-link"></i> {{ 'SUBS.DETAIL.FAM.LINK_MODAL_TITLE' | translate }}</h2>
+      <button type="button" class="sph-modal-close" (click)="closeLinkModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="sph-modal-body">
+      <div class="bento-grid">
+        <div class="field">
+          <label>{{ 'SUBS.DETAIL.FAM.RELATION' | translate }}</label>
+          <select [(ngModel)]="linkRelacion">
+            <option *ngFor="let r of relationOptions" [value]="r.value">{{ r.labelKey | translate }}</option>
+          </select>
+        </div>
+        <div class="field field--full">
+          <label>{{ 'SUBS.DETAIL.FAM.SEARCH_LABEL' | translate }}</label>
+          <input type="text"
+                 [ngModel]="linkSearchTerm"
+                 (ngModelChange)="onLinkSearchChange($event)"
+                 [placeholder]="'SUBS.DETAIL.FAM.SEARCH_PLACEHOLDER' | translate" />
+        </div>
+      </div>
+
+      <div class="search-results">
+        <div class="docs-loading" *ngIf="linkSearchLoading">
+          <div class="loader loader--inline"></div>
+          <span>{{ 'SUBS.DETAIL.LOADING' | translate }}</span>
+        </div>
+        <div class="empty-state" *ngIf="!linkSearchLoading && !linkSearchResults.length">
+          <i class="fas fa-search"></i>
+          <p>{{ 'SUBS.DETAIL.FAM.NO_RESULTS' | translate }}</p>
+        </div>
+        <button
+          type="button"
+          class="search-result-row"
+          *ngFor="let r of linkSearchResults"
+          [class.search-result-row--selected]="linkSelectedAbonado?.abonadoId === r.abonadoId"
+          (click)="selectLinkAbonado(r)">
+          <div class="result-avatar">
+            <span>{{ (r.nombre[0] || '').toUpperCase() + (r.apellidos[0] || '').toUpperCase() }}</span>
+          </div>
+          <div class="result-info">
+            <div class="result-name">{{ r.nombre }} {{ r.apellidos }}</div>
+            <div class="result-meta">
+              <span *ngIf="r.numeroSocio">#{{ r.numeroSocio }}</span>
+              <span *ngIf="r.mail">{{ r.mail }}</span>
+            </div>
+          </div>
+          <i class="fas fa-check-circle" *ngIf="linkSelectedAbonado?.abonadoId === r.abonadoId"></i>
+        </button>
+      </div>
+    </div>
+    <div class="sph-modal-foot">
+      <button type="button" class="btn-secondary-sph" (click)="closeLinkModal()" [disabled]="familiarSaving">
+        {{ 'APP.BUTTONS.CLOSE' | translate }}
+      </button>
+      <button type="button" class="btn-primary-sph"
+              (click)="confirmLink()"
+              [disabled]="!linkSelectedAbonado || familiarSaving">
+        <i class="fas" [ngClass]="familiarSaving ? 'fa-spinner fa-spin' : 'fa-link'"></i>
+        {{ 'SUBS.DETAIL.FAM.LINK_CONFIRM' | translate }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────── MODAL FAMILIAR EXTERNO (PR3) ─────────────── -->
+<div class="sph-modal-overlay" *ngIf="showExternalModal" (click)="closeExternalModal()">
+  <div class="sph-modal sph-modal--wide" (click)="$event.stopPropagation()">
+    <div class="sph-modal-head">
+      <h2><i class="fas fa-user-plus"></i> {{ 'SUBS.DETAIL.FAM.EXTERNAL_MODAL_TITLE' | translate }}</h2>
+      <button type="button" class="sph-modal-close" (click)="closeExternalModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="sph-modal-body">
+      <div class="bento-grid">
+        <div class="field">
+          <label>{{ 'SUBS.DETAIL.FAM.RELATION' | translate }}</label>
+          <select [(ngModel)]="externalForm.relacion">
+            <option *ngFor="let r of relationOptions" [value]="r.value">{{ r.labelKey | translate }}</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.DETAIL.FAM.NAME' | translate }} *</label>
+          <input type="text" [(ngModel)]="externalForm.nombre" />
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.DETAIL.FAM.LASTNAME' | translate }}</label>
+          <input type="text" [(ngModel)]="externalForm.apellidos" />
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.DETAIL.FAM.EMAIL' | translate }}</label>
+          <input type="email" [(ngModel)]="externalForm.email" />
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.DETAIL.FAM.PHONE' | translate }}</label>
+          <input type="tel" [(ngModel)]="externalForm.telefono" />
+        </div>
+        <div class="field">
+          <label>{{ 'SUBS.DETAIL.FAM.BIRTHDATE' | translate }}</label>
+          <input type="date" [(ngModel)]="externalForm.fechaNacimiento" />
+        </div>
+        <div class="field field--full">
+          <label>{{ 'SUBS.DETAIL.FAM.NOTES' | translate }}</label>
+          <textarea rows="3" [(ngModel)]="externalForm.notas"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="sph-modal-foot">
+      <button type="button" class="btn-secondary-sph" (click)="closeExternalModal()" [disabled]="familiarSaving">
+        {{ 'APP.BUTTONS.CLOSE' | translate }}
+      </button>
+      <button type="button" class="btn-primary-sph" (click)="saveExternal()" [disabled]="familiarSaving">
+        <i class="fas" [ngClass]="familiarSaving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+        {{ 'APP.BUTTONS.SAVE' | translate }}
+      </button>
+    </div>
+  </div>
+</div>

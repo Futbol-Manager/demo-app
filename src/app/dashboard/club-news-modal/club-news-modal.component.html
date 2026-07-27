@@ -1,0 +1,80 @@
+<div class="cn-backdrop" *ngIf="open" (click)="close()">
+  <div class="cn-card" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+
+    <!-- Cabecera -->
+    <div class="cn-header">
+      <div class="cn-header-title">
+        <i class="bi bi-megaphone-fill"></i>
+        <span>{{ 'CLUB_NEWS.TITLE' | translate }}</span>
+      </div>
+      <button type="button" class="cn-close" (click)="close()" [attr.aria-label]="'CLUB_NEWS.CLOSE' | translate">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- ── Modo: novedad automática ── -->
+    <ng-container *ngIf="mode === 'new' && current as item">
+      <div class="cn-body">
+        <div class="cn-meta">
+          <span class="cn-version" *ngIf="item.version">{{ item.version }}</span>
+          <span class="cn-date" *ngIf="item.publishedAt">{{ formatDate(item.publishedAt) }}</span>
+        </div>
+        <h3 class="cn-news-title">{{ content(item).title }}</h3>
+        <ul class="cn-list">
+          <li *ngFor="let point of content(item).items">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>{{ point }}</span>
+          </li>
+        </ul>
+      </div>
+      <div class="cn-footer">
+        <span class="cn-pager" *ngIf="newsList.length > 1">{{ currentIndex + 1 }} / {{ newsList.length }}</span>
+        <span class="cn-spacer"></span>
+        <button type="button" class="cn-btn cn-btn-primary" (click)="nextNews()">
+          {{ (isLast ? 'CLUB_NEWS.GOT_IT' : 'CLUB_NEWS.NEXT') | translate }}
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- ── Modo: historial ── -->
+    <ng-container *ngIf="mode === 'history'">
+      <div class="cn-body cn-body-history">
+        <div class="cn-loading" *ngIf="loadingHistory">{{ 'CLUB_NEWS.LOADING' | translate }}</div>
+
+        <div class="cn-empty" *ngIf="!loadingHistory && historyList.length === 0">
+          <i class="bi bi-megaphone"></i>
+          <p>{{ 'CLUB_NEWS.EMPTY' | translate }}</p>
+        </div>
+
+        <div class="cn-history-item" *ngFor="let item of historyList" [class.is-unread]="!item.read">
+          <div class="cn-meta">
+            <span class="cn-unread-dot" *ngIf="!item.read"></span>
+            <span class="cn-version" *ngIf="item.version">{{ item.version }}</span>
+            <span class="cn-date" *ngIf="item.publishedAt">{{ formatDate(item.publishedAt) }}</span>
+          </div>
+          <h4 class="cn-news-title">{{ content(item).title }}</h4>
+          <ul class="cn-list">
+            <li *ngFor="let point of content(item).items">
+              <i class="bi bi-check-circle-fill"></i>
+              <span>{{ point }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="cn-footer">
+        <button type="button" class="cn-btn cn-btn-suggest" (click)="goToSuggestions()">
+          <i class="bi bi-lightbulb-fill"></i>
+          {{ 'CLUB_NEWS.SUGGESTIONS' | translate }}
+        </button>
+        <button type="button" class="cn-btn cn-btn-ghost" *ngIf="hasUnreadInHistory" (click)="markAllRead()">
+          {{ 'CLUB_NEWS.MARK_ALL_READ' | translate }}
+        </button>
+        <span class="cn-spacer"></span>
+        <button type="button" class="cn-btn cn-btn-primary" (click)="close()">
+          {{ 'CLUB_NEWS.CLOSE' | translate }}
+        </button>
+      </div>
+    </ng-container>
+
+  </div>
+</div>

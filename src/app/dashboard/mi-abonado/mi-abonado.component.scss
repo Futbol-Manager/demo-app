@@ -1,0 +1,1054 @@
+// Pantalla "Mi cuenta de abonado" — Bloque 5
+// Sigue paleta Sphaira: navy #002c40, green #31b270, gris texto #636363.
+
+$navy: #002c40;
+$navy-deep: #001e2e;
+$green: #31b270;
+$green-light: #c4e8d6;
+$gray-text: #636363;
+$gray-bg: #f4f4f4;
+$amber: #f5b733;
+$amber-soft: #fff5d9;
+$red: #d04848;
+$red-soft: #fdecec;
+
+:host {
+  display: block;
+  width: 100%;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.abonado-page {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 28px 20px 48px;
+  color: $gray-text;
+}
+
+// =====================================================
+// Loading & Error states
+// =====================================================
+.state-loading {
+  text-align: center;
+  padding: 80px 20px;
+  color: $gray-text;
+
+  .spinner {
+    width: 42px;
+    height: 42px;
+    border: 4px solid rgba(0, 0, 0, 0.08);
+    border-top-color: $green;
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    animation: spin 0.9s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.state-error {
+  text-align: center;
+  padding: 64px 20px;
+
+  .error-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: $red-soft;
+    color: $red;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  h2 {
+    color: $navy;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  p {
+    margin-bottom: 24px;
+  }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+// =====================================================
+// Header
+// =====================================================
+.abonado-header {
+  // Brand Sphaira: siempre degradado verde → navy. NO usar ámbar/violeta/
+  // sky aunque el estado sea pendiente, va contra la guía de marca.
+  background: linear-gradient(135deg, $green 0%, $navy 100%);
+  border-radius: 18px;
+  padding: 24px 28px;
+  color: #fff;
+  margin-bottom: 28px;
+  box-shadow: 0 8px 22px rgba(0, 44, 64, 0.18);
+  position: relative;
+
+  // Branding del producto "Sphaira Player". Se pinta arriba a la izquierda
+  // dentro de la cabecera, separado del bloque principal por un pequeño
+  // margen, para que el abonado identifique en qué producto está.
+  .abonado-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 14px;
+    padding: 4px 10px;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fff;
+
+    i {
+      font-size: 13px;
+      color: $green-light;
+    }
+  }
+
+  // Para diferenciar visualmente los estados sin salir de la paleta
+  // Sphaira, modulamos el degradado base:
+  //   - activo    → green → navy        (default)
+  //   - pendiente → green → navy        (mismo; la pista visual de
+  //                                       "pendiente" la da el badge en
+  //                                       ámbar y el banner de aviso)
+  //   - baja      → gris  → navy-deep   (apagado pero dentro de marca)
+  &.estado-baja {
+    background: linear-gradient(135deg, #6f8590 0%, $navy-deep 100%);
+  }
+
+  .header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .club-info {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  // El "club-logo" actúa como contenedor del <img> O del icono fallback,
+  // así nunca se ve un cuadrado vacío cuando el club no tiene foto.
+  .club-logo {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.18);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    i {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 28px;
+      line-height: 1;
+    }
+  }
+
+  // Avatar del abonado: foto personal con escudo del club como badge.
+  // Reemplaza al `.club-logo` cuando el dashboard muestra al abonado
+  // logueado en estado=1.
+  .abonado-avatar {
+    position: relative;
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.16);
+    border: 3px solid rgba(255, 255, 255, 0.55);
+    flex-shrink: 0;
+    overflow: visible;
+    padding: 0;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 140ms, border-color 140ms, box-shadow 160ms;
+
+    > img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    > i {
+      font-size: 36px;
+      line-height: 1;
+    }
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      border-color: #fff;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+    }
+
+    &.has-image > i { display: none; }
+
+    &:disabled {
+      cursor: progress;
+      opacity: 0.75;
+    }
+
+    // Badge edit (lápiz / spinner).
+    &__edit {
+      position: absolute;
+      right: -2px;
+      bottom: -2px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #31b270;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+      font-size: 13px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+
+      .bi-arrow-clockwise {
+        animation: avatar-spin 1s linear infinite;
+      }
+    }
+
+    // Badge con el escudo del club (top-right, anti-edit).
+    &__club-badge {
+      position: absolute;
+      right: -4px;
+      top: -2px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+      }
+    }
+  }
+
+  @keyframes avatar-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .club-text {
+    min-width: 0;
+  }
+
+  .welcome {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 11px;
+    opacity: 0.85;
+  }
+
+  h1 {
+    font-size: 26px;
+    font-weight: 800;
+    margin: 4px 0 6px;
+    line-height: 1.15;
+  }
+
+  .club-name {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.95;
+
+    &.muted {
+      font-style: italic;
+      opacity: 0.7;
+    }
+  }
+
+  .estado-badge {
+    background: rgba(255, 255, 255, 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    flex-shrink: 0;
+    white-space: nowrap;
+
+    // Tintamos el badge según estado para dar la pista visual sin tocar
+    // el degradado de marca del header.
+    &.estado-pendiente {
+      background: $amber-soft;
+      color: #8a6a14;
+      border-color: $amber;
+    }
+
+    &.estado-baja {
+      background: $red-soft;
+      color: #a83333;
+      border-color: $red;
+    }
+  }
+
+  .estado-hint {
+    margin: 16px 0 0;
+    font-size: 13px;
+    opacity: 0.9;
+    line-height: 1.45;
+  }
+}
+
+// =====================================================
+// Sections
+// =====================================================
+.card-section {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  padding: 22px 24px;
+  margin-bottom: 18px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.section-title {
+  color: $navy;
+  font-size: 17px;
+  font-weight: 700;
+  margin: 0 0 16px;
+}
+
+// =====================================================
+// Carnet virtual placeholder
+// =====================================================
+.virtual-card {
+  background: linear-gradient(135deg, $navy 0%, $navy-deep 100%);
+  color: #fff;
+  border-radius: 18px;
+  padding: 22px 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 12px 28px rgba(0, 44, 64, 0.22);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: rgba(49, 178, 112, 0.18);
+    pointer-events: none;
+  }
+
+  .vc-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .vc-club {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.85;
+  }
+
+  .vc-tag {
+    background: $green;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .vc-body {
+    margin: 18px 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .vc-name {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 14px;
+  }
+
+  .vc-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 13px;
+  }
+
+  .vc-label {
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 11px;
+  }
+
+  .vc-value {
+    font-weight: 600;
+  }
+
+  .vc-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 18px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .vc-qr-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+
+    .qr-ph {
+      width: 72px;
+      height: 72px;
+      background: repeating-conic-gradient(
+        rgba(255, 255, 255, 0.85) 0% 25%,
+        rgba(255, 255, 255, 0.55) 25% 50%
+      );
+      background-size: 18px 18px;
+      border-radius: 8px;
+      opacity: 0.85;
+    }
+
+    small {
+      font-size: 10px;
+      opacity: 0.75;
+      letter-spacing: 0.04em;
+    }
+  }
+
+  .vc-brand {
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    opacity: 0.55;
+    font-size: 13px;
+  }
+}
+
+// =====================================================
+// Banners (pendiente / baja)
+// =====================================================
+.info-banner {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  background: $amber-soft;
+  border-left: 4px solid $amber;
+  padding: 16px 18px;
+  border-radius: 10px;
+
+  &.banner-error {
+    background: $red-soft;
+    border-left-color: $red;
+  }
+
+  .banner-icon {
+    font-size: 22px;
+    line-height: 1;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.7);
+  }
+
+  h3 {
+    margin: 0 0 4px;
+    color: $navy;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: $gray-text;
+    line-height: 1.5;
+  }
+}
+
+// =====================================================
+// Datos personales
+// =====================================================
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px 24px;
+}
+
+.info-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &.info-cell-wide {
+    grid-column: 1 / -1;
+  }
+}
+
+.info-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: $gray-text;
+  opacity: 0.8;
+}
+
+.info-value {
+  color: $navy;
+  font-weight: 600;
+  font-size: 15px;
+  word-break: break-word;
+}
+
+// =====================================================
+// Temporada
+// =====================================================
+.season-card {
+  background: $gray-bg;
+  border-radius: 10px;
+  padding: 14px 18px;
+
+  .season-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+    &:last-child { border-bottom: none; }
+
+    strong {
+      color: $navy;
+      font-size: 15px;
+    }
+  }
+}
+
+.pago-badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  i { font-size: 13px; }
+
+  &.pago-ok {
+    background: $green-light;
+    color: #1f8a55;
+  }
+
+  &.pago-warn {
+    background: $amber-soft;
+    color: #8a6a14;
+  }
+
+  &.pago-ko {
+    background: $red-soft;
+    color: #a83333;
+  }
+}
+
+// =====================================================
+// Mis pagos (clubes ad-hoc sin temporada)
+// =====================================================
+.pay-section {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.pay-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.pay-card {
+  background: $gray-bg;
+  border-radius: 12px;
+  padding: 16px 18px;
+  border-left: 4px solid $navy;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &--green { border-left-color: $green; }
+  &--blue { border-left-color: #4a90e2; }
+
+  .pay-card-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #636363;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .pay-card-value {
+    font-size: 24px;
+    font-weight: 800;
+    color: $navy;
+    line-height: 1.1;
+  }
+
+  .pay-card-foot {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #636363;
+    margin-top: 2px;
+  }
+
+  // En la tarjeta de estado el badge ocupa el sitio del valor numérico,
+  // así que lo alineamos a la izquierda y le dejamos respirar.
+  .pago-badge {
+    align-self: flex-start;
+    margin-top: 2px;
+  }
+}
+
+.pay-history-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: $navy;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 4px 0 -6px;
+
+  i { font-size: 14px; color: $green; }
+}
+
+.pay-history-empty {
+  background: $gray-bg;
+  border-radius: 12px;
+  padding: 28px 18px;
+  text-align: center;
+  color: #8a8a8a;
+  font-size: 13.5px;
+
+  i {
+    display: block;
+    font-size: 28px;
+    margin-bottom: 8px;
+    opacity: 0.6;
+  }
+  p { margin: 0; }
+}
+
+.pay-history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pay-history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: $gray-bg;
+  border-radius: 10px;
+  padding: 12px 14px;
+  border-left: 3px solid $green;
+
+  // Variante "negativa" (devoluciones) por si en el futuro se permite
+  // registrarlas desde la app del abonado: borde rojo discreto.
+  &:has(.phi-amount--neg) {
+    border-left-color: #d04848;
+  }
+
+  .phi-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .phi-date {
+    font-size: 14px;
+    font-weight: 700;
+    color: $navy;
+  }
+
+  .phi-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #636363;
+  }
+
+  .phi-tipo {
+    font-weight: 700;
+    color: #1f8a55;
+
+    &--neg { color: #d04848; }
+  }
+
+  .phi-sep { opacity: 0.5; }
+
+  .phi-comment {
+    font-size: 12px;
+    color: #8a8a8a;
+    font-style: italic;
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 280px;
+  }
+
+  .phi-amount {
+    font-size: 16px;
+    font-weight: 800;
+    white-space: nowrap;
+    color: $navy;
+
+    &--pos { color: #1f8a55; }
+    &--neg { color: #d04848; }
+  }
+}
+
+// =====================================================
+// Quick actions: tarjetas de acceso rápido (bandeja, etc.)
+// =====================================================
+.quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.qa-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #e6ebef;
+  border-radius: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  color: $navy;
+  font-family: inherit;
+
+  &:hover {
+    border-color: $green;
+    box-shadow: 0 6px 20px rgba(49, 178, 112, 0.12);
+    transform: translateY(-1px);
+  }
+
+  .qa-icon {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, $green 0%, $navy 100%);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .qa-dot {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #d04848;
+    color: #fff;
+    border-radius: 999px;
+    min-width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    box-shadow: 0 0 0 2px #fff;
+  }
+
+  .qa-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+
+    strong {
+      color: $navy;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    small {
+      color: $gray-text;
+      font-size: 0.8rem;
+    }
+  }
+
+  .qa-chevron {
+    color: lighten($gray-text, 18%);
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+}
+
+// =====================================================
+// Buttons
+// =====================================================
+.actions-section {
+  text-align: center;
+}
+
+.btn-secondary {
+  background: #fff;
+  color: $navy;
+  border: 1.5px solid $navy;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover { background: $navy; color: #fff; }
+}
+
+.btn-link {
+  background: transparent;
+  color: $gray-text;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 8px 12px;
+
+  &:hover { color: $navy; }
+}
+
+// =====================================================
+// Pantalla bloqueante (estado != 1)
+// Se muestra cuando el abonado está pendiente de
+// aprobación (estado=2) o de baja (estado=0). Oculta
+// por completo carnet, datos personales y temporada
+// y deja una única tarjeta con escudo del club +
+// mensaje. Sin botón de cerrar sesión.
+// =====================================================
+.abonado-gate {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px 48px;
+  position: relative;
+}
+
+.abonado-brand--gate {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(0, 44, 64, 0.08);
+  border: 1px solid rgba(0, 44, 64, 0.18);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $navy;
+
+  i {
+    font-size: 13px;
+    color: $green;
+  }
+}
+
+.gate-card {
+  width: 100%;
+  max-width: 520px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 20px;
+  padding: 36px 32px 32px;
+  text-align: center;
+  box-shadow: 0 16px 40px rgba(0, 44, 64, 0.12);
+}
+
+.gate-shield {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $green 0%, $navy 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 8px 22px rgba(0, 44, 64, 0.2);
+  border: 4px solid #fff;
+  outline: 4px solid rgba(49, 178, 112, 0.18);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  i {
+    color: #fff;
+    font-size: 52px;
+    line-height: 1;
+  }
+}
+
+.gate-club {
+  margin: 0 0 24px;
+  font-size: 14px;
+  color: $gray-text;
+
+  strong {
+    color: $navy;
+    font-weight: 700;
+  }
+}
+
+.gate-status {
+  margin: 0 0 22px;
+
+  i {
+    font-size: 36px;
+    line-height: 1;
+    margin-bottom: 12px;
+    display: inline-block;
+  }
+
+  h1 {
+    margin: 0 0 8px;
+    font-size: 22px;
+    font-weight: 800;
+    color: $navy;
+    line-height: 1.2;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: $gray-text;
+    line-height: 1.55;
+    max-width: 380px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+// Variantes por estado: solo cambia el color del icono central, todo
+// lo demás (escudo, fondo, branding) se mantiene en paleta Sphaira.
+.gate-card.estado-pendiente .gate-status i { color: $amber; }
+.gate-card.estado-baja      .gate-status i { color: $red; }
+.gate-card.estado-activo    .gate-status i { color: $green; }
+
+.gate-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 10px 16px;
+  background: $green-light;
+  color: #1f8a55;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+
+  i { font-size: 15px; }
+}
+
+@media (max-width: 480px) {
+  .gate-card { padding: 28px 22px 26px; }
+  .gate-shield { width: 96px; height: 96px; i { font-size: 42px; } }
+  .gate-status h1 { font-size: 19px; }
+}
+
+// =====================================================
+// Responsive
+// =====================================================
+@media (max-width: 720px) {
+  .abonado-page { padding: 18px 14px 36px; }
+
+  .abonado-header {
+    padding: 20px 18px;
+
+    h1 { font-size: 22px; }
+
+    .header-inner { flex-direction: column; align-items: flex-start; }
+    .estado-badge { align-self: flex-start; }
+  }
+
+  .info-grid { grid-template-columns: 1fr; }
+
+  .virtual-card .vc-name { font-size: 18px; }
+}

@@ -1,0 +1,173 @@
+<div class="dup-overlay" *ngIf="open" (click)="close()">
+  <div class="dup-modal" (click)="$event.stopPropagation()">
+
+    <header class="dup-modal__header">
+      <h2 class="dup-modal__title">
+        {{ 'DUPLICATES.MODAL.TITLE' | translate }}
+      </h2>
+      <button type="button"
+              class="dup-modal__close"
+              [disabled]="!!processingPairKey"
+              (click)="close()"
+              [attr.aria-label]="'COMMON.CLOSE' | translate">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </header>
+
+    <p class="dup-modal__intro">
+      {{ 'DUPLICATES.MODAL.INTRO' | translate }}
+    </p>
+
+    <div *ngIf="loading" class="dup-modal__loading">
+      <i class="bi bi-arrow-clockwise spin"></i>
+      {{ 'DUPLICATES.MODAL.LOADING' | translate }}
+    </div>
+
+    <div *ngIf="!loading && errorMsg" class="dup-modal__error">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      {{ errorMsg }}
+    </div>
+
+    <div *ngIf="!loading && !errorMsg && groups.length === 0" class="dup-modal__empty">
+      <i class="bi bi-check-circle-fill"></i>
+      {{ 'DUPLICATES.MODAL.EMPTY' | translate }}
+    </div>
+
+    <div *ngIf="!loading && groups.length > 0" class="dup-modal__list">
+
+      <article *ngFor="let g of groups; trackBy: trackByPair" class="dup-card">
+
+        <div class="dup-card__reasons">
+          <span class="dup-card__reason-chip"
+                *ngFor="let r of g.reasons">
+            {{ reasonKey(r) | translate }}
+          </span>
+        </div>
+
+        <div class="dup-card__bodies">
+
+          <!-- Player A -->
+          <section class="dup-card__player">
+            <header class="dup-card__player-head">
+              <strong class="dup-card__player-name">{{ fullName(g.playerA) }}</strong>
+              <span class="dup-card__player-id">#{{ g.playerA.playerId }}</span>
+            </header>
+            <dl class="dup-card__data">
+              <div><dt>{{ 'COMMON.ID' | translate }}</dt><dd>{{ g.playerA.dni || '—' }}</dd></div>
+              <div><dt>{{ 'DUPLICATES.MODAL.BIRTHDATE' | translate }}</dt><dd>{{ g.playerA.fechaDeNacimiento || '—' }}</dd></div>
+              <div><dt>{{ 'DUPLICATES.MODAL.CREATED' | translate }}</dt><dd>{{ g.playerA.fechaCreacion || '—' }}</dd></div>
+              <div><dt>{{ 'DUPLICATES.MODAL.TEAMS' | translate }}</dt>
+                <dd>
+                  {{ g.playerA.countTeams }}
+                  <small *ngIf="g.playerA.teamNames?.length">
+                    ({{ g.playerA.teamNames!.join(', ') }})
+                  </small>
+                </dd>
+              </div>
+              <div><dt>{{ 'DUPLICATES.MODAL.TUTORS' | translate }}</dt><dd>{{ g.playerA.countTutores }}</dd></div>
+              <div><dt>{{ 'DUPLICATES.MODAL.PAYMENTS' | translate }}</dt><dd>{{ g.playerA.countPagos }}</dd></div>
+              <div><dt>{{ 'DUPLICATES.MODAL.ATTENDANCE' | translate }}</dt><dd>{{ g.playerA.countAsistencias }}</dd></div>
+              <div><dt>{{ 'DUPLICATES.MODAL.GOALS' | translate }}</dt><dd>{{ g.playerA.countGoals }}</dd></div>
+            </dl>
+            <button type="button"
+                    class="dup-card__keep-btn"
+                    [disabled]="processingPairKey === pairKey(g)"
+                    (click)="keep(g, 'A')">
+              <i class="bi bi-check2-circle"></i>
+              {{ 'DUPLICATES.MODAL.KEEP_THIS' | translate }}
+            </button>
+          </section>
+
+          <div class="dup-card__vs">VS</div>
+
+          <!-- Player B -->
+          <section class="dup-card__player">
+            <header class="dup-card__player-head">
+              <strong class="dup-card__player-name">{{ fullName(g.playerB) }}</strong>
+              <span class="dup-card__player-id">#{{ g.playerB.playerId }}</span>
+            </header>
+            <dl class="dup-card__data">
+              <div><dt>{{ 'COMMON.ID' | translate }}</dt><dd>{{ g.playerB.dni || '—' }}</dd></div>
+              <div><dt>{{ 'DUPLICATES.MODAL.BIRTHDATE' | translate }}</dt><dd>{{ g.playerB.fechaDeNacimiento || '—' }}</dd></div>
+              <div><dt>{{ 'DUPLICATES.MODAL.CREATED' | translate }}</dt><dd>{{ g.playerB.fechaCreacion || '—' }}</dd></div>
+              <div><dt>{{ 'DUPLICATES.MODAL.TEAMS' | translate }}</dt>
+                <dd>
+                  {{ g.playerB.countTeams }}
+                  <small *ngIf="g.playerB.teamNames?.length">
+                    ({{ g.playerB.teamNames!.join(', ') }})
+                  </small>
+                </dd>
+              </div>
+              <div><dt>{{ 'DUPLICATES.MODAL.TUTORS' | translate }}</dt><dd>{{ g.playerB.countTutores }}</dd></div>
+              <div><dt>{{ 'DUPLICATES.MODAL.PAYMENTS' | translate }}</dt><dd>{{ g.playerB.countPagos }}</dd></div>
+              <div><dt>{{ 'DUPLICATES.MODAL.ATTENDANCE' | translate }}</dt><dd>{{ g.playerB.countAsistencias }}</dd></div>
+              <div><dt>{{ 'DUPLICATES.MODAL.GOALS' | translate }}</dt><dd>{{ g.playerB.countGoals }}</dd></div>
+            </dl>
+            <button type="button"
+                    class="dup-card__keep-btn"
+                    [disabled]="processingPairKey === pairKey(g)"
+                    (click)="keep(g, 'B')">
+              <i class="bi bi-check2-circle"></i>
+              {{ 'DUPLICATES.MODAL.KEEP_THIS' | translate }}
+            </button>
+          </section>
+
+        </div>
+
+        <footer class="dup-card__footer">
+          <button type="button"
+                  class="dup-card__ignore-btn"
+                  [disabled]="processingPairKey === pairKey(g)"
+                  (click)="ignore(g)">
+            <i class="bi bi-slash-circle"></i>
+            {{ 'DUPLICATES.MODAL.NOT_DUPLICATE' | translate }}
+          </button>
+        </footer>
+
+        <div *ngIf="processingPairKey === pairKey(g)" class="dup-card__processing">
+          <i class="bi bi-arrow-clockwise spin"></i>
+          {{ 'DUPLICATES.MODAL.PROCESSING' | translate }}
+        </div>
+
+      </article>
+    </div>
+
+  </div>
+</div>
+
+<!-- Confirm-dialog Sphaira inline autocontenido. -->
+<div class="dup-confirm-overlay" *ngIf="confirmShow" (click)="onConfirmCancel()">
+  <div class="dup-confirm-box" (click)="$event.stopPropagation()">
+    <header class="dup-confirm-box__header">
+      <h3 class="dup-confirm-box__title">
+        <i class="bi"
+           [class.bi-exclamation-triangle-fill]="confirmDanger"
+           [class.bi-question-circle-fill]="!confirmDanger"></i>
+        {{ confirmTitle }}
+      </h3>
+      <button type="button"
+              class="dup-confirm-box__close"
+              (click)="onConfirmCancel()"
+              [attr.aria-label]="'COMMON.CLOSE' | translate">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </header>
+    <div class="dup-confirm-box__body">
+      <p>{{ confirmMessage }}</p>
+    </div>
+    <footer class="dup-confirm-box__footer">
+      <button type="button"
+              class="dup-confirm-box__btn dup-confirm-box__btn--cancel"
+              (click)="onConfirmCancel()">
+        {{ 'COMMON.CANCEL' | translate }}
+      </button>
+      <button type="button"
+              class="dup-confirm-box__btn"
+              [class.dup-confirm-box__btn--danger]="confirmDanger"
+              [class.dup-confirm-box__btn--primary]="!confirmDanger"
+              (click)="onConfirmAccept()">
+        {{ confirmText }}
+      </button>
+    </footer>
+  </div>
+</div>

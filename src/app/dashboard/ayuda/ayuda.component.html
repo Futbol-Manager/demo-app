@@ -1,0 +1,206 @@
+<div class="ayuda-page">
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       Cabecera (sticky con buscador prominente)
+       ═══════════════════════════════════════════════════════════════ -->
+  <header class="ayuda-header">
+    <div class="ayuda-header__top">
+      <div class="ayuda-header__brand">
+        <i class="bi bi-book-half ayuda-header__icon"></i>
+        <div class="ayuda-header__title-wrap">
+          <h1 class="ayuda-header__title">{{ 'AYUDA.TITLE' | translate }}</h1>
+          <p class="ayuda-header__subtitle">{{ 'AYUDA.SUBTITLE' | translate }}</p>
+        </div>
+      </div>
+
+      <button class="ayuda-header__sidebar-toggle" type="button"
+              (click)="toggleSidebar()"
+              [attr.aria-label]="'AYUDA.TOGGLE_INDEX' | translate">
+        <i class="bi bi-list"></i>
+        <span>{{ 'AYUDA.INDEX' | translate }}</span>
+      </button>
+    </div>
+
+    <!-- Buscador prominente en el hero -->
+    <div class="ayuda-hero-search" *ngIf="!loading && !error && sections.length > 0">
+      <i class="bi bi-search ayuda-hero-search__icon"></i>
+      <input
+        type="text"
+        class="ayuda-hero-search__input"
+        [placeholder]="'AYUDA.SEARCH_PLACEHOLDER_BIG' | translate"
+        [ngModel]="searchQuery"
+        (ngModelChange)="onSearchChange($event)"
+        autocomplete="off" />
+      <button *ngIf="searchQuery" class="ayuda-hero-search__clear" type="button" (click)="clearSearch()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ───── Loading state ───── -->
+  <div class="ayuda-loading" *ngIf="loading">
+    <div class="spinner-border text-success" role="status"></div>
+    <p>{{ 'AYUDA.LOADING' | translate }}</p>
+  </div>
+
+  <!-- ───── Error / vacío ───── -->
+  <div class="ayuda-empty" *ngIf="!loading && (error || sections.length === 0)">
+    <i class="bi bi-exclamation-triangle"></i>
+    <p>{{ 'AYUDA.EMPTY' | translate }}</p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       Layout principal: sidebar + contenido
+       ═══════════════════════════════════════════════════════════════ -->
+  <div class="ayuda-layout" *ngIf="!loading && !error && sections.length > 0">
+
+    <!-- ─── Sidebar con índice agrupado por categoría ─── -->
+    <aside class="ayuda-sidebar" [class.ayuda-sidebar--mobile-open]="sidebarMobileOpen">
+
+      <!-- Resultados de búsqueda -->
+      <div class="ayuda-results" *ngIf="searchQuery && searchHits.length > 0">
+        <p class="ayuda-results__title">
+          {{ 'AYUDA.SEARCH_RESULTS' | translate }} ({{ searchHits.length }})
+        </p>
+        <ul class="ayuda-results__list">
+          <li *ngFor="let h of searchHits; trackBy: trackSlug">
+            <button class="ayuda-results__item" type="button" (click)="scrollToSlug(h.slug)">
+              <strong>{{ h.header }}</strong>
+              <span class="ayuda-results__snippet">{{ h.snippet }}</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <p *ngIf="searchQuery && searchHits.length === 0" class="ayuda-results__empty">
+        {{ 'AYUDA.SEARCH_NO_RESULTS' | translate }}
+      </p>
+
+      <!-- Índice agrupado por categoría (acordeón) -->
+      <nav class="ayuda-index" *ngIf="!searchQuery">
+        <p class="ayuda-index__title">{{ 'AYUDA.INDEX' | translate }}</p>
+
+        <div class="ayuda-group" *ngFor="let g of groups; trackBy: trackCat">
+          <button class="ayuda-group__head" type="button"
+                  [class.ayuda-group__head--active]="activeCategoryId === g.id"
+                  (click)="toggleGroup(g.id)">
+            <span class="ayuda-group__icon-wrap">
+              <i class="bi" [ngClass]="g.icon"></i>
+            </span>
+            <span class="ayuda-group__label">{{ g.label | translate }}</span>
+            <span class="ayuda-group__count">{{ g.sections.length }}</span>
+            <i class="bi ayuda-group__chevron"
+               [ngClass]="g.expanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+          </button>
+
+          <ul class="ayuda-group__list" *ngIf="g.expanded">
+            <li *ngFor="let s of g.sections; trackBy: trackSlug">
+              <button
+                class="ayuda-group__item"
+                [class.ayuda-group__item--active]="activeSlug === s.slug"
+                type="button"
+                (click)="scrollToSlug(s.slug)">
+                {{ s.prettyHeader }}
+              </button>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Backdrop para sidebar móvil -->
+    <div class="ayuda-backdrop"
+         *ngIf="sidebarMobileOpen"
+         (click)="toggleSidebar()"></div>
+
+    <!-- ─── Contenido principal ─── -->
+    <main class="ayuda-content" #contentScroll (scroll)="onContentScroll($event)">
+
+      <!-- Breadcrumb sticky (visible cuando hay sección activa) -->
+      <div class="ayuda-breadcrumb" *ngIf="activeGroup && activeSectionHeader">
+        <i class="bi" [ngClass]="activeGroup.icon"></i>
+        <span class="ayuda-breadcrumb__cat">{{ activeGroup.label | translate }}</span>
+        <i class="bi bi-chevron-right ayuda-breadcrumb__sep"></i>
+        <span class="ayuda-breadcrumb__sec">{{ activeSectionHeader }}</span>
+      </div>
+
+      <!-- Hero: tarjetas de categorías -->
+      <section class="ayuda-hero" *ngIf="!searchQuery">
+        <h2 class="ayuda-hero__title">{{ 'AYUDA.HERO_TITLE' | translate }}</h2>
+        <p class="ayuda-hero__subtitle">{{ 'AYUDA.HERO_SUBTITLE' | translate }}</p>
+
+        <div class="ayuda-cards">
+          <button class="ayuda-card" type="button"
+                  *ngFor="let g of groups; trackBy: trackCat"
+                  (click)="scrollToCategory(g.id)">
+            <span class="ayuda-card__icon">
+              <i class="bi" [ngClass]="g.icon"></i>
+            </span>
+            <span class="ayuda-card__body">
+              <span class="ayuda-card__title">{{ g.label | translate }}</span>
+              <span class="ayuda-card__desc">{{ g.description | translate }}</span>
+              <span class="ayuda-card__count">
+                {{ g.sections.length }} {{ (g.sections.length === 1 ? 'AYUDA.MODULE_ONE' : 'AYUDA.MODULE_MANY') | translate }}
+              </span>
+            </span>
+            <i class="bi bi-arrow-right ayuda-card__arrow"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- Secciones agrupadas por categoría -->
+      <section class="ayuda-cat-block"
+               *ngFor="let g of groups; trackBy: trackCat"
+               [class.ayuda-cat-block--player]="g.id === 'player'">
+
+        <!-- Cabecera de la categoría -->
+        <header class="ayuda-cat-block__head" *ngIf="!searchQuery">
+          <span class="ayuda-cat-block__icon">
+            <i class="bi" [ngClass]="g.icon"></i>
+          </span>
+          <div class="ayuda-cat-block__texts">
+            <h3 class="ayuda-cat-block__title">{{ g.label | translate }}</h3>
+            <p class="ayuda-cat-block__desc">{{ g.description | translate }}</p>
+          </div>
+        </header>
+
+        <article *ngFor="let s of g.sections; trackBy: trackSlug"
+                 class="ayuda-section"
+                 [id]="'section-' + s.slug">
+
+          <header class="ayuda-section__header">
+            <div class="ayuda-section__title-wrap">
+              <span class="ayuda-section__cat-badge" [attr.data-cat]="g.id">
+                <i class="bi" [ngClass]="g.icon"></i>
+              </span>
+              <h2 class="ayuda-section__title">{{ s.prettyHeader }}</h2>
+            </div>
+            <button
+              type="button"
+              class="ayuda-section__ask-btn"
+              [attr.title]="'AYUDA.ASK_ABOUT_TOOLTIP' | translate"
+              (click)="askAboutSection(s)">
+              <i class="bi bi-chat-dots"></i>
+              <span>{{ 'AYUDA.ASK_ABOUT_BUTTON' | translate }}</span>
+            </button>
+          </header>
+
+          <div class="ayuda-section__body" [innerHTML]="s.html"></div>
+        </article>
+      </section>
+
+      <footer class="ayuda-footer">
+        <p>{{ 'AYUDA.FOOTER_HINT' | translate }}</p>
+      </footer>
+
+      <!-- Botón flotante "Volver arriba" -->
+      <button class="ayuda-back-top"
+              [class.ayuda-back-top--visible]="showBackToTop"
+              type="button"
+              (click)="scrollToTop()"
+              [attr.aria-label]="'AYUDA.BACK_TO_TOP' | translate">
+        <i class="bi bi-chevron-up"></i>
+      </button>
+    </main>
+  </div>
+</div>

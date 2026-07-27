@@ -1,6 +1,30 @@
 <!-- ══ MODO DEMO ══ -->
 <div class="demo-mode-banner" *ngIf="isDemoMode">
-  <span><i class="bi bi-eye me-1"></i> Modo demo — Datos ficticios.</span>
+  <span class="demo-mode-banner__text">
+    <i class="bi bi-eye me-1"></i> {{ 'DEMO_ROLE.BANNER' | translate }}
+  </span>
+
+  <!-- Cambio de perfil sin salir de la demo: no vuelve a pedir email ni teléfono -->
+  <span class="demo-role-switch" data-tutorial="demo-role-switch">
+    <span class="demo-role-switch__label">{{ 'DEMO_ROLE.SWITCH_AS' | translate }}</span>
+    <button type="button" class="demo-role-switch__btn" [class.is-active]="profileId === 1"
+            (click)="cambiarRol(1)">
+      <i class="bi bi-building"></i>
+      <span>{{ 'DEMO_ROLE.CLUB_TITLE' | translate }}</span>
+    </button>
+    <button type="button" class="demo-role-switch__btn"
+            [class.is-active]="profileId === 2 || profileId === 6 || profileId === 7"
+            (click)="cambiarRol(2)">
+      <i class="bi bi-person-badge"></i>
+      <span>{{ 'DEMO_ROLE.COACH_TITLE' | translate }}</span>
+    </button>
+    <button type="button" class="demo-role-switch__btn"
+            [class.is-active]="profileId === 3 || profileId === 5"
+            (click)="cambiarRol(3)">
+      <i class="bi bi-person-fill"></i>
+      <span>{{ 'DEMO_ROLE.PLAYER_TITLE' | translate }}</span>
+    </button>
+  </span>
 </div>
 
 <!-- ══ TRIAL BANNER (coach standalone, trial activo) ══ -->
@@ -139,8 +163,8 @@
           </div>
         </div>
 
-        <!-- ===== VER TUTORIAL (solo desktop) ===== -->
-        <button *ngIf="isDesktop" type="button" class="header-tutorial-btn" data-tutorial="header-tutorial-btn" (click)="openTutorial()"
+        <!-- ===== VER TUTORIAL (ahora también en móvil: es la única vía de abrirlo) ===== -->
+        <button type="button" class="header-tutorial-btn" data-tutorial="header-tutorial-btn" (click)="openTutorial()"
           [attr.aria-label]="'TUTORIAL.ARIA_TUTORIAL_BTN' | translate">
           <span class="header-tutorial-btn__pulse" aria-hidden="true"></span>
           <span class="header-tutorial-btn__circle">

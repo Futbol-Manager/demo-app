@@ -1,0 +1,722 @@
+<div class="access-root">
+  <header class="access-page-header">
+    <div class="access-header-back">
+      <button type="button" class="access-btn-back" (click)="goBack()">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+        <span>{{ 'COMMON.BACK' | translate }}</span>
+      </button>
+    </div>
+    <div class="access-header-center">
+      <h1 class="access-header-title">
+        <i class="bi bi-qr-code" aria-hidden="true"></i>
+        {{ 'ACCESS_CONTROL.TITLE' | translate }}
+      </h1>
+      <p class="access-header-subtitle">{{ 'ACCESS_CONTROL.SUBTITLE' | translate }}</p>
+    </div>
+    <div class="access-header-spacer">
+      <a *ngIf="modules?.accessControlEnabled"
+         [routerLink]="['/dashboard/access-control-kiosko']"
+         class="access-btn access-btn--kiosko">
+        <i class="bi bi-shield-lock-fill" aria-hidden="true"></i>
+        {{ 'ACCESS_CONTROL.OPEN_KIOSKO' | translate }}
+      </a>
+    </div>
+  </header>
+
+  <div class="access-page-content">
+    <div *ngIf="loading" class="access-state access-state--loading">
+      <div class="access-spinner" role="status" aria-live="polite"></div>
+      <p>{{ 'ACCESS_CONTROL.LOADING' | translate }}</p>
+    </div>
+
+    <!-- Estado: módulo desactivado en Permisos del club -->
+    <div *ngIf="!loading && modules && !modules.accessControlEnabled" class="access-state access-state--off">
+      <i class="bi bi-toggle-off" aria-hidden="true"></i>
+      <h2>{{ 'ACCESS_CONTROL.OFF_TITLE' | translate }}</h2>
+      <p>{{ 'ACCESS_CONTROL.OFF_DESC' | translate }}</p>
+      <a [routerLink]="['/dashboard/permisos-club']" class="access-btn access-btn--primary">
+        <i class="bi bi-gear-fill" aria-hidden="true"></i>
+        {{ 'ACCESS_CONTROL.OFF_CTA' | translate }}
+      </a>
+    </div>
+
+    <ng-container *ngIf="!loading && modules?.accessControlEnabled">
+      <!-- Tabs -->
+      <nav class="access-tabs" role="tablist">
+        <button type="button"
+                class="access-tab"
+                [class.access-tab--active]="section === 'config'"
+                (click)="setSection('config')">
+          <i class="bi bi-sliders" aria-hidden="true"></i>
+          <span>{{ 'ACCESS_CONTROL.TAB_CONFIG' | translate }}</span>
+        </button>
+        <button type="button"
+                class="access-tab"
+                [class.access-tab--active]="section === 'points'"
+                (click)="setSection('points')">
+          <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+          <span>{{ 'ACCESS_CONTROL.TAB_POINTS' | translate }}</span>
+        </button>
+        <button type="button"
+                class="access-tab"
+                [class.access-tab--active]="section === 'logs'"
+                (click)="setSection('logs')">
+          <i class="bi bi-clipboard-data" aria-hidden="true"></i>
+          <span>{{ 'ACCESS_CONTROL.TAB_LOGS' | translate }}</span>
+        </button>
+        <button type="button"
+                class="access-tab"
+                [class.access-tab--active]="section === 'preview'"
+                (click)="setSection('preview')">
+          <i class="bi bi-eye" aria-hidden="true"></i>
+          <span>{{ 'ACCESS_CONTROL.TAB_PREVIEW' | translate }}</span>
+        </button>
+      </nav>
+
+      <!-- ============== CONFIG ============== -->
+      <section *ngIf="section === 'config' && config" class="access-section">
+        <!-- Reglas + QR para ABONADOS -->
+        <div class="access-card">
+          <div class="access-card__head">
+            <h2><i class="bi bi-people-fill" aria-hidden="true"></i> {{ 'ACCESS_CONTROL.CFG.ABONADOS_TITLE' | translate }}</h2>
+            <p>{{ 'ACCESS_CONTROL.CFG.ABONADOS_HELP' | translate }}</p>
+          </div>
+          <div class="access-card__grid">
+            <label class="access-field">
+              <span>{{ 'ACCESS_CONTROL.CFG.RULE' | translate }}</span>
+              <select [(ngModel)]="config.abonadoPaymentRule">
+                <option *ngFor="let r of paymentRules" [value]="r">
+                  {{ ('ACCESS_CONTROL.CFG.RULE_' + r) | translate }}
+                </option>
+              </select>
+            </label>
+            <label class="access-field">
+              <span>{{ 'ACCESS_CONTROL.CFG.GRACE_DAYS' | translate }}</span>
+              <input type="number" min="0" max="60" [(ngModel)]="config.abonadoGraceDays" />
+            </label>
+            <label class="access-field access-field--full">
+              <span>{{ 'ACCESS_CONTROL.CFG.MESSAGE' | translate }}</span>
+              <input type="text" maxlength="500" [(ngModel)]="config.abonadoDefaultMessage"
+                     [placeholder]="'ACCESS_CONTROL.CFG.MESSAGE_PH' | translate" />
+            </label>
+          </div>
+
+          <!-- Modo del QR (DYNAMIC / STATIC) por colectivo. Las dos tarjetas
+               son visualmente segmentos seleccionables (radio implícito). -->
+          <div class="qr-mode-block">
+            <div class="qr-mode-block__head">
+              <i class="bi bi-qr-code" aria-hidden="true"></i>
+              <div>
+                <strong>{{ 'ACCESS_CONTROL.CFG.QR_MODE_TITLE' | translate }}</strong>
+                <small>{{ 'ACCESS_CONTROL.CFG.QR_MODE_HELP' | translate }}</small>
+              </div>
+            </div>
+            <div class="qr-mode-options">
+              <label class="qr-mode-option"
+                     [class.qr-mode-option--active]="config.abonadoQrMode === 'DYNAMIC'">
+                <input type="radio" name="abonadoQrMode" value="DYNAMIC"
+                       [(ngModel)]="config.abonadoQrMode" />
+                <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+                <div>
+                  <strong>{{ 'ACCESS_CONTROL.CFG.QR_DYNAMIC' | translate }}</strong>
+                  <small>{{ 'ACCESS_CONTROL.CFG.QR_DYNAMIC_DESC' | translate }}</small>
+                </div>
+              </label>
+              <label class="qr-mode-option"
+                     [class.qr-mode-option--active]="config.abonadoQrMode === 'STATIC'">
+                <input type="radio" name="abonadoQrMode" value="STATIC"
+                       [(ngModel)]="config.abonadoQrMode" />
+                <i class="bi bi-printer" aria-hidden="true"></i>
+                <div>
+                  <strong>{{ 'ACCESS_CONTROL.CFG.QR_STATIC' | translate }}</strong>
+                  <small>{{ 'ACCESS_CONTROL.CFG.QR_STATIC_DESC' | translate }}</small>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reglas + QR para JUGADORES -->
+        <div class="access-card">
+          <div class="access-card__head">
+            <h2><i class="bi bi-person-badge" aria-hidden="true"></i> {{ 'ACCESS_CONTROL.CFG.PLAYERS_TITLE' | translate }}</h2>
+            <p>{{ 'ACCESS_CONTROL.CFG.PLAYERS_HELP' | translate }}</p>
+          </div>
+          <div class="access-card__grid">
+            <label class="access-field">
+              <span>{{ 'ACCESS_CONTROL.CFG.RULE' | translate }}</span>
+              <select [(ngModel)]="config.playerPaymentRule">
+                <option *ngFor="let r of paymentRules" [value]="r">
+                  {{ ('ACCESS_CONTROL.CFG.RULE_' + r) | translate }}
+                </option>
+              </select>
+            </label>
+            <label class="access-field">
+              <span>{{ 'ACCESS_CONTROL.CFG.GRACE_DAYS' | translate }}</span>
+              <input type="number" min="0" max="60" [(ngModel)]="config.playerGraceDays" />
+            </label>
+            <label class="access-field access-field--full">
+              <span>{{ 'ACCESS_CONTROL.CFG.MESSAGE' | translate }}</span>
+              <input type="text" maxlength="500" [(ngModel)]="config.playerDefaultMessage"
+                     [placeholder]="'ACCESS_CONTROL.CFG.MESSAGE_PH' | translate" />
+            </label>
+          </div>
+
+          <div class="qr-mode-block">
+            <div class="qr-mode-block__head">
+              <i class="bi bi-qr-code" aria-hidden="true"></i>
+              <div>
+                <strong>{{ 'ACCESS_CONTROL.CFG.QR_MODE_TITLE' | translate }}</strong>
+                <small>{{ 'ACCESS_CONTROL.CFG.QR_MODE_HELP' | translate }}</small>
+              </div>
+            </div>
+            <div class="qr-mode-options">
+              <label class="qr-mode-option"
+                     [class.qr-mode-option--active]="config.playerQrMode === 'DYNAMIC'">
+                <input type="radio" name="playerQrMode" value="DYNAMIC"
+                       [(ngModel)]="config.playerQrMode" />
+                <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+                <div>
+                  <strong>{{ 'ACCESS_CONTROL.CFG.QR_DYNAMIC' | translate }}</strong>
+                  <small>{{ 'ACCESS_CONTROL.CFG.QR_DYNAMIC_DESC' | translate }}</small>
+                </div>
+              </label>
+              <label class="qr-mode-option"
+                     [class.qr-mode-option--active]="config.playerQrMode === 'STATIC'">
+                <input type="radio" name="playerQrMode" value="STATIC"
+                       [(ngModel)]="config.playerQrMode" />
+                <i class="bi bi-printer" aria-hidden="true"></i>
+                <div>
+                  <strong>{{ 'ACCESS_CONTROL.CFG.QR_STATIC' | translate }}</strong>
+                  <small>{{ 'ACCESS_CONTROL.CFG.QR_STATIC_DESC' | translate }}</small>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Validez del QR dinámico (sólo aplica cuando algún colectivo es DYNAMIC) -->
+        <div class="access-card"
+             *ngIf="config.abonadoQrMode === 'DYNAMIC' || config.playerQrMode === 'DYNAMIC'">
+          <div class="access-card__head">
+            <h2><i class="bi bi-stopwatch" aria-hidden="true"></i> {{ 'ACCESS_CONTROL.CFG.QR_TITLE' | translate }}</h2>
+            <p>{{ 'ACCESS_CONTROL.CFG.QR_HELP' | translate }}</p>
+          </div>
+          <div class="access-card__grid">
+            <label class="access-field">
+              <span>{{ 'ACCESS_CONTROL.CFG.QR_TTL' | translate }}</span>
+              <input type="number" min="15" max="300" [(ngModel)]="config.qrTokenTtlSeconds" />
+            </label>
+          </div>
+        </div>
+
+        <!-- Seguridad de QRs estáticos: rotar clave -->
+        <div class="access-card access-card--security"
+             *ngIf="config.abonadoQrMode === 'STATIC' || config.playerQrMode === 'STATIC'">
+          <div class="access-card__head">
+            <h2><i class="bi bi-shield-lock" aria-hidden="true"></i> {{ 'ACCESS_CONTROL.CFG.SECURITY_TITLE' | translate }}</h2>
+            <p>{{ 'ACCESS_CONTROL.CFG.SECURITY_HELP' | translate }}</p>
+          </div>
+          <div class="access-rotate-info">
+            <div>
+              <small>{{ 'ACCESS_CONTROL.CFG.KEY_VERSION' | translate }}</small>
+              <strong>v{{ config.staticQrKeyVersion }}</strong>
+            </div>
+            <button type="button" class="access-btn access-btn--danger"
+                    (click)="openRotateDialog()" [disabled]="saving">
+              <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
+              {{ 'ACCESS_CONTROL.CFG.ROTATE_KEYS' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <div class="access-actions access-actions--save">
+          <button type="button" class="access-btn access-btn--primary access-btn--lg"
+                  [disabled]="saving"
+                  (click)="saveConfig()">
+            <i class="bi bi-save" aria-hidden="true"></i>
+            {{ 'ACCESS_CONTROL.CFG.SAVE' | translate }}
+          </button>
+        </div>
+      </section>
+
+      <!-- ============== MODAL: confirmar rotación de claves estáticas ============== -->
+      <div *ngIf="rotateDialogOpen" class="access-modal-backdrop" (click)="closeRotateDialog()">
+        <div class="access-modal" (click)="$event.stopPropagation()">
+          <div class="access-modal__head">
+            <h3><i class="bi bi-shield-exclamation" aria-hidden="true"></i> {{ 'ACCESS_CONTROL.CFG.ROTATE_TITLE' | translate }}</h3>
+            <button type="button" class="access-modal__close" (click)="closeRotateDialog()">
+              <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="access-modal__body">
+            <p class="access-modal__help">{{ 'ACCESS_CONTROL.CFG.ROTATE_BODY' | translate }}</p>
+            <ul class="access-rotate-effects">
+              <li><i class="bi bi-x-circle" aria-hidden="true"></i> {{ 'ACCESS_CONTROL.CFG.ROTATE_EFFECT_1' | translate }}</li>
+              <li><i class="bi bi-arrow-repeat" aria-hidden="true"></i> {{ 'ACCESS_CONTROL.CFG.ROTATE_EFFECT_2' | translate }}</li>
+              <li><i class="bi bi-printer" aria-hidden="true"></i> {{ 'ACCESS_CONTROL.CFG.ROTATE_EFFECT_3' | translate }}</li>
+            </ul>
+          </div>
+          <div class="access-modal__foot">
+            <button type="button" class="access-btn access-btn--ghost" (click)="closeRotateDialog()" [disabled]="rotateLoading">
+              {{ 'ACCESS_CONTROL.CANCEL' | translate }}
+            </button>
+            <button type="button" class="access-btn access-btn--danger"
+                    [disabled]="rotateLoading"
+                    (click)="confirmRotateKeys()">
+              <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
+              {{ (rotateLoading ? 'ACCESS_CONTROL.CFG.ROTATE_LOADING' : 'ACCESS_CONTROL.CFG.ROTATE_CONFIRM') | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============== PUNTOS ============== -->
+      <section *ngIf="section === 'points'" class="access-section">
+        <div class="access-toolbar">
+          <h2>{{ 'ACCESS_CONTROL.POINTS.LIST_TITLE' | translate }}</h2>
+          <button type="button"
+                  class="access-btn access-btn--primary"
+                  [disabled]="saving || !!pointEdit"
+                  (click)="startNewPoint()">
+            <i class="bi bi-plus-lg" aria-hidden="true"></i>
+            {{ 'ACCESS_CONTROL.POINTS.NEW' | translate }}
+          </button>
+        </div>
+
+        <div class="access-points-grid">
+          <article *ngFor="let p of points" class="access-point-card"
+                   [class.access-point-card--off]="!p.active">
+            <div class="access-point-card__head">
+              <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+              <div>
+                <h3>{{ p.name }}</h3>
+                <span *ngIf="p.active" class="access-pill access-pill--on">{{ 'ACCESS_CONTROL.POINTS.ACTIVE' | translate }}</span>
+                <span *ngIf="!p.active" class="access-pill access-pill--off">{{ 'ACCESS_CONTROL.POINTS.INACTIVE' | translate }}</span>
+              </div>
+            </div>
+            <p *ngIf="p.description" class="access-point-card__desc">{{ p.description }}</p>
+            <ul class="access-point-card__meta">
+              <li *ngIf="p.maxCapacity">
+                <i class="bi bi-people" aria-hidden="true"></i>
+                {{ 'ACCESS_CONTROL.POINTS.MAX_CAPACITY' | translate }}: <strong>{{ p.maxCapacity }}</strong>
+              </li>
+              <li *ngIf="p.dailyEntryLimit">
+                <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
+                {{ 'ACCESS_CONTROL.POINTS.DAILY_LIMIT' | translate }}: <strong>{{ p.dailyEntryLimit }}</strong>
+              </li>
+            </ul>
+            <div class="access-point-card__actions">
+              <button type="button" class="access-btn access-btn--ghost" (click)="startEditPoint(p)">
+                <i class="bi bi-pencil" aria-hidden="true"></i>
+                {{ 'ACCESS_CONTROL.POINTS.EDIT' | translate }}
+              </button>
+              <button *ngIf="p.active"
+                      type="button"
+                      class="access-btn access-btn--danger"
+                      [disabled]="saving"
+                      (click)="deactivatePoint(p)">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+                {{ 'ACCESS_CONTROL.POINTS.DEACTIVATE' | translate }}
+              </button>
+            </div>
+          </article>
+
+          <div *ngIf="!points.length && !pointEdit" class="access-empty">
+            <i class="bi bi-geo-alt" aria-hidden="true"></i>
+            <p>{{ 'ACCESS_CONTROL.POINTS.EMPTY' | translate }}</p>
+          </div>
+        </div>
+
+        <!-- Editor de punto -->
+        <div *ngIf="pointEdit" class="access-card access-point-editor">
+          <div class="access-card__head">
+            <h2>
+              <i class="bi" [ngClass]="pointEdit.pointId ? 'bi-pencil-square' : 'bi-plus-circle'" aria-hidden="true"></i>
+              {{ (pointEdit.pointId ? 'ACCESS_CONTROL.POINTS.EDIT_TITLE' : 'ACCESS_CONTROL.POINTS.NEW_TITLE') | translate }}
+            </h2>
+          </div>
+          <div class="access-card__grid">
+            <label class="access-field access-field--full">
+              <span>{{ 'ACCESS_CONTROL.POINTS.NAME' | translate }} *</span>
+              <input type="text" maxlength="120" [(ngModel)]="pointEdit.name" />
+            </label>
+            <label class="access-field access-field--full">
+              <span>{{ 'ACCESS_CONTROL.POINTS.DESC' | translate }}</span>
+              <input type="text" maxlength="500" [(ngModel)]="pointEdit.description" />
+            </label>
+            <label class="access-field">
+              <span>{{ 'ACCESS_CONTROL.POINTS.MAX_CAPACITY' | translate }}</span>
+              <input type="number" min="0" [(ngModel)]="pointEdit.maxCapacity" />
+            </label>
+            <label class="access-field">
+              <span>{{ 'ACCESS_CONTROL.POINTS.DAILY_LIMIT' | translate }}</span>
+              <input type="number" min="0" [(ngModel)]="pointEdit.dailyEntryLimit" />
+            </label>
+            <label class="access-field access-field--check">
+              <input type="checkbox" [(ngModel)]="pointEdit.active" />
+              <span>{{ 'ACCESS_CONTROL.POINTS.ACTIVE_FLAG' | translate }}</span>
+            </label>
+          </div>
+
+          <!-- Bloque: integración con torno / IoT (Fase 2.5) -->
+          <details class="access-subsection" [open]="!!pointEdit.pointId">
+            <summary>
+              <i class="bi bi-cpu" aria-hidden="true"></i>
+              {{ 'ACCESS_CONTROL.DEVICES.SECTION_TITLE' | translate }}
+            </summary>
+
+            <p class="access-subsection__desc">
+              {{ 'ACCESS_CONTROL.DEVICES.SECTION_DESC' | translate }}
+            </p>
+
+            <div class="access-card__grid">
+              <label class="access-field">
+                <span>{{ 'ACCESS_CONTROL.DEVICES.OFFLINE_BEHAVIOR' | translate }}</span>
+                <select [(ngModel)]="pointEdit.offlineBehavior">
+                  <option value="">{{ 'ACCESS_CONTROL.DEVICES.OFFLINE_DEFAULT' | translate }}</option>
+                  <option *ngFor="let b of offlineBehaviors" [value]="b">
+                    {{ ('ACCESS_CONTROL.DEVICES.OFFLINE_' + b) | translate }}
+                  </option>
+                </select>
+              </label>
+              <label class="access-field access-field--full">
+                <span>{{ 'ACCESS_CONTROL.DEVICES.WEBHOOK_URL' | translate }}</span>
+                <input type="url"
+                       maxlength="500"
+                       placeholder="https://..."
+                       [(ngModel)]="pointEdit.webhookUrl" />
+                <small class="access-hint">{{ 'ACCESS_CONTROL.DEVICES.WEBHOOK_HINT' | translate }}</small>
+              </label>
+            </div>
+
+            <!-- Tabla de claves de dispositivo (solo cuando el punto ya existe) -->
+            <ng-container *ngIf="pointEdit.pointId">
+              <h3 class="access-subsection__h3">
+                <i class="bi bi-key" aria-hidden="true"></i>
+                {{ 'ACCESS_CONTROL.DEVICES.KEYS_TITLE' | translate }}
+              </h3>
+
+              <!-- Aviso de clave recién creada -->
+              <div *ngIf="freshApiKey" class="access-key-banner">
+                <div class="access-key-banner__icon">
+                  <i class="bi bi-clipboard-check" aria-hidden="true"></i>
+                </div>
+                <div class="access-key-banner__body">
+                  <strong>{{ 'ACCESS_CONTROL.DEVICES.NEW_KEY_TITLE' | translate }}</strong>
+                  <p>{{ 'ACCESS_CONTROL.DEVICES.NEW_KEY_WARN' | translate }}</p>
+                  <code class="access-key-banner__value">{{ freshApiKey }}</code>
+                  <small *ngIf="freshApiKeyName">{{ freshApiKeyName }}</small>
+                </div>
+                <div class="access-key-banner__actions">
+                  <button type="button" class="access-btn access-btn--primary" (click)="copyApiKey()">
+                    <i class="bi bi-clipboard" aria-hidden="true"></i>
+                    {{ 'ACCESS_CONTROL.DEVICES.COPY' | translate }}
+                  </button>
+                  <button type="button" class="access-btn access-btn--ghost" (click)="dismissFreshKey()">
+                    {{ 'ACCESS_CONTROL.DEVICES.DISMISS' | translate }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="access-key-form">
+                <input type="text"
+                       maxlength="120"
+                       [(ngModel)]="newKeyName"
+                       [placeholder]="'ACCESS_CONTROL.DEVICES.NEW_KEY_PH' | translate" />
+                <button type="button"
+                        class="access-btn access-btn--primary"
+                        (click)="createDeviceKey()"
+                        [disabled]="saving">
+                  <i class="bi bi-plus-circle" aria-hidden="true"></i>
+                  {{ 'ACCESS_CONTROL.DEVICES.GENERATE' | translate }}
+                </button>
+              </div>
+
+              <div *ngIf="deviceKeysLoading" class="access-state access-state--loading">
+                <div class="access-spinner"></div>
+              </div>
+
+              <table *ngIf="!deviceKeysLoading && deviceKeys.length" class="access-table">
+                <thead>
+                  <tr>
+                    <th>{{ 'ACCESS_CONTROL.DEVICES.NAME' | translate }}</th>
+                    <th>{{ 'ACCESS_CONTROL.DEVICES.STATUS' | translate }}</th>
+                    <th>{{ 'ACCESS_CONTROL.DEVICES.CREATED_AT' | translate }}</th>
+                    <th>{{ 'ACCESS_CONTROL.DEVICES.LAST_USED' | translate }}</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let k of deviceKeys" [class.access-row--off]="!k.active">
+                    <td><strong>{{ k.name }}</strong></td>
+                    <td>
+                      <span class="access-pill"
+                            [ngClass]="k.active ? 'access-pill--on' : 'access-pill--off'">
+                        {{ (k.active ? 'ACCESS_CONTROL.DEVICES.ACTIVE'
+                                     : 'ACCESS_CONTROL.DEVICES.REVOKED') | translate }}
+                      </span>
+                    </td>
+                    <td>{{ k.createdAt | date:'short' }}</td>
+                    <td>{{ k.lastUsedAt ? (k.lastUsedAt | date:'short')
+                                        : ('ACCESS_CONTROL.DEVICES.NEVER_USED' | translate) }}</td>
+                    <td>
+                      <button *ngIf="k.active"
+                              type="button"
+                              class="access-btn access-btn--danger access-btn--small"
+                              (click)="revokeDeviceKey(k)">
+                        <i class="bi bi-x-circle" aria-hidden="true"></i>
+                        {{ 'ACCESS_CONTROL.DEVICES.REVOKE' | translate }}
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <p *ngIf="!deviceKeysLoading && !deviceKeys.length" class="access-empty">
+                <i class="bi bi-inbox" aria-hidden="true"></i>
+                {{ 'ACCESS_CONTROL.DEVICES.NO_KEYS' | translate }}
+              </p>
+            </ng-container>
+
+            <p *ngIf="!pointEdit.pointId" class="access-hint">
+              <i class="bi bi-info-circle" aria-hidden="true"></i>
+              {{ 'ACCESS_CONTROL.DEVICES.SAVE_FIRST' | translate }}
+            </p>
+          </details>
+
+          <div class="access-actions">
+            <button type="button" class="access-btn access-btn--ghost" (click)="cancelEditPoint()" [disabled]="saving">
+              {{ 'COMMON.CANCEL' | translate }}
+            </button>
+            <button type="button" class="access-btn access-btn--primary" (click)="savePoint()" [disabled]="saving || !pointEdit.name">
+              <i class="bi bi-save" aria-hidden="true"></i>
+              {{ 'COMMON.SAVE' | translate }}
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== LOGS ============== -->
+      <section *ngIf="section === 'logs'" class="access-section">
+        <div class="access-toolbar access-toolbar--wrap">
+          <div class="access-filters access-filters--wrap">
+            <label class="access-field access-field--inline">
+              <span>{{ 'ACCESS_CONTROL.LOGS.FROM' | translate }}</span>
+              <input type="datetime-local" [(ngModel)]="logsFrom" />
+            </label>
+            <label class="access-field access-field--inline">
+              <span>{{ 'ACCESS_CONTROL.LOGS.TO' | translate }}</span>
+              <input type="datetime-local" [(ngModel)]="logsTo" />
+            </label>
+            <label class="access-field access-field--inline">
+              <span>{{ 'ACCESS_CONTROL.LOGS.SUBJECT_TYPE' | translate }}</span>
+              <select [(ngModel)]="logFilterSubjectType">
+                <option value="">{{ 'ACCESS_CONTROL.LOGS.ALL' | translate }}</option>
+                <option value="ABONADO">{{ 'ACCESS_CONTROL.SUBJECT_ABONADO' | translate }}</option>
+                <option value="PLAYER">{{ 'ACCESS_CONTROL.SUBJECT_PLAYER' | translate }}</option>
+              </select>
+            </label>
+            <label class="access-field access-field--inline">
+              <span>{{ 'ACCESS_CONTROL.LOGS.POINT' | translate }}</span>
+              <select [(ngModel)]="logFilterPointId">
+                <option [ngValue]="null">{{ 'ACCESS_CONTROL.LOGS.ALL' | translate }}</option>
+                <option *ngFor="let p of points" [ngValue]="p.pointId">{{ p.name }}</option>
+              </select>
+            </label>
+            <label class="access-field access-field--inline">
+              <span>{{ 'ACCESS_CONTROL.LOGS.RESULT' | translate }}</span>
+              <select [(ngModel)]="logFilterResult">
+                <option value="">{{ 'ACCESS_CONTROL.LOGS.ALL' | translate }}</option>
+                <option value="ALLOWED">{{ 'ACCESS_CONTROL.RESULT_ALLOWED' | translate }}</option>
+                <option value="WARNING">{{ 'ACCESS_CONTROL.RESULT_WARNING' | translate }}</option>
+                <option value="DENIED">{{ 'ACCESS_CONTROL.RESULT_DENIED' | translate }}</option>
+              </select>
+            </label>
+            <button type="button" class="access-btn access-btn--ghost" (click)="reloadLogs()">
+              <i class="bi bi-funnel" aria-hidden="true"></i>
+              {{ 'ACCESS_CONTROL.LOGS.APPLY' | translate }}
+            </button>
+            <button type="button" class="access-btn access-btn--ghost access-btn--text" (click)="clearLogFilters()">
+              {{ 'ACCESS_CONTROL.LOGS.CLEAR' | translate }}
+            </button>
+          </div>
+          <div class="access-actions">
+            <button type="button" class="access-btn access-btn--ghost" (click)="openPrintDialog()">
+              <i class="bi bi-printer" aria-hidden="true"></i>
+              {{ 'ACCESS_CONTROL.PRINT.OPEN' | translate }}
+            </button>
+            <button type="button" class="access-btn access-btn--ghost" (click)="exportLogsCsv()" [disabled]="!logs.length">
+              <i class="bi bi-download" aria-hidden="true"></i>
+              {{ 'ACCESS_CONTROL.LOGS.EXPORT' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="logsLoading" class="access-state access-state--loading">
+          <div class="access-spinner"></div>
+        </div>
+
+        <div *ngIf="!logsLoading" class="access-table-wrap">
+          <table class="access-table">
+            <thead>
+              <tr>
+                <th>{{ 'ACCESS_CONTROL.LOGS.WHEN' | translate }}</th>
+                <th>{{ 'ACCESS_CONTROL.LOGS.SUBJECT' | translate }}</th>
+                <th>{{ 'ACCESS_CONTROL.LOGS.POINT' | translate }}</th>
+                <th>{{ 'ACCESS_CONTROL.LOGS.RESULT' | translate }}</th>
+                <th>{{ 'ACCESS_CONTROL.LOGS.PAYMENT' | translate }}</th>
+                <th>{{ 'ACCESS_CONTROL.LOGS.REASON' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let l of logs">
+                <td>{{ l.scannedAt | date:'short' }}</td>
+                <td>
+                  <span class="access-tag" [ngClass]="'access-tag--' + l.subjectType">
+                    {{ ('ACCESS_CONTROL.SUBJECT_' + l.subjectType) | translate }}
+                  </span>
+                  <strong>{{ l.subjectName || ('ID ' + l.subjectId) }}</strong>
+                </td>
+                <td>{{ l.pointName || '—' }}</td>
+                <td>
+                  <span class="access-pill" [ngClass]="{
+                    'access-pill--on': l.result === 'ALLOWED',
+                    'access-pill--warn': l.result === 'WARNING',
+                    'access-pill--off': l.result === 'DENIED'
+                  }">
+                    {{ ('ACCESS_CONTROL.RESULT_' + l.result) | translate }}
+                  </span>
+                </td>
+                <td>{{ l.paymentStatus || '—' }}</td>
+                <td class="access-table__reason">{{ l.reason || '—' }}</td>
+              </tr>
+              <tr *ngIf="!logs.length">
+                <td colspan="6" class="access-table__empty">
+                  <i class="bi bi-inbox" aria-hidden="true"></i>
+                  {{ 'ACCESS_CONTROL.LOGS.EMPTY' | translate }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div *ngIf="logTotalPages > 1" class="access-pagination">
+            <button type="button" class="access-btn access-btn--ghost"
+                    [disabled]="logPageIndex === 0"
+                    (click)="goToLogPage(logPageIndex - 1)">
+              <i class="bi bi-chevron-left" aria-hidden="true"></i>
+            </button>
+            <span class="access-pagination__info">
+              {{ 'ACCESS_CONTROL.LOGS.PAGE_OF' | translate:{ page: logPageIndex + 1, total: logTotalPages } }}
+              ({{ logTotalElements }} {{ 'ACCESS_CONTROL.LOGS.TOTAL' | translate }})
+            </span>
+            <button type="button" class="access-btn access-btn--ghost"
+                    [disabled]="logPageIndex + 1 >= logTotalPages"
+                    (click)="goToLogPage(logPageIndex + 1)">
+              <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== MODAL: PDF de carnets imprimibles ============== -->
+      <div *ngIf="printDialogOpen" class="access-modal-backdrop" (click)="closePrintDialog()">
+        <div class="access-modal" (click)="$event.stopPropagation()">
+          <div class="access-modal__head">
+            <h3><i class="bi bi-printer" aria-hidden="true"></i> {{ 'ACCESS_CONTROL.PRINT.TITLE' | translate }}</h3>
+            <button type="button" class="access-modal__close" (click)="closePrintDialog()">
+              <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="access-modal__body">
+            <p class="access-modal__help">{{ 'ACCESS_CONTROL.PRINT.HELP' | translate }}</p>
+
+            <label class="access-field">
+              <span>{{ 'ACCESS_CONTROL.PRINT.SUBJECT_TYPE' | translate }}</span>
+              <select [(ngModel)]="printSubjectType">
+                <option value="ABONADO">{{ 'ACCESS_CONTROL.SUBJECT_ABONADO' | translate }}</option>
+                <option value="PLAYER">{{ 'ACCESS_CONTROL.SUBJECT_PLAYER' | translate }}</option>
+              </select>
+            </label>
+
+            <label class="access-field">
+              <span>{{ 'ACCESS_CONTROL.PRINT.IDS' | translate }}</span>
+              <textarea rows="4" [(ngModel)]="printIds"
+                        placeholder="123, 124, 125"></textarea>
+              <small class="access-field__hint">{{ 'ACCESS_CONTROL.PRINT.IDS_HINT' | translate }}</small>
+            </label>
+          </div>
+          <div class="access-modal__foot">
+            <button type="button" class="access-btn access-btn--ghost" (click)="closePrintDialog()">
+              {{ 'ACCESS_CONTROL.CANCEL' | translate }}
+            </button>
+            <button type="button" class="access-btn access-btn--primary"
+                    [disabled]="printLoading"
+                    (click)="downloadCarnets()">
+              <i class="bi bi-download" aria-hidden="true"></i>
+              {{ (printLoading ? 'ACCESS_CONTROL.PRINT.LOADING' : 'ACCESS_CONTROL.PRINT.DOWNLOAD') | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============== PREVIEW QR ============== -->
+      <section *ngIf="section === 'preview'" class="access-section">
+        <div class="access-card">
+          <div class="access-card__head">
+            <h2><i class="bi bi-eye" aria-hidden="true"></i> {{ 'ACCESS_CONTROL.PREVIEW.TITLE' | translate }}</h2>
+            <p>{{ 'ACCESS_CONTROL.PREVIEW.HELP' | translate }}</p>
+          </div>
+          <div class="access-card__grid">
+            <label class="access-field">
+              <span>{{ 'ACCESS_CONTROL.PREVIEW.SUBJECT_TYPE' | translate }}</span>
+              <select [(ngModel)]="previewSubjectType">
+                <option value="PLAYER">{{ 'ACCESS_CONTROL.SUBJECT_PLAYER' | translate }}</option>
+                <option value="ABONADO">{{ 'ACCESS_CONTROL.SUBJECT_ABONADO' | translate }}</option>
+              </select>
+            </label>
+            <label class="access-field">
+              <span>{{ 'ACCESS_CONTROL.PREVIEW.SUBJECT_ID' | translate }}</span>
+              <input type="number" min="1" [(ngModel)]="previewSubjectId" />
+            </label>
+          </div>
+          <div class="access-actions">
+            <button type="button" class="access-btn access-btn--primary"
+                    [disabled]="!previewSubjectId"
+                    (click)="generatePreview()">
+              <i class="bi bi-qr-code-scan" aria-hidden="true"></i>
+              {{ 'ACCESS_CONTROL.PREVIEW.GENERATE' | translate }}
+            </button>
+          </div>
+
+          <div *ngIf="previewQr" class="access-preview-result">
+            <div class="access-preview-qr">
+              <qrcode [qrdata]="previewQr.token"
+                      [width]="240"
+                      [errorCorrectionLevel]="'M'"
+                      [margin]="1"></qrcode>
+              <div class="access-preview-countdown" [class.access-preview-countdown--low]="previewCountdown <= 10">
+                <i class="bi bi-stopwatch" aria-hidden="true"></i>
+                {{ previewCountdown }}s
+              </div>
+            </div>
+            <div class="access-preview-info">
+              <h3>{{ previewQr.subjectName || ('ID ' + previewQr.subjectId) }}</h3>
+              <p>
+                <strong>{{ 'ACCESS_CONTROL.PREVIEW.PAYMENT' | translate }}:</strong>
+                {{ previewQr.paymentStatus || '—' }}
+              </p>
+              <p *ngIf="previewQr.paymentWarning" class="access-preview-warn">
+                <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
+                {{ previewQr.paymentWarningMessage }}
+              </p>
+              <p class="access-preview-token">
+                <code>{{ previewQr.token | slice:0:32 }}…</code>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </ng-container>
+  </div>
+</div>

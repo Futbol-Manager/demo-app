@@ -10645,3 +10645,209 @@ tr.row-loading {
   .header-action-btn--reminder span,
   .header-action-btn--export span { display: none; }
 }
+
+/* ── Botón "Validar variantes" en la tarjeta de cuota ─────────────── */
+.gp-action-btn--variants,
+.gp-action-btn--variants:focus,
+.gp-action-btn--variants:focus-visible {
+  background: #31b270 !important;
+  color: #ffffff !important;
+  border-color: #31b270 !important;
+  box-shadow: 0 2px 6px rgba(49, 178, 112, 0.35);
+}
+
+.gp-action-btn--variants:hover,
+.gp-action-btn--variants:active {
+  background: #002c40 !important;
+  color: #ffffff !important;
+  border-color: #002c40 !important;
+}
+
+/* ── Modal validar variantes: tamaño y estilos de marca Sphaira ──── */
+.nc-var-modal-dialog {
+  max-width: 1180px;
+  width: 95vw;
+
+  .nc-var-modal {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    border: none;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0, 44, 64, 0.28);
+  }
+
+  .modern-body {
+    padding: 1.75rem 2rem;
+    min-height: 48vh;
+    max-height: 78vh;
+    overflow-y: auto;
+    font-size: 1rem;
+  }
+
+  .modern-footer {
+    padding: 1rem 1.75rem;
+    background: #f4f4f4;
+    border-top: 1px solid #e3e8ee;
+  }
+}
+
+.nc-var-header {
+  background: linear-gradient(120deg, #31b270 0%, #002c40 100%) !important;
+  border-bottom: none !important;
+  padding: 1.15rem 1.75rem;
+
+  .modal-title {
+    color: #ffffff;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+
+    i { color: #ffffff; }
+  }
+
+  .nc-var-subtitle {
+    color: #c4e8d6;
+    font-weight: 400;
+    font-size: 0.85rem;
+    margin-top: 2px;
+  }
+}
+
+.nc-var-modal {
+  .table {
+    --bs-table-bg: transparent;
+
+    thead th {
+      background: #002c40;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: none;
+      vertical-align: middle;
+      padding: 0.75rem 0.85rem;
+    }
+
+    tbody td {
+      color: #636363;
+      vertical-align: middle;
+      border-color: #eef1f4;
+      padding: 0.7rem 0.85rem;
+      font-size: 0.95rem;
+    }
+
+    tbody tr.table-active td {
+      background: #c4e8d6;
+      color: #002c40;
+    }
+  }
+
+  .nc-input-hint { color: #636363; }
+
+  .form-check-input:checked {
+    background-color: #31b270;
+    border-color: #31b270;
+  }
+
+  .form-select:focus {
+    border-color: #31b270;
+    box-shadow: 0 0 0 0.2rem rgba(49, 178, 112, 0.2);
+  }
+
+  .btn-success {
+    background: #31b270;
+    border-color: #31b270;
+
+    &:hover:not(:disabled),
+    &:focus:not(:disabled) {
+      background: #002c40;
+      border-color: #002c40;
+    }
+  }
+
+  .btn-primary {
+    background: #002c40;
+    border-color: #002c40;
+
+    &:hover:not(:disabled),
+    &:focus:not(:disabled) {
+      background: #013b54;
+      border-color: #013b54;
+    }
+  }
+}
+
+.nc-var-tabs {
+  border-bottom: 1px solid #e3e8ee;
+
+  .nav-link {
+    border: none;
+    background: transparent;
+    color: #636363;
+    font-weight: 600;
+    padding: 0.45rem 0.9rem;
+    border-bottom: 2px solid transparent;
+
+    &.active {
+      color: #002c40;
+      border-bottom-color: #31b270;
+      background: transparent;
+    }
+
+    &:hover:not(.active) {
+      color: #002c40;
+      border-bottom-color: #c4e8d6;
+    }
+  }
+}
+
+.nc-var-fam-legend {
+  color: #636363;
+  i { color: #31b270; }
+}
+
+.nc-var-fam-bar {
+  display: inline-block;
+  width: 4px;
+  height: 1.1em;
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.nc-var-fam-chip {
+  color: #ffffff;
+  font-size: 0.68rem;
+  padding: 0.18em 0.4em;
+  vertical-align: middle;
+
+  i { font-size: 0.7rem; }
+}
+
+/* ── Botón de cabecera "Cobrar vencidas" (dunning) ────────────────── */
+.header-action-btn--charge {
+  position: relative;
+
+  i { color: #31b270; }
+
+  &:hover:not(:disabled) i { color: #ffffff; }
+
+  .hab-badge {
+    background: #002c40;
+    color: #ffffff;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .spin {
+    display: inline-block;
+    animation: nc-spin 0.9s linear infinite;
+  }
+}
+
+@keyframes nc-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

@@ -15,6 +15,7 @@ import { isDemoMode } from 'src/app/core/services/demo/demo-mode';
 import { getSportConfig, SportConfig } from 'src/app/core/models/sport/sport-config.model';
 import { SportContextService } from 'src/app/core/services/sport/sport-context.service';
 import { sportScoringPlural } from 'src/app/core/utils/sport-ui-i18n';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-estadisticas-equipos-club',
@@ -36,6 +37,20 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
   mostarTabla = false;
   equipoSeleccionado = '';
   loading = true;
+
+  // Filtro de deporte y búsqueda (multideporte)
+  activeSport = '';
+  searchQuery = '';
+
+  // Ordenamiento de la tabla
+  sortCol = 'puntos';
+  sortDir: 'asc' | 'desc' = 'desc';
+
+  // Fila expandida (últimos partidos del equipo)
+  expandedTeamId: number | null = null;
+
+  // Todos los resúmenes sin filtrar (para calcular deportes disponibles)
+  private resumentotalesAll: any[] = [];
 
   // AI Panel
   aiPanelOpen = false;
@@ -103,6 +118,110 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
   get aiSuggestionGoalsComparison(): string {
     const unit = sportScoringPlural(this.translate, this.currentSport, this.sportConfig.scoringUnitPlural).toLowerCase();
     return this.translate.instant('SPORT_UI.AI_COMPARE_SCORING_PROMPT', { unit });
+  }
+
+  /** Deportes únicos presentes en los datos cargados (para los chips de filtro). */
+  get availableSports(): { sport: string; emoji: string; count: number }[] {
+    const map = new Map<string, { emoji: string; count: number }>();
+    for (const r of this.resumentotalesAll) {
+      const s: string = r.sport || 'futbol';
+      if (!map.has(s)) {
+        map.set(s, { emoji: getSportConfig(s).emoji, count: 0 });
+      }
+      map.get(s)!.count++;
+    }
+    return Array.from(map.entries()).map(([sport, v]) => ({ sport, ...v }));
+  }
+
+  /** Resúmenes filtrados por deporte + búsqueda + ordenados por la columna activa. */
+  get filteredResumenes(): any[] {
+    let list = this.activeSport
+      ? this.resumentotales.filter(r => (r.sport || 'futbol') === this.activeSport)
+      : this.resumentotales;
+
+    if (this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      list = list.filter(r =>
+        (r.categoria || '').toLowerCase().includes(q) ||
+        (r.division || '').toLowerCase().includes(q)
+      );
+    }
+
+    return [...list].sort((a, b) => {
+      const av = a[this.sortCol] ?? 0;
+      const bv = b[this.sortCol] ?? 0;
+      const cmp = typeof av === 'string' ? av.localeCompare(bv) : (av as number) - (bv as number);
+      return this.sortDir === 'asc' ? cmp : -cmp;
+    });
+  }
+
+  sortBy(col: string): void {
+    if (this.sortCol === col) {
+      this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortCol = col;
+      this.sortDir = col === 'categoria' ? 'asc' : 'desc';
+    }
+    this.cdr.markForCheck();
+  }
+
+  toggleExpand(teamId: number): void {
+    this.expandedTeamId = this.expandedTeamId === teamId ? null : teamId;
+    this.cdr.markForCheck();
+  }
+
+  getExpandedMatches(teamId: number): any[] {
+    const team = this.resumenes.find(r => r.teamId === teamId);
+    return team?.partidos?.slice(0, 8) ?? [];
+  }
+
+  /** Clase de zona (estilo liga): campeón, ascenso, playoff, descenso. */
+  zoneClass(i: number, total: number): string {
+    if (total < 3) return '';
+    if (i === 0) return 'zone-champion';
+    if (i <= Math.max(1, Math.floor(total * 0.25))) return 'zone-promotion';
+    if (i <= Math.floor(total * 0.45)) return 'zone-playoff';
+    if (i >= total - Math.max(1, Math.floor(total * 0.25))) return 'zone-relegation';
+    return '';
+  }
+
+  winPct(r: any): number {
+    if (!r.partidos) return 0;
+    return Math.round((r.victorias / r.partidos) * 100);
+  }
+
+  /** Genera los puntos SVG para el sparkline (60x28 px). */
+  sparklinePoints(sparkData: number[]): string {
+    if (!sparkData || sparkData.length < 2) return '';
+    const W = 60, H = 28, pad = 3;
+    const max = Math.max(...sparkData, 1);
+    const min = Math.min(...sparkData);
+    const range = max - min || 1;
+    return sparkData.map((v, i) => {
+      const x = pad + (i / (sparkData.length - 1)) * (W - pad * 2);
+      const y = H - pad - ((v - min) / range) * (H - pad * 2);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' ');
+  }
+
+  setSportFilter(sport: string): void {
+    this.activeSport = sport;
+    this.sportConfig = getSportConfig(sport);
+    this.cdr.markForCheck();
+  }
+
+  getSportConfigFor(sport?: string): SportConfig {
+    return getSportConfig(sport);
+  }
+
+  get matchModalColumns(): { key: string; labelKey: string }[] {
+    return this.sportConfig.matchStatsFields.filter(
+      f => !['golesAFavor', 'golesEnContra'].includes(f.key)
+    );
+  }
+
+  exportToPdf(): void {
+    window.print();
   }
 
   ngOnInit(): void {
@@ -186,6 +305,8 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
   getListaPostpartidos() {
     this.loading = true;
     this.datosCargados = false;
+    this.resumentotales = [];
+    this.resumentotalesAll = [];
     this.clubService.getListTeamsOfClubByStadistics(this.clubId).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
@@ -196,6 +317,12 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
             if (!this.resumenes[index].nameTeam.includes('Sin equipo')) {
               this.datosResumentTotales(this.resumenes[index]);
             }
+          }
+          // Auto-seleccionar el primer deporte disponible
+          const first = this.availableSports[0];
+          if (first) {
+            this.activeSport = first.sport;
+            this.sportConfig = getSportConfig(first.sport);
           }
           this.datosCargados = true;
           this.loading = false;
@@ -223,17 +350,32 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
     let gc = 0;
     let dg = 0;
     let pun = 0;
+    const sparkData: number[] = [];
 
-    // Obtener los primeros 5 resultados que realmente son los ultimos
     this.partidos = team.partidos;
-    const ultimosResultados = this.partidos
+
+    // Form detallado con rival y marcador (últimos 5, cronológico)
+    const ultimosDetallados = [...this.partidos]
+      .filter((p) => p.resultado === 'V' || p.resultado === 'E' || p.resultado === 'D')
       .slice(0, 5)
-      .map((partido) => partido.resultado)
-      .filter((r) => r === 'V' || r === 'E' || r === 'D')
-      .reverse();
+      .reverse()
+      .map((p) => ({
+        resultado: p.resultado,
+        rival: p.matchPreparation?.rivalName ?? '—',
+        gf: p.golesAFavor ?? 0,
+        gc: p.golesEnContra ?? 0,
+        fecha: p.matchPreparation?.matchDate ?? '',
+      }));
+
+    // Sparkline: puntos acumulados por partido (cronológico)
+    let cumPun = 0;
+    for (const p of [...team.partidos].reverse()) {
+      if (p.resultado === 'V') cumPun += 3;
+      else if (p.resultado === 'E') cumPun += 1;
+      sparkData.push(cumPun);
+    }
 
     for (let partido of team.partidos) {
-      // Aquí dentro del bucle, puedes acceder a cada elemento de la lista como "partido"
       switch (partido.resultado) {
         case 'V':
           vic++;
@@ -258,6 +400,8 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
       equipo: team.nameTeam,
       categoria: team.categoria || '',
       division: team.division || '',
+      sport: team.sport || 'futbol',
+      temporada: team.temporada || '',
       partidos: team.partidos.length,
       victorias: vic,
       empates: emp,
@@ -266,10 +410,12 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
       gc: gc,
       dg: dg,
       puntos: pun,
-      ultimos: ultimosResultados,
+      ultimos: ultimosDetallados,
+      sparkData,
     };
 
     this.resumentotales.push(resumen);
+    this.resumentotalesAll.push(resumen);
   }
 
   verTablaequipo(index: number) {
@@ -305,7 +451,38 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
       .toLowerCase();
   }
 
-  exportTableToExcel() {}
+  exportTableToExcel(): void {
+    try {
+      const data = this.filteredResumenes.map((r, i) => ({
+        '#': i + 1,
+        [this.translate.instant('ESTADIS_EQUIPO.TABLE.TEAM')]: r.categoria,
+        [this.translate.instant('ESTADIS_EQUIPO.TABLE.DIVISION')]: r.division,
+        [this.translate.instant('ESTADIS_EQUIPO.TABLE.PJ')]: r.partidos,
+        [this.translate.instant('ESTADIS_EQUIPO.TABLE.PTS')]: r.puntos,
+        [this.translate.instant('ESTADIS_EQUIPO.TABLE.W')]: r.victorias,
+        [this.translate.instant('ESTADIS_EQUIPO.TABLE.D')]: r.empates,
+        [this.translate.instant('ESTADIS_EQUIPO.TABLE.L')]: r.derrotas,
+        [this.labelScoringFor]: r.gf,
+        [this.labelScoringAgainst]: r.gc,
+        [this.labelDiffScoring]: r.dg,
+      }));
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, this.translate.instant('ESTADIS_EQUIPO.TITLE'));
+      const sport = this.activeSport || this.currentSport;
+      const fileName = `sphaira_tabla_${sport}.xlsx`;
+      const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([wbout], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error('Error exportando a Excel', e);
+    }
+  }
 
   openInfoPostPartido(value: number) {}
 

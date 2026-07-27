@@ -1,0 +1,557 @@
+/* ═══════════════════════════════════════
+   HELP FAB — "Pregunta al manual"
+   Posicionamiento: esquina inferior DERECHA, por debajo del FAB
+   del Asistente IA cuando ambos coexisten (AI FAB tiene default
+   `bottom: 90 + alto 60` → ocupa Y 90→150; este botón a
+   `bottom: 24 + alto 56` → ocupa Y 24→80, dejando 10px de hueco).
+   En clubes Adhoc sin Asistente IA activo, el AI FAB no se
+   renderiza (gestionado en DashboardComponent.aiAssistantEnabled)
+   y este botón queda solo en la esquina sin riesgo de solape.
+   El usuario puede arrastrarlo a cualquier posición; la elegida
+   se persiste en localStorage (`helpFabPosition`).
+   Color de marca invertido: navy con borde verde.
+═══════════════════════════════════════ */
+
+$green-primary: #31b270;
+$green-light:   #c4e8d6;
+$navy:          #002c40;
+$navy-light:    #003a54;
+$white:         #ffffff;
+$bg-page:       #f4f7fa;
+$text-dark:     #1a2332;
+$text-muted:    #6b7a8d;
+$text-light:    #8e9bab;
+$border:        #e2e8f0;
+
+/* ═══════════════════════════════════════
+   Botón flotante
+═══════════════════════════════════════ */
+.help-fab-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px 14px 16px;
+  height: 56px;
+  border-radius: 28px;
+  border: 2px solid $green-primary;
+  background: $navy;
+  color: $white;
+
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: grab;
+  user-select: none;
+  // Evita el scroll/zoom nativo del navegador al arrastrar con táctil.
+  touch-action: none;
+
+  box-shadow:
+    0 8px 24px rgba(0, 44, 64, 0.35),
+    0 4px 12px rgba(49, 178, 112, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+
+  i {
+    font-size: 1.4rem;
+    color: $green-primary;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover {
+    background: $navy-light;
+    transform: translateY(-2px);
+    box-shadow:
+      0 12px 32px rgba(0, 44, 64, 0.45),
+      0 6px 16px rgba(49, 178, 112, 0.35);
+
+    i { transform: scale(1.1); }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &.help-fab-btn--open {
+    i { color: $white; }
+  }
+
+  // Cuando el componente aplica posición custom via [ngStyle], los
+  // defaults bottom/right dejan de tener sentido y el cursor pasa a
+  // "grab" para indicar que es arrastrable. Reseteamos también `left`
+  // por si el navegador interpretó algún auto-layout residual.
+  &.help-fab-btn--positioned {
+    bottom: auto;
+    left: auto;
+    right: auto;
+  }
+
+  &.help-fab-btn--dragging {
+    cursor: grabbing;
+    transition: none;
+    // Sombra reforzada mientras se arrastra para refuerzo visual.
+    box-shadow:
+      0 16px 40px rgba(0, 44, 64, 0.55),
+      0 8px 20px rgba(49, 178, 112, 0.45);
+  }
+}
+
+.help-fab-btn__label {
+  white-space: nowrap;
+
+  /* En móvil ocultamos el label y dejamos solo el icono circular */
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .help-fab-btn {
+    padding: 0;
+    width: 56px;
+    justify-content: center;
+    border-radius: 50%;
+  }
+}
+
+/* ═══════════════════════════════════════
+   Panel desplegable
+═══════════════════════════════════════ */
+.help-fab-panel {
+  position: fixed;
+  bottom: 96px;
+  right: 24px;
+  z-index: 9998;
+
+  width: 380px;
+  max-width: calc(100vw - 48px);
+  height: 600px;
+  max-height: calc(100vh - 120px);
+
+  background: $white;
+  border-radius: 18px;
+  border: 1px solid $border;
+  box-shadow:
+    0 20px 60px rgba(0, 44, 64, 0.25),
+    0 8px 24px rgba(0, 44, 64, 0.15);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  animation: helpPanelAppear 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  // Cuando el FAB tiene posición custom, el [ngStyle] del componente
+  // pisa left/top y aquí anulamos bottom/right para no entrar en
+  // conflicto con los valores absolutos calculados por el getter
+  // panelStyle del TS.
+  &.help-fab-panel--positioned {
+    bottom: auto;
+    right: auto;
+  }
+
+  @media (max-width: 640px) {
+    bottom: 88px;
+    left: 8px;
+    right: 8px;
+    width: auto;
+    max-width: none;
+    height: calc(100vh - 110px);
+  }
+}
+
+@keyframes helpPanelAppear {
+  from { opacity: 0; transform: translateY(12px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ─── Cabecera ─── */
+.help-fab-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, $navy 0%, $navy-light 100%);
+  color: $white;
+  border-bottom: 2px solid $green-primary;
+  flex-shrink: 0;
+}
+
+.help-fab-panel__header-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.help-fab-panel__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: $green-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  i {
+    font-size: 1.2rem;
+    color: $white;
+  }
+}
+
+.help-fab-panel__title-wrap {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.help-fab-panel__title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.help-fab-panel__subtitle {
+  font-size: 0.75rem;
+  color: $green-light;
+  font-weight: 500;
+}
+
+.help-fab-panel__actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.help-fab-panel__action-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: $white;
+  }
+
+  i { font-size: 1rem; }
+}
+
+/* ─── Cuerpo ─── */
+.help-fab-panel__body {
+  flex: 1;
+  overflow-y: auto;
+  background: $bg-page;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Welcome screen */
+.help-fab-welcome {
+  text-align: center;
+  padding: 16px 8px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.help-fab-welcome__hero {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.help-fab-welcome__icon {
+  font-size: 3rem;
+  color: $green-primary;
+  background: $green-light;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.help-fab-welcome__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: $navy;
+  margin: 0 0 8px 0;
+}
+
+.help-fab-welcome__subtitle {
+  font-size: 0.85rem;
+  color: $text-muted;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+.help-fab-welcome__suggestions-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: $text-light;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 12px 0;
+}
+
+.help-fab-welcome__suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.help-fab-suggestion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid $border;
+  background: $white;
+  color: $text-dark;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  i {
+    color: $green-primary;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  span { flex: 1; }
+
+  &:hover {
+    border-color: $green-primary;
+    background: $green-light;
+    color: $navy;
+    transform: translateX(2px);
+  }
+}
+
+/* Lista de mensajes */
+.help-fab-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.help-fab-msg {
+  display: flex;
+  gap: 8px;
+
+  &--user {
+    justify-content: flex-end;
+
+    .help-fab-msg__bubble {
+      background: $navy;
+      color: $white;
+      border-radius: 16px 16px 4px 16px;
+      max-width: 85%;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      word-wrap: break-word;
+    }
+  }
+
+  &--assistant {
+    align-items: flex-start;
+
+    .help-fab-msg__bubble {
+      background: $white;
+      color: $text-dark;
+      border-radius: 16px 16px 16px 4px;
+      max-width: calc(100% - 40px);
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      line-height: 1.55;
+      border: 1px solid $border;
+      word-wrap: break-word;
+      flex: 1;
+    }
+  }
+}
+
+.help-fab-msg__avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: $green-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+
+  i {
+    color: $white;
+    font-size: 0.85rem;
+  }
+}
+
+.help-fab-msg__content {
+  /* Estilos para el markdown renderizado */
+  ::ng-deep {
+    p { margin: 0 0 8px 0; }
+    p:last-child { margin-bottom: 0; }
+
+    ul, ol {
+      margin: 8px 0;
+      padding-left: 20px;
+    }
+
+    li { margin: 2px 0; }
+
+    strong { color: $navy; font-weight: 700; }
+
+    code {
+      background: $bg-page;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85em;
+    }
+
+    h1, h2, h3, h4 {
+      margin: 8px 0 4px 0;
+      color: $navy;
+      font-weight: 700;
+    }
+
+    h3 { font-size: 1rem; }
+    h4 { font-size: 0.92rem; }
+
+    a {
+      color: $green-primary;
+      text-decoration: underline;
+
+      &:hover { color: $navy; }
+    }
+  }
+}
+
+/* "Escribiendo..." indicator */
+.help-fab-typing {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px 0;
+
+  span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: $green-primary;
+    animation: helpTypingBounce 1.2s infinite ease-in-out both;
+
+    &:nth-child(1) { animation-delay: -0.32s; }
+    &:nth-child(2) { animation-delay: -0.16s; }
+  }
+}
+
+@keyframes helpTypingBounce {
+  0%, 80%, 100% { transform: scale(0.7); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+/* ─── Pie: input ─── */
+.help-fab-panel__footer {
+  flex-shrink: 0;
+  padding: 12px 16px 16px;
+  background: $white;
+  border-top: 1px solid $border;
+}
+
+.help-fab-input-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  background: $bg-page;
+  border: 1.5px solid $border;
+  border-radius: 14px;
+  padding: 6px 6px 6px 12px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus-within {
+    border-color: $green-primary;
+    box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.12);
+  }
+}
+
+.help-fab-input {
+  flex: 1;
+  resize: none;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9rem;
+  color: $text-dark;
+  max-height: 120px;
+  padding: 8px 0;
+  line-height: 1.4;
+
+  &::placeholder { color: $text-light; }
+
+  &:disabled {
+    color: $text-light;
+    cursor: not-allowed;
+  }
+}
+
+.help-fab-send {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: $green-primary;
+  color: $white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, transform 0.15s ease;
+
+  i { font-size: 0.95rem; }
+
+  &:hover:not(:disabled) {
+    background: $navy;
+    transform: scale(1.05);
+  }
+
+  &:disabled {
+    background: $border;
+    color: $text-light;
+    cursor: not-allowed;
+  }
+}
+
+.help-fab-disclaimer {
+  font-size: 0.7rem;
+  color: $text-light;
+  text-align: center;
+  margin: 8px 0 0 0;
+  line-height: 1.3;
+}

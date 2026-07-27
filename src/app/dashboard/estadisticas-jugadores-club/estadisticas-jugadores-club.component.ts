@@ -40,6 +40,12 @@ export class EstadisticasJugadoresClubComponent implements OnInit, OnDestroy {
 
   playersPaged: any[] = [];
 
+  // FILTROS
+  searchTerm = '';
+  filterTeam = '';
+  filterPosition = '';
+  filterSport = '';
+
   // ORDENAMIENTO
   sortColumn: string = 'goles';
   sortDirection: 'asc' | 'desc' = 'desc';
@@ -112,6 +118,91 @@ export class EstadisticasJugadoresClubComponent implements OnInit, OnDestroy {
   get aiSuggestionCompareScoring(): string {
     const unit = this.scoringPluralLabel.toLowerCase();
     return this.translate.instant('SPORT_UI.AI_COMPARE_SCORING_ASSISTS', { unit });
+  }
+
+  /* ── Multideporte + filtros ── */
+
+  /** Deportes presentes en los datos del club, con emoji y contador de jugadores. */
+  get availableSports(): { sport: string; emoji: string; count: number }[] {
+    const map = new Map<string, { emoji: string; count: number }>();
+    for (const p of this.players) {
+      const s: string = p.sport || 'futbol';
+      if (!map.has(s)) {
+        map.set(s, { emoji: getSportConfig(s).emoji, count: 0 });
+      }
+      map.get(s)!.count++;
+    }
+    return Array.from(map.entries()).map(([sport, v]) => ({ sport, ...v }));
+  }
+
+  get uniqueTeams(): string[] {
+    const source = this.filterSport
+      ? this.players.filter(p => (p.sport || 'futbol') === this.filterSport)
+      : this.players;
+    const teams = new Set<string>(source.map(p => p.nameTeam).filter(Boolean));
+    return Array.from(teams).sort((a, b) => a.localeCompare(b));
+  }
+
+  get uniquePositions(): string[] {
+    if (this.filterSport) {
+      const cfg = getSportConfig(this.filterSport);
+      if (cfg?.positions?.length) return cfg.positions;
+    } else if (this.sportConfig?.positions?.length) {
+      return this.sportConfig.positions;
+    }
+    const pos = new Set<string>(
+      this.players.map(p => p.posicion || p.posicionGlobal).filter(Boolean)
+    );
+    return Array.from(pos).sort((a, b) => a.localeCompare(b));
+  }
+
+  get activeFiltersCount(): number {
+    return [this.searchTerm, this.filterTeam, this.filterPosition, this.filterSport].filter(Boolean).length;
+  }
+
+  private _applyFilters(): any[] {
+    let result = this.players;
+    if (this.filterSport) {
+      result = result.filter(p => (p.sport || 'futbol') === this.filterSport);
+    }
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      result = result.filter(p =>
+        (p.nombre || '').toLowerCase().includes(term) ||
+        (p.apellido || '').toLowerCase().includes(term)
+      );
+    }
+    if (this.filterTeam) {
+      result = result.filter(p => p.nameTeam === this.filterTeam);
+    }
+    if (this.filterPosition) {
+      result = result.filter(p => (p.posicion || p.posicionGlobal || '') === this.filterPosition);
+    }
+    return result;
+  }
+
+  onFilterChange(): void {
+    this.page = 1;
+    this.actualizarPaginacion();
+    this.cdr.markForCheck();
+  }
+
+  setSportFilter(sport: string): void {
+    this.filterSport = sport;
+    this.filterTeam = '';
+    this.filterPosition = '';
+    this.sportConfig = sport ? getSportConfig(sport) : this.sportContextService.getConfig();
+    this.onFilterChange();
+  }
+
+  clearFilters(): void {
+    this.searchTerm = '';
+    this.filterTeam = '';
+    this.filterPosition = '';
+    const firstSport = this.availableSports[0]?.sport ?? '';
+    this.filterSport = firstSport;
+    this.sportConfig = firstSport ? getSportConfig(firstSport) : this.sportContextService.getConfig();
+    this.onFilterChange();
   }
 
   ngOnInit(): void {
@@ -206,6 +297,12 @@ export class EstadisticasJugadoresClubComponent implements OnInit, OnDestroy {
           // Mapea los datos bajo 'data' a instancias del modelo Team
           this.players = list;
           this.page = 1;
+          // Auto-seleccionar el primer deporte disponible
+          const firstSport = this.availableSports[0]?.sport;
+          if (firstSport) {
+            this.filterSport = firstSport;
+            this.sportConfig = getSportConfig(firstSport);
+          }
           this.actualizarPaginacion();
           this.datosCargados = true;
           this.publishPageContext();
@@ -225,9 +322,9 @@ export class EstadisticasJugadoresClubComponent implements OnInit, OnDestroy {
     );
   }
   private actualizarPaginacion(): void {
-    // Aplicar ordenamiento antes de paginar
-    const sortedPlayers = this.sortPlayers([...this.players]);
-    
+    // Aplicar filtros + ordenamiento antes de paginar
+    const sortedPlayers = this.sortPlayers([...this._applyFilters()]);
+
     this.totalRecords = sortedPlayers.length;
 
     this.totalPages = Math.max(1, Math.ceil(this.totalRecords / this.pageSize));

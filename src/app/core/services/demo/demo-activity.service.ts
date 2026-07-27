@@ -5,6 +5,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { DemoService } from './demo.service';
+import { DemoAnalyticsService } from './demo-analytics.service';
 
 export interface DemoVisit {
   route: string;
@@ -53,12 +54,16 @@ export class DemoActivityService {
 
   private routerSub?: { unsubscribe: () => void };
   private visibilityHandler?: () => void;
+  private unloadHandler?: () => void;
+  /** Evita enviar el lead dos veces si se disparan pagehide y beforeunload. */
+  private beaconSent = false;
   private readonly TOP_N = 5;
 
   constructor(
     private router: Router,
     private http: HttpClient,
-    private demoService: DemoService
+    private demoService: DemoService,
+    private demoAnalytics: DemoAnalyticsService,
   ) {}
 
   /** Inicializa el tracking (solo en modo demo). Llamar una vez desde AppComponent. */
@@ -79,6 +84,10 @@ export class DemoActivityService {
         this.currentSection   = undefined;
         this.currentStartTime = Date.now();
         this.hiddenMs         = 0;
+        this.demoAnalytics.track('demo_screen_view', {
+          screen: this.currentRoute,
+          screens_seen: this.completedVisits.length + 1,
+        });
       }
     });
 
@@ -96,6 +105,13 @@ export class DemoActivityService {
       }
     };
     document.addEventListener('visibilitychange', this.visibilityHandler);
+
+    // ── Cierre de pestaña ─────────────────────────────────────────────────────
+    // Sin esto el lead solo se guardaba al pulsar "cerrar sesión", que casi nadie
+    // hace: la mayoría cierra la pestaña y se perdía la visita entera.
+    this.unloadHandler = () => this.submitLeadBeacon();
+    window.addEventListener('pagehide', this.unloadHandler);
+    window.addEventListener('beforeunload', this.unloadHandler);
   }
 
   /** Notifica pausa forzada (p. ej. cuando InactivityService detecta 5 min sin actividad). */
@@ -197,6 +213,7 @@ export class DemoActivityService {
    */
   submitLead(email: string): Observable<{ success: boolean; message?: string }> {
     this.finalizeAndSubmit(); // cerrar visita activa antes de enviar
+    this.beaconSent = true;   // el cierre de pestaña ya no debe reenviarlo
 
     const baseUrl = (environment as { demoLeadApiUrl?: string }).demoLeadApiUrl;
     if (!baseUrl) {
@@ -223,10 +240,67 @@ export class DemoActivityService {
     );
   }
 
+  /**
+   * Envía el lead al cerrar la pestaña usando `sendBeacon`, que el navegador
+   * garantiza aunque el documento se esté destruyendo (una petición HTTP normal
+   * se cancelaría). Silencioso: si no hay email todavía, no hay nada que guardar.
+   */
+  submitLeadBeacon(): void {
+    if (this.beaconSent || !this.demoService.isDemoMode()) return;
+
+    const email = this.resolveEmail();
+    if (!email) return;
+
+    const baseUrl = (environment as { demoLeadApiUrl?: string }).demoLeadApiUrl;
+    if (!baseUrl || typeof navigator === 'undefined' || !navigator.sendBeacon) return;
+
+    this.finalizeAndSubmit();
+
+    const phone = (sessionStorage.getItem(SESSION_KEY_PHONE) || '').trim();
+    const payload: DemoLeadPayload = {
+      email,
+      demoRole:        this.demoService.getDemoRole() || '',
+      activitySummary: this.getActivitySummary(),
+    };
+    if (phone) payload.phone = phone;
+
+    try {
+      const url = `${baseUrl.replace(/\/$/, '')}/public/demo-lead`;
+      const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+      this.beaconSent = navigator.sendBeacon(url, blob);
+      this.demoAnalytics.track('demo_session_end', {
+        total_seconds: payload.activitySummary.totalSeconds,
+        screens_seen: payload.activitySummary.visits.length,
+        top_screen: payload.activitySummary.topScreens[0]?.route ?? 'none',
+      });
+    } catch {
+      // El navegador puede rechazar el beacon durante la descarga; no hay reintento posible.
+    }
+  }
+
+  /** Email del visitante: el del usuario demo logueado o el capturado en la entrada. */
+  private resolveEmail(): string {
+    try {
+      const raw = localStorage.getItem('usuario');
+      if (raw) {
+        const user = JSON.parse(raw);
+        const mail = user && user.mail ? String(user.mail).trim() : '';
+        if (mail) return mail;
+      }
+    } catch {
+      // usuario corrupto en localStorage: caemos al email de sesión
+    }
+    return (sessionStorage.getItem('demoEmail') || '').trim();
+  }
+
   ngOnDestroy(): void {
     this.routerSub?.unsubscribe();
     if (this.visibilityHandler) {
       document.removeEventListener('visibilitychange', this.visibilityHandler);
+    }
+    if (this.unloadHandler) {
+      window.removeEventListener('pagehide', this.unloadHandler);
+      window.removeEventListener('beforeunload', this.unloadHandler);
     }
   }
 }

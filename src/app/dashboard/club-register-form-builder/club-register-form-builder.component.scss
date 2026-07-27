@@ -1,0 +1,1335 @@
+// Builder del formulario extendido de registro. Estilo Sphaira:
+// navy #002c40, green #31b270, blanco/gris.
+
+// Checkbox redondo de marca: círculo con borde verde, al marcar se rellena
+// de verde y muestra un tick blanco dibujado en CSS. Reutilizado por todos
+// los checks del builder para un aspecto consistente con los datos base.
+@mixin round-check($size: 18px) {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  width: $size;
+  height: $size;
+  border: 2px solid #31b270;
+  border-radius: 50%;
+  background: #ffffff;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+
+  &:checked {
+    background: #31b270;
+    border-color: #31b270;
+  }
+
+  &:checked::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 47%;
+    width: calc(#{$size} * 0.28);
+    height: calc(#{$size} * 0.5);
+    border: solid #ffffff;
+    border-width: 0 2px 2px 0;
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(49, 178, 112, 0.4);
+    outline-offset: 1px;
+  }
+}
+
+:host {
+  display: block;
+  padding: 24px;
+  background: #f4f4f4;
+  min-height: 100%;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.builder {
+  max-width: 980px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.builder__variant-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 2px solid #e4e7eb;
+  padding-bottom: 0;
+}
+
+.builder__variant-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  padding: 12px 18px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #636363;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+
+  i {
+    font-size: 1.05rem;
+  }
+
+  &:hover {
+    color: #002c40;
+  }
+
+  &--active {
+    color: #002c40;
+    border-bottom-color: #31b270;
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(49, 178, 112, 0.4);
+    outline-offset: 2px;
+  }
+}
+
+.builder__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px 24px;
+  box-shadow: 0 1px 6px rgba(0, 44, 64, 0.06);
+  flex-wrap: wrap;
+}
+
+.builder__header-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.builder__back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #d6d6d6;
+  background: #ffffff;
+  color: #002c40;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  margin-top: 2px;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+
+  i {
+    font-size: 14px;
+  }
+
+  &:hover {
+    background: #f4f4f4;
+    border-color: #31b270;
+    color: #31b270;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #31b270;
+    outline-offset: 2px;
+  }
+}
+
+.builder__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: #002c40;
+}
+
+.builder__lead {
+  margin: 6px 0 0;
+  color: #636363;
+  font-size: 13px;
+  max-width: 540px;
+}
+
+.builder__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.builder__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f4f4f4;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #002c40;
+  cursor: pointer;
+  user-select: none;
+}
+
+.builder__toggle input[type='checkbox'] {
+  accent-color: #31b270;
+}
+
+.builder__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  font-family: inherit;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.builder__btn--primary {
+  background: linear-gradient(90deg, #31b270 0%, #1f8f8a 100%);
+  color: #ffffff;
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.05);
+  }
+}
+
+.builder__btn--ghost {
+  background: transparent;
+  color: #002c40;
+  border: 1px solid #d6d6d6;
+
+  &:hover:not(:disabled) {
+    background: #f4f4f4;
+  }
+}
+
+.builder__loading {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  color: #002c40;
+  font-weight: 600;
+
+  i {
+    margin-right: 8px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// Estado vacío (ningún slot marcado)
+.builder__empty-state {
+  background: #fff8e1;
+  border: 1px solid #ffe49b;
+  border-radius: 12px;
+  padding: 14px 18px;
+  color: #6b5500;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  i {
+    color: #b8860b;
+    font-size: 18px;
+  }
+}
+
+.builder__sections {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px 24px;
+  box-shadow: 0 1px 6px rgba(0, 44, 64, 0.06);
+}
+
+.section-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #ececec;
+}
+
+.section-card__heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-card__chip {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #c4e8d6;
+  color: #002c40;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  flex-shrink: 0;
+
+  &--general {
+    background: #002c40;
+    color: #ffffff;
+  }
+}
+
+.section-card__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #002c40;
+}
+
+.section-card__hint {
+  margin: 0;
+  font-size: 12px;
+  color: #636363;
+  line-height: 1.5;
+}
+
+// Datos base fijos del jugador (siempre obligatorios, bloqueados).
+.base-fields {
+  background: #f4fbf7;
+  border: 1px solid #c4e8d6;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.base-fields__note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #002c40;
+  line-height: 1.5;
+
+  i {
+    color: #31b270;
+    font-size: 14px;
+    margin-top: 1px;
+  }
+}
+
+.base-fields__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.base-fields__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid #e3efe9;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.base-fields__name {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #002c40;
+
+  i {
+    color: #31b270;
+    font-size: 15px;
+  }
+}
+
+.base-fields__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  background: #002c40;
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  i {
+    font-size: 11px;
+  }
+}
+
+.section-card__empty {
+  background: #f4f4f4;
+  border-radius: 8px;
+  padding: 14px;
+  color: #636363;
+  font-size: 13px;
+  text-align: center;
+  font-style: italic;
+  margin: 0;
+}
+
+// ── Lista de slots con checkbox + toggle Obligatorio ──────────────────────
+
+.slot-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  // Variante "ordenada": los items en uso con flechas ▲/▼ a la izquierda.
+  // Como cada item puede ser un slot canónico o un free field, dejamos más
+  // espacio vertical entre filas y el primer hijo flexible (el contenido
+  // del item) ocupa el resto del espacio.
+  &--ordered {
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+}
+
+.slot-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  background: #f9f9f9;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 10px 14px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: #f1f5f3;
+  }
+
+  &--selected {
+    background: linear-gradient(180deg, #eaf6ef 0%, #f9fcfa 100%);
+    border-color: #c4e8d6;
+  }
+
+  // Slot del catálogo aún sin marcar: se ve más apagado para que el
+  // ojo del admin separe rápidamente lo que ya está en el formulario
+  // (verde) de lo que todavía es opcional (gris claro). Aquí no hay
+  // editor expandido, así que recuperamos el centrado vertical.
+  &--available {
+    align-items: center;
+    background: #ffffff;
+    border-color: #e6e6e6;
+
+    .slot-row__name {
+      color: #5a5a5a;
+      font-weight: 500;
+    }
+  }
+}
+
+// Cuerpo de un item en uso (head + editor opcional). Toma el espacio que
+// dejen libre las flechas de reordenamiento a la izquierda.
+.slot-row__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.slot-row__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+// Editor que se despliega bajo la head para slots canónicos `select` y
+// `consent`: opciones del desplegable o textarea con el texto legal.
+.slot-row__editor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px dashed #d8e7df;
+}
+
+.slot-row__editor-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #002c40;
+}
+
+// Flechas ▲/▼ para reordenar items dentro de la sección.
+.slot-row__order {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+
+  // Variante "placeholder" para los slots disponibles (no seleccionados).
+  // Reservamos exactamente el mismo espacio que las flechas reales para
+  // que la columna de etiquetas quede alineada arriba y abajo.
+  &--placeholder {
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+.slot-row__order-spacer {
+  display: inline-block;
+  width: 26px;
+  height: 22px;
+}
+
+.slot-row__order-btn {
+  background: #ffffff;
+  border: 1px solid #d6d6d6;
+  border-radius: 6px;
+  width: 26px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #002c40;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+  i {
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  &:hover:not(:disabled) {
+    background: #002c40;
+    color: #ffffff;
+    border-color: #002c40;
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}
+
+.slot-row__main {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+  user-select: none;
+  padding: 4px 0;
+}
+
+.slot-row__check {
+  @include round-check(18px);
+}
+
+.slot-row__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #002c40;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.slot-row__type {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  background: #ffffff;
+  color: #636363;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid #d6d6d6;
+}
+
+// Badge para slots deprecated. Naranja (avis), no rojo (rojo = error).
+// Cualquier slot legacy en uso se muestra con este aviso para empujar al
+// club a migrar a su equivalente moderno (padre/madre).
+.slot-row__type--legacy {
+  background: #fff7e6;
+  color: #b86300;
+  border-color: #ffd591;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  i {
+    font-size: 11px;
+    line-height: 1;
+  }
+}
+
+.slot-row__legacy-hint {
+  margin: 6px 0 0;
+  padding: 8px 10px;
+  font-size: 12px;
+  color: #8b4a00;
+  background: #fff7e6;
+  border: 1px solid #ffd591;
+  border-radius: 6px;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  line-height: 1.45;
+
+  i {
+    font-size: 13px;
+    margin-top: 1px;
+  }
+}
+
+.slot-row__required {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #002c40;
+  cursor: pointer;
+  user-select: none;
+  background: #ffffff;
+  padding: 4px 10px 4px 8px;
+  border-radius: 999px;
+  border: 1px solid #d6d6d6;
+  flex-shrink: 0;
+
+  input[type='checkbox'] {
+    @include round-check(15px);
+  }
+}
+
+// ── Vista preview ─────────────────────────────────────────────────────────
+
+.builder__preview {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 1px 6px rgba(0, 44, 64, 0.06);
+}
+
+.builder__preview-title {
+  margin: 0 0 6px;
+  color: #002c40;
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  i {
+    color: #31b270;
+  }
+}
+
+.builder__preview-lead {
+  margin: 0 0 18px;
+  color: #636363;
+  font-size: 13px;
+}
+
+.builder__preview-section {
+  background: #f9f9f9;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.builder__error {
+  background: #ffe6e6;
+  border: 1px solid #f3c2c2;
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #c12d2d;
+  font-weight: 600;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// ── Campos libres añadidos por el club (info / select / consent) ─────────
+
+.free-fields {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px dashed #d6d6d6;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.free-fields__title {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #002c40;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  i {
+    color: #31b270;
+  }
+}
+
+.free-field {
+  background: linear-gradient(180deg, #f9fcfa 0%, #ffffff 100%);
+  border: 1px solid #d8e7df;
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.free-field__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.free-field__badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  background: #c4e8d6;
+  color: #002c40;
+
+  &--info {
+    background: #e9eef2;
+    color: #002c40;
+  }
+  &--select {
+    background: #fff1c2;
+    color: #6b5500;
+  }
+  &--consent {
+    background: #c4e8d6;
+    color: #1f6b46;
+  }
+}
+
+.free-field__remove {
+  background: transparent;
+  border: 0;
+  color: #c12d2d;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 6px;
+  border-radius: 6px;
+
+  &:hover {
+    background: #ffe6e6;
+  }
+}
+
+.free-field__label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #002c40;
+}
+
+.free-field__input,
+.free-field__textarea {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 10px;
+  border: 1px solid #d6d6d6;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #002c40;
+  width: 100%;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: #31b270;
+    box-shadow: 0 0 0 2px rgba(49, 178, 112, 0.18);
+  }
+}
+
+.free-field__textarea {
+  resize: vertical;
+  min-height: 70px;
+  line-height: 1.5;
+}
+
+.free-field__options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.free-field__option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.free-field__option-remove {
+  background: transparent;
+  border: 1px solid #d6d6d6;
+  border-radius: 8px;
+  color: #c12d2d;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &:hover {
+    background: #ffe6e6;
+    border-color: #f3c2c2;
+  }
+}
+
+.free-field__add-option {
+  align-self: flex-start;
+  background: transparent;
+  border: 1px dashed #31b270;
+  color: #1f6b46;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  &:hover {
+    background: #eaf6ef;
+  }
+}
+
+.free-field__required {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #002c40;
+  cursor: pointer;
+  user-select: none;
+  align-self: flex-start;
+
+  input[type='checkbox'] {
+    @include round-check(15px);
+  }
+}
+
+// Cuando un free field se renderiza dentro de un slot-row (lista en orden)
+// queremos que ocupe todo el ancho disponible y no se vea encajonado.
+.free-field--inline {
+  flex: 1;
+  margin: 0;
+}
+
+// Botones para añadir nuevos campos libres en cada sección
+.free-actions {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.free-actions__hint {
+  font-size: 12px;
+  color: #636363;
+  line-height: 1.5;
+}
+
+.free-actions__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.free-actions__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1px dashed #002c40;
+  color: #002c40;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background-color 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: #002c40;
+    color: #ffffff;
+  }
+}
+
+// ── Documento descargable (free field tipo 'document') ───────────────
+// Tres estados: vacío (drop-zone), subiendo (spinner), subido (preview).
+
+.free-field__document-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.free-field__document-input {
+  display: none;
+}
+
+.free-field__document-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #f4f4f4;
+  border: 1.5px dashed #31b270;
+  border-radius: 10px;
+  color: #002c40;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+
+  i {
+    color: #31b270;
+    font-size: 16px;
+  }
+
+  &:hover {
+    background: #e9f7ee;
+    border-color: #002c40;
+  }
+}
+
+.free-field__document-hint {
+  font-size: 11px;
+  color: #636363;
+}
+
+.free-field__document-uploading {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #fff;
+  border: 1px solid #31b270;
+  border-radius: 10px;
+  color: #31b270;
+  font-weight: 600;
+  font-size: 13px;
+
+  i {
+    animation: free-field__document-spin 0.9s linear infinite;
+  }
+}
+
+@keyframes free-field__document-spin {
+  to { transform: rotate(360deg); }
+}
+
+.free-field__document-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid #d6e5dc;
+  border-radius: 10px;
+  flex-wrap: wrap;
+
+  > i {
+    font-size: 26px;
+    color: #31b270;
+    flex-shrink: 0;
+  }
+}
+
+.free-field__document-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+
+  strong {
+    color: #002c40;
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  small {
+    color: #636363;
+    font-size: 11px;
+  }
+}
+
+.free-field__document-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #31b270;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+
+  &:hover {
+    background: #e9f7ee;
+    color: #002c40;
+  }
+}
+
+.free-field__document-replace {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: #002c40;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+
+  &:hover {
+    background: #f4f4f4;
+    border-color: #d6e5dc;
+  }
+}
+
+.free-field__document-clear {
+  background: transparent;
+  border: none;
+  color: #c0392b;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 6px 8px;
+  border-radius: 8px;
+
+  &:hover {
+    background: #fdecea;
+  }
+}
+
+.free-field__document-error {
+  margin: 6px 0 0;
+  color: #c0392b;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+// Responsive: en móvil colapsamos toggle Obligatorio debajo del checkbox.
+@media (max-width: 600px) {
+  .slot-row {
+    flex-wrap: wrap;
+  }
+
+  .slot-row__required {
+    margin-left: 28px;
+  }
+
+  .free-actions__buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .free-actions__btn {
+    justify-content: center;
+  }
+
+  .slot-row__order {
+    flex-direction: row;
+  }
+}
+
+// ─── Exportar a PDF: menú desplegable ────────────────────────────────
+.builder__export {
+  position: relative;
+  display: inline-flex;
+}
+
+.builder__export-caret {
+  font-size: 0.7rem;
+  margin-left: 2px;
+}
+
+.builder__export-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  min-width: 220px;
+  background: #ffffff;
+  border: 1px solid #e3e9ed;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 44, 64, 0.16);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.builder__export-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font: inherit;
+  font-weight: 600;
+  color: #002c40;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  i {
+    color: #31b270;
+    font-size: 1rem;
+  }
+
+  &:hover {
+    background: #eef4f1;
+  }
+}
+
+// ─── Área de render fuera de pantalla para capturar el PDF ───────────
+// Se posiciona fuera de la vista (no `display:none`, que impediría a
+// html2canvas medir el contenido). Ancho fijo ~A4 para un layout estable.
+.pdf-stage-wrap {
+  position: fixed;
+  left: -10000px;
+  top: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.pdf-stage {
+  width: 760px;
+  background: #ffffff;
+  padding: 8px 12px 16px;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  color: #002c40;
+
+  .pdf-lead {
+    color: #636363;
+    font-size: 0.9rem;
+    margin: 0 0 14px;
+  }
+
+  .pdf-section {
+    margin-bottom: 18px;
+    break-inside: avoid;
+  }
+
+  .pdf-section__title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #002c40;
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #31b270;
+  }
+
+  .pdf-fields {
+    list-style: none;
+    margin: 0 0 8px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .pdf-field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 10px;
+    border: 1px solid #eef1f3;
+    border-radius: 8px;
+    background: #f9fbfc;
+  }
+
+  .pdf-field__name {
+    font-weight: 600;
+    color: #002c40;
+    font-size: 0.92rem;
+  }
+
+  .pdf-badges {
+    display: inline-flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .pdf-badge {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .pdf-badge--req {
+    background: #c4e8d6;
+    color: #15663f;
+  }
+
+  .pdf-badge--opt {
+    background: #eef1f3;
+    color: #636363;
+  }
+
+  .pdf-badge--locked {
+    background: #002c40;
+    color: #ffffff;
+  }
+
+  .pdf-badge--free {
+    background: #e6eef2;
+    color: #013a52;
+  }
+
+  .pdf-empty {
+    list-style: none;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-style: italic;
+    padding: 6px 10px;
+  }
+
+  .pdf-preview-section {
+    margin-bottom: 16px;
+    break-inside: avoid;
+  }
+
+  // Datos base del jugador (siempre obligatorios) en la versión de padres.
+  .pdf-parents-base {
+    margin-bottom: 16px;
+    break-inside: avoid;
+  }
+
+  .pdf-parents-base__title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #002c40;
+    margin: 0 0 12px;
+  }
+
+  .pdf-parents-base__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
+  }
+
+  .pdf-parents-base__field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .pdf-parents-base__label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #002c40;
+  }
+
+  .pdf-parents-base__req {
+    color: #31b270;
+    font-weight: 800;
+  }
+
+  .pdf-parents-base__input {
+    display: block;
+    height: 34px;
+    border: 1px solid #d7dee3;
+    border-radius: 8px;
+    background: #f9fbfc;
+  }
+}

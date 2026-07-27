@@ -1,0 +1,619 @@
+// Sphaira brand
+$navy:        #002c40;
+$green:       #31b270;
+$green-light: #c4e8d6;
+$gray-text:   #636363;
+$bg-soft:     #f4f4f4;
+$white:       #ffffff;
+$danger:      #e53935;
+
+:host { display: block; }
+
+.builder-page {
+  padding: 24px 32px;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  color: $navy;
+}
+
+/* Spinner reutilizable para iconos Bootstrap Icons (la app usa `bi`). */
+.bi.spin {
+  display: inline-block;
+  animation: bi-spin 1s linear infinite;
+}
+
+@keyframes bi-spin {
+  to { transform: rotate(360deg); }
+}
+
+// ───────────────────── Header ─────────────────────
+.page-header {
+  margin-bottom: 24px;
+
+  &__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, $green 0%, $navy 100%);
+    border-radius: 16px;
+    color: $white;
+    box-shadow: 0 8px 24px rgba(0, 44, 64, 0.12);
+
+    .title-icon {
+      width: 56px;
+      height: 56px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.18);
+      border-radius: 14px;
+      font-size: 28px;
+    }
+
+    h1 {
+      margin: 0 0 4px 0;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 14px;
+      font-weight: 400;
+    }
+  }
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: $white;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  color: $navy;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+
+  &:hover {
+    background: $bg-soft;
+    border-color: $green;
+  }
+
+  i { font-size: 14px; }
+}
+
+.primary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: $green;
+  color: $white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  font-family: inherit;
+
+  &:hover:not(:disabled) {
+    background: darken($green, 6%);
+    box-shadow: 0 4px 12px rgba(49, 178, 112, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: $white;
+  color: $navy;
+  border: 1px dashed $green;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  font-family: inherit;
+
+  &:hover {
+    background: rgba(49, 178, 112, 0.08);
+  }
+
+  &.small {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}
+
+// ───────────────────── Switch ─────────────────────
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: $white;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 6px 12px 6px 6px;
+  cursor: pointer;
+  font-family: inherit;
+  color: $navy;
+  font-weight: 600;
+  font-size: 13px;
+
+  &__track {
+    width: 36px;
+    height: 20px;
+    background: #d0d4d6;
+    border-radius: 10px;
+    position: relative;
+    transition: background .2s;
+  }
+
+  &__thumb {
+    width: 16px;
+    height: 16px;
+    background: $white;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: left .2s;
+  }
+
+  &.is-on {
+    .switch__track { background: $green; }
+    .switch__thumb { left: 18px; }
+  }
+}
+
+// ───────────────────── Skeleton ─────────────────────
+.skeleton-card {
+  height: 120px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #eaeaea 0%, #f5f5f5 50%, #eaeaea 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ───────────────────── Default banner ─────────────────────
+// Banner informativo cuando el club aún no ha guardado su plantilla y
+// está viendo el formulario predeterminado de Sphaira precargado.
+.default-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 18px;
+  margin: 0 0 18px;
+  background: $green-light;
+  border: 1px solid #a5d8b9;
+  border-radius: 12px;
+  color: #1a5b39;
+
+  > i {
+    font-size: 22px;
+    line-height: 1;
+    color: $green;
+    margin-top: 2px;
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 13.5px;
+    line-height: 1.5;
+
+    strong {
+      font-weight: 700;
+      color: $navy;
+      font-size: 14px;
+    }
+
+    span {
+      color: #2b5a3e;
+    }
+  }
+}
+
+// ───────────────────── Accordion ─────────────────────
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &__item {
+    background: $white;
+    border: 1px solid #e8eaee;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: box-shadow .2s, border-color .2s;
+
+    &.is-open {
+      border-color: $green;
+      box-shadow: 0 6px 20px rgba(0, 44, 64, 0.08);
+    }
+  }
+
+  &__header {
+    padding: 18px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    user-select: none;
+
+    &-left {
+      flex: 1;
+      min-width: 0;
+
+      h2 {
+        margin: 6px 0 4px 0;
+        font-size: 17px;
+        font-weight: 700;
+        color: $navy;
+      }
+
+      p {
+        margin: 0;
+        color: $gray-text;
+        font-size: 13px;
+      }
+    }
+
+    &-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: $navy;
+      font-size: 18px;
+    }
+  }
+
+  &__content {
+    padding: 0 22px 22px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+.chip {
+  display: inline-block;
+  background: $green-light;
+  color: $navy;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.count-badge {
+  background: $bg-soft;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-weight: 700;
+  font-size: 13px;
+  color: $navy;
+  min-width: 28px;
+  text-align: center;
+}
+
+// ───────────────────── Field list ─────────────────────
+.empty-state {
+  text-align: center;
+  padding: 30px 12px;
+  border: 1px dashed #d8dadd;
+  border-radius: 12px;
+  color: $gray-text;
+
+  i { font-size: 28px; margin-bottom: 8px; display: block; }
+  p { margin: 0; font-size: 14px; }
+}
+
+.field-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.field-card {
+  background: $bg-soft;
+  border: 1px solid #e8eaee;
+  border-radius: 12px;
+  padding: 12px 14px;
+
+  &__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  &__main {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  &__meta {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #d8dadd;
+    color: $gray-text;
+    font-size: 12px;
+  }
+}
+
+.type-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: $white;
+  border: 1px solid #d0d6da;
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: $navy;
+
+  i { font-size: 12px; color: $green; }
+}
+
+.field-label {
+  font-weight: 600;
+  color: $navy;
+  font-size: 14px;
+}
+
+.canonical-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: $green;
+  color: $white;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+
+  i { font-size: 11px; }
+}
+
+.free-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: $navy;
+  color: $white;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.required-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: $gray-text;
+  cursor: pointer;
+  user-select: none;
+
+  input { accent-color: $green; }
+}
+
+.icon-btn {
+  background: $white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: $navy;
+  transition: all .15s;
+
+  &:hover {
+    border-color: $green;
+    color: $green;
+  }
+
+  &.danger {
+    &:hover {
+      border-color: $danger;
+      color: $danger;
+    }
+  }
+}
+
+// ───────────────────── Add section ─────────────────────
+.add-section {
+  background: rgba(196, 232, 214, 0.18);
+  border-radius: 12px;
+  padding: 16px;
+
+  h3 {
+    margin: 0 0 12px 0;
+    color: $navy;
+    font-size: 14px;
+    font-weight: 700;
+  }
+}
+
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+}
+
+.slot-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: $white;
+  border: 1px solid #d0d6da;
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: $navy;
+  transition: all .15s;
+
+  &:hover {
+    border-color: $green;
+    box-shadow: 0 2px 8px rgba(49, 178, 112, 0.15);
+  }
+
+  i { color: $green; }
+
+  span {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  small {
+    color: $gray-text;
+    font-size: 11px;
+    background: $bg-soft;
+    padding: 2px 6px;
+    border-radius: 6px;
+  }
+}
+
+// ───────────────────── Free draft form ─────────────────────
+.free-draft {
+  background: $white;
+  border: 1px solid #d0d6da;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 8px;
+
+  .row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      min-width: 160px;
+      font-size: 12px;
+      font-weight: 600;
+      color: $navy;
+
+      &.full { flex-basis: 100%; }
+
+      &.checkbox-label {
+        flex-direction: row;
+        align-items: center;
+        min-width: unset;
+        flex: 0 0 auto;
+        align-self: flex-end;
+        padding-bottom: 8px;
+
+        input { accent-color: $green; }
+      }
+
+      span { font-size: 12px; }
+
+      input, select, textarea {
+        padding: 8px 10px;
+        border: 1px solid #d0d6da;
+        border-radius: 8px;
+        font-size: 13px;
+        font-family: inherit;
+        color: $navy;
+        background: $white;
+
+        &:focus {
+          outline: none;
+          border-color: $green;
+          box-shadow: 0 0 0 3px rgba(49,178,112,.15);
+        }
+      }
+
+      textarea { resize: vertical; }
+    }
+  }
+
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .option-row {
+      display: flex;
+      gap: 6px;
+
+      input { flex: 1; }
+    }
+  }
+
+  .draft-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+  }
+}

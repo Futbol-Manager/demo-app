@@ -57,4 +57,21 @@ export class NotificationService {
   saveSuccess(): void {
     this.success('ACTIONS.SAVE_SUCCESS');
   }
+
+  /** Error al cargar datos */
+  errorLoad(): void { this.error('COMMON.ERROR_LOAD'); }
+  /** Exportado correctamente */
+  exportSuccess(): void { this.success('COMMON.EXPORT_OK'); }
+  /** Error al exportar */
+  exportError(): void { this.error('COMMON.EXPORT_ERROR'); }
+  /** Cambios guardados */
+  changesSaved(): void { this.success('COMMON.CHANGES_SAVED'); }
+  /** Descarga completa */
+  downloadOk(): void { this.success('COMMON.DOWNLOAD_OK'); }
+  /** Error al descargar */
+  downloadError(): void { this.error('COMMON.DOWNLOAD_ERROR'); }
+  /** Subida completada */
+  uploadOk(): void { this.success('COMMON.UPLOAD_OK'); }
+  /** Error al subir */
+  uploadError(): void { this.error('COMMON.UPLOAD_ERROR'); }
 }

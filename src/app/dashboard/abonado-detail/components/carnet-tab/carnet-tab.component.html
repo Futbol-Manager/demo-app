@@ -1,0 +1,289 @@
+<!-- ─────────────── TAB CARNET + BENEFICIOS (PR4) ─────────────── -->
+
+<!-- Tarjeta carnet visual + QR -->
+<section class="bento bento--carnet-wrap">
+  <header class="bento-head">
+    <div class="bento-head-icon"><i class="fas fa-id-card"></i></div>
+    <div>
+      <h2 class="bento-title">{{ 'SUBS.DETAIL.CARD.TITLE' | translate }}</h2>
+      <p class="bento-sub">{{ 'SUBS.DETAIL.CARD.SUB' | translate }}</p>
+    </div>
+    <div class="bento-head-actions">
+      <button type="button" class="btn-secondary-sph"
+              (click)="loadCarnet()"
+              [disabled]="carnetLoading">
+        <i class="fas" [ngClass]="carnetLoading ? 'fa-spinner fa-spin' : 'fa-sync-alt'"></i>
+        {{ 'SUBS.DETAIL.CARD.REFRESH' | translate }}
+      </button>
+      <button type="button" class="btn-primary-sph"
+              (click)="downloadCarnet()"
+              [disabled]="!carnet || carnetLoading">
+        <i class="fas fa-download"></i>
+        {{ 'SUBS.DETAIL.CARD.DOWNLOAD' | translate }}
+      </button>
+    </div>
+  </header>
+
+  <div class="docs-loading" *ngIf="carnetLoading">
+    <div class="loader loader--inline"></div>
+    <span>{{ 'SUBS.DETAIL.LOADING' | translate }}</span>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════════
+       Carnet horizontal estilo ID-1 (1.585:1, como DNI / tarjeta de
+       crédito). Foto del abonado a la izquierda, datos al centro, QR
+       a la derecha. La banda inferior con el branding Sphaira mantiene
+       la identidad visual. El QR aquí se conserva porque el club lo
+       usa para imprimir / descargar el carnet físico para el socio,
+       no para escanearse a sí mismo.
+       ═════════════════════════════════════════════════════════════════ -->
+  <div class="sph-carnet" *ngIf="!carnetLoading && carnet">
+    <article class="sph-carnet-card"
+             [class.sph-carnet-card--active]="carnet.estado === 1"
+             [class.sph-carnet-card--pending]="carnet.estado === 2"
+             [class.sph-carnet-card--inactive]="carnet.estado === 0">
+
+      <!-- Marca de agua decorativa sutil -->
+      <div class="sph-carnet-watermark" aria-hidden="true">
+        <i class="fas fa-broadcast-tower"></i>
+      </div>
+
+      <!-- ─── Columna 1 · Foto del abonado (3:4) ─── -->
+      <div class="sph-carnet-photo">
+        <ng-container *ngIf="carnetAvatarUrl() as a; else carnetAvatarFb">
+          <img
+            [src]="a"
+            [alt]="carnet.nombre + ' ' + carnet.apellidos"
+            (error)="onCarnetAvatarError()"
+          />
+        </ng-container>
+        <ng-template #carnetAvatarFb>
+          <div class="sph-carnet-photo-fb">
+            <span>{{ getCarnetInitials() }}</span>
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- ─── Columna 2 · Datos del abonado ─── -->
+      <div class="sph-carnet-data">
+
+        <!-- Logo + nombre del club. El fallback muestra las
+             iniciales del club (no un icono genérico) para que se
+             distinga a qué club pertenece el carnet incluso si el
+             logo aún no se ha subido o el fichero ha sido borrado
+             del servidor (situación bastante común en clubes recién
+             creados). El nombre se permite envolver a 2 líneas para
+             que los nombres largos tipo "Casino Mercantil e
+             Industrial de Pontevedra" se vean enteros. -->
+        <header class="sph-carnet-club-head">
+          <div class="sph-carnet-club-logo"
+               *ngIf="carnetClubLogoUrl() as logo; else clubLogoFb">
+            <img [src]="logo" [alt]="carnet.clubName"
+                 (error)="onCarnetClubLogoError()" />
+          </div>
+          <ng-template #clubLogoFb>
+            <div class="sph-carnet-club-logo sph-carnet-club-logo--fb"
+                 [attr.aria-label]="carnet.clubName">
+              <span class="sph-carnet-club-logo__initials">{{ getClubInitials() }}</span>
+            </div>
+          </ng-template>
+          <span class="sph-carnet-club-name">{{ carnet.clubName || 'SPHAIRA' }}</span>
+        </header>
+
+        <!-- Nombre y apellidos -->
+        <h3 class="sph-carnet-name">
+          {{ carnet.nombre }} <span class="sph-carnet-name__last">{{ carnet.apellidos }}</span>
+        </h3>
+
+        <!-- Datos meta -->
+        <dl class="sph-carnet-meta">
+          <div class="sph-carnet-meta-row" *ngIf="carnet.numeroSocio">
+            <dt>{{ 'SUBS.DETAIL.CARD.NUMBER' | translate }}</dt>
+            <dd class="sph-carnet-meta-row__value sph-carnet-meta-row__value--mono">
+              #{{ carnet.numeroSocio }}
+            </dd>
+          </div>
+          <div class="sph-carnet-meta-row" *ngIf="carnet.fechaAlta">
+            <dt>{{ 'SUBS.DETAIL.CARD.SINCE' | translate }}</dt>
+            <dd class="sph-carnet-meta-row__value">{{ formatDate(carnet.fechaAlta) }}</dd>
+          </div>
+        </dl>
+
+        <!-- Estado (badge prominente) -->
+        <div class="sph-carnet-status-wrap">
+          <span class="sph-carnet-status"
+                [class.sph-carnet-status--active]="carnet.estado === 1"
+                [class.sph-carnet-status--pending]="carnet.estado === 2"
+                [class.sph-carnet-status--inactive]="carnet.estado === 0">
+            <i class="fas"
+               [class.fa-check-circle]="carnet.estado === 1"
+               [class.fa-hourglass-half]="carnet.estado === 2"
+               [class.fa-ban]="carnet.estado === 0"></i>
+            {{ getCarnetEstadoLabel(carnet.estado) | translate }}
+          </span>
+        </div>
+      </div>
+
+      <!-- ─── Columna 3 · QR fijo ─── -->
+      <!-- Desde 2026-05-17 el QR no rota: el token es permanente
+           para que descargar el PNG tenga sentido. La validez del
+           socio se verifica en el scanner consultando el estado. -->
+      <aside class="sph-carnet-qr">
+        <div class="sph-carnet-qr-frame">
+          <!--
+            width=128 es el tamaño NATURAL del SVG. El marco blanco
+            se dimensiona en función del padding + ese 128, así el
+            QR siempre queda centrado y nunca se sale del cuadrado.
+          -->
+          <qrcode
+            [qrdata]="carnet.qrToken"
+            [width]="128"
+            [margin]="1"
+            [errorCorrectionLevel]="'M'"
+            [elementType]="'svg'"
+            [colorDark]="'#002c40'"
+            [colorLight]="'#ffffff'">
+          </qrcode>
+          <div class="sph-carnet-qr-frame__corner sph-carnet-qr-frame__corner--tl"></div>
+          <div class="sph-carnet-qr-frame__corner sph-carnet-qr-frame__corner--tr"></div>
+          <div class="sph-carnet-qr-frame__corner sph-carnet-qr-frame__corner--bl"></div>
+          <div class="sph-carnet-qr-frame__corner sph-carnet-qr-frame__corner--br"></div>
+        </div>
+      </aside>
+
+      <!-- ─── Banda inferior · Branding club ─── -->
+      <footer class="sph-carnet-footer">
+        <span class="sph-carnet-brand-tag">
+          {{ 'SUBS.DETAIL.CARD.MEMBER_TITLE' | translate }}
+        </span>
+      </footer>
+    </article>
+  </div>
+</section>
+
+<!-- Beneficios disponibles
+     Oculto temporalmente (showPerks=false) por decisión de producto
+     del 2026-05-17. La lógica de carga de perks sigue intacta para
+     poder reactivarlo cambiando el flag en el .ts. -->
+<section class="bento" *ngIf="showPerks">
+  <header class="bento-head">
+    <div class="bento-head-icon"><i class="fas fa-gift"></i></div>
+    <div>
+      <h2 class="bento-title">{{ 'SUBS.DETAIL.PERKS.TITLE' | translate }}</h2>
+      <p class="bento-sub">{{ 'SUBS.DETAIL.PERKS.SUB' | translate }}</p>
+    </div>
+  </header>
+
+  <div class="docs-loading" *ngIf="perksLoading">
+    <div class="loader loader--inline"></div>
+    <span>{{ 'SUBS.DETAIL.LOADING' | translate }}</span>
+  </div>
+
+  <div class="empty-state" *ngIf="!perksLoading && !perks.length">
+    <i class="fas fa-gift"></i>
+    <p>{{ 'SUBS.DETAIL.PERKS.EMPTY' | translate }}</p>
+  </div>
+
+  <div class="perks-grid" *ngIf="!perksLoading && perks.length">
+    <article class="perk-card" *ngFor="let p of perks" [class.perk-card--locked]="!p.canCanjear">
+      <div class="perk-icon">
+        <span *ngIf="isEmojiIcon(p.icono)">{{ p.icono }}</span>
+        <i *ngIf="!isEmojiIcon(p.icono)" class="fas" [ngClass]="p.icono"></i>
+      </div>
+      <div class="perk-body">
+        <h3 class="perk-title">{{ p.titulo }}</h3>
+        <p class="perk-desc" *ngIf="p.descripcion">{{ p.descripcion }}</p>
+        <div class="perk-meta">
+          <span class="perk-limit" *ngIf="p.maxCanjesPorSocio !== null">
+            {{ p.canjesUsados }} / {{ p.maxCanjesPorSocio }}
+          </span>
+          <span class="perk-limit perk-limit--unlimited" *ngIf="p.maxCanjesPorSocio === null">
+            <i class="fas fa-infinity"></i> {{ 'SUBS.DETAIL.PERKS.UNLIMITED' | translate }}
+          </span>
+        </div>
+      </div>
+      <button type="button" class="btn-primary-sph perk-cta"
+              [disabled]="!p.canCanjear"
+              (click)="openCanjeModal(p)">
+        <i class="fas" [ngClass]="p.canCanjear ? 'fa-check-circle' : 'fa-lock'"></i>
+        {{ (p.canCanjear ? 'SUBS.DETAIL.PERKS.REDEEM' : 'SUBS.DETAIL.PERKS.LOCKED') | translate }}
+      </button>
+    </article>
+  </div>
+</section>
+
+<!-- Histórico de canjes del socio -->
+<section class="bento" *ngIf="showPerks && perkCanjes.length">
+  <header class="bento-head">
+    <div class="bento-head-icon"><i class="fas fa-history"></i></div>
+    <div>
+      <h2 class="bento-title">{{ 'SUBS.DETAIL.PERKS.HISTORY' | translate }}</h2>
+      <p class="bento-sub">{{ 'SUBS.DETAIL.PERKS.HISTORY_SUB' | translate }}</p>
+    </div>
+  </header>
+
+  <ol class="timeline">
+    <li class="timeline-item" *ngFor="let c of perkCanjes">
+      <div class="tl-marker act-marker--green">
+        <span *ngIf="isEmojiIcon(c.perkIcono)">{{ c.perkIcono }}</span>
+        <i *ngIf="!isEmojiIcon(c.perkIcono)" class="fas fa-gift"></i>
+      </div>
+      <div class="tl-card">
+        <div class="tl-head">
+          <h3 class="tl-subject">{{ c.perkTitulo }}</h3>
+          <span class="tl-date">{{ formatDate(c.fechaCanje) }}</span>
+        </div>
+        <p class="tl-body" *ngIf="c.nota">{{ c.nota }}</p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<!-- ─────────────── MODAL CANJE BENEFICIO (PR4) ─────────────── -->
+<div class="sph-modal-overlay" *ngIf="showCanjeModal" (click)="closeCanjeModal()">
+  <div class="sph-modal" (click)="$event.stopPropagation()">
+    <div class="sph-modal-head">
+      <h2><i class="fas fa-gift"></i> {{ 'SUBS.DETAIL.PERKS.REDEEM_TITLE' | translate }}</h2>
+      <button type="button" class="sph-modal-close" (click)="closeCanjeModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="sph-modal-body" *ngIf="canjeSelectedPerk">
+      <div class="perk-summary">
+        <div class="perk-icon">
+          <span *ngIf="isEmojiIcon(canjeSelectedPerk.icono)">{{ canjeSelectedPerk.icono }}</span>
+          <i *ngIf="!isEmojiIcon(canjeSelectedPerk.icono)" class="fas" [ngClass]="canjeSelectedPerk.icono"></i>
+        </div>
+        <div>
+          <h3>{{ canjeSelectedPerk.titulo }}</h3>
+          <p *ngIf="canjeSelectedPerk.descripcion">{{ canjeSelectedPerk.descripcion }}</p>
+          <div class="perk-summary-meta">
+            <span *ngIf="canjeSelectedPerk.maxCanjesPorSocio !== null">
+              {{ 'SUBS.DETAIL.PERKS.REMAINING' | translate }}:
+              <strong>{{ canjeSelectedPerk.canjesRestantes }} / {{ canjeSelectedPerk.maxCanjesPorSocio }}</strong>
+            </span>
+            <span *ngIf="canjeSelectedPerk.maxCanjesPorSocio === null">
+              <i class="fas fa-infinity"></i> {{ 'SUBS.DETAIL.PERKS.UNLIMITED' | translate }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="field field--full">
+        <label>{{ 'SUBS.DETAIL.PERKS.NOTE' | translate }}</label>
+        <textarea rows="3"
+                  [(ngModel)]="canjeNota"
+                  [placeholder]="'SUBS.DETAIL.PERKS.NOTE_PLACEHOLDER' | translate"></textarea>
+      </div>
+    </div>
+    <div class="sph-modal-foot">
+      <button type="button" class="btn-secondary-sph" (click)="closeCanjeModal()" [disabled]="canjeSaving">
+        {{ 'APP.BUTTONS.CLOSE' | translate }}
+      </button>
+      <button type="button" class="btn-primary-sph" (click)="confirmCanje()" [disabled]="canjeSaving">
+        <i class="fas" [ngClass]="canjeSaving ? 'fa-spinner fa-spin' : 'fa-check-circle'"></i>
+        {{ (canjeSaving ? 'SUBS.DETAIL.PERKS.REDEEMING' : 'SUBS.DETAIL.PERKS.CONFIRM_REDEEM') | translate }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -29,6 +29,9 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 import { InactivityService } from 'src/app/core/services/inactivity/inactivity.service';
 import { TutorialService } from 'src/app/core/services/tutorial/tutorial.service';
+import { DemoCouponService } from 'src/app/core/services/demo/demo-coupon.service';
+import { DemoAnalyticsService } from 'src/app/core/services/demo/demo-analytics.service';
+import { DemoJourneyService } from 'src/app/core/services/demo/demo-journey.service';
 import {
   APP_LANGUAGE_OPTIONS,
   APP_SUPPORTED_LANG_CODES,
@@ -189,6 +192,9 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     private ngZone: NgZone,
     public inactivityService: InactivityService,
     private tutorialService: TutorialService,
+    private demoCouponService: DemoCouponService,
+    private demoAnalytics: DemoAnalyticsService,
+    private demoJourney: DemoJourneyService,
   ) {
     const stored = localStorage.getItem('lang');
     const current = this.translate.currentLang || this.translate.defaultLang || 'es';
@@ -434,7 +440,8 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** Abre el tutorial de la pantalla actual. */
   openTutorial(): void {
-    this.tutorialService.start(this.currentTutorialScreenId, true);
+    this.demoAnalytics.track('demo_tutorial_start', { screen: this.currentTutorialScreenId });
+    this.tutorialService.start(this.currentTutorialScreenId, true, 'user');
   }
 
   /**
@@ -869,7 +876,18 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
    * Cambia el rol del usuario (Club, Entrenador, Jugador) y navega al inicio del dashboard.
    */
   cambiarRol(profileId: 1 | 2 | 3): void {
+    if (profileId === this.profileId) {
+      this.cerrarDropdowns();
+      return;
+    }
+    this.demoAnalytics.track('demo_role_switch', {
+      from_profile: this.profileId,
+      to_profile: profileId,
+    });
     this.loginService.switchRole(profileId, true);
+    // El recorrido guiado es distinto para cada perfil: hay que rehacer los hitos.
+    const role = profileId === 1 ? 'club' : profileId === 2 ? 'coach' : 'player';
+    this.demoJourney.resetForRole(role);
     this.cerrarDropdowns();
   }
 
@@ -990,7 +1008,23 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
       event.stopPropagation();
     }
     this.showModal = false;
-    window.open('https://appsphairatech.com/planes', '_blank');
+    this.demoAnalytics.track('demo_cta_subscribe', {
+      profile: this.profileId,
+      with_coupon: !!this.demoCouponService.getCouponFromSession(),
+    });
+
+    // En la demo el CTA abre la oferta Club Fundador sin sacar al visitante de la
+    // aplicación: mandarlo a otra pestaña con la lista de planes rompía el hilo de la
+    // visita y perdía el contexto de lo que acababa de ver.
+    if (this.isDemoMode) {
+      this.demoJourney.openOffer('manual');
+      return;
+    }
+
+    const coupon = this.demoCouponService.getCouponFromSession();
+    const url = this.demoCouponService.buildSubscriptionUrl('https://appsphairatech.com/planes', coupon);
+    this.demoAnalytics.trackMetaConversion('InitiateCheckout');
+    window.open(url, '_blank');
   }
 
   cambiarPassword(): void {

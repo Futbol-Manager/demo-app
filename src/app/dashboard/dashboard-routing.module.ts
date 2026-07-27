@@ -88,6 +88,48 @@ import { IndividualTrainingComponent } from './individual-training/individual-tr
 import { RopaJugadorComponent } from './ropa-jugador/ropa-jugador.component';
 import { ClubShopComponent } from './club-shop/club-shop.component';
 import { ClubPostComponent } from './club-post/club-post.component';
+// --- Rutas de componentes portados desde rep-futbol (paridad) ---
+import { ClubRegisterFormBuilderComponent } from './club-register-form-builder/club-register-form-builder.component';
+import { ClubAbonadoFormBuilderComponent } from './club-abonado-form-builder/club-abonado-form-builder.component';
+import { MiAbonadoComponent } from './mi-abonado/mi-abonado.component';
+import { MiAbonadoNotificacionesComponent } from './mi-abonado-notificaciones/mi-abonado-notificaciones.component';
+import { MiAbonadoDocumentosComponent } from './mi-abonado-documentos/mi-abonado-documentos.component';
+import { ScanCarnetComponent } from './scan-carnet/scan-carnet.component';
+import { DocumentosAbonadosComponent } from './documentos-abonados/documentos-abonados.component';
+import { AbonadoDetailComponent } from './abonado-detail/abonado-detail.component';
+import { AccessControlComponent } from './access-control/access-control.component';
+import { AccessKioskoComponent } from './access-control/kiosko/access-kiosko.component';
+import { EntrenamientosComponent } from './entrenamientos/entrenamientos.component';
+import { EntrenamientosClubComponent } from './entrenamientos-club/entrenamientos-club.component';
+import { MicrociclosComponent } from './microciclos/microciclos.component';
+import { PlanesComponent } from './planes/planes.component';
+import { RrssComponent } from './rrss/rrss.component';
+import { DiarioMedicoEquipoComponent } from './diario-medico/diario-medico-equipo.component';
+import { AgendaMedicaComponent } from './agenda-medica/agenda-medica.component';
+import { ReadaptacionEquipoComponent } from './readaptacion/readaptacion-equipo.component';
+import { PhysicalAssessmentComponent } from './physical-assessment/physical-assessment.component';
+import { InformeDiarioComponent } from './informe-diario/informe-diario.component';
+import { WellnessEquipoComponent } from './wellness/wellness-equipo.component';
+import { RpeCargaSemanalComponent } from './rpe/carga-semanal.component';
+import { NutricionJugadorComponent } from './nutricion/nutricion-jugador.component';
+import { NutricionEquipoComponent } from './nutricion-equipo/nutricion-equipo.component';
+import { DisponibilidadEquipoComponent } from './disponibilidad/disponibilidad-equipo.component';
+import { MiTemporadaComponent } from './mi-temporada/mi-temporada.component';
+import { ClubEvalComponent } from './club-eval/club-eval.component';
+import { ClubEvalPlayerComponent } from './club-eval/club-eval-player/club-eval-player.component';
+import { ClubEvalConfigComponent } from './club-eval/club-eval-config/club-eval-config.component';
+import { ClubEvalCompareComponent } from './club-eval/club-eval-compare/club-eval-compare.component';
+import { ClubEvalSessionComponent } from './club-eval/club-eval-session/club-eval-session.component';
+import { UnsavedSessionGuard } from './club-eval/club-eval-session/unsaved-session.guard';
+import { ClubClasificacionesComponent } from './club-clasificaciones/club-clasificaciones.component';
+import { PermisosClubComponent } from './permisos-club/permisos-club.component';
+import { PanelDiarioComponent } from './panel-diario/panel-diario.component';
+import { HorariosEquipoComponent } from './horarios-equipo/horarios-equipo.component';
+import { EncuestasComponent } from './encuestas/encuestas.component';
+import { ListadoClubesComponent } from './listado-clubes/listado-clubes.component';
+import { AyudaComponent } from './ayuda/ayuda.component';
+import { MenuLayoutEditorComponent } from './menu-layout-editor/menu-layout-editor.component';
+import { SportOnboardingComponent } from './sport-onboarding/sport-onboarding.component';
 
 const routes: Routes = [
   {
@@ -110,6 +152,8 @@ const routes: Routes = [
       { path: 'jugador/:teamId/:playerId', component: PlayerComponent },
       { path: 'jugadores/:teamId', component: PlayerComponent },
       { path: 'documentos-club/:clubId', component: DocumentosClubComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'club-register-form-builder/:clubId', component: ClubRegisterFormBuilderComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'club-abonado-form-builder/:clubId', component: ClubAbonadoFormBuilderComponent, canActivate: [ClubOwnerGuard] },
       { path: 'estadisticas_equipo/:teamId', component: EstadisticasEquipoComponent, canActivate: [ClubPlanGuard] },
       { path: 'informacion_equipo/:teamId', component: InformacionEquipoComponent },
       { path: 'estadisticas_jugadores/:teamId', component: EstadisticasJugadoresComponent, canActivate: [ClubPlanGuard] },
@@ -181,6 +225,62 @@ const routes: Routes = [
       { path: 'individual-training', component: IndividualTrainingComponent },
       { path: 'tienda-club', component: ClubShopComponent },
       { path: 'club-post', component: ClubPostComponent },
+
+      // --- Abonados (portado de rep-futbol) ---
+      { path: 'mi-abonado', component: MiAbonadoComponent },
+      { path: 'mi-abonado/notificaciones', component: MiAbonadoNotificacionesComponent },
+      { path: 'mi-abonado/documentos', component: MiAbonadoDocumentosComponent },
+      { path: 'scan-carnet', component: ScanCarnetComponent },
+      { path: 'documentos-abonados/:clubId', component: DocumentosAbonadosComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'abonados/:clubId/detail/:abonadoId', component: AbonadoDetailComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'access-control', component: AccessControlComponent, canActivate: [ClubPlanGuard] },
+      { path: 'access-control/:clubId', component: AccessControlComponent, canActivate: [ClubPlanGuard] },
+      { path: 'access-control-kiosko', component: AccessKioskoComponent, canActivate: [ClubPlanGuard] },
+      { path: 'access-control-kiosko/:clubId', component: AccessKioskoComponent, canActivate: [ClubPlanGuard] },
+
+      // --- Entrenamientos avanzados (portado de rep-futbol) ---
+      { path: 'entrenamientos/:clubId', component: EntrenamientosComponent },
+      { path: 'entrenamientos-club/:clubId', component: EntrenamientosClubComponent },
+      { path: 'microciclos', component: MicrociclosComponent, canActivate: [ClubPlanGuard] },
+      { path: 'microciclos/:teamId', component: MicrociclosComponent, canActivate: [ClubPlanGuard] },
+      { path: 'planes', component: PlanesComponent },
+
+      // --- RRSS (portado de rep-futbol) ---
+      { path: 'rrss', component: RrssComponent },
+
+      // --- Bloque médico / jugador (portado de rep-futbol) ---
+      { path: 'diario-medico/:teamId', component: DiarioMedicoEquipoComponent, canActivate: [ClubPlanGuard] },
+      { path: 'agenda-medica/:teamId', component: AgendaMedicaComponent, canActivate: [ClubPlanGuard] },
+      { path: 'readaptacion-equipo/:teamId', component: ReadaptacionEquipoComponent, canActivate: [ClubPlanGuard] },
+      { path: 'tests-fisicos/:playerId', component: PhysicalAssessmentComponent, canActivate: [ClubPlanGuard] },
+      { path: 'informe-diario/:teamId', component: InformeDiarioComponent, canActivate: [ClubPlanGuard] },
+      { path: 'wellness-equipo/:teamId', component: WellnessEquipoComponent, canActivate: [ClubPlanGuard] },
+      { path: 'rpe-equipo/:teamId', component: RpeCargaSemanalComponent, canActivate: [ClubPlanGuard] },
+      { path: 'nutricion/:playerId', component: NutricionJugadorComponent, canActivate: [ClubPlanGuard] },
+      { path: 'nutricion-equipo/:teamId', component: NutricionEquipoComponent },
+      { path: 'disponibilidad-equipo/:teamId', component: DisponibilidadEquipoComponent, canActivate: [ClubPlanGuard] },
+      { path: 'mi-temporada', component: MiTemporadaComponent, canActivate: [ClubOwnerGuard] },
+
+      // --- Bloque club / misc (portado de rep-futbol) ---
+      { path: 'club-eval/:clubId', component: ClubEvalComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'club-eval/:clubId/player/:playerId', component: ClubEvalPlayerComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'club-eval/:clubId/config', component: ClubEvalConfigComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'club-eval/:clubId/compare', component: ClubEvalCompareComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'club-eval/:clubId/session/:teamId', component: ClubEvalSessionComponent, canActivate: [ClubOwnerGuard], canDeactivate: [UnsavedSessionGuard] },
+      { path: 'club-clasificaciones/:teamId', component: ClubClasificacionesComponent },
+      { path: 'club-clasificaciones-club/:clubId', component: ClubClasificacionesComponent },
+      { path: 'permisos-club', component: PermisosClubComponent, canActivate: [ClubPlanGuard] },
+      { path: 'permisos-club/:clubId', component: PermisosClubComponent, canActivate: [ClubPlanGuard] },
+      { path: 'panel-diario', component: PanelDiarioComponent, canActivate: [ClubPlanGuard] },
+      { path: 'panel-diario/:teamId', component: PanelDiarioComponent, canActivate: [ClubPlanGuard] },
+      { path: 'horarios-equipo/:teamId', component: HorariosEquipoComponent, canActivate: [ClubPlanGuard] },
+      { path: 'encuestas/:clubId', component: EncuestasComponent },
+      { path: 'encuestas-usuario/:userId', component: EncuestasComponent },
+      { path: 'listado-clubes', component: ListadoClubesComponent },
+      { path: 'ayuda', component: AyudaComponent },
+      { path: 'menu-layout-editor', component: MenuLayoutEditorComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'sport-onboarding', component: SportOnboardingComponent },
+
       { path: '**', redirectTo: 'inicio' },
     ],
   }

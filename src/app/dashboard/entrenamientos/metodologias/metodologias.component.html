@@ -1,0 +1,327 @@
+<div class="metodologias">
+
+  <!-- ===================== LISTA ===================== -->
+  <ng-container *ngIf="!selected">
+    <div class="meth-header">
+      <div>
+        <h2>{{ 'ENTRENAMIENTOS.METH_TITLE' | translate }}
+          <span class="season-pill" *ngIf="temporadaLabel"><i class="bi bi-calendar3"></i> {{ temporadaLabel }}</span>
+        </h2>
+        <p class="subtitle">{{ 'ENTRENAMIENTOS.METH_SUBTITLE' | translate }}</p>
+      </div>
+      <button class="btn-primary" (click)="openCreate()">
+        <i class="bi bi-plus-lg"></i> {{ 'ENTRENAMIENTOS.METH_NEW' | translate }}
+      </button>
+    </div>
+
+    <div *ngIf="error && !showForm" class="alert-error">{{ error | translate }}</div>
+
+    <div *ngIf="loading" class="state">{{ 'ENTRENAMIENTOS.LOADING' | translate }}</div>
+
+    <div *ngIf="!loading && methodologies.length === 0" class="state empty">
+      {{ 'ENTRENAMIENTOS.METH_EMPTY' | translate }}
+    </div>
+
+    <div class="meth-grid" *ngIf="!loading && methodologies.length > 0">
+      <div class="meth-card" *ngFor="let m of methodologies; trackBy: trackByMethodology">
+        <div class="meth-card-body" (click)="open(m)">
+          <h3>{{ m.name }}</h3>
+          <p class="desc" *ngIf="m.description">{{ m.description }}</p>
+          <div class="badges">
+            <span class="badge"><i class="bi bi-clipboard2-check"></i> {{ m.taskCount || 0 }} {{ 'ENTRENAMIENTOS.METH_TASKS_COUNT' | translate }}</span>
+            <span class="badge"><i class="bi bi-people"></i> {{ m.teamCount || 0 }} {{ 'ENTRENAMIENTOS.METH_TEAMS_COUNT' | translate }}</span>
+          </div>
+        </div>
+        <div class="meth-card-actions">
+          <button class="btn-link" (click)="open(m)">{{ 'ENTRENAMIENTOS.METH_OPEN' | translate }}</button>
+          <button class="btn-link" (click)="openEdit(m)">{{ 'ENTRENAMIENTOS.EDIT' | translate }}</button>
+          <button class="btn-link" (click)="openClone(m)">{{ 'ENTRENAMIENTOS.METH_CLONE' | translate }}</button>
+          <button class="btn-link danger" (click)="deleteMethodology(m)">{{ 'ENTRENAMIENTOS.DELETE' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ===================== DETALLE ===================== -->
+  <ng-container *ngIf="selected">
+    <div class="meth-detail-head">
+      <button class="btn-back" (click)="back()"><i class="bi bi-arrow-left"></i> {{ 'ENTRENAMIENTOS.METH_BACK' | translate }}</button>
+      <h2>{{ selected.name }}</h2>
+    </div>
+
+    <div *ngIf="error" class="alert-error">{{ error | translate }}</div>
+
+    <div class="tabs">
+      <button [class.active]="detailTab === 'tasks'" (click)="detailTab = 'tasks'">{{ 'ENTRENAMIENTOS.METH_TAB_TASKS' | translate }}</button>
+      <button [class.active]="detailTab === 'teams'" (click)="detailTab = 'teams'">{{ 'ENTRENAMIENTOS.METH_TAB_TEAMS' | translate }}</button>
+      <button [class.active]="detailTab === 'trainings'" (click)="detailTab = 'trainings'">{{ 'ENTRENAMIENTOS.METH_TAB_TRAININGS' | translate }}</button>
+    </div>
+
+    <!-- TAB TAREAS -->
+    <div *ngIf="detailTab === 'tasks'" class="tab-body">
+      <div class="tab-actions">
+        <button class="btn-primary" (click)="openTaskPicker()"><i class="bi bi-plus-lg"></i> {{ 'ENTRENAMIENTOS.METH_ADD_TASK' | translate }}</button>
+      </div>
+
+      <div *ngIf="detailLoading" class="state">{{ 'ENTRENAMIENTOS.LOADING' | translate }}</div>
+      <div *ngIf="!detailLoading && assignedTasks.length === 0" class="state empty">{{ 'ENTRENAMIENTOS.METH_NO_TASKS' | translate }}</div>
+
+      <div class="picker-grid" *ngIf="!detailLoading && assignedTasks.length > 0">
+        <article class="task-preview" [class.is-missing]="t.missing" *ngFor="let t of assignedTasks; trackBy: trackByAssignedTask">
+          <div class="task-preview__media" (click)="openPreviewAssigned(t)">
+            <video *ngIf="!t.missing && isUploadedVideoUrl(t.video)" [src]="t.video" preload="metadata"></video>
+            <img *ngIf="!t.missing && !isUploadedVideoUrl(t.video) && taskImageUrl(t) as img" [src]="img" alt="" loading="lazy" />
+            <div class="task-preview__placeholder" *ngIf="t.missing || (!isUploadedVideoUrl(t.video) && !taskImageUrl(t))">
+              <i class="bi" [ngClass]="t.missing ? 'bi-exclamation-triangle' : 'bi-diagram-3'"></i>
+            </div>
+            <span class="task-preview__gif" *ngIf="!t.missing && isGif(t.imagenBoard)">GIF</span>
+            <span class="src-badge" [class.cloud]="t.sourceType === 'SHOP'">
+              {{ (t.sourceType === 'SHOP' ? 'ENTRENAMIENTOS.METH_SOURCE_CLOUD' : 'ENTRENAMIENTOS.METH_SOURCE_CLUB') | translate }}
+            </span>
+            <span class="task-preview__expand" *ngIf="!t.missing" [attr.aria-label]="'ENTRENAMIENTOS.METH_PREVIEW' | translate">
+              <i class="bi bi-arrows-fullscreen"></i>
+            </span>
+          </div>
+          <div class="task-preview__body">
+            <p class="task-preview__title" *ngIf="!t.missing && taskTitle(t)">{{ taskTitle(t) }}</p>
+            <p class="task-preview__desc" [class.missing]="t.missing">
+              {{ t.missing ? ('ENTRENAMIENTOS.METH_TASK_MISSING' | translate) : (t.description || ('ENTRENAMIENTOS.METH_TASK_NO_DESC' | translate)) }}
+            </p>
+            <span class="task-preview__work" *ngIf="t.work">{{ t.work }}</span>
+          </div>
+          <div class="task-preview__foot">
+            <button type="button" class="task-preview__view" *ngIf="!t.missing" (click)="openPreviewAssigned(t)">
+              <i class="bi bi-eye"></i> {{ 'ENTRENAMIENTOS.METH_PREVIEW' | translate }}
+            </button>
+            <span *ngIf="t.missing"></span>
+            <button class="btn-link danger" (click)="removeTask(t)">{{ 'ENTRENAMIENTOS.METH_REMOVE' | translate }}</button>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- TAB EQUIPOS -->
+    <div *ngIf="detailTab === 'teams'" class="tab-body">
+      <p class="hint">{{ 'ENTRENAMIENTOS.METH_TEAMS_HINT' | translate }}</p>
+      <div *ngIf="teamsLoading" class="state">{{ 'ENTRENAMIENTOS.LOADING' | translate }}</div>
+      <div *ngIf="!teamsLoading && teamsCombo.length === 0" class="state empty">{{ 'ENTRENAMIENTOS.METH_NO_TEAMS' | translate }}</div>
+
+      <div class="team-grid" *ngIf="!teamsLoading && teamsCombo.length > 0">
+        <label class="team-chip" *ngFor="let team of teamsCombo" [class.checked]="selectedTeamIds.has(team.teamId)">
+          <input type="checkbox" [checked]="selectedTeamIds.has(team.teamId)" (change)="toggleTeam(team.teamId)" />
+          <span>{{ team.name }}</span>
+        </label>
+      </div>
+
+      <div class="tab-actions end" *ngIf="!teamsLoading && teamsCombo.length > 0">
+        <span class="saved-msg" *ngIf="teamsSaved">{{ 'ENTRENAMIENTOS.METH_TEAMS_SAVED' | translate }}</span>
+        <button class="btn-primary" [disabled]="saving" (click)="saveTeams()">{{ 'ENTRENAMIENTOS.SAVE' | translate }}</button>
+      </div>
+    </div>
+
+    <!-- TAB ENTRENAMIENTOS -->
+    <div *ngIf="detailTab === 'trainings'" class="tab-body">
+      <app-methodology-trainings
+        [clubId]="clubId"
+        [methodologyId]="selected.methodologyId || 0"
+        [teams]="assignedTeams">
+      </app-methodology-trainings>
+    </div>
+  </ng-container>
+
+  <!-- ===================== MODAL: crear/editar metodología ===================== -->
+  <div class="meth-modal-backdrop" *ngIf="showForm" (click)="cancelForm()">
+    <div class="meth-modal" (click)="$event.stopPropagation()">
+      <h3>{{ (editingId ? 'ENTRENAMIENTOS.METH_EDIT' : 'ENTRENAMIENTOS.METH_NEW') | translate }}</h3>
+      <div *ngIf="error" class="alert-error">{{ error | translate }}</div>
+      <label>
+        {{ 'ENTRENAMIENTOS.METH_NAME' | translate }}
+        <input type="text" [(ngModel)]="form.name" maxlength="255" />
+      </label>
+      <label>
+        {{ 'ENTRENAMIENTOS.METH_DESC' | translate }}
+        <textarea rows="3" [(ngModel)]="form.description"></textarea>
+      </label>
+      <div class="modal-actions">
+        <button class="btn-link" (click)="cancelForm()">{{ 'ENTRENAMIENTOS.CANCEL' | translate }}</button>
+        <button class="btn-primary" [disabled]="saving" (click)="saveMethodology()">{{ 'ENTRENAMIENTOS.SAVE' | translate }}</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: selector de tareas ===================== -->
+  <div class="meth-modal-backdrop" *ngIf="showTaskPicker" (click)="closeTaskPicker()">
+    <div class="meth-modal wide" (click)="$event.stopPropagation()">
+      <h3>{{ 'ENTRENAMIENTOS.METH_ADD_TASK' | translate }}</h3>
+      <div class="picker-tabs">
+        <button [class.active]="pickerSource === 'CLUB'" (click)="setPickerSource('CLUB')">{{ 'ENTRENAMIENTOS.METH_SOURCE_CLUB' | translate }}</button>
+        <button [class.active]="pickerSource === 'CLOUD'" (click)="setPickerSource('CLOUD')">{{ 'ENTRENAMIENTOS.METH_SOURCE_CLOUD' | translate }}</button>
+      </div>
+
+      <div class="picker-toolbar" *ngIf="!pickerLoading">
+        <div class="picker-search">
+          <i class="bi bi-search"></i>
+          <input type="text" [(ngModel)]="pickerSearch" [placeholder]="'ENTRENAMIENTOS.METH_SEARCH_TASKS' | translate" />
+          <button type="button" class="picker-search__clear" *ngIf="pickerSearch" (click)="pickerSearch = ''" aria-label="clear">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <button type="button" class="btn-primary picker-new" *ngIf="pickerSource === 'CLUB'" (click)="openClubTaskForm()">
+          <i class="bi bi-plus-lg"></i> {{ 'ENTRENAMIENTOS.NEW_TASK' | translate }}
+        </button>
+      </div>
+
+      <div *ngIf="pickerLoading" class="state">{{ 'ENTRENAMIENTOS.LOADING' | translate }}</div>
+
+      <!-- Club -->
+      <div class="picker-grid" *ngIf="!pickerLoading && pickerSource === 'CLUB'">
+        <div *ngIf="clubTasks.length === 0" class="state empty picker-grid__empty picker-empty">
+          <p>{{ 'ENTRENAMIENTOS.METH_PICKER_EMPTY_CLUB' | translate }}</p>
+          <button type="button" class="btn-primary" (click)="openClubTaskForm()">
+            <i class="bi bi-plus-lg"></i> {{ 'ENTRENAMIENTOS.NEW_TASK' | translate }}
+          </button>
+        </div>
+        <div *ngIf="clubTasks.length > 0 && filteredClubTasks.length === 0" class="state empty picker-grid__empty">{{ 'ENTRENAMIENTOS.METH_SEARCH_EMPTY' | translate }}</div>
+        <article class="task-preview" *ngFor="let task of filteredClubTasks">
+          <div class="task-preview__media" (click)="openPreview(task, 'CLUB')">
+            <video *ngIf="isUploadedVideoUrl(task.video)" [src]="task.video" preload="metadata"></video>
+            <img *ngIf="!isUploadedVideoUrl(task.video) && taskImageUrl(task) as img" [src]="img" alt="" loading="lazy" />
+            <div class="task-preview__placeholder" *ngIf="!isUploadedVideoUrl(task.video) && !taskImageUrl(task)">
+              <i class="bi bi-diagram-3"></i>
+            </div>
+            <span class="task-preview__gif" *ngIf="isGif(task.imagenBoard)">GIF</span>
+            <span class="task-preview__expand" [attr.aria-label]="'ENTRENAMIENTOS.METH_PREVIEW' | translate">
+              <i class="bi bi-arrows-fullscreen"></i>
+            </span>
+          </div>
+          <div class="task-preview__body">
+            <p class="task-preview__title" *ngIf="taskTitle(task)">{{ taskTitle(task) }}</p>
+            <p class="task-preview__desc">{{ task.description || ('ENTRENAMIENTOS.METH_TASK_NO_DESC' | translate) }}</p>
+            <span class="task-preview__work" *ngIf="task.work">{{ task.work }}</span>
+          </div>
+          <div class="task-preview__foot">
+            <button type="button" class="task-preview__view" (click)="openPreview(task, 'CLUB')">
+              <i class="bi bi-eye"></i> {{ 'ENTRENAMIENTOS.METH_PREVIEW' | translate }}
+            </button>
+            <button class="btn-add" [disabled]="isAssigned('CLUB', task.clubTaskId!)" (click)="addTask('CLUB', task.clubTaskId!)">
+              {{ (isAssigned('CLUB', task.clubTaskId!) ? 'ENTRENAMIENTOS.METH_ALREADY_ADDED' : 'ENTRENAMIENTOS.METH_ADD') | translate }}
+            </button>
+          </div>
+        </article>
+      </div>
+
+      <!-- Nube -->
+      <div class="picker-grid" *ngIf="!pickerLoading && pickerSource === 'CLOUD'">
+        <div *ngIf="cloudTasks.length === 0" class="state empty picker-grid__empty">{{ 'ENTRENAMIENTOS.METH_PICKER_EMPTY_CLOUD' | translate }}</div>
+        <div *ngIf="cloudTasks.length > 0 && filteredCloudTasks.length === 0" class="state empty picker-grid__empty">{{ 'ENTRENAMIENTOS.METH_SEARCH_EMPTY' | translate }}</div>
+        <article class="task-preview" *ngFor="let task of filteredCloudTasks">
+          <div class="task-preview__media" (click)="openPreview(task, 'CLOUD')">
+            <video *ngIf="isUploadedVideoUrl(task.video)" [src]="task.video" preload="metadata"></video>
+            <img *ngIf="!isUploadedVideoUrl(task.video) && taskImageUrl(task) as img" [src]="img" alt="" loading="lazy" />
+            <div class="task-preview__placeholder" *ngIf="!isUploadedVideoUrl(task.video) && !taskImageUrl(task)">
+              <i class="bi bi-diagram-3"></i>
+            </div>
+            <span class="task-preview__gif" *ngIf="isGif(task.imagenBoard)">GIF</span>
+            <span class="task-preview__expand" [attr.aria-label]="'ENTRENAMIENTOS.METH_PREVIEW' | translate">
+              <i class="bi bi-arrows-fullscreen"></i>
+            </span>
+          </div>
+          <div class="task-preview__body">
+            <p class="task-preview__title" *ngIf="taskTitle(task)">{{ taskTitle(task) }}</p>
+            <p class="task-preview__desc">{{ task.description || ('ENTRENAMIENTOS.METH_TASK_NO_DESC' | translate) }}</p>
+            <span class="task-preview__work" *ngIf="task.work">{{ task.work }}</span>
+          </div>
+          <div class="task-preview__foot">
+            <button type="button" class="task-preview__view" (click)="openPreview(task, 'CLOUD')">
+              <i class="bi bi-eye"></i> {{ 'ENTRENAMIENTOS.METH_PREVIEW' | translate }}
+            </button>
+            <button class="btn-add" [disabled]="isAssigned('SHOP', task.tasksShopId)" (click)="addTask('SHOP', task.tasksShopId)">
+              {{ (isAssigned('SHOP', task.tasksShopId) ? 'ENTRENAMIENTOS.METH_ALREADY_ADDED' : 'ENTRENAMIENTOS.METH_ADD') | translate }}
+            </button>
+          </div>
+        </article>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-link" (click)="closeTaskPicker()">{{ 'ENTRENAMIENTOS.METH_CLOSE' | translate }}</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulario reutilizable: crear tarea del club sin salir del selector -->
+  <app-club-task-form
+    *ngIf="showClubTaskForm"
+    [clubId]="clubId"
+    [task]="null"
+    (saved)="onClubTaskSaved()"
+    (closed)="onClubTaskFormClosed()">
+  </app-club-task-form>
+
+  <!-- ===================== MODAL: preview ampliada de tarea ===================== -->
+  <div class="meth-preview-backdrop" *ngIf="previewTask" (click)="closePreview()">
+    <div class="meth-preview" (click)="$event.stopPropagation()">
+      <button type="button" class="meth-preview__close" (click)="closePreview()" aria-label="close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+
+      <div class="meth-preview__media">
+        <video *ngIf="isUploadedVideoUrl(previewTask.video)" [src]="previewTask.video" controls preload="metadata"></video>
+        <img *ngIf="!isUploadedVideoUrl(previewTask.video) && taskImageUrl(previewTask) as img" [src]="img" alt="" />
+        <div class="meth-preview__placeholder" *ngIf="!isUploadedVideoUrl(previewTask.video) && !taskImageUrl(previewTask)">
+          <i class="bi bi-diagram-3"></i>
+        </div>
+        <span class="task-preview__gif" *ngIf="isGif(previewTask.imagenBoard)">GIF</span>
+      </div>
+
+      <div class="meth-preview__info">
+        <h3 *ngIf="taskTitle(previewTask)">{{ taskTitle(previewTask) }}</h3>
+        <a class="meth-preview__videolink" *ngIf="previewTask.video && !isUploadedVideoUrl(previewTask.video)"
+           [href]="previewTask.video" target="_blank" rel="noopener">
+          <i class="bi bi-play-btn"></i> {{ 'ENTRENAMIENTOS.VIEW_VIDEO' | translate }}
+        </a>
+
+        <p class="meth-preview__desc">{{ previewTask.description || ('ENTRENAMIENTOS.METH_TASK_NO_DESC' | translate) }}</p>
+
+        <dl class="meth-preview__meta">
+          <div *ngIf="previewTask.work"><dt>{{ 'ENTRENAMIENTOS.METH_META_WORK' | translate }}</dt><dd>{{ previewTask.work }}</dd></div>
+          <div *ngIf="previewTask.worktime"><dt>{{ 'ENTRENAMIENTOS.METH_META_TIME' | translate }}</dt><dd>{{ previewTask.worktime }}</dd></div>
+          <div *ngIf="previewTask.space"><dt>{{ 'ENTRENAMIENTOS.METH_META_SPACE' | translate }}</dt><dd>{{ previewTask.space }}</dd></div>
+          <div *ngIf="previewTask.material"><dt>{{ 'ENTRENAMIENTOS.METH_META_MATERIAL' | translate }}</dt><dd>{{ previewTask.material }}</dd></div>
+          <div *ngIf="previewTask.rules"><dt>{{ 'ENTRENAMIENTOS.METH_META_RULES' | translate }}</dt><dd>{{ previewTask.rules }}</dd></div>
+          <div *ngIf="previewTask.variants"><dt>{{ 'ENTRENAMIENTOS.METH_META_VARIANTS' | translate }}</dt><dd>{{ previewTask.variants }}</dd></div>
+          <div *ngIf="hasRealSlogans(previewTask)"><dt>{{ 'ENTRENAMIENTOS.METH_META_SLOGANS' | translate }}</dt><dd>{{ previewTask.slogans }}</dd></div>
+        </dl>
+
+        <div class="meth-preview__actions">
+          <button class="btn-link" (click)="closePreview()">{{ 'ENTRENAMIENTOS.METH_CLOSE' | translate }}</button>
+          <button *ngIf="previewMode === 'picker'" class="btn-add" [disabled]="isAssigned(previewSourceType(), previewTaskId())" (click)="addFromPreview()">
+            {{ (isAssigned(previewSourceType(), previewTaskId()) ? 'ENTRENAMIENTOS.METH_ALREADY_ADDED' : 'ENTRENAMIENTOS.METH_ADD') | translate }}
+          </button>
+          <button *ngIf="previewMode === 'assigned'" class="btn-link danger" (click)="removeFromPreview()">
+            {{ 'ENTRENAMIENTOS.METH_REMOVE' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: duplicar a temporada ===================== -->
+  <div class="meth-modal-backdrop" *ngIf="showCloneModal" (click)="cancelClone()">
+    <div class="meth-modal" (click)="$event.stopPropagation()">
+      <h3>{{ 'ENTRENAMIENTOS.METH_CLONE_TITLE' | translate }}</h3>
+      <p class="hint">{{ 'ENTRENAMIENTOS.METH_CLONE_HINT' | translate }}</p>
+      <div *ngIf="error" class="alert-error">{{ error | translate }}</div>
+      <label>
+        {{ 'ENTRENAMIENTOS.METH_CLONE_TARGET' | translate }}
+        <select [(ngModel)]="cloneSeason">
+          <option *ngFor="let s of seasons" [value]="s.value">{{ s.label }}</option>
+        </select>
+      </label>
+      <div class="modal-actions">
+        <button class="btn-link" (click)="cancelClone()">{{ 'ENTRENAMIENTOS.CANCEL' | translate }}</button>
+        <button class="btn-primary" [disabled]="cloning || !cloneSeason" (click)="doClone()">{{ 'ENTRENAMIENTOS.METH_CLONE_CONFIRM' | translate }}</button>
+      </div>
+    </div>
+  </div>
+
+</div>

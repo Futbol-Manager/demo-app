@@ -7,6 +7,8 @@ export interface PdfReportOptions {
   title: string;
   subtitle?: string;
   type?: 'training' | 'match' | 'financial' | 'video' | 'default';
+  /** Club emisor del informe (opcional; usado para marca de agua/branding). */
+  clubId?: number;
 }
 
 @Injectable({ providedIn: 'root' })

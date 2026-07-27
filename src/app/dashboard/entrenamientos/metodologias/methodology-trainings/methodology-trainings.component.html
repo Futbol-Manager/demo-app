@@ -1,0 +1,160 @@
+<div class="meth-trainings">
+
+  <!-- Sin equipos asignados -->
+  <div *ngIf="!teams || teams.length === 0" class="state empty">
+    {{ 'ENTRENAMIENTOS.TR_NO_TEAMS' | translate }}
+  </div>
+
+  <ng-container *ngIf="teams && teams.length > 0">
+
+    <!-- Selector de equipo -->
+    <div class="team-select-row" *ngIf="!selectedTraining">
+      <label>
+        {{ 'ENTRENAMIENTOS.TR_TEAM' | translate }}
+        <select [(ngModel)]="selectedTeamId" (ngModelChange)="onTeamChange()">
+          <option *ngFor="let t of teams" [ngValue]="t.teamId">{{ t.teamName }}</option>
+        </select>
+      </label>
+      <button class="btn-primary" (click)="openCreate()">
+        <i class="bi bi-plus-lg"></i> {{ 'ENTRENAMIENTOS.TR_NEW' | translate }}
+      </button>
+    </div>
+
+    <div *ngIf="error" class="alert-error">{{ error | translate }}</div>
+
+    <!-- ===================== LISTA DE ENTRENAMIENTOS ===================== -->
+    <ng-container *ngIf="!selectedTraining">
+      <div *ngIf="loading" class="state">{{ 'ENTRENAMIENTOS.LOADING' | translate }}</div>
+      <div *ngIf="!loading && trainings.length === 0" class="state empty">{{ 'ENTRENAMIENTOS.TR_EMPTY' | translate }}</div>
+
+      <ul class="training-list" *ngIf="!loading && trainings.length > 0">
+        <li *ngFor="let t of trainings; trackBy: trackByTraining">
+          <div class="tr-main" (click)="openTraining(t)">
+            <span class="tr-date"><i class="bi bi-calendar-event"></i> {{ t.daySession }}</span>
+            <span class="tr-obj">{{ t.objectiveSession || ('ENTRENAMIENTOS.TR_NO_OBJECTIVE' | translate) }}</span>
+            <span class="tr-meta">
+              <span *ngIf="t.startTime">{{ t.startTime }}<span *ngIf="t.endTime">–{{ t.endTime }}</span></span>
+              <span class="badge">{{ t.taskCount || 0 }} {{ 'ENTRENAMIENTOS.METH_TASKS_COUNT' | translate }}</span>
+              <span class="badge" [class.off]="!t.visible">
+                <i class="bi" [ngClass]="t.visible ? 'bi-eye' : 'bi-eye-slash'"></i>
+              </span>
+            </span>
+          </div>
+          <div class="tr-actions">
+            <button class="btn-link" (click)="openTraining(t)">{{ 'ENTRENAMIENTOS.TR_TASKS' | translate }}</button>
+            <button class="btn-link" (click)="openEdit(t)">{{ 'ENTRENAMIENTOS.EDIT' | translate }}</button>
+            <button class="btn-link danger" (click)="deleteTraining(t)">{{ 'ENTRENAMIENTOS.DELETE' | translate }}</button>
+          </div>
+        </li>
+      </ul>
+    </ng-container>
+
+    <!-- ===================== DETALLE DEL ENTRENAMIENTO (tareas) ===================== -->
+    <ng-container *ngIf="selectedTraining">
+      <div class="tr-detail-head">
+        <button class="btn-back" (click)="backFromTraining()"><i class="bi bi-arrow-left"></i> {{ 'ENTRENAMIENTOS.METH_BACK' | translate }}</button>
+        <div>
+          <h3>{{ selectedTraining.daySession }}</h3>
+          <p class="muted" *ngIf="selectedTraining.objectiveSession">{{ selectedTraining.objectiveSession }}</p>
+          <p class="muted" *ngIf="selectedTraining.warmUp"><i class="bi bi-fire"></i> {{ selectedTraining.warmUp }}</p>
+          <p class="muted" *ngIf="selectedTraining.addressSession"><i class="bi bi-geo-alt"></i> {{ selectedTraining.addressSession }}</p>
+        </div>
+        <button class="btn-primary" (click)="openPicker()"><i class="bi bi-plus-lg"></i> {{ 'ENTRENAMIENTOS.METH_ADD_TASK' | translate }}</button>
+      </div>
+
+      <div *ngIf="tasksLoading" class="state">{{ 'ENTRENAMIENTOS.LOADING' | translate }}</div>
+      <div *ngIf="!tasksLoading && trainingTasks.length === 0" class="state empty">{{ 'ENTRENAMIENTOS.TR_NO_TASKS' | translate }}</div>
+
+      <ul class="task-list" *ngIf="!tasksLoading && trainingTasks.length > 0">
+        <li *ngFor="let task of trainingTasks; trackBy: trackByTask">
+          <span class="task-text">
+            {{ task.description || ('ENTRENAMIENTOS.METH_TASK_NO_DESC' | translate) }}
+            <small *ngIf="task.work">· {{ task.work }}</small>
+          </span>
+          <button class="btn-link danger" (click)="removeTask(task)">{{ 'ENTRENAMIENTOS.METH_REMOVE' | translate }}</button>
+        </li>
+      </ul>
+    </ng-container>
+
+  </ng-container>
+
+  <!-- ===================== MODAL: crear/editar entrenamiento ===================== -->
+  <div class="meth-modal-backdrop" *ngIf="showForm" (click)="cancelForm()">
+    <div class="meth-modal" (click)="$event.stopPropagation()">
+      <h3>{{ (editingId ? 'ENTRENAMIENTOS.TR_EDIT' : 'ENTRENAMIENTOS.TR_NEW') | translate }}</h3>
+      <div *ngIf="error" class="alert-error">{{ error | translate }}</div>
+      <label>
+        {{ 'ENTRENAMIENTOS.TR_DATE' | translate }}
+        <input type="date" [(ngModel)]="form.daySession" />
+      </label>
+      <label>
+        {{ 'ENTRENAMIENTOS.TR_OBJECTIVE' | translate }}
+        <input type="text" [(ngModel)]="form.objectiveSession" maxlength="255" />
+      </label>
+      <label>
+        {{ 'ENTRENAMIENTOS.TR_WARMUP' | translate }}
+        <textarea rows="2" [(ngModel)]="form.warmUp"></textarea>
+      </label>
+      <label>
+        {{ 'ENTRENAMIENTOS.TR_PLACE' | translate }}
+        <textarea rows="2" [(ngModel)]="form.addressSession"></textarea>
+      </label>
+      <div class="row-2">
+        <label>
+          {{ 'ENTRENAMIENTOS.TR_START' | translate }}
+          <input type="time" [(ngModel)]="form.startTime" />
+        </label>
+        <label>
+          {{ 'ENTRENAMIENTOS.TR_END' | translate }}
+          <input type="time" [(ngModel)]="form.endTime" />
+        </label>
+      </div>
+      <label class="check">
+        <input type="checkbox" [checked]="form.visible === 1" (change)="form.visible = form.visible === 1 ? 0 : 1" />
+        {{ 'ENTRENAMIENTOS.TR_VISIBLE' | translate }}
+      </label>
+      <label class="check">
+        <input type="checkbox" [checked]="form.infoVisible === 1" (change)="form.infoVisible = form.infoVisible === 1 ? 0 : 1" />
+        {{ 'ENTRENAMIENTOS.TR_INFO_VISIBLE' | translate }}
+      </label>
+      <div class="modal-actions">
+        <button class="btn-link" (click)="cancelForm()">{{ 'ENTRENAMIENTOS.CANCEL' | translate }}</button>
+        <button class="btn-primary" [disabled]="saving" (click)="saveTraining()">{{ 'ENTRENAMIENTOS.SAVE' | translate }}</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: selector de tareas ===================== -->
+  <div class="meth-modal-backdrop" *ngIf="showPicker" (click)="closePicker()">
+    <div class="meth-modal wide" (click)="$event.stopPropagation()">
+      <h3>{{ 'ENTRENAMIENTOS.METH_ADD_TASK' | translate }}</h3>
+      <div class="picker-tabs">
+        <button [class.active]="pickerSource === 'CLUB'" (click)="setPickerSource('CLUB')">{{ 'ENTRENAMIENTOS.METH_SOURCE_CLUB' | translate }}</button>
+        <button [class.active]="pickerSource === 'CLOUD'" (click)="setPickerSource('CLOUD')">{{ 'ENTRENAMIENTOS.METH_SOURCE_CLOUD' | translate }}</button>
+      </div>
+
+      <div *ngIf="pickerLoading" class="state">{{ 'ENTRENAMIENTOS.LOADING' | translate }}</div>
+
+      <ul class="picker-list" *ngIf="!pickerLoading && pickerSource === 'CLUB'">
+        <li *ngIf="clubTasks.length === 0" class="state empty">{{ 'ENTRENAMIENTOS.METH_PICKER_EMPTY_CLUB' | translate }}</li>
+        <li *ngFor="let task of clubTasks">
+          <span class="task-text">{{ task.description || ('ENTRENAMIENTOS.METH_TASK_NO_DESC' | translate) }}<small *ngIf="task.work"> · {{ task.work }}</small></span>
+          <button class="btn-add" (click)="addTask('CLUB', task.clubTaskId!)">{{ 'ENTRENAMIENTOS.METH_ADD' | translate }}</button>
+        </li>
+      </ul>
+
+      <ul class="picker-list" *ngIf="!pickerLoading && pickerSource === 'CLOUD'">
+        <li *ngIf="cloudTasks.length === 0" class="state empty">{{ 'ENTRENAMIENTOS.METH_PICKER_EMPTY_CLOUD' | translate }}</li>
+        <li *ngFor="let task of cloudTasks">
+          <span class="task-text">{{ task.description || ('ENTRENAMIENTOS.METH_TASK_NO_DESC' | translate) }}<small *ngIf="task.work"> · {{ task.work }}</small></span>
+          <button class="btn-add" (click)="addTask('SHOP', task.tasksShopId)">{{ 'ENTRENAMIENTOS.METH_ADD' | translate }}</button>
+        </li>
+      </ul>
+
+      <div class="modal-actions">
+        <button class="btn-link" (click)="closePicker()">{{ 'ENTRENAMIENTOS.METH_CLOSE' | translate }}</button>
+      </div>
+    </div>
+  </div>
+
+</div>

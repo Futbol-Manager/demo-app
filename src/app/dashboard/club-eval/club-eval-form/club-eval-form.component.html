@@ -1,0 +1,148 @@
+<div class="modal-overlay" (click)="cancelled.emit()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h3>
+        <i class="bi bi-clipboard-plus"></i>
+        {{ (editingEval ? 'CLUB_EVAL.FORM.TITLE_EDIT' : 'CLUB_EVAL.FORM.TITLE_NEW') | translate }}
+      </h3>
+      <button class="btn-close-modal" (click)="cancelled.emit()"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- Rating global -->
+      <div class="form-group">
+        <label>{{ 'CLUB_EVAL.FORM.OVERALL_RATING' | translate }}</label>
+        <div class="star-rating">
+          <i *ngFor="let s of getStars()" class="bi"
+            [class.bi-star-fill]="s <= overallRating"
+            [class.bi-star]="s > overallRating"
+            (click)="setRating(s)"></i>
+        </div>
+      </div>
+
+      <!-- Vincular a partido o entrenamiento (solo si hay equipo) -->
+      <div *ngIf="teamId" class="form-group">
+        <label>{{ 'CLUB_EVAL.FORM.LINK_EVENT' | translate }}</label>
+
+        <div *ngIf="calendarLoading" class="event-loading">
+          <i class="bi bi-arrow-clockwise spin"></i>
+          {{ 'CLUB_EVAL.FORM.LOADING_EVENTS' | translate }}
+        </div>
+
+        <div *ngIf="!calendarLoading" class="event-type-pills">
+          <button type="button" class="pill" [class.active]="linkedEventType === 'none'"
+            (click)="linkedEventType = 'none'; onLinkedEventTypeChange()">
+            <i class="bi bi-slash-circle"></i>
+            {{ 'CLUB_EVAL.FORM.NO_EVENT' | translate }}
+          </button>
+          <button type="button" class="pill" [class.active]="linkedEventType === 'match'"
+            (click)="linkedEventType = 'match'; onLinkedEventTypeChange()">
+            <i class="bi bi-trophy"></i>
+            {{ 'CLUB_EVAL.FORM.MATCH' | translate }}
+          </button>
+          <button type="button" class="pill" [class.active]="linkedEventType === 'training'"
+            (click)="linkedEventType = 'training'; onLinkedEventTypeChange()">
+            <i class="bi bi-stopwatch"></i>
+            {{ 'CLUB_EVAL.FORM.TRAINING' | translate }}
+          </button>
+        </div>
+
+        <!-- Selector de partido -->
+        <div *ngIf="linkedEventType === 'match' && !calendarLoading" class="event-select-wrap">
+          <select class="form-input event-select" [(ngModel)]="selectedMatchId"
+            (ngModelChange)="onMatchSelected($event)">
+            <option [value]="0" disabled>{{ 'CLUB_EVAL.FORM.SELECT_MATCH' | translate }}</option>
+            <option *ngFor="let m of matches" [value]="m.id">
+              {{ m.date | date:'dd/MM/yy' }} — {{ m.label }}
+            </option>
+          </select>
+          <p *ngIf="matches.length === 0" class="event-empty">
+            <i class="bi bi-info-circle"></i>
+            {{ 'CLUB_EVAL.FORM.NO_MATCHES' | translate }}
+          </p>
+        </div>
+
+        <!-- Selector de entrenamiento -->
+        <div *ngIf="linkedEventType === 'training' && !calendarLoading" class="event-select-wrap">
+          <select class="form-input event-select" [(ngModel)]="selectedTrainingId"
+            (ngModelChange)="onTrainingSelected($event)">
+            <option [value]="0" disabled>{{ 'CLUB_EVAL.FORM.SELECT_TRAINING' | translate }}</option>
+            <option *ngFor="let t of trainings" [value]="t.id">
+              {{ t.date | date:'dd/MM/yy' }} — {{ t.label }}
+            </option>
+          </select>
+          <p *ngIf="trainings.length === 0" class="event-empty">
+            <i class="bi bi-info-circle"></i>
+            {{ 'CLUB_EVAL.FORM.NO_TRAININGS' | translate }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Fecha y Contexto -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>{{ 'CLUB_EVAL.FORM.DATE' | translate }}</label>
+          <input type="date" [(ngModel)]="evaluationDate" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label>{{ 'CLUB_EVAL.FORM.CONTEXT' | translate }}</label>
+          <input type="text" [(ngModel)]="observationContext" class="form-input"
+            [placeholder]="'CLUB_EVAL.FORM.CONTEXT_PH' | translate">
+        </div>
+      </div>
+
+      <!-- Scores dinámicos -->
+      <div class="form-group scores-section">
+        <label>{{ 'CLUB_EVAL.FORM.SCORES' | translate }}</label>
+        <div class="scores-grid">
+          <div *ngFor="let field of activeFields" class="score-item">
+            <div class="score-header">
+              <span class="score-name">{{ field.fieldLabel }}</span>
+              <span class="score-num">{{ scores[field.fieldKey] }}</span>
+            </div>
+            <input type="range" min="1" max="10" step="1"
+              [(ngModel)]="scores[field.fieldKey]"
+              class="score-slider"
+              [style.--pct]="(scores[field.fieldKey] - 1) / 9 * 100 + '%'">
+            <div class="score-marks">
+              <span>1</span><span>5</span><span>10</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notas -->
+      <div class="form-group">
+        <label>{{ 'CLUB_EVAL.FORM.NOTES' | translate }}</label>
+        <textarea [(ngModel)]="notes" class="form-textarea" rows="3"
+          [placeholder]="'CLUB_EVAL.FORM.NOTES_PH' | translate"></textarea>
+      </div>
+
+      <!-- Visible al jugador -->
+      <div class="form-group toggle-group">
+        <label>{{ 'CLUB_EVAL.FORM.VISIBLE_PLAYER' | translate }}</label>
+        <label class="toggle-switch">
+          <input type="checkbox" [checked]="visibleToPlayer === 1"
+            (change)="visibleToPlayer = $any($event.target).checked ? 1 : 0">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="cancelled.emit()">
+        {{ 'COMMON.CANCEL' | translate }}
+      </button>
+      <button class="btn-save" (click)="onSave()" [disabled]="saving || !evaluationDate">
+        <span *ngIf="saving" class="spinner-border spinner-border-sm me-1"></span>
+        <i *ngIf="!saving" class="bi bi-check-lg"></i>
+        {{ 'COMMON.SAVE' | translate }}
+      </button>
+    </div>
+
+  </div>
+</div>

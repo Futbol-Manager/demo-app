@@ -110,6 +110,22 @@ export class ClubService {
     }
   }
 
+  updateClubBranding(clubId: number, brandColor: string, altColor: string): Observable<any> {
+    if (isDemoMode()) {
+      return of({ data: { clubId, brandColor, altColor }, status: 200, error: null } as any);
+    }
+    return this.http.put(`${environment.apiUrl}club/branding/${clubId}`, { brandColor, altColor });
+  }
+
+  uploadClubLogo(clubId: number, file: File): Observable<any> {
+    if (isDemoMode()) {
+      return of({ data: `demo-club-logo-${clubId}.png`, status: 200, error: null } as any);
+    }
+    const formData = new FormData();
+    formData.append('files', file);
+    return this.http.post(`${environment.apiUrl}club/upload-logo/${clubId}`, formData);
+  }
+
   getAllClubes(): Observable<Response> {
     // Construye la URL para la solicitud
     const url: string = environment.apiUrl + `user/getAllClubes`;
@@ -590,7 +606,55 @@ export class ClubService {
 
   //************** PARA LOS ABONADOS *********************/
 
-  getListAbonadosTemporadaByClub(clubId: number): Observable<Response> {
+  /** Genera un listado mock de abonados/temporada para el modo demo. */
+  private demoAbonadosTemporada(clubId: number): any[] {
+    const nombres = [
+      ['Lucía', 'Fernández Gómez', 'F'],
+      ['Sergio', 'Ruiz Martín', 'M'],
+      ['Carmen', 'López Díaz', 'F'],
+      ['Javier', 'Moreno Sanz', 'M'],
+      ['Marta', 'Gil Romero', 'F'],
+      ['Andrés', 'Navarro Vega', 'M'],
+      ['Elena', 'Castro Ortiz', 'F'],
+      ['Pablo', 'Serrano Ramos', 'M'],
+    ];
+    return nombres.map((n, i) => {
+      const cuota = 120;
+      const estado = i % 4 === 0 ? 2 : i % 5 === 0 ? 0 : 1;
+      const pagado = estado === 1 ? (i % 3 === 0 ? cuota : 60) : 0;
+      const restante = cuota - pagado;
+      const abonadoId = 5001 + i;
+      return {
+        abonadosTemporadaId: 7001 + i,
+        clubId,
+        temporada: '2025/2026',
+        cuota: String(cuota),
+        pagado: String(pagado),
+        restante: String(restante),
+        estado,
+        fechaCreate: '2025-09-01',
+        fechaBaja: '',
+        numFamiliares: i % 3,
+        abonado: {
+          abonadoId,
+          nombre: n[0],
+          apellidos: n[1],
+          mail: `${n[0].toLowerCase()}.${n[1].split(' ')[0].toLowerCase()}@example.com`,
+          telefono: `6${String(10000000 + abonadoId).slice(0, 8)}`,
+          dni: `${45000000 + abonadoId}X`,
+          genero: n[2],
+          imgPerfil: '',
+          estado,
+          numeroSocio: `S-${String(140 + i).padStart(4, '0')}`,
+        },
+      };
+    });
+  }
+
+  getListAbonadosTemporadaByClub(clubId: number, season?: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: this.demoAbonadosTemporada(clubId), status: 200, error: null } as any);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -615,6 +679,36 @@ export class ClubService {
   getListPagosAbonadoHistorico(
     abonadosTemporadaId: number
   ): Observable<Response> {
+    if (isDemoMode()) {
+      return of({
+        data: [
+          {
+            abonadoPagoHistoricoId: 9001,
+            abonadosTemporadaId,
+            cantidad: '60',
+            tipo: 'Pagado',
+            fechaCreate: '2025-09-05',
+            fechaPago: '2025-09-05',
+            metodo: 'Transferencia',
+            comentario: 'Primer plazo',
+            estado: 2,
+          },
+          {
+            abonadoPagoHistoricoId: 9002,
+            abonadosTemporadaId,
+            cantidad: '60',
+            tipo: 'Pagado',
+            fechaCreate: '2026-01-10',
+            fechaPago: '2026-01-10',
+            metodo: 'Tarjeta',
+            comentario: 'Segundo plazo',
+            estado: 2,
+          },
+        ],
+        status: 200,
+        error: null,
+      } as any);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -644,6 +738,26 @@ export class ClubService {
     cuota: number,
     abonadosTemporadaId: number
   ): Observable<Response> {
+    if (isDemoMode()) {
+      const abonadoId = (abonado as any)?.abonadoId || Date.now();
+      return of({
+        data: {
+          abonadosTemporadaId: abonadosTemporadaId || Date.now(),
+          clubId,
+          temporada: '2025/2026',
+          cuota: String(cuota),
+          pagado: '0',
+          restante: String(cuota),
+          estado: 1,
+          fechaCreate: new Date().toISOString().substring(0, 10),
+          fechaBaja: '',
+          numFamiliares: 0,
+          abonado: { ...abonado, abonadoId },
+        },
+        status: 200,
+        error: null,
+      } as any);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -672,6 +786,13 @@ export class ClubService {
     cuota: number,
     pagado: number
   ): Observable<Response> {
+    if (isDemoMode()) {
+      return of({
+        data: { cuota: String(cuota), pagado: String(pagado), restante: String(cuota - pagado) },
+        status: 200,
+        error: null,
+      } as any);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -697,6 +818,9 @@ export class ClubService {
   insertReembolsoAbonadoPagoHistorico(
     abonadoPagoHist: AbonadoPagoHistorico
   ): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: { pagado: '0', restante: '120' }, status: 200, error: null } as any);
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -718,6 +842,9 @@ export class ClubService {
   }
 
   subirImgAbonado(abonadoId: string, file: File): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: 'abonado_demo.jpg', status: 200, error: null } as any);
+    }
     // Verifica si el archivo está presente
     if (file) {
       // Obtén el token almacenado en localStorage
@@ -747,6 +874,206 @@ export class ClubService {
       // Manejo de error si no se proporciona un archivo (puedes personalizar según tus necesidades)
       return throwError('Archivo no proporcionado');
     }
+  }
+
+  /**
+   * Catálogo de conceptos de pago del club con audiencia=ABONADOS para una
+   * temporada. Usado por la ficha de detalle del abonado para decidir si
+   * se puede registrar un pago.
+   */
+  getListPagosClubAbonados(clubId: number, temporada: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of({
+        data: {
+          pagos: [
+            { pagoClubId: 3001, nombre: 'Cuota anual de socio', importe: 120, audiencia: 1, temporada },
+            { pagoClubId: 3002, nombre: 'Lotería de Navidad', importe: 20, audiencia: 1, temporada },
+          ],
+        },
+        status: 200,
+        error: null,
+      } as any);
+    }
+    const token: string | null = localStorage.getItem('token');
+    if (!token) return EMPTY;
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    return this.http.get<Response>(
+      environment.apiUrl + `club/getlistpagosclub-abonados/${clubId}/${temporada}`,
+      { headers },
+    );
+  }
+
+  /**
+   * Conceptos de pago asignados a un abonado (temporada), con su estado de
+   * pago (importe, restante, etc.). Usado por el modal "Registrar pago".
+   */
+  getConceptosPorAbonado(abonadosTemporadaId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of({
+        data: {
+          conceptos: [
+            {
+              pagoClubId: 3001,
+              nombre: 'Cuota anual de socio',
+              importe: 120,
+              restante: 0,
+              totalPagado: 120,
+              estado: 2,
+              ultimoPago: '2026-01-10',
+              numMovimientos: 2,
+            },
+            {
+              pagoClubId: 3002,
+              nombre: 'Lotería de Navidad',
+              importe: 20,
+              restante: 20,
+              totalPagado: 0,
+              estado: 0,
+              ultimoPago: null,
+              numMovimientos: 0,
+            },
+          ],
+        },
+        status: 200,
+        error: null,
+      } as any);
+    }
+    const token: string | null = localStorage.getItem('token');
+    if (!token) return EMPTY;
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    return this.http.get<Response>(
+      environment.apiUrl + `club/abonado/${abonadosTemporadaId}/conceptos`,
+      { headers },
+    );
+  }
+
+  /**
+   * Cambia el estado de un abonado (0=baja/rechazado, 1=activo/aprobado,
+   * 2=pendiente). En modo demo simula éxito devolviendo el nuevo estado.
+   */
+  updateAbonadoEstado(
+    abonadoId: number,
+    estado: number,
+    clubId: number,
+    motivo?: string,
+  ): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: { abonadoId, estado, motivo: motivo?.trim() || null }, status: 200, error: null } as any);
+    }
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      });
+      const url: string =
+        environment.apiUrl +
+        `club/abonado/${abonadoId}/estado/${estado}/club/${clubId}`;
+      const body = motivo && motivo.trim() ? { motivo: motivo.trim() } : {};
+      return this.http.put<Response>(url, body, { headers });
+    }
+    return EMPTY;
+  }
+
+  /**
+   * Cambio masivo de estado para varios abonados. En demo simula un
+   * agregado OK para todos los ids recibidos.
+   */
+  bulkUpdateAbonadosEstado(
+    clubId: number,
+    abonadoIds: number[],
+    estadoNuevo: number,
+  ): Observable<Response> {
+    if (isDemoMode()) {
+      return of({
+        data: {
+          total: abonadoIds.length,
+          ok: abonadoIds.length,
+          ko: 0,
+          estadoNuevo,
+          resultados: abonadoIds.map((id) => ({ abonadoId: id, ok: true, estado: estadoNuevo })),
+        },
+        status: 200,
+        error: null,
+      } as any);
+    }
+    const token: string | null = localStorage.getItem('token');
+    if (!token) return EMPTY;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    });
+    return this.http.post<Response>(
+      environment.apiUrl + 'club/abonados/bulk-estado',
+      { clubId, abonadoIds, estadoNuevo },
+      { headers },
+    );
+  }
+
+  /**
+   * Nº de conceptos de pago vigentes (audiencia=ABONADOS) del club. En demo
+   * devuelve un conteo estático plausible.
+   */
+  countPendingPagosAbonados(clubId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: { count: 2 }, status: 200, error: null } as any);
+    }
+    const token: string | null = localStorage.getItem('token');
+    if (!token) return EMPTY;
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    return this.http.get<Response>(
+      environment.apiUrl + `club/count-pending-pagos-abonados/${clubId}`,
+      { headers },
+    );
+  }
+
+  /**
+   * Aplica los conceptos de pago vigentes al abonado. En demo simula éxito.
+   */
+  applyPendingPagosToAbonado(abonadosTemporadaId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: { abonadosTemporadaId, applied: 2 }, status: 200, error: null } as any);
+    }
+    const token: string | null = localStorage.getItem('token');
+    if (!token) return EMPTY;
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    return this.http.post<Response>(
+      environment.apiUrl + `club/abonado/${abonadosTemporadaId}/apply-pending-pagos`,
+      {},
+      { headers },
+    );
+  }
+
+  /**
+   * Activa/desactiva el recordatorio semanal de abonados pendientes. En demo
+   * simula persistencia devolviendo el flag recibido.
+   */
+  setSubsReminderEnabled(clubId: number, enabled: boolean): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: { enabled }, status: 200, error: null } as any);
+    }
+    const token: string | null = localStorage.getItem('token');
+    if (!token) return EMPTY;
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    return this.http.put<Response>(
+      environment.apiUrl + `club/${clubId}/settings/subs-reminder/${enabled ? 1 : 0}`,
+      {},
+      { headers },
+    );
+  }
+
+  /** Lee el flag del recordatorio semanal. En demo devuelve activado. */
+  getSubsReminderEnabled(clubId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of({ data: { enabled: true }, status: 200, error: null } as any);
+    }
+    const token: string | null = localStorage.getItem('token');
+    if (!token) return EMPTY;
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    return this.http.get<Response>(
+      environment.apiUrl + `club/${clubId}/settings/subs-reminder`,
+      { headers },
+    );
   }
 
   //**********************Patrocinadores**************/
@@ -1464,6 +1791,71 @@ export class ClubService {
     return this.http.post<Response>(url, formData, { headers });
   }
 
+  /**
+   * Documentos que el club ha requerido/publicado para un abonado concreto,
+   * con su estado (subido / pendiente). Espejo de los documentos de "padres"
+   * pero para el módulo de abonados.
+   */
+  getDocumentosDelAbonado(clubId: number, abonadoId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response([]) as Response);
+    }
+    const token = localStorage.getItem('token');
+    if (!token) return EMPTY;
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    const url = environment.apiUrl + `club/getdocumentosdelabonado/${clubId}/${abonadoId}`;
+    return this.http.get<Response>(url, { headers });
+  }
+
+  /** Sube un archivo como respuesta a un documento requerido del abonado. */
+  uploadDocAbonado(file: File, dto: any): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ ok: true }) as Response);
+    }
+    const token = localStorage.getItem('token');
+    if (!token) return EMPTY;
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    const formData = new FormData();
+    formData.append('files', file, file.name ? file.name : '');
+    formData.append(
+      'dto',
+      new Blob([JSON.stringify(dto)], { type: 'application/json' })
+    );
+
+    const url = environment.apiUrl + 'club/uploaddocabonado';
+    return this.http.post<Response>(url, formData, { headers });
+  }
+
+  /** Registra la respuesta a un documento personalizado del abonado (sin archivo). */
+  uploadDocAbonadoPersonalizado(dto: any): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ ok: true }) as Response);
+    }
+    const token = localStorage.getItem('token');
+    if (!token) return EMPTY;
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    const formData = new FormData();
+    formData.append(
+      'dto',
+      new Blob([JSON.stringify(dto)], { type: 'application/json' })
+    );
+
+    const url = environment.apiUrl + 'club/uploaddocabonadopersonalizado';
+    return this.http.post<Response>(url, formData, { headers });
+  }
+
   getListCategoriasByFilter(filter: string): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
@@ -2134,6 +2526,15 @@ export class ClubService {
     userId: number,
     temporada: string
   ): Observable<Response> {
+    if (isDemoMode()) {
+      const clubs = [
+        { userId: 9001, userIdClub: 9001, suscripcionId: 5001, nombre: 'CD Demo Norte', numEquipos: 8, equipos: 6, poblacion: 'Madrid', email: 'norte@demo.com' },
+        { userId: 9002, userIdClub: 9002, suscripcionId: 5002, nombre: 'UD Demo Sur', numEquipos: 5, equipos: 5, poblacion: 'Sevilla', email: 'sur@demo.com' },
+        { userId: 9003, userIdClub: 9003, suscripcionId: 5003, nombre: 'Atlético Demo CF', numEquipos: 12, equipos: 10, poblacion: 'Valencia', email: 'atletico@demo.com' },
+        { userId: 9004, userIdClub: 9004, suscripcionId: 5004, nombre: 'Real Sporting Demo', numEquipos: 3, equipos: 2, poblacion: 'Bilbao', email: 'sporting@demo.com' },
+      ];
+      return of(new Response({ data: clubs, status: 200, error: { code: 0, msg: 'MOCK_OK' } }));
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -2178,6 +2579,9 @@ export class ClubService {
   }
 
   setEquiposClub(suscripcionId: number, equipos: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(new Response({ data: { suscripcionId, equipos, ok: true }, status: 200, error: { code: 0, msg: 'MOCK_OK' } }));
+    }
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -2337,6 +2741,78 @@ export class ClubService {
     } else {
       return EMPTY;
     }
+  }
+
+  getClasificacionResumen(teamId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(new Response({ data: this.mockClasificacionResumen(), status: 200, error: { code: 0, msg: 'MOCK_OK' } }));
+    }
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+      const apiUrl: string = environment.apiUrl + `club/clasificacion-resumen/${teamId}`;
+      return this.http.get<Response>(apiUrl, { headers });
+    } else {
+      return EMPTY;
+    }
+  }
+
+  getClasificacionResumenByClub(clubId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(new Response({ data: this.mockClasificacionResumen(), status: 200, error: { code: 0, msg: 'MOCK_OK' } }));
+    }
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+      const apiUrl: string = environment.apiUrl + `club/clasificacion-resumen-club/${clubId}`;
+      return this.http.get<Response>(apiUrl, { headers });
+    } else {
+      return EMPTY;
+    }
+  }
+
+  /** Mock inline de clasificaciones para modo demo (no depende de DemoDataService). */
+  private mockClasificacionResumen(): any[] {
+    const headers = ['Pos', 'Equipo', 'Pts', 'J', 'G', 'E', 'P', 'GF', 'GC', 'Forma'];
+    const table = [
+      { posicion: '1', nombre: 'Atlético Demo CF', puntos: '42', forma: 'G G E G G', jugados: '18', ganados: '13', empatados: '3', perdidos: '2', golesAFavor: '38', golesEnContra: '14' },
+      { posicion: '2', nombre: 'Real Sporting Demo', puntos: '39', forma: 'G E G G P', jugados: '18', ganados: '12', empatados: '3', perdidos: '3', golesAFavor: '34', golesEnContra: '18' },
+      { posicion: '3', nombre: 'CD Demo Norte', puntos: '35', forma: 'G G P E G', jugados: '18', ganados: '10', empatados: '5', perdidos: '3', golesAFavor: '29', golesEnContra: '19' },
+      { posicion: '4', nombre: 'UD Demo Sur', puntos: '30', forma: 'E G G P E', jugados: '18', ganados: '8', empatados: '6', perdidos: '4', golesAFavor: '25', golesEnContra: '21' },
+      { posicion: '5', nombre: 'Demo Juvenil A', puntos: '24', forma: 'P E G E P', jugados: '18', ganados: '6', empatados: '6', perdidos: '6', golesAFavor: '22', golesEnContra: '24' },
+    ];
+    return [
+      {
+        teamId: 3101,
+        teamName: 'Demo Juvenil A',
+        sport: 'futbol',
+        hasUrl: true,
+        hasData: true,
+        lastUpdated: new Date().toISOString(),
+        myPosition: 5,
+        totalTeams: 16,
+        points: 24,
+        form: 'P E G E P',
+        rawHtml: null,
+        headers,
+        topClasificacion: table,
+      },
+      {
+        teamId: 3102,
+        teamName: 'Demo Cadete B',
+        sport: 'futbol-sala',
+        hasUrl: false,
+        hasData: false,
+        lastUpdated: null,
+        myPosition: null,
+        totalTeams: null,
+        points: null,
+        form: null,
+        rawHtml: null,
+        headers: null,
+        topClasificacion: [],
+      },
+    ];
   }
 
   /**************************PERFIL ENTRENADOR************************** */
@@ -2698,13 +3174,282 @@ export class ClubService {
     );
   }
 
-  searchClubMembers(clubId: number, q: string, temporada: string): Observable<Response> {
+  searchClubMembers(clubId: number, q: string, temporada: string, coachUserId = 0): Observable<Response> {
     if (isDemoMode()) {
-      return of(DemoDataService.response([]) as Response);
+      const all = [
+        { userId: 7001, playerId: 8001, fullName: 'Lucas López García', role: 'PLAYER', photoUrl: null, hasAccount: true, teamId: 3101 },
+        { userId: 7002, playerId: 8002, fullName: 'Marta Ruiz Fernández', role: 'PLAYER', photoUrl: null, hasAccount: true, teamId: 3101 },
+        { userId: 7003, playerId: 8003, fullName: 'Iker Santos Vidal', role: 'PLAYER', photoUrl: null, hasAccount: false, teamId: 3102 },
+        { userId: 7010, playerId: 0, fullName: 'Carlos Entrenador Pérez', role: 'COACH', photoUrl: null, hasAccount: true, teamId: 3101 },
+      ];
+      const needle = (q || '').toLowerCase();
+      const data = all.filter(m => m.fullName.toLowerCase().includes(needle));
+      return of(new Response({ data, status: 200, error: { code: 0, msg: 'MOCK_OK' } }));
     }
+    const coachParam = coachUserId > 0 ? `&coachUserId=${coachUserId}` : '';
     return this.http.get<Response>(
-      environment.apiUrl + `club/search-members/${clubId}?q=${encodeURIComponent(q)}&temporada=${temporada}`,
+      environment.apiUrl + `club/search-members/${clubId}?q=${encodeURIComponent(q)}&temporada=${temporada}${coachParam}`,
       { headers: this.getAuthHeaders() }
     );
+  }
+
+  // ─── Dunning: cobro de cuotas vencidas a tarjeta guardada ─────────────────
+
+  /** Previsualiza el cobro colectivo de vencidas (nº jugadores, importe, sin tarjeta). */
+  chargeOverduePreview(body: { clubId: number; temporada: string; playerId?: number }): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoChargeOverduePreview(body.playerId)) as Response);
+    }
+    return this.http.post<Response>(
+      environment.apiUrl + 'club/charge-overdue-preview',
+      body,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  /** Ejecuta el cobro de vencidas. playerId>0 = individual; 0 = colectivo. */
+  chargeOverdue(body: { clubId: number; temporada: string; playerId?: number }): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoChargeOverdueResult(body.playerId)) as Response);
+    }
+    return this.http.post<Response>(
+      environment.apiUrl + 'club/charge-overdue',
+      body,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  // ─── Variantes de precio (lado club) ──────────────────────────────────────
+
+  /** Devuelve las variantes de precio + flags de registro de un pago. */
+  getPagoVariantes(pagoClubId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoPagoVariantes(pagoClubId)) as Response);
+    }
+    return this.http.get<Response>(
+      environment.apiUrl + `club/pago-variantes/${pagoClubId}`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  /** Asignaciones de variante por jugador para un pago y temporada. */
+  getPagoVarianteAsignaciones(pagoClubId: number, temporada: string): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response(DemoDataService.getDemoPagoVarianteAsignaciones(pagoClubId)) as Response);
+    }
+    return this.http.get<Response>(
+      environment.apiUrl + `club/pago-variante-asignaciones/${pagoClubId}/${temporada}`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  /** Asigna/valida/corrige variante para uno o varios jugadores (bulk). */
+  asignarPagoVariante(body: {
+    pagoClubId: number;
+    temporada: string;
+    asignaciones: Array<{ playerId: number; varianteId: number; estado?: number }>;
+    validar: boolean;
+  }): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ validados: body.asignaciones.length }) as Response);
+    }
+    return this.http.post<Response>(
+      environment.apiUrl + 'club/pago-variante-asignar',
+      body,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  /** Valida las variantes marcadas y cobra al instante las atrasadas seleccionadas. */
+  validarYCobrarVariantes(body: {
+    pagoClubId: number;
+    temporada: string;
+    asignaciones: Array<{ playerId: number; varianteId: number }>;
+    cobrarPlayerIds: number[];
+  }): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ validados: body.asignaciones.length, cobrados: body.cobrarPlayerIds.length }) as Response);
+    }
+    return this.http.post<Response>(
+      environment.apiUrl + 'club/pago-variante-validar-cobrar',
+      body,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  /** El club rechaza la propuesta pendiente de un jugador para que vuelva a elegir. */
+  rechazarVariantePlayer(body: { pagoClubId: number; playerId: number }): Observable<Response> {
+    if (isDemoMode()) {
+      return of(DemoDataService.response({ rechazado: body.playerId }) as Response);
+    }
+    return this.http.post<Response>(
+      environment.apiUrl + 'club/pago-variante-rechazar',
+      body,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  // ─── Encuestas (rama demo con mock inline) ────────────────────────────────
+
+  crearEncuesta(dto: any): Observable<Response> {
+    if (isDemoMode()) {
+      return of(new Response({ data: { encuestaId: Math.floor(Math.random() * 100000) + 1000, ...dto }, status: 200, error: { code: 0, msg: 'MOCK_OK' } }));
+    }
+    const headers = this.getAuthHeaders();
+    if (!headers) return EMPTY;
+    return this.http.post<Response>(environment.apiUrl + 'encuesta', dto, { headers });
+  }
+
+  getEncuestasByClub(clubId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(new Response({ data: this.mockEncuestasResumen(), status: 200, error: { code: 0, msg: 'MOCK_OK' } }));
+    }
+    const headers = this.getAuthHeaders();
+    if (!headers) return EMPTY;
+    return this.http.get<Response>(environment.apiUrl + `encuesta/club/${clubId}`, { headers });
+  }
+
+  getEncuestasByUser(userId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(new Response({ data: this.mockEncuestasResumen(), status: 200, error: { code: 0, msg: 'MOCK_OK' } }));
+    }
+    const headers = this.getAuthHeaders();
+    if (!headers) return EMPTY;
+    return this.http.get<Response>(environment.apiUrl + `encuesta/user/${userId}`, { headers });
+  }
+
+  getEncuestaDetalle(encuestaId: number, userId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(new Response({ data: this.mockEncuestaDetalle(encuestaId), status: 200, error: { code: 0, msg: 'MOCK_OK' } }));
+    }
+    const headers = this.getAuthHeaders();
+    if (!headers) return EMPTY;
+    return this.http.get<Response>(
+      environment.apiUrl + `encuesta/${encuestaId}/detalle?userId=${userId}`,
+      { headers }
+    );
+  }
+
+  responderEncuesta(encuestaId: number, dto: any): Observable<Response> {
+    if (isDemoMode()) {
+      return of(new Response({ data: { encuestaId, ok: true }, status: 200, error: { code: 0, msg: 'MOCK_OK' } }));
+    }
+    const headers = this.getAuthHeaders();
+    if (!headers) return EMPTY;
+    return this.http.post<Response>(
+      environment.apiUrl + `encuesta/${encuestaId}/responder`,
+      dto,
+      { headers }
+    );
+  }
+
+  getEncuestaResultados(encuestaId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(new Response({ data: this.mockEncuestaResultados(encuestaId), status: 200, error: { code: 0, msg: 'MOCK_OK' } }));
+    }
+    const headers = this.getAuthHeaders();
+    if (!headers) return EMPTY;
+    return this.http.get<Response>(environment.apiUrl + `encuesta/${encuestaId}/resultados`, { headers });
+  }
+
+  toggleEncuestaActiva(encuestaId: number, activa: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(new Response({ data: { encuestaId, activa }, status: 200, error: { code: 0, msg: 'MOCK_OK' } }));
+    }
+    const headers = this.getAuthHeaders();
+    if (!headers) return EMPTY;
+    return this.http.put<Response>(
+      environment.apiUrl + `encuesta/${encuestaId}/toggle?activa=${activa}`,
+      {},
+      { headers }
+    );
+  }
+
+  deleteEncuesta(encuestaId: number): Observable<Response> {
+    if (isDemoMode()) {
+      return of(new Response({ data: { encuestaId, deleted: true }, status: 200, error: { code: 0, msg: 'MOCK_OK' } }));
+    }
+    const headers = this.getAuthHeaders();
+    if (!headers) return EMPTY;
+    return this.http.delete<Response>(environment.apiUrl + `encuesta/${encuestaId}`, { headers });
+  }
+
+  private mockEncuestasResumen(): any[] {
+    return [
+      {
+        encuestaId: 4001, titulo: 'Valoración del primer trimestre',
+        descripcion: 'Queremos conocer tu opinión sobre el arranque de temporada.',
+        fechaCreate: '2026-01-10T10:00', fechaCierre: '2026-02-01T23:59',
+        activa: 1, totalDestinatarios: 24, totalRespondieron: 18, yaRespondio: false, creatorUserId: 1,
+      },
+      {
+        encuestaId: 4002, titulo: 'Preferencia de horario de entrenamiento',
+        descripcion: 'Ayúdanos a fijar el mejor horario para el segundo trimestre.',
+        fechaCreate: '2026-02-05T09:30', fechaCierre: undefined,
+        activa: 1, totalDestinatarios: 24, totalRespondieron: 7, yaRespondio: false, creatorUserId: 1,
+      },
+      {
+        encuestaId: 4003, titulo: 'Cierre de temporada (cerrada)',
+        descripcion: 'Encuesta ya finalizada de ejemplo.',
+        fechaCreate: '2025-06-01T12:00', fechaCierre: '2025-06-20T23:59',
+        activa: 0, totalDestinatarios: 20, totalRespondieron: 20, yaRespondio: true, creatorUserId: 1,
+      },
+    ];
+  }
+
+  private mockEncuestaDetalle(encuestaId: number): any {
+    return {
+      encuestaId, titulo: 'Valoración del primer trimestre',
+      descripcion: 'Queremos conocer tu opinión sobre el arranque de temporada.',
+      activa: 1, fechaCierre: '2026-02-01T23:59', yaRespondio: false,
+      preguntas: [
+        {
+          preguntaId: 1, encuestaId, orden: 1,
+          texto: '¿Cómo valoras la comunicación del club?', tipo: 'OPCION_MULTIPLE', requerida: 1,
+          opciones: [
+            { opcionId: 11, preguntaId: 1, orden: 1, texto: 'Excelente' },
+            { opcionId: 12, preguntaId: 1, orden: 2, texto: 'Buena' },
+            { opcionId: 13, preguntaId: 1, orden: 3, texto: 'Regular' },
+            { opcionId: 14, preguntaId: 1, orden: 4, texto: 'Mejorable' },
+          ],
+          respuestaPreviaOpcionId: null, respuestaPreviaTexto: null,
+        },
+        {
+          preguntaId: 2, encuestaId, orden: 2,
+          texto: '¿Qué mejorarías de cara al próximo trimestre?', tipo: 'TEXTO_LIBRE', requerida: 0,
+          opciones: [], respuestaPreviaOpcionId: null, respuestaPreviaTexto: null,
+        },
+      ],
+    };
+  }
+
+  private mockEncuestaResultados(encuestaId: number): any {
+    return {
+      encuestaId, titulo: 'Valoración del primer trimestre',
+      descripcion: 'Queremos conocer tu opinión sobre el arranque de temporada.',
+      activa: 1, totalDestinatarios: 24, totalRespondieron: 18,
+      preguntas: [
+        {
+          preguntaId: 1, orden: 1, texto: '¿Cómo valoras la comunicación del club?', tipo: 'OPCION_MULTIPLE',
+          opciones: [
+            { opcionId: 11, texto: 'Excelente', count: 8, porcentaje: 44, nombresRespondentes: ['Lucas López', 'Marta Ruiz'] },
+            { opcionId: 12, texto: 'Buena', count: 6, porcentaje: 33, nombresRespondentes: ['Iker Santos'] },
+            { opcionId: 13, texto: 'Regular', count: 3, porcentaje: 17, nombresRespondentes: [] },
+            { opcionId: 14, texto: 'Mejorable', count: 1, porcentaje: 6, nombresRespondentes: [] },
+          ],
+        },
+        {
+          preguntaId: 2, orden: 2, texto: '¿Qué mejorarías de cara al próximo trimestre?', tipo: 'TEXTO_LIBRE',
+          respuestasTexto: [
+            { userId: 7001, nombreDisplay: 'Lucas López', respuesta: 'Más avisos de cambios de horario.', fecha: '2026-01-15' },
+            { userId: 7002, nombreDisplay: 'Marta Ruiz', respuesta: 'Todo genial, seguid así.', fecha: '2026-01-16' },
+          ],
+        },
+      ],
+      pendientes: [
+        { userId: 7003, nombreDisplay: 'Iker Santos' },
+        { userId: 7004, nombreDisplay: 'Ana Molina' },
+      ],
+    };
   }
 }

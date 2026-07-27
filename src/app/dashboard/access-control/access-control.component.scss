@@ -1,0 +1,1330 @@
+@use 'sass:color';
+
+$navy: #002c40;
+$navy-mid: #0a4a6e;
+$green: #31b270;
+$green-dark: #1f7a4d;
+$gray-text: #636363;
+$bg-soft: #f4f4f4;
+
+.access-root {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background: #fff;
+  min-height: 100%;
+  padding: 1.25rem 1.75rem 3rem;
+  color: $navy;
+}
+
+/* Tablet: reducimos padding lateral. */
+@media (max-width: 1024px) {
+  .access-root { padding: 1rem 1.25rem 2.5rem; }
+}
+
+/* Móvil: padding mínimo para aprovechar todo el ancho. */
+@media (max-width: 600px) {
+  .access-root { padding: 0.75rem 0.85rem 2rem; }
+}
+
+.access-page-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+
+  .access-header-back {
+    flex: 0 0 auto;
+  }
+  .access-header-center {
+    flex: 1;
+    text-align: center;
+  }
+  .access-header-spacer {
+    flex: 0 0 auto;
+    min-width: 100px;
+  }
+}
+
+/* Tablet vertical / móvil ancho: el header pasa a 2 filas para que el
+   botón "Modo portero" no compita con el título centrado. */
+@media (max-width: 768px) {
+  .access-page-header {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+
+    .access-header-center {
+      order: 1;
+      flex: 1 1 100%;
+      text-align: left;
+    }
+    .access-header-back {
+      order: 0;
+    }
+    .access-header-spacer {
+      order: 2;
+      flex: 1 1 100%;
+      justify-content: stretch;
+    }
+
+    .access-header-title { font-size: 1.25rem; }
+    .access-header-subtitle { font-size: 0.85rem; }
+  }
+
+  .access-btn--kiosko {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.access-btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  border: 1px solid rgba($navy, 0.18);
+  color: $navy;
+  padding: 0.4rem 0.85rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba($navy, 0.06);
+  }
+}
+
+.access-header-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0 0 0.25rem;
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: $navy;
+
+  i {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba($green, 0.2), rgba($navy, 0.1));
+    border: 1px solid rgba($green, 0.25);
+    color: $green-dark;
+    font-size: 1.15rem;
+  }
+}
+.access-header-subtitle {
+  margin: 0;
+  color: $gray-text;
+  font-size: 0.92rem;
+}
+
+// ----- Estados -----
+.access-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  padding: 3.5rem 1.5rem;
+  text-align: center;
+  color: $gray-text;
+
+  i {
+    font-size: 2.4rem;
+    color: $navy-mid;
+  }
+
+  h2 {
+    margin: 0;
+    color: $navy;
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+}
+
+.access-state--off {
+  background: $bg-soft;
+  border-radius: 18px;
+  padding: 2.5rem;
+}
+
+.access-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba($navy, 0.15);
+  border-top-color: $green;
+  border-radius: 50%;
+  animation: access-spin 0.8s linear infinite;
+}
+@keyframes access-spin {
+  to { transform: rotate(360deg); }
+}
+
+// ----- Tabs (pill segment, estilo moderno) -----
+.access-tabs {
+  display: inline-flex;
+  gap: 0.2rem;
+  padding: 0.3rem;
+  background: $bg-soft;
+  border: 1px solid rgba($navy, 0.06);
+  border-radius: 13px;
+  margin-bottom: 1.75rem;
+  overflow-x: auto;
+  max-width: 100%;
+  scrollbar-width: thin;
+
+  /* Móvil: el segment ocupa todo el ancho disponible */
+  @media (max-width: 600px) {
+    display: flex;
+    width: 100%;
+  }
+}
+
+.access-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 0;
+  background: transparent;
+  color: $gray-text;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.55rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease, box-shadow 0.18s ease;
+  white-space: nowrap;
+
+  i { font-size: 1rem; color: rgba($gray-text, 0.85); transition: color 0.15s ease; }
+
+  &:hover {
+    color: $navy;
+    background: rgba($navy, 0.04);
+
+    i { color: $navy; }
+  }
+
+  &--active {
+    color: $navy;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba($navy, 0.06), 0 2px 6px rgba($navy, 0.05);
+
+    i { color: $green; }
+  }
+
+  @media (max-width: 600px) {
+    flex: 1;
+    justify-content: center;
+    padding: 0.55rem 0.6rem;
+    font-size: 0.82rem;
+
+    /* En pantallas muy pequeñas escondemos el texto y dejamos sólo icono
+       para que las 4 tabs entren sin scroll horizontal. */
+    @media (max-width: 420px) {
+      span { display: none; }
+    }
+  }
+}
+
+.access-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+// ----- Cards -----
+.access-card {
+  position: relative;
+  background: #fff;
+  border: 1px solid rgba($navy, 0.07);
+  border-radius: 18px;
+  padding: 1.6rem 1.6rem 1.4rem;
+  box-shadow: 0 1px 2px rgba($navy, 0.04), 0 2px 10px rgba($navy, 0.025);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+
+  /* Acento vertical green→navy. Marca visualmente cada bloque y aporta
+     identidad sin sobrecargar la card. */
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, $green 0%, $navy 100%);
+    opacity: 0.9;
+  }
+
+  &:hover {
+    box-shadow: 0 4px 18px rgba($navy, 0.08);
+    border-color: rgba($navy, 0.1);
+  }
+
+  /* En móvil reducimos el padding interior para que los formularios
+     largos no se vean acartonados. */
+  @media (max-width: 600px) {
+    padding: 1.1rem 1.1rem 1rem 1.25rem;
+    border-radius: 14px;
+  }
+}
+
+.access-card__head {
+  margin-bottom: 1.3rem;
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 0 0.4rem;
+    font-size: 1.08rem;
+    font-weight: 800;
+    color: $navy;
+    letter-spacing: -0.01em;
+
+    /* Icono en cápsula con halo verde sphaira. */
+    i {
+      flex: 0 0 auto;
+      width: 38px; height: 38px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, rgba($green, 0.18), rgba($green, 0.06));
+      border: 1px solid rgba($green, 0.22);
+      color: $green-dark;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.05rem;
+    }
+  }
+  p {
+    /* Alineado bajo el título (no bajo el icono) para que el texto descriptivo
+       fluya con el título. */
+    margin: 0 0 0 calc(38px + 0.75rem);
+    color: $gray-text;
+    font-size: 0.88rem;
+    line-height: 1.5;
+
+    @media (max-width: 600px) {
+      margin-left: 0;
+    }
+  }
+}
+
+.access-card__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+// ----- Fields -----
+.access-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  span {
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: $gray-text;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  input,
+  select,
+  textarea {
+    padding: 0.65rem 0.85rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 11px;
+    background: #fafafa;
+    color: $navy;
+    font-family: inherit;
+    font-size: 0.92rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+
+    &::placeholder { color: rgba($gray-text, 0.7); }
+
+    &:hover:not(:focus):not(:disabled) {
+      background: #fff;
+      border-color: #d1d5db;
+    }
+
+    &:focus {
+      outline: none;
+      background: #fff;
+      border-color: $green;
+      box-shadow: 0 0 0 4px rgba($green, 0.13);
+    }
+
+    &:disabled {
+      background: $bg-soft;
+      color: $gray-text;
+      cursor: not-allowed;
+    }
+  }
+
+  /* Caret personalizado para los selects (Bootstrap/Sphaira chevron-down).
+     Mantiene los selects coherentes con los inputs en altura y alineación. */
+  select {
+    -webkit-appearance: none;
+    appearance: none;
+    padding-right: 2.2rem;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='%23636363' d='M4.5 6l3.5 3.5L11.5 6'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 14px 14px;
+  }
+
+  &--full {
+    grid-column: 1 / -1;
+  }
+
+  &--inline {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+
+    span { text-transform: none; letter-spacing: normal; }
+  }
+
+  &--check {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+
+    span { text-transform: none; letter-spacing: normal; font-weight: 500; color: $navy; }
+  }
+}
+
+// ----- Buttons -----
+.access-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+/* Acción final del bloque de configuración: pegajosa al final, separada
+   visualmente del último card y con peso suficiente para que el usuario
+   no la pierda al desplazarse. */
+.access-actions--save {
+  position: sticky;
+  bottom: 0.75rem;
+  z-index: 5;
+  margin-top: 1.5rem;
+  padding: 0.85rem 1rem;
+  background: rgba(#fff, 0.85);
+  backdrop-filter: saturate(160%) blur(10px);
+  -webkit-backdrop-filter: saturate(160%) blur(10px);
+  border: 1px solid rgba($navy, 0.07);
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba($navy, 0.08);
+}
+
+.access-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.05rem;
+  border-radius: 11px;
+  border: 1px solid transparent;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease,
+              box-shadow 0.18s ease, transform 0.12s ease;
+  will-change: transform;
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  &--primary {
+    background: linear-gradient(135deg, $green 0%, $navy 100%);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 2px 6px rgba($green, 0.2), 0 4px 14px rgba($navy, 0.15);
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 4px 10px rgba($green, 0.28), 0 6px 18px rgba($navy, 0.18);
+      transform: translateY(-1px);
+    }
+  }
+
+  &--ghost {
+    background: transparent;
+    border-color: rgba($navy, 0.15);
+    color: $navy;
+
+    &:hover:not(:disabled) {
+      background: rgba($navy, 0.05);
+      border-color: rgba($navy, 0.25);
+    }
+  }
+
+  &--danger {
+    background: rgba(#d92d20, 0.08);
+    color: #d92d20;
+    border-color: rgba(#d92d20, 0.22);
+
+    &:hover:not(:disabled) {
+      background: rgba(#d92d20, 0.14);
+    }
+  }
+
+  &--kiosko {
+    background: linear-gradient(135deg, $green 0%, $navy 100%);
+    color: #fff;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba($green, 0.35);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba($green, 0.4);
+    }
+  }
+
+  /* Variante grande para CTAs principales (Guardar configuración). */
+  &--lg {
+    padding: 0.75rem 1.4rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    border-radius: 12px;
+  }
+}
+
+.access-header-spacer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+// ----- Toolbar -----
+.access-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: $navy;
+  }
+}
+
+.access-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+// ----- Pills / Tags -----
+.access-pill {
+  display: inline-block;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+
+  &--on {
+    background: rgba($green, 0.15);
+    color: $green-dark;
+  }
+  &--off {
+    background: rgba(#d92d20, 0.1);
+    color: #b42318;
+  }
+  &--warn {
+    background: rgba(#f59e0b, 0.15);
+    color: #b45309;
+  }
+}
+
+.access-tag {
+  display: inline-block;
+  margin-right: 0.4rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: rgba($navy, 0.08);
+  color: $navy;
+
+  &--PLAYER { background: rgba($green, 0.12); color: $green-dark; }
+  &--ABONADO { background: rgba($navy-mid, 0.12); color: $navy-mid; }
+}
+
+// ----- Points grid -----
+.access-points-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.access-point-card {
+  background: #fff;
+  border: 1px solid rgba($navy, 0.08);
+  border-radius: 14px;
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  transition: box-shadow 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 4px 14px rgba($navy, 0.08);
+  }
+
+  &--off {
+    opacity: 0.6;
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+
+    > i {
+      font-size: 1.4rem;
+      color: $green;
+    }
+
+    h3 {
+      margin: 0 0 0.15rem;
+      font-size: 1rem;
+      font-weight: 700;
+      color: $navy;
+    }
+  }
+
+  &__desc {
+    margin: 0;
+    color: $gray-text;
+    font-size: 0.86rem;
+  }
+
+  &__meta {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    li {
+      font-size: 0.83rem;
+      color: $gray-text;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+
+      i { color: $navy-mid; }
+      strong { color: $navy; }
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: auto;
+    flex-wrap: wrap;
+  }
+}
+
+.access-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem 1rem;
+  color: $gray-text;
+  background: $bg-soft;
+  border-radius: 14px;
+
+  i {
+    font-size: 2rem;
+    color: $navy-mid;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+}
+
+.access-point-editor {
+  border: 1px dashed rgba($green, 0.4);
+  background: rgba($green, 0.03);
+}
+
+// ----- Logs table -----
+.access-table-wrap {
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid rgba($navy, 0.08);
+  background: #fff;
+}
+
+.access-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+
+  thead {
+    background: $bg-soft;
+
+    th {
+      padding: 0.65rem 0.85rem;
+      text-align: left;
+      font-weight: 700;
+      color: $navy;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+  }
+
+  tbody td {
+    padding: 0.65rem 0.85rem;
+    border-top: 1px solid rgba($navy, 0.05);
+    color: $navy;
+    vertical-align: middle;
+  }
+
+  &__reason {
+    max-width: 260px;
+    color: $gray-text;
+    font-size: 0.82rem;
+  }
+
+  &__empty {
+    text-align: center;
+    padding: 2.5rem !important;
+    color: $gray-text;
+
+    i {
+      font-size: 1.6rem;
+      display: block;
+      margin-bottom: 0.4rem;
+      color: $navy-mid;
+    }
+  }
+}
+
+// ----- Preview QR -----
+.access-preview-result {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.access-preview-qr {
+  position: relative;
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid rgba($navy, 0.1);
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba($navy, 0.06);
+
+  ::ng-deep canvas,
+  ::ng-deep img {
+    display: block;
+  }
+}
+
+.access-preview-countdown {
+  position: absolute;
+  bottom: -12px;
+  right: -12px;
+  background: $navy;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  box-shadow: 0 4px 14px rgba($navy, 0.25);
+
+  &--low {
+    background: #d92d20;
+    animation: pulse-warn 0.8s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes pulse-warn {
+  to { transform: scale(1.06); }
+}
+
+.access-preview-info {
+  flex: 1;
+  min-width: 220px;
+
+  h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: $navy;
+  }
+
+  p {
+    margin: 0 0 0.4rem;
+    color: $gray-text;
+    font-size: 0.88rem;
+
+    strong { color: $navy; }
+  }
+}
+
+.access-preview-warn {
+  background: rgba(#f59e0b, 0.12);
+  color: #b45309;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  font-size: 0.86rem;
+}
+
+.access-preview-token {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 0.72rem !important;
+  color: $gray-text !important;
+  word-break: break-all;
+}
+
+// =====================================================================
+// Sub-sección de Dispositivos / Tornos (Fase 2.5)
+// =====================================================================
+.access-subsection {
+  margin-top: 1.5rem;
+  padding: 1rem 1.1rem;
+  background: $bg-soft;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+
+  > summary {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    cursor: pointer;
+    list-style: none;
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: $navy;
+    padding: 0.25rem 0;
+
+    &::-webkit-details-marker { display: none; }
+
+    &::after {
+      content: '\F285';
+      font-family: 'bootstrap-icons';
+      margin-left: auto;
+      font-size: 0.9rem;
+      transition: transform 0.2s ease;
+    }
+  }
+
+  &[open] > summary::after { transform: rotate(180deg); }
+
+  &__desc {
+    color: $gray-text;
+    font-size: 0.86rem;
+    margin: 0.5rem 0 1rem;
+    line-height: 1.45;
+  }
+
+  &__h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: $navy;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 1.25rem 0 0.75rem;
+
+    i { color: $green; }
+  }
+}
+
+.access-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.5rem 0 0;
+  font-size: 0.78rem;
+  color: $gray-text;
+}
+
+.access-key-banner {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  background: linear-gradient(135deg, rgba($green, 0.08), rgba($navy, 0.05));
+  border: 2px solid rgba($green, 0.3);
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  margin: 0.75rem 0 1rem;
+
+  /* Móvil: el banner colapsa a una columna; las acciones quedan abajo.
+     Sin esto el icono + texto + botones se aprietan y se desborda. */
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+    text-align: center;
+
+    &__icon {
+      margin: 0 auto;
+    }
+
+    &__actions {
+      flex-direction: row;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+  }
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: $green;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+  }
+
+  &__body {
+    min-width: 0;
+
+    strong {
+      display: block;
+      color: $navy;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+    }
+
+    p {
+      margin: 0 0 0.55rem;
+      color: $gray-text;
+      font-size: 0.82rem;
+    }
+
+    small {
+      color: $gray-text;
+      font-size: 0.78rem;
+    }
+  }
+
+  &__value {
+    display: block;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    background: #fff;
+    color: $navy;
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 0.85rem;
+    word-break: break-all;
+    margin: 0.4rem 0;
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    align-self: center;
+  }
+}
+
+.access-key-form {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+
+  input {
+    flex: 1;
+    padding: 0.55rem 0.85rem;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-family: inherit;
+    font-size: 0.92rem;
+
+    &:focus {
+      outline: none;
+      border-color: $green;
+      box-shadow: 0 0 0 3px rgba($green, 0.18);
+    }
+  }
+
+  /* En móvil, input y botón apilados ocupando todo el ancho. */
+  @media (max-width: 600px) {
+    flex-direction: column;
+  }
+}
+
+.access-btn--small {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.82rem;
+}
+
+.access-row--off {
+  opacity: 0.55;
+}
+
+.access-empty {
+  text-align: center;
+  padding: 1.25rem;
+  color: $gray-text;
+  background: #fff;
+  border: 1px dashed #d1d5db;
+  border-radius: 10px;
+  margin: 0;
+
+  i {
+    display: block;
+    font-size: 1.4rem;
+    color: #9ca3af;
+    margin-bottom: 0.35rem;
+  }
+}
+
+// ============================================================================
+// Filtros avanzados + paginación + modal de impresión
+// ============================================================================
+
+.access-toolbar--wrap {
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  row-gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.access-filters--wrap {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  row-gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.access-btn--text {
+  background: transparent;
+  border: 0;
+  color: $gray-text;
+  text-decoration: underline;
+  padding: 0.4rem 0.5rem;
+
+  &:hover {
+    color: #002c40;
+  }
+}
+
+.access-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  margin-top: 0.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.access-pagination__info {
+  color: $gray-text;
+  font-size: 0.85rem;
+}
+
+// ----- Modal genérico (PDF de carnets) -----
+.access-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 30, 46, 0.55);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  backdrop-filter: blur(2px);
+}
+
+.access-modal {
+  background: #fff;
+  border-radius: 14px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 50px rgba(0, 30, 46, 0.25);
+  display: flex;
+  flex-direction: column;
+}
+
+.access-modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+
+  h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    color: #002c40;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    i {
+      color: #31b270;
+    }
+  }
+}
+
+.access-modal__close {
+  background: transparent;
+  border: 0;
+  color: $gray-text;
+  font-size: 1.05rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+
+  &:hover {
+    background: #f4f4f4;
+    color: #002c40;
+  }
+}
+
+.access-modal__body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.access-modal__help {
+  margin: 0;
+  color: $gray-text;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.access-modal__foot {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+  border-radius: 0 0 14px 14px;
+}
+
+.access-field__hint {
+  display: block;
+  margin-top: 0.25rem;
+  color: $gray-text;
+  font-size: 0.78rem;
+}
+
+// =====================================================================
+// Bloque de modo del QR (DYNAMIC / STATIC) — radio cards
+// =====================================================================
+.qr-mode-block {
+  margin-top: 1.25rem;
+  padding-top: 1.1rem;
+  border-top: 1px dashed rgba($navy, 0.1);
+}
+
+.qr-mode-block__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin-bottom: 0.85rem;
+
+  > i {
+    flex: 0 0 auto;
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba($green, 0.18), rgba($green, 0.06));
+    border: 1px solid rgba($green, 0.22);
+    color: $green-dark;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+  }
+
+  strong {
+    display: block;
+    color: $navy;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 0.15rem;
+  }
+
+  small {
+    display: block;
+    color: $gray-text;
+    font-size: 0.82rem;
+    line-height: 1.4;
+  }
+}
+
+.qr-mode-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.qr-mode-option {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.85rem 0.95rem;
+  background: #fafafa;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.18s ease;
+
+  input[type='radio'] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  > i {
+    flex: 0 0 auto;
+    font-size: 1.1rem;
+    color: $gray-text;
+    transition: color 0.15s ease;
+  }
+
+  > div {
+    flex: 1;
+    min-width: 0;
+  }
+
+  strong {
+    display: block;
+    color: $navy;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 0.15rem;
+  }
+
+  small {
+    display: block;
+    color: $gray-text;
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+
+  &:hover {
+    background: #fff;
+    border-color: #d1d5db;
+
+    > i { color: $navy; }
+  }
+
+  &--active {
+    background: #fff;
+    border-color: $green;
+    box-shadow: 0 0 0 3px rgba($green, 0.13);
+
+    > i { color: $green-dark; }
+    strong { color: $navy; }
+  }
+}
+
+// =====================================================================
+// Tarjeta de seguridad: rotar firma de QRs estáticos
+// =====================================================================
+.access-card--security::before {
+  background: linear-gradient(180deg, #d92d20 0%, $navy 100%);
+}
+
+.access-rotate-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: rgba(#d92d20, 0.04);
+  border: 1px solid rgba(#d92d20, 0.15);
+  border-radius: 12px;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+
+    small {
+      color: $gray-text;
+      font-size: 0.74rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    strong {
+      color: $navy;
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+}
+
+.access-rotate-effects {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    color: $navy;
+    font-size: 0.88rem;
+    line-height: 1.4;
+
+    i {
+      flex: 0 0 auto;
+      color: #d92d20;
+      font-size: 1rem;
+      margin-top: 0.15rem;
+    }
+  }
+}

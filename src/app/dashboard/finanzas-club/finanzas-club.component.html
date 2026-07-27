@@ -1,0 +1,203 @@
+<div class="finanzas">
+
+  <!-- ── Cabecera ─────────────────────────────────────────────── -->
+  <header class="finanzas__header">
+    <button *ngIf="!embedded" type="button" class="btn-back" (click)="goBack()" [attr.aria-label]="'FINANCE.BACK' | translate">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <div class="finanzas__titles" *ngIf="!embedded">
+      <h1>{{ 'FINANCE.TITLE' | translate }}</h1>
+      <p>{{ 'FINANCE.SUBTITLE' | translate }}</p>
+    </div>
+    <button
+      *ngIf="isConfigured && summary?.stripeDashboardUrl"
+      type="button"
+      class="btn-stripe"
+      [class.btn-stripe--push]="embedded"
+      (click)="openStripeDashboard()">
+      <i class="bi bi-box-arrow-up-right"></i>
+      {{ 'FINANCE.OPEN_STRIPE' | translate }}
+    </button>
+  </header>
+
+  <!-- ── Cargando ─────────────────────────────────────────────── -->
+  <div *ngIf="loadingSummary" class="finanzas__loading">
+    <div class="spinner"></div>
+    <span>{{ 'FINANCE.LOADING' | translate }}</span>
+  </div>
+
+  <!-- ── Error de resumen ─────────────────────────────────────── -->
+  <div *ngIf="!loadingSummary && summaryError" class="finanzas__empty">
+    <i class="bi bi-exclamation-triangle"></i>
+    <p>{{ 'FINANCE.ERROR' | translate }}</p>
+    <button type="button" class="btn-primary" (click)="loadSummary()">{{ 'FINANCE.RETRY' | translate }}</button>
+  </div>
+
+  <!-- ── No configurado ───────────────────────────────────────── -->
+  <div *ngIf="!loadingSummary && !summaryError && !isConfigured" class="finanzas__empty">
+    <i class="bi bi-bank"></i>
+    <h2>{{ 'FINANCE.NOT_CONFIGURED_TITLE' | translate }}</h2>
+    <p>{{ 'FINANCE.NOT_CONFIGURED_DESC' | translate }}</p>
+  </div>
+
+  <!-- ── Contenido principal ──────────────────────────────────── -->
+  <ng-container *ngIf="!loadingSummary && !summaryError && isConfigured">
+
+    <!-- Aviso: payouts deshabilitados / verificación pendiente -->
+    <div *ngIf="!payoutsEnabled" class="finanzas__warning">
+      <i class="bi bi-exclamation-circle"></i>
+      <span>{{ 'FINANCE.PAYOUTS_DISABLED' | translate }}</span>
+    </div>
+
+    <!-- Tarjetas resumen -->
+    <section class="cards">
+      <div class="card card--available">
+        <div class="card__icon"><i class="bi bi-wallet2"></i></div>
+        <div class="card__body">
+          <span class="card__label">{{ 'FINANCE.AVAILABLE' | translate }}</span>
+          <span class="card__value">{{ formatMoney(availablePrimary?.amount, availablePrimary?.currency) }}</span>
+          <span class="card__hint">{{ 'FINANCE.AVAILABLE_HINT' | translate }}</span>
+        </div>
+      </div>
+
+      <div class="card card--pending">
+        <div class="card__icon"><i class="bi bi-hourglass-split"></i></div>
+        <div class="card__body">
+          <span class="card__label">{{ 'FINANCE.PENDING' | translate }}</span>
+          <span class="card__value">{{ formatMoney(pendingPrimary?.amount, pendingPrimary?.currency) }}</span>
+          <span class="card__hint">{{ 'FINANCE.PENDING_HINT' | translate }}</span>
+        </div>
+      </div>
+
+      <div class="card card--schedule">
+        <div class="card__icon"><i class="bi bi-calendar-check"></i></div>
+        <div class="card__body">
+          <span class="card__label">{{ 'FINANCE.SCHEDULE_TITLE' | translate }}</span>
+          <span class="card__value card__value--sm" *ngIf="scheduleKey">{{ scheduleKey | translate: scheduleParams }}</span>
+          <span class="card__value card__value--sm" *ngIf="!scheduleKey">{{ 'FINANCE.SCHEDULE_UNKNOWN' | translate }}</span>
+        </div>
+      </div>
+
+      <div class="card card--status">
+        <div class="card__icon">
+          <i class="bi" [ngClass]="payoutsEnabled ? 'bi-check-circle' : 'bi-exclamation-circle'"></i>
+        </div>
+        <div class="card__body">
+          <span class="card__label">{{ 'FINANCE.ACCOUNT_STATUS' | translate }}</span>
+          <span class="card__value card__value--sm">
+            {{ (payoutsEnabled ? 'FINANCE.STATUS_ACTIVE' : 'FINANCE.STATUS_VERIFY') | translate }}
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Historial de transferencias -->
+    <section class="payouts">
+      <h2 class="payouts__title">
+        <i class="bi bi-arrow-left-right"></i>
+        {{ 'FINANCE.PAYOUTS_TITLE' | translate }}
+      </h2>
+
+      <div *ngIf="loadingPayouts" class="finanzas__loading finanzas__loading--inline">
+        <div class="spinner"></div>
+        <span>{{ 'FINANCE.LOADING' | translate }}</span>
+      </div>
+
+      <div *ngIf="!loadingPayouts && payoutsError" class="finanzas__empty finanzas__empty--inline">
+        <p>{{ 'FINANCE.ERROR' | translate }}</p>
+        <button type="button" class="btn-primary" (click)="loadPayouts()">{{ 'FINANCE.RETRY' | translate }}</button>
+      </div>
+
+      <div *ngIf="!loadingPayouts && !payoutsError && payouts.length === 0" class="finanzas__empty finanzas__empty--inline">
+        <i class="bi bi-inbox"></i>
+        <p>{{ 'FINANCE.NO_PAYOUTS' | translate }}</p>
+      </div>
+
+      <div *ngIf="!loadingPayouts && !payoutsError && payouts.length > 0" class="payouts__table-wrap">
+        <table class="payouts__table">
+          <thead>
+            <tr>
+              <th>{{ 'FINANCE.COL_ARRIVAL' | translate }}</th>
+              <th>{{ 'FINANCE.COL_AMOUNT' | translate }}</th>
+              <th>{{ 'FINANCE.COL_STATUS' | translate }}</th>
+              <th>{{ 'FINANCE.COL_BANK' | translate }}</th>
+              <th class="col-detail"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let p of payouts; trackBy: trackByPayout">
+              <tr class="payouts__row" (click)="togglePayoutDetail(p)">
+                <td [attr.data-label]="'FINANCE.COL_ARRIVAL' | translate">{{ formatDate(p.arrivalDate) }}</td>
+                <td [attr.data-label]="'FINANCE.COL_AMOUNT' | translate" class="amount">{{ formatMoney(p.amount, p.currency) }}</td>
+                <td [attr.data-label]="'FINANCE.COL_STATUS' | translate">
+                  <span class="badge-status" [ngClass]="statusClass(p.status)">{{ statusLabelKey(p.status) | translate }}</span>
+                  <span *ngIf="p.failureMessage" class="fail-msg" [title]="p.failureMessage">
+                    <i class="bi bi-info-circle"></i>
+                  </span>
+                </td>
+                <td [attr.data-label]="'FINANCE.COL_BANK' | translate">
+                  <ng-container *ngIf="p.bankLast4; else noBank">
+                    {{ p.bankName || ('FINANCE.BANK' | translate) }} ····{{ p.bankLast4 }}
+                  </ng-container>
+                  <ng-template #noBank>—</ng-template>
+                </td>
+                <td class="col-detail">
+                  <i class="bi" [ngClass]="expandedPayoutId === p.id ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                </td>
+              </tr>
+
+              <!-- Detalle: movimientos que componen el payout -->
+              <tr *ngIf="expandedPayoutId === p.id" class="payouts__detail">
+                <td colspan="5">
+                  <div *ngIf="loadingTransactions" class="finanzas__loading finanzas__loading--inline">
+                    <div class="spinner spinner--sm"></div>
+                    <span>{{ 'FINANCE.LOADING' | translate }}</span>
+                  </div>
+
+                  <div *ngIf="!loadingTransactions && transactions">
+                    <div class="detail-summary">
+                      <span>{{ 'FINANCE.GROSS' | translate }}: <strong>{{ formatMoney(transactions.grossAmount, transactions.currency) }}</strong></span>
+                      <span>{{ 'FINANCE.FEES' | translate }}: <strong class="neg">-{{ formatMoney(transactions.totalFee, transactions.currency) }}</strong></span>
+                      <span>{{ 'FINANCE.NET' | translate }}: <strong>{{ formatMoney(transactions.netAmount, transactions.currency) }}</strong></span>
+                    </div>
+
+                    <table class="detail-table" *ngIf="transactions.transactions.length > 0">
+                      <thead>
+                        <tr>
+                          <th>{{ 'FINANCE.COL_CONCEPT' | translate }}</th>
+                          <th>{{ 'FINANCE.COL_GROSS' | translate }}</th>
+                          <th>{{ 'FINANCE.COL_FEE' | translate }}</th>
+                          <th>{{ 'FINANCE.COL_NET' | translate }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let t of transactions.transactions">
+                          <td>{{ t.description || t.type }}</td>
+                          <td>{{ formatMoney(t.amount, t.currency) }}</td>
+                          <td class="neg">{{ t.fee ? '-' + formatMoney(t.fee, t.currency) : '—' }}</td>
+                          <td>{{ formatMoney(t.net, t.currency) }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    <p *ngIf="transactions.transactions.length === 0" class="detail-empty">
+                      {{ 'FINANCE.NO_TRANSACTIONS' | translate }}
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+
+        <div class="payouts__more" *ngIf="hasMore">
+          <button type="button" class="btn-primary" (click)="loadMore()" [disabled]="loadingMore">
+            <span *ngIf="!loadingMore">{{ 'FINANCE.LOAD_MORE' | translate }}</span>
+            <span *ngIf="loadingMore">{{ 'FINANCE.LOADING' | translate }}</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </ng-container>
+</div>
