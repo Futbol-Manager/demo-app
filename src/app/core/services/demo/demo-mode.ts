@@ -10,3 +10,14 @@ export function isDemoMode(): boolean {
   const h = window.location.hostname.toLowerCase();
   return !!(environment as { demo?: boolean }).demo || h === 'demo.sphairatech.com' || h.startsWith('demo.');
 }
+
+/**
+ * Rol activo de la demo leído de sessionStorage (misma clave que DemoService).
+ * Existe como función suelta para los datos demo estáticos, que no pueden inyectar
+ * servicios.
+ */
+export function demoRole(): 'club' | 'coach' | 'player' | null {
+  if (!isDemoMode() || typeof sessionStorage === 'undefined') return null;
+  const r = sessionStorage.getItem('demoRole');
+  return r === 'club' || r === 'coach' || r === 'player' ? r : null;
+}

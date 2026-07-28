@@ -11,11 +11,12 @@ $gray-text: #636363;
 // ══════════════════════════════════════════════════════════════════════════
 .dj {
   position: fixed;
-  left: 18px;
+  // Desplazado para no quedar encima de la barra lateral de iconos del dashboard.
+  left: 86px;
   bottom: 18px;
   z-index: 1035; // por debajo del overlay del tutorial, por encima del contenido
   width: 320px;
-  max-width: calc(100vw - 36px);
+  max-width: calc(100vw - 104px);
   border-radius: 16px;
   background: #fff;
   box-shadow: 0 18px 44px rgba(0, 44, 64, 0.22);
@@ -23,6 +24,14 @@ $gray-text: #636363;
   overflow: hidden;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   animation: dj-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dj__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1034;
+  background: rgba(0, 30, 46, 0.45);
+  animation: dj-fade 0.25s ease both;
 }
 
 @keyframes dj-in {
@@ -198,6 +207,19 @@ $gray-text: #636363;
   &--offer {
     background: linear-gradient(120deg, $green 0%, $navy 100%);
     box-shadow: 0 6px 18px rgba(49, 178, 112, 0.34);
+  }
+
+  // Mientras queda recorrido por ver, la oferta está disponible pero sin robarle
+  // el protagonismo al botón que lleva al siguiente hito.
+  &--offer-soft {
+    margin-top: 7px;
+    background: rgba($green, 0.1);
+    color: $navy;
+    box-shadow: none;
+    border: 1px solid rgba($green, 0.42);
+    font-weight: 600;
+
+    &:hover { background: rgba($green, 0.16); filter: none; }
   }
 }
 
@@ -406,24 +428,80 @@ $gray-text: #636363;
 // ══════════════════════════════════════════════════════════════════════════
 //  Móvil
 // ══════════════════════════════════════════════════════════════════════════
-@media (max-width: 767px) {
+// Con la barra lateral desplegada hay que apartarse todavía más.
+.dj--sidebar-open {
+  left: 266px;
+  max-width: calc(100vw - 284px);
+}
+
+@media (max-width: 768px) {
+  // Hoja inferior pegada al borde: es el patrón que el usuario de móvil ya conoce y
+  // deja el contenido de la demo visible por encima.
   .dj {
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
+    left: 0;
+    right: 0;
+    bottom: 0;
     width: auto;
+    max-width: none;
+    border-radius: 18px 18px 0 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    box-shadow: 0 -10px 34px rgba(0, 44, 64, 0.24);
+    animation: dj-sheet-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
-  // El FAB del asistente IA vive abajo a la derecha: dejamos hueco al colapsar.
+  .dj__handle {
+    padding: 13px 16px;
+    min-height: 60px;
+  }
+
+  .dj__handle-ring { flex: 0 0 38px; width: 38px; height: 38px; svg { width: 38px; height: 38px; } }
+
+  .dj__handle-text strong { font-size: 0.92rem; }
+  .dj__handle-text small  { font-size: 0.76rem; }
+
+  .dj__body { padding: 12px 16px 16px; }
+
+  // Lista táctil: filas altas y scroll propio para que quepan todos los hitos.
+  .dj__list { max-height: 46vh; overflow-y: auto; -webkit-overflow-scrolling: touch; gap: 6px; }
+  .dj__item { padding: 11px 10px; }
+  .dj__item-icon { flex: 0 0 34px; width: 34px; height: 34px; font-size: 1rem; }
+  .dj__item-text strong { font-size: 0.86rem; }
+  .dj__item-text small  { font-size: 0.75rem; }
+  .dj__item-arrow { opacity: 1; } // sin hover en táctil, la flecha debe verse siempre
+
+  .dj__cta { padding: 13px 14px; font-size: 0.88rem; }
+  .dj__dismiss { padding: 9px 4px; font-size: 0.75rem; }
+
+  // En móvil no hay barra lateral: la hoja siempre ocupa el ancho completo.
+  .dj--sidebar-open { left: 0; max-width: none; }
+
+  // Plegado: barra fina que no tapa el botón flotante del asistente IA.
   .dj--collapsed {
-    right: auto;
-    max-width: calc(100vw - 92px);
-  }
+    left: 0;
+    right: 74px;
+    width: auto;
+    border-radius: 0 18px 0 0;
 
-  .dj__list { max-height: 42vh; overflow-y: auto; }
+    .dj__handle { min-height: 52px; padding: 9px 14px; }
+    .dj__handle-ring { flex: 0 0 32px; width: 32px; height: 32px; svg { width: 32px; height: 32px; } }
+  }
 
   .dj-offer__card { padding: 26px 20px 22px; }
   .dj-offer__title { font-size: 1.22rem; }
+  .dj-offer__cta { padding: 15px 18px; }
+}
+
+@keyframes dj-sheet-in {
+  from { opacity: 0; transform: translateY(100%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// Pantallas muy bajas (móvil en horizontal): la lista no puede comerse la pantalla.
+@media (max-height: 520px) {
+  .dj__list { max-height: 34vh; }
 }
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -434,6 +512,8 @@ $gray-text: #636363;
     background: $navy-deep;
     border-color: rgba(255, 255, 255, 0.1);
   }
+
+  .dj__dismiss { color: rgba(255, 255, 255, 0.62); }
 
   .dj__item:hover { background: rgba(255, 255, 255, 0.06); }
 
@@ -448,6 +528,13 @@ $gray-text: #636363;
   .dj__bar { background: rgba(255, 255, 255, 0.14); }
 
   .dj__cta { background: $green; }
+
+  .dj__cta--offer-soft {
+    background: rgba($green, 0.16);
+    color: #fff;
+    border-color: rgba($green, 0.5);
+    &:hover { background: rgba($green, 0.24); }
+  }
 
   .dj-offer__card { background: $navy-deep; }
   .dj-offer__title { color: #fff; }

@@ -12,6 +12,7 @@ import {
   monthYearLabel,
   nextSaturdayIso,
 } from 'src/app/core/utils/demo-dates';
+import { demoRole } from './demo-mode';
 
 /**
  * Datos hardcodeados para el modo demo (rama demo-app).
@@ -160,10 +161,19 @@ export class DemoDataService {
     }));
   }
 
+  /**
+   * Equipos que el usuario ve como propios. El entrenador solo dirige uno: mostrarle
+   * los ocho del club daba una idea equivocada de su día a día.
+   */
+  static getDemoTeamsForUser(): any[] {
+    const teams = DemoDataService.getDemoTeams();
+    return demoRole() === 'coach' ? teams.slice(0, 1) : teams;
+  }
+
   /** Objeto data completo para getTeams (data.teams + data.picture) */
   static getDemoTeamsResponseData(): any {
     return {
-      teams: DemoDataService.getDemoTeams(),
+      teams: DemoDataService.getDemoTeamsForUser(),
       picture: 'demo-club-logo.png'
     };
   }
@@ -483,9 +493,15 @@ export class DemoDataService {
     return DEMO_TEAMS_META.map(t => t.teamId).join(',');
   }
 
-  /** Equipos para combo (calendario / selects) — 8 equipos */
+  /** Equipos para combo (calendario / selects) — 8 equipos del club */
   static getDemoTeamsByClubForCombo(): any[] {
     return DEMO_TEAMS_META.map(t => ({ value: t.teamId, teamId: t.teamId, name: t.name, teamName: t.name }));
+  }
+
+  /** Combo de equipos del usuario: uno solo si es el entrenador. */
+  static getDemoTeamsForUserCombo(): any[] {
+    const teams = DemoDataService.getDemoTeamsByClubForCombo();
+    return demoRole() === 'coach' ? teams.slice(0, 1) : teams;
   }
 
   /** Lesiones por club — muestra de jugadores de distintos equipos. */

@@ -35,6 +35,19 @@ export class PublicidadComponent implements OnInit, OnDestroy {
     return isDemoMode() ? '/assets/images/patrocinadores/' : environment.images + 'patrocinadores/';
   }
 
+  /**
+   * Perfiles que ven patrocinadores. En la demo solo el jugador: al entrenador la
+   * banda de logos le ocupaba la pantalla sin aportar nada a lo que viene a ver.
+   */
+  private get sponsorsAllowed(): boolean {
+    return isDemoMode() ? this.profileId === 3 : this.profileId === 2 || this.profileId === 3;
+  }
+
+  /** El carrusel solo se pinta si hay algún logo visible que mostrar. */
+  get showSponsors(): boolean {
+    return this.sponsorsAllowed && this.listPatrocinadores.some((p) => p?.imagen && p?.oculto === 1);
+  }
+
   /** URL de la imagen del patrocinador; resuelve '../nombre.png' a /assets/images/nombre.png */
   getSponsorImageSrc(p: { imagen?: string }): string {
     if (!p?.imagen) return '';
@@ -53,7 +66,7 @@ export class PublicidadComponent implements OnInit, OnDestroy {
       this.profileId = this.usuarioActual!.profileType.profileId;
 
       //llamar a endpoint que de userId y profileId
-      if(this.profileId == 2 || this.profileId == 3){
+      if (this.sponsorsAllowed) {
         this.clubService.getListPatrocinadoresByUser(this.userId, this.profileId).subscribe(
           (response: Response) => {
             if (response.data !== null) {

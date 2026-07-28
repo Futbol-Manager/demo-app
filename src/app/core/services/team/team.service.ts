@@ -456,7 +456,8 @@ export class TeamService {
 
     getTeamsByClubForCombo2(clubId: number, temporada: string, userId: number): Observable<Response> {
         if (isDemoMode()) {
-            return of(DemoDataService.response(DemoDataService.getDemoTeamsByClubForCombo()) as any);
+            // Combo de los equipos del usuario, no de todo el club.
+            return of(DemoDataService.response(DemoDataService.getDemoTeamsForUserCombo()) as any);
         }
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');

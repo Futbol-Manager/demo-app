@@ -436,41 +436,97 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
   emailTouched = false;
 
   // ── Teléfono (obligatorio para acceder a la demo) ──────────────────────────
-  /** Prefijo internacional seleccionado (ej. '+34'). */
-  phonePrefix = '+34';
+  /**
+   * País elegido en el desplegable (código ISO). Se pide el país y no el prefijo
+   * porque casi nadie se sabe el suyo de memoria: al elegir 'Colombia' el +57 se
+   * pone solo. Vacío obliga a elegir antes de continuar.
+   */
+  selectedCountry = '';
+  /** Prefijo internacional derivado del país elegido (ej. '+34'). */
+  phonePrefix = '';
   /** Número de teléfono sin prefijo (solo dígitos). */
   phoneNumber = '';
   /** true en cuanto el usuario ha tocado el campo de teléfono. */
   phoneTouched = false;
-  /** Lista curada de prefijos de país más habituales para la demo. */
-  readonly phonePrefixes: ReadonlyArray<{ code: string; label: string }> = [
-    { code: '+34',  label: '🇪🇸 +34' },
-    { code: '+351', label: '🇵🇹 +351' },
-    { code: '+33',  label: '🇫🇷 +33' },
-    { code: '+49',  label: '🇩🇪 +49' },
-    { code: '+39',  label: '🇮🇹 +39' },
-    { code: '+44',  label: '🇬🇧 +44' },
-    { code: '+1',   label: '🇺🇸 +1' },
-    { code: '+52',  label: '🇲🇽 +52' },
-    { code: '+54',  label: '🇦🇷 +54' },
-    { code: '+57',  label: '🇨🇴 +57' },
-    { code: '+56',  label: '🇨🇱 +56' },
-    { code: '+58',  label: '🇻🇪 +58' },
-    { code: '+591', label: '🇧🇴 +591' },
-    { code: '+593', label: '🇪🇨 +593' },
-    { code: '+595', label: '🇵🇾 +595' },
-    { code: '+598', label: '🇺🇾 +598' },
-    { code: '+51',  label: '🇵🇪 +51' },
-    { code: '+212', label: '🇲🇦 +212' },
+  /** true en cuanto el usuario ha desplegado o cambiado el país. */
+  countryTouched = false;
+  /** Países ordenados por nombre en el idioma del visitante, con su prefijo. */
+  phoneCountries: ReadonlyArray<{ iso: string; code: string; label: string }> = [];
+
+  /** Países soportados con su prefijo y su nombre en castellano como respaldo. */
+  private static readonly COUNTRIES: ReadonlyArray<{ iso: string; code: string; es: string }> = [
+    { iso: 'ES', code: '+34',  es: 'España' },
+    { iso: 'MX', code: '+52',  es: 'México' },
+    { iso: 'AR', code: '+54',  es: 'Argentina' },
+    { iso: 'CO', code: '+57',  es: 'Colombia' },
+    { iso: 'CL', code: '+56',  es: 'Chile' },
+    { iso: 'PE', code: '+51',  es: 'Perú' },
+    { iso: 'VE', code: '+58',  es: 'Venezuela' },
+    { iso: 'EC', code: '+593', es: 'Ecuador' },
+    { iso: 'BO', code: '+591', es: 'Bolivia' },
+    { iso: 'PY', code: '+595', es: 'Paraguay' },
+    { iso: 'UY', code: '+598', es: 'Uruguay' },
+    { iso: 'CR', code: '+506', es: 'Costa Rica' },
+    { iso: 'PA', code: '+507', es: 'Panamá' },
+    { iso: 'GT', code: '+502', es: 'Guatemala' },
+    { iso: 'SV', code: '+503', es: 'El Salvador' },
+    { iso: 'HN', code: '+504', es: 'Honduras' },
+    { iso: 'NI', code: '+505', es: 'Nicaragua' },
+    { iso: 'DO', code: '+1',   es: 'República Dominicana' },
+    { iso: 'US', code: '+1',   es: 'Estados Unidos' },
+    { iso: 'BR', code: '+55',  es: 'Brasil' },
+    { iso: 'PT', code: '+351', es: 'Portugal' },
+    { iso: 'FR', code: '+33',  es: 'Francia' },
+    { iso: 'IT', code: '+39',  es: 'Italia' },
+    { iso: 'DE', code: '+49',  es: 'Alemania' },
+    { iso: 'GB', code: '+44',  es: 'Reino Unido' },
+    { iso: 'MA', code: '+212', es: 'Marruecos' },
+    { iso: 'AD', code: '+376', es: 'Andorra' },
   ];
 
-  // ── Cupón demo ────────────────────────────────────────────────────────────
   /**
-   * Paso del modal: 'email' → captura de email | 'coupon' → muestra el cupón generado.
+   * País por zona horaria del navegador, para llegar con el suyo ya elegido. El
+   * idioma no sirve: media Latinoamérica comparte el castellano y cada país tiene
+   * un prefijo distinto.
+   */
+  private static readonly COUNTRY_BY_TIMEZONE: Readonly<Record<string, string>> = {
+    'Europe/Madrid': 'ES', 'Atlantic/Canary': 'ES',
+    'Europe/Lisbon': 'PT', 'Atlantic/Madeira': 'PT', 'Atlantic/Azores': 'PT',
+    'Europe/Paris': 'FR',
+    'Europe/Berlin': 'DE', 'Europe/Vienna': 'DE', 'Europe/Zurich': 'DE',
+    'Europe/Rome': 'IT',
+    'Europe/London': 'GB', 'Europe/Dublin': 'GB',
+    'Europe/Andorra': 'AD',
+    'America/New_York': 'US', 'America/Chicago': 'US', 'America/Denver': 'US',
+    'America/Los_Angeles': 'US', 'America/Phoenix': 'US', 'America/Anchorage': 'US',
+    'America/Mexico_City': 'MX', 'America/Monterrey': 'MX', 'America/Tijuana': 'MX',
+    'America/Cancun': 'MX', 'America/Merida': 'MX',
+    'America/Bogota': 'CO',
+    'America/Santiago': 'CL',
+    'America/Caracas': 'VE',
+    'America/La_Paz': 'BO',
+    'America/Guayaquil': 'EC',
+    'America/Asuncion': 'PY',
+    'America/Montevideo': 'UY',
+    'America/Lima': 'PE',
+    'America/Costa_Rica': 'CR',
+    'America/Panama': 'PA',
+    'America/Guatemala': 'GT',
+    'America/El_Salvador': 'SV',
+    'America/Tegucigalpa': 'HN',
+    'America/Managua': 'NI',
+    'America/Santo_Domingo': 'DO',
+    'America/Sao_Paulo': 'BR', 'America/Bahia': 'BR', 'America/Fortaleza': 'BR',
+    'America/Recife': 'BR', 'America/Manaus': 'BR',
+    'Africa/Casablanca': 'MA',
+  };
+
+  // ── Código de acceso demo ─────────────────────────────────────────────────
+  /**
+   * Paso del modal: 'email' → captura de email | 'coupon' → muestra el código generado.
    */
   modalStep: 'email' | 'coupon' = 'email';
   couponCode        = '';
-  couponDiscount    = 10;
   couponExpires     = '';
   couponCopied      = false;
   couponLoadError   = false;
@@ -563,10 +619,44 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     if (this.emailError && this.isValidEmail) this.emailError = '';
   }
 
-  /** Solo dígitos en el número y validación de longitud (6-15 dígitos). */
+  /**
+   * El número tiene la longitud que le corresponde a su país y no es un relleno
+   * evidente. Aceptar cualquier cosa de 6 a 15 dígitos dejaba pasar teléfonos
+   * inservibles: un '+52 234556' o un '+34 2966555880' se guardaban como buenos
+   * y el comercial descubría el problema al intentar llamar.
+   */
   get isValidPhone(): boolean {
+    if (!this.phonePrefix) return false;
     const digits = this.phoneNumber.replace(/\D/g, '');
-    return digits.length >= 6 && digits.length <= 15;
+    const rule = DemoRoleSelectionComponent.PHONE_LENGTHS[this.phonePrefix];
+    const min = rule ? rule[0] : 6;
+    const max = rule ? rule[1] : 15;
+    if (digits.length < min || digits.length > max) return false;
+    return !DemoRoleSelectionComponent.isFillerNumber(digits);
+  }
+
+  /**
+   * Longitud nacional (sin prefijo) esperada por país: [mínimo, máximo]. Se usa un
+   * rango porque varios países mezclan móviles y fijos de distinta longitud.
+   */
+  private static readonly PHONE_LENGTHS: Readonly<Record<string, [number, number]>> = {
+    '+34': [9, 9],    '+351': [9, 9],   '+33': [9, 9],
+    '+49': [10, 11],  '+39': [9, 10],   '+44': [10, 10],
+    '+1':  [10, 10],  '+52': [10, 10],  '+54': [10, 11],
+    '+57': [10, 10],  '+56': [9, 9],    '+58': [10, 10],
+    '+591': [8, 8],   '+593': [9, 9],   '+595': [9, 9],
+    '+598': [8, 9],   '+51': [9, 9],    '+212': [9, 9],
+    '+55': [10, 11],  '+502': [8, 8],   '+503': [8, 8],
+    '+504': [8, 8],   '+505': [8, 8],   '+506': [8, 8],
+    '+507': [8, 8],   '+376': [6, 9],
+  };
+
+  /** Descarta rellenos obvios: todos los dígitos iguales o secuencias corridas. */
+  private static isFillerNumber(digits: string): boolean {
+    if (/^(\d)\1+$/.test(digits)) return true;
+    const ascending  = '01234567890123456789';
+    const descending = '09876543210987654321';
+    return ascending.includes(digits) || descending.includes(digits);
   }
 
   /** true cuando el visitante no ha escrito nada en el teléfono. */
@@ -580,19 +670,95 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     return digits ? `${this.phonePrefix}${digits}` : '';
   }
 
-  /**
-   * Requisito para acceder a la demo: solo el email.
-   * El teléfono es opcional (pedirlo antes de que el visitante haya visto nada
-   * de la plataforma hundía la entrada); si lo rellena, sí debe ser válido.
-   */
+  /** Para entrar en la demo hacen falta email, país y teléfono. */
   get canSubmitDemoAccess(): boolean {
-    return this.isValidEmail && (this.isPhoneEmpty || this.isValidPhone);
+    return this.isValidEmail && !!this.phonePrefix && this.isValidPhone;
   }
 
-  /** Limpia el número conforme se escribe (solo dígitos y espacios). */
+  /**
+   * País de partida a partir de la zona horaria del navegador. Si no se reconoce se
+   * deja vacío para que el visitante lo elija: es preferible un desplegable sin
+   * responder que un prefijo equivocado pegado a un número correcto.
+   */
+  private detectCountry(): string {
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone ?? '';
+      const direct = DemoRoleSelectionComponent.COUNTRY_BY_TIMEZONE[tz];
+      if (direct) return direct;
+      // Argentina reparte sus provincias en zonas del tipo America/Argentina/Cordoba.
+      if (tz.startsWith('America/Argentina')) return 'AR';
+    } catch {
+      // Navegadores sin Intl completo: se queda sin preseleccionar.
+    }
+    return '';
+  }
+
+  /**
+   * Monta la lista de países con el nombre en el idioma del visitante y la ordena
+   * alfabéticamente, que es como se busca un país en un desplegable.
+   */
+  private buildCountryList(): void {
+    let display: Intl.DisplayNames | null = null;
+    try {
+      display = new Intl.DisplayNames([this.currentLang || 'es'], { type: 'region' });
+    } catch {
+      display = null;
+    }
+    this.phoneCountries = DemoRoleSelectionComponent.COUNTRIES
+      .map((c) => {
+        let name = c.es;
+        try {
+          name = display?.of(c.iso) || c.es;
+        } catch {
+          name = c.es;
+        }
+        return { iso: c.iso, code: c.code, label: `${name} (${c.code})` };
+      })
+      .sort((a, b) => a.label.localeCompare(b.label, this.currentLang || 'es'));
+  }
+
+  /** Al elegir país se aplica su prefijo y se revalida el número ya escrito. */
+  onCountryChange(): void {
+    this.countryTouched = true;
+    const country = DemoRoleSelectionComponent.COUNTRIES.find((c) => c.iso === this.selectedCountry);
+    this.phonePrefix = country ? country.code : '';
+    if (this.phoneNumber) this.onPhoneInput();
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Limpia el número conforme se escribe. Además de quedarse con dígitos y espacios,
+   * quita lo que el visitante repite sin darse cuenta cuando ya hay un prefijo en el
+   * desplegable: el '00' o '+' de salida internacional, su propio prefijo de país
+   * escrito otra vez y el 0 de acceso nacional.
+   */
   onPhoneInput(): void {
     this.phoneTouched = true;
-    this.phoneNumber = this.phoneNumber.replace(/[^\d\s]/g, '');
+    let digits = this.phoneNumber.replace(/[^\d\s]/g, '').replace(/\s+/g, '');
+    const prefix = this.phonePrefix.replace('+', '');
+    if (digits.startsWith('00' + prefix)) digits = digits.slice(2 + prefix.length);
+    else if (digits.startsWith(prefix) && digits.length > prefix.length + 5) digits = digits.slice(prefix.length);
+    // El 0 nacional (Argentina, Alemania, Reino Unido...) no viaja en formato internacional.
+    if (digits.startsWith('0')) digits = digits.replace(/^0+/, '');
+    this.phoneNumber = digits;
+  }
+
+  /** Cuántos dígitos se esperan para el prefijo elegido, para poder decírselo al visitante. */
+  get expectedPhoneDigits(): string {
+    const rule = DemoRoleSelectionComponent.PHONE_LENGTHS[this.phonePrefix];
+    if (!rule) return '';
+    return rule[0] === rule[1] ? `${rule[0]}` : `${rule[0]}-${rule[1]}`;
+  }
+
+  /** Mensaje de error del teléfono: falta país, está vacío o no cuadra la longitud. */
+  get phoneValidationMessage(): string {
+    if (!this.phonePrefix) return this.translate.instant('DEMO_INTRO.COUNTRY_REQUIRED');
+    if (this.isPhoneEmpty) return this.translate.instant('DEMO_INTRO.PHONE_REQUIRED');
+    const digits = this.expectedPhoneDigits;
+    if (digits) {
+      return this.translate.instant('DEMO_INTRO.PHONE_LENGTH', { digits, prefix: this.phonePrefix });
+    }
+    return this.translate.instant('DEMO_INTRO.PHONE_INVALID');
   }
   get slideProgress(): number { return (this.currentSlide / Math.max(this.introSlides.length - 1, 1)) * 100; }
 
@@ -678,6 +844,11 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     this.currentLang = full.split('-')[0].toLowerCase();
     this.activeLang  = this.currentLang;
     this.introSlides = INTRO_SLIDES[this.currentLang] ?? INTRO_SLIDES['es'];
+
+    this.buildCountryList();
+    this.selectedCountry = this.detectCountry();
+    this.onCountryChange();
+    this.countryTouched = false;
 
     // Splash universal: el audio siempre requiere interacción explícita del usuario.
     this.audioPending = true;
@@ -1003,13 +1174,12 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
         this.emailAlreadyHasCoupon = res?.status === 'existing';
         if (res && res.code) {
           this.couponCode     = this.emailAlreadyHasCoupon ? '' : res.code;
-          this.couponDiscount = res.discountPercent;
           this.couponExpires  = res.expiresAt;
           if (!this.emailAlreadyHasCoupon) {
             this.demoCouponService.saveCouponToSession(res.code);
             this.demoAnalytics.trackMetaConversion('Lead');
             this.demoAnalytics.track('demo_coupon_generated', {
-              discount: res.discountPercent,
+              offer: 'club_fundador',
             });
           }
         } else {

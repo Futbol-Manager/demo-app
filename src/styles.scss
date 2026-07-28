@@ -1032,4 +1032,10 @@ body.dark {
   .header-tutorial-btn {
     display: none !important;
   }
+
+  /* La barra del recorrido guiado está anclada abajo: reservamos su altura para que
+     no tape el final del contenido ni los botones de la pantalla. */
+  body.demo-journey-docked .dashboard-content {
+    padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px));
+  }
 }

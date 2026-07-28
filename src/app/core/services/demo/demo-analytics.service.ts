@@ -28,6 +28,7 @@ export type DemoFunnelEvent =
   | 'demo_journey_complete'
   | 'demo_journey_dismiss'
   | 'demo_offer_view'
+  | 'demo_offer_close'
   | 'demo_offer_cta'
   | 'demo_offer_whatsapp';
 

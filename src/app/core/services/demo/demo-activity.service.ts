@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { TranslateService } from '@ngx-translate/core';
 import { DemoService } from './demo.service';
 import { DemoAnalyticsService } from './demo-analytics.service';
 
@@ -23,6 +24,8 @@ export interface DemoLeadPayload {
   email: string;
   phone?: string;
   demoRole: string;
+  /** Idioma con el que se recorrió la demo: el seguimiento por email se escribe en él. */
+  lang?: string;
   activitySummary: DemoActivitySummary;
 }
 
@@ -64,7 +67,17 @@ export class DemoActivityService {
     private http: HttpClient,
     private demoService: DemoService,
     private demoAnalytics: DemoAnalyticsService,
+    private translate: TranslateService,
   ) {}
+
+  /** Idioma activo, en dos letras, para que el seguimiento se escriba en el del visitante. */
+  private currentLang(): string {
+    const raw = this.translate.currentLang
+      || this.translate.defaultLang
+      || localStorage.getItem('language')
+      || 'es';
+    return raw.split('-')[0].toLowerCase();
+  }
 
   /** Inicializa el tracking (solo en modo demo). Llamar una vez desde AppComponent. */
   init(): void {
@@ -225,6 +238,7 @@ export class DemoActivityService {
     const payload: DemoLeadPayload = {
       email:           email.trim(),
       demoRole:        role || '',
+      lang:            this.currentLang(),
       activitySummary: this.getActivitySummary(),
     };
     if (phone) payload.phone = phone;
@@ -260,6 +274,7 @@ export class DemoActivityService {
     const payload: DemoLeadPayload = {
       email,
       demoRole:        this.demoService.getDemoRole() || '',
+      lang:            this.currentLang(),
       activitySummary: this.getActivitySummary(),
     };
     if (phone) payload.phone = phone;

@@ -6,7 +6,8 @@ import { take } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { LoginService } from 'src/app/core/services/login/login.service';
 
-@Component({
+@Component({
+
   selector: 'app-planes',
   templateUrl: './planes.component.html',
   styleUrls: ['./planes.component.scss']
@@ -64,7 +65,7 @@ export class PlanesComponent implements OnInit, OnDestroy {
       pricingDiscount: '-50%',
       pricingTag: 'Por tiempo limitado',
       pricingAlt: null as string | null,
-      pricingNote: 'Mínimo 10 jugadores · Sin comisiones sobre cuotas',
+      pricingNote: 'Mínimo 50 jugadores · Sin comisiones sobre cuotas',
       features: [
         'Jugadores ilimitados',
         'Estadísticas avanzadas',

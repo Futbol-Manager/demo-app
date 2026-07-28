@@ -6,7 +6,8 @@ import { environment } from 'src/environments/environment';
 
 export interface DemoCouponResponse {
   code: string;
-  discountPercent: number;
+  /** Null en los códigos de Club Fundador: el beneficio no es un porcentaje. */
+  discountPercent: number | null;
   expiresAt: string;
   status: 'created' | 'existing' | 'error';
   message: string;

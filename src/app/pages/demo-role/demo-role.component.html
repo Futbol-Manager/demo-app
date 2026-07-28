@@ -298,7 +298,7 @@
                target="_blank" rel="noopener noreferrer">
               {{ 'DEMO_INTRO.PROMO_CTA' | translate }}
               <span class="promo-cta__coupon-hint" *ngIf="demoCouponService.getCouponFromSession()">
-                &nbsp;<i class="fas fa-tag"></i> -10%
+                &nbsp;<i class="fas fa-tag"></i> {{ 'DEMO_INTRO.COUPON_TAG' | translate }}
               </span>
             </a>
 
@@ -507,30 +507,35 @@
         <i class="fas fa-exclamation-circle"></i> {{ emailError }}
       </p>
 
-      <!-- Teléfono opcional: prefijo de país + número -->
+      <!-- Teléfono obligatorio: se elige el país y el prefijo se pone solo -->
       <div class="email-modal__phone-wrap">
         <select
-          [(ngModel)]="phonePrefix"
+          [(ngModel)]="selectedCountry"
+          (ngModelChange)="onCountryChange()"
           class="email-modal__phone-prefix"
-          [attr.aria-label]="'DEMO_INTRO.PHONE_PREFIX' | translate">
-          <option *ngFor="let p of phonePrefixes" [value]="p.code">{{ p.label }}</option>
+          [class.email-modal__input--error]="countryTouched && !phonePrefix"
+          [attr.aria-label]="'DEMO_INTRO.COUNTRY' | translate"
+          required>
+          <option value="" disabled>{{ 'DEMO_INTRO.COUNTRY_PLACEHOLDER' | translate }}</option>
+          <option *ngFor="let c of phoneCountries" [value]="c.iso">{{ c.label }}</option>
         </select>
         <input
           type="tel"
           [(ngModel)]="phoneNumber"
           [placeholder]="'DEMO_INTRO.PHONE_PLACEHOLDER' | translate"
           class="email-modal__input email-modal__phone-input"
-          [class.email-modal__input--error]="phoneTouched && !isPhoneEmpty && !isValidPhone"
+          [class.email-modal__input--error]="phoneTouched && !isValidPhone"
           [class.email-modal__input--valid]="phoneTouched && isValidPhone"
           (input)="onPhoneInput()"
           (blur)="phoneTouched = true"
           (keydown.enter)="confirmDemoAccess()"
           autocomplete="tel-national"
-          inputmode="tel">
+          inputmode="tel"
+          required>
       </div>
 
-      <p class="email-modal__error" *ngIf="phoneTouched && !isPhoneEmpty && !isValidPhone">
-        <i class="fas fa-exclamation-circle"></i> {{ 'DEMO_INTRO.PHONE_INVALID' | translate }}
+      <p class="email-modal__error" *ngIf="(phoneTouched || countryTouched) && !isValidPhone">
+        <i class="fas fa-exclamation-circle"></i> {{ phoneValidationMessage }}
       </p>
 
       <button class="email-modal__btn" (click)="confirmDemoAccess()"
@@ -571,7 +576,7 @@
 
         <!-- Bloque del código copiable -->
         <div class="coupon-code-block" (click)="copyCouponCode()">
-          <span class="coupon-code-block__discount">-{{ couponDiscount }}%</span>
+          <span class="coupon-code-block__discount">{{ 'DEMO_INTRO.COUPON_TAG' | translate }}</span>
           <span class="coupon-code-block__code">{{ couponCode }}</span>
           <button class="coupon-code-block__copy" type="button" [attr.aria-label]="'DEMO_INTRO.COUPON_COPY' | translate">
             <i class="fas fa-check" *ngIf="couponCopied"></i>

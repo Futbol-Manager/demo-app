@@ -1,5 +1,11 @@
 <!-- ══════════ RECORRIDO GUIADO (widget flotante) ══════════ -->
-<div class="dj" *ngIf="visible && inDashboard && total > 0" [class.dj--collapsed]="collapsed">
+<!-- En móvil, al desplegarse se convierte en hoja inferior: el fondo permite cerrarla
+     tocando fuera, igual que cualquier bottom sheet nativo. -->
+<div class="dj__backdrop" *ngIf="visible && inDashboard && total > 0 && !collapsed && isMobile"
+     (click)="collapseFromBackdrop()"></div>
+
+<div class="dj" *ngIf="visible && inDashboard && total > 0" [class.dj--collapsed]="collapsed"
+     [class.dj--sidebar-open]="sidebarOpen">
 
   <button type="button" class="dj__handle" (click)="toggleCollapsed()"
           [attr.aria-expanded]="!collapsed">
@@ -43,9 +49,14 @@
       {{ 'DEMO_JOURNEY.CTA_NEXT' | translate }}
     </button>
 
-    <button type="button" class="dj__cta dj__cta--offer" *ngIf="allDone" (click)="openOffer()">
+    <!-- La oferta está a un toque en todo momento: esperar a completar el recorrido la
+         dejaba fuera del alcance de quien se cansaba a la mitad. -->
+    <button type="button" class="dj__cta dj__cta--offer"
+            [class.dj__cta--offer-soft]="!allDone" (click)="openOffer()">
       <i class="bi bi-gift" aria-hidden="true"></i>
-      {{ 'DEMO_JOURNEY.CTA_OFFER' | translate }}
+      {{ allDone
+          ? ('DEMO_JOURNEY.CTA_OFFER' | translate)
+          : ('DEMO_JOURNEY.CTA_OFFER_SLOTS' | translate: { left: slotsLeft }) }}
     </button>
 
     <button type="button" class="dj__dismiss" (click)="dismiss($event)">
