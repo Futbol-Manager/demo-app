@@ -535,15 +535,16 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
   private drawVolleyballCourt(): void {
     const W = this.PITCH_W;
     const H = this.PITCH_H;
-    const court = '#283593';
+    const freeZone = '#283593';   // zona libre, tono más oscuro
+    const court = '#3949ab';      // pista de juego (Taraflex)
     const c = '#ffffff';
     const ls = { stroke: c, strokeWidth: 2, listening: false };
 
-    this.addSolidPitchFill(court);
+    this.addSolidPitchFill(freeZone);
 
     const padX = 130; const padY = 136;
     const cW = W - 2 * padX; const cH = H - 2 * padY;
-    this.pitchLayer.add(new Konva.Rect({ x: padX, y: padY, width: cW, height: cH, stroke: c, strokeWidth: 3, fill: 'transparent', listening: false }));
+    this.pitchLayer.add(new Konva.Rect({ x: padX, y: padY, width: cW, height: cH, stroke: c, strokeWidth: 3, fill: court, listening: false }));
 
     const netX = W / 2;
     this.pitchLayer.add(new Konva.Line({ points: [netX, padY - 22, netX, padY + cH + 22], stroke: '#ffeb3b', strokeWidth: 5, listening: false }));
@@ -566,17 +567,21 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
   private drawFutsalCourt(): void {
     const W = this.PITCH_W;
     const H = this.PITCH_H;
-    const bg1 = '#1b5e20'; const bg2 = '#2e7d32';
+    const court = '#1565c0';
+    const penFill = '#0d47a1';
     const c = '#ffffff';
     const ls = { stroke: c, strokeWidth: 2, listening: false };
 
-    this.addVerticalGrassStripes(12, bg1, bg2);
+    // Pista de resina azul (pabellón), no césped
+    this.addSolidPitchFill(court);
     this.pitchLayer.add(new Konva.Rect({ x: 0, y: 0, width: W, height: H, ...ls, fill: 'transparent' }));
     this.pitchLayer.add(new Konva.Line({ points: [W / 2, 0, W / 2, H], ...ls }));
     this.pitchLayer.add(new Konva.Circle({ x: W / 2, y: H / 2, radius: 76, ...ls, fill: 'transparent' }));
     this.pitchLayer.add(new Konva.Circle({ x: W / 2, y: H / 2, radius: 4, fill: c, listening: false }));
 
     const penR = 157;
+    this.pitchLayer.add(new Konva.Arc({ x: 0, y: H / 2, innerRadius: 0, outerRadius: penR, angle: 180, rotation: -90, fill: penFill, listening: false }));
+    this.pitchLayer.add(new Konva.Arc({ x: W, y: H / 2, innerRadius: 0, outerRadius: penR, angle: 180, rotation: 90, fill: penFill, listening: false }));
     this.pitchLayer.add(new Konva.Arc({ x: 0, y: H / 2, innerRadius: penR, outerRadius: penR, angle: 180, rotation: -90, ...ls }));
     this.pitchLayer.add(new Konva.Arc({ x: W, y: H / 2, innerRadius: penR, outerRadius: penR, angle: 180, rotation: 90, ...ls }));
 
@@ -599,7 +604,7 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
   private drawWaterpoloCourt(): void {
     const W = this.PITCH_W;
     const H = this.PITCH_H;
-    const pool = '#1565c0';
+    const pool = '#0d47a1';   // agua profunda de piscina
     const c = '#ffffff';
     const ls = { stroke: c, strokeWidth: 2, listening: false };
 
