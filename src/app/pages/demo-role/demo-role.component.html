@@ -480,6 +480,16 @@
       <h3 class="email-modal__title">{{ 'DEMO_INTRO.EMAIL_TITLE' | translate }}</h3>
       <p class="email-modal__sub" [innerHTML]="'DEMO_INTRO.EMAIL_SUB_COUPON' | translate"></p>
 
+      <!-- Campo trampa: oculto para las personas, los bots lo rellenan y quedan marcados -->
+      <input
+        class="email-modal__honeypot"
+        type="text"
+        name="company"
+        tabindex="-1"
+        aria-hidden="true"
+        autocomplete="off"
+        [(ngModel)]="honeypotValue">
+
       <div class="email-modal__input-wrap">
         <input
           #emailInput

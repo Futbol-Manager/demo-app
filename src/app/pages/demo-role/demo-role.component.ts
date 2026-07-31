@@ -435,6 +435,17 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
   /** true en cuanto el usuario ha modificado el campo (activa validación en tiempo real) */
   emailTouched = false;
 
+  // ── Antibot ────────────────────────────────────────────────────────────────
+  /**
+   * Campo trampa: invisible para las personas, pero los bots que rellenan todos los
+   * inputs del DOM lo completan. Si llega con valor, el lead se marca como sospechoso.
+   */
+  honeypotValue = '';
+  /** Momento en que se abrió el modal, para descartar envíos instantáneos. */
+  private emailModalOpenedAt = 0;
+  /** Nadie lee la pantalla y escribe su email en menos de esto. */
+  private static readonly MIN_SUBMIT_MS = 2500;
+
   // ── Teléfono (obligatorio para acceder a la demo) ──────────────────────────
   /**
    * País elegido en el desplegable (código ISO). Se pide el país y no el prefijo
@@ -1122,7 +1133,20 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     this.couponCopied    = false;
     this.modalStep       = 'email';
     this.showEmailModal  = true;
+    this.honeypotValue   = '';
+    this.emailModalOpenedAt = Date.now();
     setTimeout(() => this.emailInputRef?.nativeElement.focus(), 80);
+  }
+
+  /**
+   * Veredicto antibot del formulario: campo trampa relleno o envío demasiado rápido.
+   * No bloquea el acceso a la demo (un falso positivo no debe dejar fuera a un cliente),
+   * solo viaja al backend para que no le programe la secuencia de emails.
+   */
+  private get botSuspect(): boolean {
+    if (this.honeypotValue.trim().length > 0) return true;
+    const openedAt = this.emailModalOpenedAt;
+    return openedAt > 0 && Date.now() - openedAt < DemoRoleSelectionComponent.MIN_SUBMIT_MS;
   }
 
   closeEmailModal(): void {
@@ -1151,8 +1175,10 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
 
     const email = this.emailValue.trim();
     const phone = this.fullPhone;
+    const bot   = this.botSuspect;
     sessionStorage.setItem('demoEmail', email);
     sessionStorage.setItem('demoPhone', phone);
+    sessionStorage.setItem('demoBotSuspect', bot ? '1' : '0');
     this.demoAnalytics.track('demo_email_submitted', {
       role: this.selectedRole ?? 'none',
       has_phone: !!phone,
@@ -1167,7 +1193,7 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     this.emailError       = '';
     this.cdr.markForCheck();
 
-    this.demoCouponService.generateCoupon(email, this.activeLang, phone).subscribe({
+    this.demoCouponService.generateCoupon(email, this.activeLang, phone, bot).subscribe({
       next: (res) => {
         if (this.destroyed) return;
         this.isCouponLoading = false;
@@ -1237,6 +1263,7 @@ export class DemoRoleSelectionComponent implements OnInit, AfterViewInit, OnDest
     const role  = this.selectedRole;
     sessionStorage.setItem('demoEmail', email);
     sessionStorage.setItem('demoPhone', this.fullPhone);
+    sessionStorage.setItem('demoBotSuspect', this.botSuspect ? '1' : '0');
     this.demoAnalytics.track('demo_email_submitted', {
       role: role ?? 'none',
       has_phone: !this.isPhoneEmpty,

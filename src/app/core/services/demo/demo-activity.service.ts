@@ -26,11 +26,15 @@ export interface DemoLeadPayload {
   demoRole: string;
   /** Idioma con el que se recorrió la demo: el seguimiento por email se escribe en él. */
   lang?: string;
+  /** El formulario de entrada detectó un bot (campo trampa relleno o envío instantáneo). */
+  botSuspect?: boolean;
   activitySummary: DemoActivitySummary;
 }
 
 /** Clave de sessionStorage donde se guarda el teléfono capturado al acceder a la demo. */
 const SESSION_KEY_PHONE = 'demoPhone';
+/** Clave de sessionStorage con el veredicto antibot del formulario de entrada. */
+const SESSION_KEY_BOT   = 'demoBotSuspect';
 
 /** Normaliza la URL del router a un nombre de pantalla legible */
 function routeToScreenName(url: string): string {
@@ -242,6 +246,7 @@ export class DemoActivityService {
       activitySummary: this.getActivitySummary(),
     };
     if (phone) payload.phone = phone;
+    if (this.botSuspect()) payload.botSuspect = true;
     return this.http.post<{ status?: number; data?: unknown; error?: { msg?: string } }>(url, payload).pipe(
       map((res) => {
         if (res.status === 200) return { success: true };
@@ -278,6 +283,7 @@ export class DemoActivityService {
       activitySummary: this.getActivitySummary(),
     };
     if (phone) payload.phone = phone;
+    if (this.botSuspect()) payload.botSuspect = true;
 
     try {
       const url = `${baseUrl.replace(/\/$/, '')}/public/demo-lead`;
@@ -291,6 +297,11 @@ export class DemoActivityService {
     } catch {
       // El navegador puede rechazar el beacon durante la descarga; no hay reintento posible.
     }
+  }
+
+  /** Veredicto antibot que dejó el formulario de entrada al pedir el cupón. */
+  private botSuspect(): boolean {
+    return sessionStorage.getItem(SESSION_KEY_BOT) === '1';
   }
 
   /** Email del visitante: el del usuario demo logueado o el capturado en la entrada. */

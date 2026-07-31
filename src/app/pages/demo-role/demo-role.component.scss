@@ -1331,6 +1331,16 @@ $muted:    rgba(255,255,255,0.65);
   font-size: 0.85rem; color: #64748b; line-height: 1.5;
   margin: 0 0 20px;
 }
+// Campo trampa antibot. Se saca del flujo en lugar de usar display:none porque
+// muchos bots ignoran los campos ocultos con display/visibility y así sí lo rellenan.
+.email-modal__honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
 .email-modal__input-wrap {
   position: relative;
   width: 100%;
