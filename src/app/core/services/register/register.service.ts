@@ -115,9 +115,14 @@ export class RegisterService {
     return this.http.post<any>(url, body);
   }
 
-  validateUser(userId: number) {
+  /**
+   * El `token` va firmado en el enlace del correo. Sin él el backend no valida
+   * la cuenta: antes bastaba el `userId`, un entero secuencial, para dar por
+   * verificado el email de cualquiera.
+   */
+  validateUser(userId: number, token: string) {
     const url: string = environment.apiUrl + 'user/validateUser';
-    return this.http.post<any>(url, userId);
+    return this.http.post<any>(url, { userId, token });
   }
 
   /**

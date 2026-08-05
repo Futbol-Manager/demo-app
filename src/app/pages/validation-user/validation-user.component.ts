@@ -14,6 +14,7 @@ export class ValidationUserComponent implements OnInit {
   errorMessage: string = 'No se ha podido validar el usuario. Inténtalo de nuevo.';
 
   private userId: number = 0;
+  private token: string = '';
 
   constructor(
     private router: Router,
@@ -24,13 +25,21 @@ export class ValidationUserComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe((params) => {
       this.userId = +params['userId'] || 0;
+      this.token = params['token'] ?? '';
     });
   }
 
   validarUsuario(): void {
+    // Los enlaces anteriores al token firmado ya no sirven.
+    if (!this.token) {
+      this.errorMessage = 'El enlace no es válido o ha caducado. Vuelve a la pantalla de inicio de sesión y pide un nuevo correo de verificación.';
+      this.status = 'error';
+      return;
+    }
+
     this.status = 'loading';
 
-    this.registerService.validateUser(this.userId).subscribe({
+    this.registerService.validateUser(this.userId, this.token).subscribe({
       next: (res) => {
         if (res.data) {
           this.status = 'success';
