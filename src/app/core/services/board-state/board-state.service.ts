@@ -38,7 +38,7 @@ export class BoardStateService {
     if (isDemoMode()) {
       return of(null);
     }
-    const url = `${this.api}/rest/training/board-state/${userId}?taskId=${taskId}&taskType=${taskType}`;
+    const url = `${this.api}training/board-state/${userId}?taskId=${taskId}&taskType=${taskType}`;
     return this.http.get<any>(url).pipe(
       map(res => {
         if (res?.status === 200 && res?.data?.boardData) {
@@ -64,7 +64,7 @@ export class BoardStateService {
     if (isDemoMode()) {
       return of(true);
     }
-    const url = `${this.api}/rest/training/board-state/${userId}`;
+    const url = `${this.api}training/board-state/${userId}`;
     const body = { taskId, taskType, boardData, shared };
     return this.http.put<any>(url, body).pipe(
       map(res => res?.status === 200),
